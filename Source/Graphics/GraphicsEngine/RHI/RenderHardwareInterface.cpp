@@ -415,21 +415,8 @@ void RenderHardwareInterface::DrawIndexed(unsigned aStartIndex, unsigned aIndexC
 	myContext->DrawIndexed(aIndexCount, aStartIndex, 0);
 }
 
-void RenderHardwareInterface::ChangePipelineState(const PipelineStateObject& aNewPSO, const PipelineStateObject& aOldPSO)
+void RenderHardwareInterface::ChangePipelineState(const PipelineStateObject& aNewPSO)
 {
-	if (aOldPSO.RenderTarget)
-	{
-		ID3D11RenderTargetView* nullRTV = nullptr;
-		myContext->OMSetRenderTargets(1, &nullRTV, nullptr);
-	}
-	else
-	{
-		if (aOldPSO.DepthStencil)
-		{
-			myContext->OMSetRenderTargets(0, nullptr, nullptr);
-		}
-	}
-
 	const std::array<float, 4> blendFactor = { 0, 0, 0, 0 };
 	constexpr unsigned samplerMask = 0xffffffff;
 	myContext->OMSetBlendState(aNewPSO.BlendState.Get(), blendFactor.data(), samplerMask);
@@ -464,49 +451,6 @@ void RenderHardwareInterface::ChangePipelineState(const PipelineStateObject& aNe
 	myContext->PSSetShader(psShader.Get(), nullptr, 0);
 
 	myContext->IASetInputLayout(aNewPSO.InputLayout.Get());
-
-
-	if (aNewPSO.ClearRenderTarget)
-	{
-		myContext->ClearRenderTargetView(aNewPSO.RenderTarget->myRTV.Get(), aNewPSO.RenderTarget->myClearColor.data());
-	}
-
-	if (aNewPSO.ClearDepthStencil)
-	{
-		myContext->ClearDepthStencilView(aNewPSO.DepthStencil->myDSV.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	}
-
-	if (aNewPSO.RenderTarget)
-	{
-		myContext->OMSetRenderTargets(1, aNewPSO.RenderTarget->myRTV.GetAddressOf(), aNewPSO.DepthStencil->myDSV.Get());
-	}
-	else
-	{
-		ID3D11RenderTargetView* rtv[] = { nullptr };
-		myContext->OMSetRenderTargets(1, rtv, aNewPSO.DepthStencil->myDSV.Get());
-	}
-
-	D3D11_VIEWPORT viewport = {};
-	if (!aNewPSO.RenderTarget && aNewPSO.DepthStencil)
-	{
-		viewport.TopLeftX = aNewPSO.DepthStencil->myViewport[0];
-		viewport.TopLeftY = aNewPSO.DepthStencil->myViewport[1];
-		viewport.Width = aNewPSO.DepthStencil->myViewport[2];
-		viewport.Height = aNewPSO.DepthStencil->myViewport[3];
-		viewport.MinDepth = aNewPSO.DepthStencil->myViewport[4];
-		viewport.MaxDepth = aNewPSO.DepthStencil->myViewport[5];
-	}
-	else
-	{
-		viewport.TopLeftX	= myBackBuffer->myViewport[0];
-		viewport.TopLeftY	= myBackBuffer->myViewport[1];
-		viewport.Width		= myBackBuffer->myViewport[2];
-		viewport.Height		= myBackBuffer->myViewport[3];
-		viewport.MinDepth	= myBackBuffer->myViewport[4];
-		viewport.MaxDepth	= myBackBuffer->myViewport[5];
-	}
-
-	myContext->RSSetViewports(1, &viewport);
 }
 
 void RenderHardwareInterface::CreateDefaultSamplerStates()
@@ -794,9 +738,9 @@ bool RenderHardwareInterface::CreateShadowCubemap(std::string_view aName, unsign
 	return true;
 }
 
-bool RenderHardwareInterface::CreateLUT(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture)
+bool RenderHardwareInterface::CreateLUT(std::string_view aName, unsigned aWidth, unsigned aHeight, std::shared_ptr<Texture> outTexture)
 {
-	if (!CreateTexture(aName, aWidth, aHeight, RHITextureFormat::R16G16_Float, outTexture, false, true, true, false, false))
+	if (!CreateTexture(aName, aWidth, aHeight, RHITextureFormat::R16G16_Float, *outTexture, false, true, true, false, false))
 	{
 		return false;
 	}
@@ -817,7 +761,7 @@ bool RenderHardwareInterface::CreateLUT(std::string_view aName, unsigned aWidth,
 		return false;
 	}
 	
-	SetRenderTarget(outTexture);
+	SetRenderTarget(outTexture, nullptr, true, false);
 
 	ComPtr<ID3D11VertexShader> vsShader;
 	LUTshaderVS->myShader.As(&vsShader);
@@ -837,15 +781,53 @@ bool RenderHardwareInterface::CreateLUT(std::string_view aName, unsigned aWidth,
 	return true;
 }
 
-void RenderHardwareInterface::SetRenderTarget(Texture& aRenderTarget)
+void RenderHardwareInterface::SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget, bool aClearDepthStencil)
 {
-	myContext->OMSetRenderTargets(1, aRenderTarget.myRTV.GetAddressOf(), nullptr);
-}
+	if (aClearRenderTarget)
+	{
+		myContext->ClearRenderTargetView(aRenderTarget->myRTV.Get(), aRenderTarget->myClearColor.data());
+	}
 
-void RenderHardwareInterface::SetDepthStencil(Texture& aDepthStencil)
-{
-	ID3D11RenderTargetView* rtv[] = { nullptr };
-	myContext->OMSetRenderTargets(1, rtv, aDepthStencil.myDSV.Get());
+	if (aClearDepthStencil)
+	{
+		myContext->ClearDepthStencilView(aDepthStencil->myDSV.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	}
+
+	if (aRenderTarget && aDepthStencil)
+	{
+		myContext->OMSetRenderTargets(1, aRenderTarget->myRTV.GetAddressOf(), aDepthStencil->myDSV.Get());
+	}
+	else if (aRenderTarget && !aDepthStencil)
+	{
+		myContext->OMSetRenderTargets(1, aRenderTarget->myRTV.GetAddressOf(), nullptr);
+	}
+	else
+	{
+		ID3D11RenderTargetView* rtv[] = { nullptr };
+		myContext->OMSetRenderTargets(1, rtv, aDepthStencil->myDSV.Get());
+	}
+
+	D3D11_VIEWPORT viewport = {};
+	if (!aRenderTarget && aDepthStencil)
+	{
+		viewport.TopLeftX = aDepthStencil->myViewport[0];
+		viewport.TopLeftY = aDepthStencil->myViewport[1];
+		viewport.Width = aDepthStencil->myViewport[2];
+		viewport.Height = aDepthStencil->myViewport[3];
+		viewport.MinDepth = aDepthStencil->myViewport[4];
+		viewport.MaxDepth = aDepthStencil->myViewport[5];
+	}
+	else
+	{
+		viewport.TopLeftX = myBackBuffer->myViewport[0];
+		viewport.TopLeftY = myBackBuffer->myViewport[1];
+		viewport.Width = myBackBuffer->myViewport[2];
+		viewport.Height = myBackBuffer->myViewport[3];
+		viewport.MinDepth = myBackBuffer->myViewport[4];
+		viewport.MaxDepth = myBackBuffer->myViewport[5];
+	}
+
+	myContext->RSSetViewports(1, &viewport);
 }
 
 void RenderHardwareInterface::BeginEvent(std::string_view aEvent) const

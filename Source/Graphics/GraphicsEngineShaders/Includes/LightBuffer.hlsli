@@ -12,10 +12,13 @@ cbuffer LightBuffer : register(b4)
         float Intensity;        // 4 bytes
         float3 Direction;       // 16 bytes
         int CastShadows;        // 4 bytes
+        float MinBias;          // 4 bytes
+        float MaxBias;          // 4 bytes
+        float2 Padding;         // 8 bytes
 
         float4x4 View;          // 64 bytes
         float4x4 Projection;    // 64 bytes
-    } LB_DirLight;              // 160 bytes
+    } LB_DirLight;              // 176 bytes
 	
     struct PointLightData
     {
@@ -23,9 +26,12 @@ cbuffer LightBuffer : register(b4)
         float Intensity;        // 4 bytes
         float3 Position;        // 12 bytes
         int CastShadows;        // 4 bytes
+        float MinBias;          // 4 bytes
+        float MaxBias;          // 4 bytes
+        float2 Padding;         // 8 bytes
         
         float4x4 Projection;    // 64 bytes
-    } LB_PointLights[4];        // 96 * 4 = 384
+    } LB_PointLights[4];        // 112 * 4 = 448
 
     struct SpotLightData
     {
@@ -35,15 +41,18 @@ cbuffer LightBuffer : register(b4)
         int CastShadows;        // 4 bytes
         float3 Direction;       // 12 bytes
         float ConeAngle;        // 4 bytes
+        float MinBias;          // 4 bytes
+        float MaxBias;          // 4 bytes
+        float2 Padding;         // 8 bytes
 
         float4x4 View;          // 64 bytes
         float4x4 Projection;    // 64 bytes
-    } LB_SpotLights[4];         // 176 * 4 = 704 bytes
+    } LB_SpotLights[4];         // 192 * 4 = 768 bytes
 
-    int LB_NumPointLights;      // 4
-    int LB_NumSpotLights;       // 4
+    int LB_NumPointLights;      // 4 bytes
+    int LB_NumSpotLights;       // 4 bytes
 
-	// Total Size: 1016 bytes, missing 8
+	// Total Size: 1416 bytes, missing 8
     float2 LB_Padding;
-    // Total Size: 1024 bytes (16 * 64)
+    // Total Size: 1424 bytes (16 * 89)
 }

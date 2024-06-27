@@ -52,13 +52,6 @@ void Scene::Update()
 
 void Scene::Render()
 {
-	if (myCurrentDebugMode != DebugMode::None)
-	{
-		DebugRender();
-		return;
-	}
-	
-	myCommandList->Enqueue<ChangePipelineState>(PipelineStateType::Default);
 	QueueDirectionalLightShadows();
 	QueuePointLightShadows();
 	QueueSpotLightShadows();
@@ -66,6 +59,7 @@ void Scene::Render()
 
 	// Final Render
 	myCommandList->Enqueue<ChangePipelineState>(PipelineStateType::Default);
+	myCommandList->Enqueue<SetDefaultRenderTarget>();
 	myCommandList->Enqueue<UpdateFrameBuffer>(myCamera->GetComponent<Camera>());
 	myCommandList->Enqueue<SetTextureResource>(126, myAmbientLight->GetComponent<AmbientLight>()->GetEnvironmentTexture());
 	QueueShadowmapTextureResources();
@@ -157,47 +151,6 @@ void Scene::AddSpotLight(std::shared_ptr<GameObject> aSpotLight)
 	mySpotLights.emplace_back(sLight);
 }
 
-void Scene::DebugRender()
-{
-	switch (myCurrentDebugMode)
-	{
-	case DebugMode::Unlit:
-		myCommandList->Enqueue<ChangePipelineState>(PipelineStateType::Unlit);
-		break;
-	case DebugMode::Wireframe:
-		myCommandList->Enqueue<ChangePipelineState>(PipelineStateType::Wireframe);
-		break;
-	case DebugMode::DebugVertexNormals:
-		myCommandList->Enqueue<ChangePipelineState>(PipelineStateType::DebugVertexNormals);
-		break;
-	case DebugMode::DebugPixelNormals:
-		myCommandList->Enqueue<ChangePipelineState>(PipelineStateType::DebugPixelNormals);
-		break;
-	case DebugMode::DebugTextureNormals:
-		myCommandList->Enqueue<ChangePipelineState>(PipelineStateType::DebugTextureNormals);
-		break;
-	case DebugMode::DebugUVs:
-		myCommandList->Enqueue<ChangePipelineState>(PipelineStateType::DebugUVs);
-		break;
-	}
-
-	myCommandList->Enqueue<UpdateFrameBuffer>(myCamera->GetComponent<Camera>());
-	QueueGameObjects();
-
-	if (myShowGizmos)
-	{
-		QueueDebugGizmos();
-	}
-
-	QueueClearTextureResources();
-
-	if (myCommandList->HasCommands() && !myCommandList->IsFinished())
-	{
-		myCommandList->Execute();
-	}
-	myCommandList->Reset();
-}
-
 void Scene::QueueClearTextureResources()
 {
 	for (int i = 100; i < 110; i++)
@@ -272,7 +225,8 @@ void Scene::QueueSpotLightShadows()
 		if (!spotLight->GetActive()) continue;
 		if (!spotLight->CastsShadows()) continue;
 
-		myCommandList->Enqueue<SetShadowMap>(spotLight->GetShadowMap());
+		myCommandList->Enqueue<ChangePipelineState>(PipelineStateType::Shadow);
+		myCommandList->Enqueue<SetRenderTarget>(nullptr, spotLight->GetShadowMap(), false, true);
 		myCommandList->Enqueue<UpdateFrameBuffer>(mySpotLights[i]->GetComponent<Camera>());
 		QueueGameObjects();
 	}
@@ -285,8 +239,9 @@ void Scene::QueuePointLightShadows()
 		std::shared_ptr<PointLight> pointLight = myPointLights[i]->GetComponent<PointLight>();
 		if (!pointLight->GetActive()) continue;
 		if (!pointLight->CastsShadows()) continue;
-
-		myCommandList->Enqueue<SetShadowCubemap>(pointLight->GetShadowMap());
+		
+		myCommandList->Enqueue<SetRenderTarget>(nullptr, pointLight->GetShadowMap(), false, true);
+		myCommandList->Enqueue<ChangePipelineState>(PipelineStateType::ShadowCube);
 		myCommandList->Enqueue<UpdateFrameBuffer>(myPointLights[i]->GetComponent<Camera>());
 		myCommandList->Enqueue<UpdateShadowBuffer>(pointLight);
 		QueueGameObjects();
@@ -298,9 +253,9 @@ void Scene::QueueDirectionalLightShadows()
 	std::shared_ptr<DirectionalLight> dLight = myDirectionalLight->GetComponent<DirectionalLight>();
 	if (!dLight->GetActive()) return;
 	if (!dLight->CastsShadows()) return;
-
+	
+	myCommandList->Enqueue<SetRenderTarget>(nullptr, dLight->GetShadowMap(), false, true);
 	myCommandList->Enqueue<ChangePipelineState>(PipelineStateType::Shadow);
-	myCommandList->Enqueue<SetShadowMap>(dLight->GetShadowMap());
 	myCommandList->Enqueue<UpdateFrameBuffer>(myDirectionalLight->GetComponent<Camera>());
 	QueueGameObjects();
 }

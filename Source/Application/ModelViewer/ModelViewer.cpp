@@ -202,6 +202,7 @@ void ModelViewer::InitLights()
 	directionalLight->SetName("D_Light");
 	std::shared_ptr<DirectionalLight> dLight = directionalLight->AddComponent<DirectionalLight>();
 	dLight->EnableShadowCasting(2048, 2048);
+	dLight->SetShadowBias(0.0002f, 0.0007f);
 	directionalLight->AddComponent<Camera>(-1024.0f, 1024.0f, 1024.0f, -1024.0f, 1.0f, 6000.0f);
 	directionalLight->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/DirectionalLightGizmo.fbx")->mesh);
 	directionalLight->Transform.SetRotation(45.0f, 45.0f, 0);
@@ -212,6 +213,7 @@ void ModelViewer::InitLights()
 	pointLight->SetName("P_Light");
 	std::shared_ptr<PointLight> pLight = pointLight->AddComponent<PointLight>(50000.0f);
 	pLight->EnableShadowCasting(512, 512);
+	pLight->SetShadowBias(0.00001f, 0.00003f);
 	pointLight->AddComponent<Camera>(90.0f, 1.0f, 3000.0f, CU::Vector2f(512.0f, 512.0f));
 	pointLight->Transform.SetTranslation(50, 200.0f, 100.0f);
 	pointLight->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/PointLightGizmo.fbx")->mesh);
@@ -221,6 +223,7 @@ void ModelViewer::InitLights()
 	spotLight->SetName("S_Light");
 	std::shared_ptr<SpotLight> sLight = spotLight->AddComponent<SpotLight>(600.0f, 100000.0f);
 	sLight->EnableShadowCasting(512, 512);
+	sLight->SetShadowBias(0.00005f, 0.00024f);
 	spotLight->AddComponent<Camera>(90.0f, 1.0f, 2000.0f, CU::Vector2f(512.0f, 512.0f));
 	spotLight->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/SpotLightGizmo.fbx")->mesh);
 	spotLight->Transform.SetRotation(45.0f, -90.0f, 0);
@@ -266,14 +269,16 @@ void ModelViewer::InitGameObjects()
 
 	std::shared_ptr<GameObject> matballOne = std::make_shared<GameObject>();
 	matballOne->Transform = CU::Transform<float>({ -100.0f, 0, 0 }, { 0, -45.0f, 0 });
-	matballOne->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("Models/TMA_Matball.fbx")->mesh,
+	std::shared_ptr<Model> matballOneModel = matballOne->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("Models/TMA_Matball.fbx")->mesh,
 									AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballOne.json")->material);
+	matballOneModel->SetMaterialOnSlot(1, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballTwo.json")->material);
 	myScene.Instantiate(matballOne);
 
 	std::shared_ptr<GameObject> matballTwo = std::make_shared<GameObject>();
 	matballTwo->Transform = CU::Transform<float>({ -100.0f, 0, 200.0f }, { 0, -45.0f, 0 });
-	matballTwo->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("Models/TMA_Matball.fbx")->mesh,
+	std::shared_ptr<Model> matballTwoModel = matballTwo->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("Models/TMA_Matball.fbx")->mesh,
 									AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballTwo.json")->material);
+	matballTwoModel->SetMaterialOnSlot(1, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballOne.json")->material);
 	myScene.Instantiate(matballTwo);
 
 	std::shared_ptr<GameObject> tgaBro = std::make_shared<GameObject>();
@@ -361,15 +366,15 @@ void ModelViewer::UpdateImgui()
 		// Rendering
 		{
 			ImGui::Text("Rendering Mode");
-			if (ImGui::BeginCombo("##RenderModeDropdown", myScene.myDebugModeNames[static_cast<int>(myScene.myCurrentDebugMode)].c_str()))
+			if (ImGui::BeginCombo("##RenderModeDropdown", myScene.myDebugModeNames[static_cast<int>(GraphicsEngine::Get().GetCurrentDebugMode())].c_str()))
 			{
-				if (ImGui::Selectable("None")) myScene.myCurrentDebugMode = DebugMode::None;
-				if (ImGui::Selectable("Unlit")) myScene.myCurrentDebugMode = DebugMode::Unlit;
-				if (ImGui::Selectable("Wireframe")) myScene.myCurrentDebugMode = DebugMode::Wireframe;
-				if (ImGui::Selectable("DebugVertexNormals")) myScene.myCurrentDebugMode = DebugMode::DebugVertexNormals;
-				if (ImGui::Selectable("DebugPixelNormals")) myScene.myCurrentDebugMode = DebugMode::DebugPixelNormals;
-				if (ImGui::Selectable("DebugTextureNormals")) myScene.myCurrentDebugMode = DebugMode::DebugTextureNormals;
-				if (ImGui::Selectable("DebugUVs")) myScene.myCurrentDebugMode = DebugMode::DebugUVs;
+				if (ImGui::Selectable("None")) GraphicsEngine::Get().SetDebugMode(DebugMode::None);
+				if (ImGui::Selectable("Unlit")) GraphicsEngine::Get().SetDebugMode(DebugMode::Unlit);
+				if (ImGui::Selectable("Wireframe")) GraphicsEngine::Get().SetDebugMode(DebugMode::Wireframe);
+				if (ImGui::Selectable("DebugVertexNormals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugVertexNormals);
+				if (ImGui::Selectable("DebugPixelNormals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugPixelNormals);
+				if (ImGui::Selectable("DebugTextureNormals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugTextureNormals);
+				if (ImGui::Selectable("DebugUVs")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugUVs);
 				ImGui::EndCombo();
 			}
 		}
@@ -405,9 +410,9 @@ void ModelViewer::UpdateImgui()
 			if (ImGui::CollapsingHeader("Ambient Light"))
 			{
 				std::shared_ptr<AmbientLight> aLight = ambientLight->GetComponent<AmbientLight>();
-				float value = aLight->GetIntensity();
+				float intensity = aLight->GetIntensity();
 				ImGui::Text("Intensity");
-				if (ImGui::SliderFloat("##AmbientIntensity", &value, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) aLight->SetIntensity(value);
+				if (ImGui::SliderFloat("##AmbientIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) aLight->SetIntensity(intensity);
 				ImGui::Spacing();
 				float color[3] = { aLight->GetColor().x, aLight->GetColor().y, aLight->GetColor().z };
 				ImGui::Text("Color");
@@ -424,9 +429,16 @@ void ModelViewer::UpdateImgui()
 			if (ImGui::CollapsingHeader("Directional Light"))
 			{
 				std::shared_ptr<DirectionalLight> dLight = directionalLight->GetComponent<DirectionalLight>();
-				float value = dLight->GetIntensity();
+				float intensity = dLight->GetIntensity();
 				ImGui::Text("Intensity");
-				if (ImGui::SliderFloat("##DirectionalIntensity", &value, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) dLight->SetIntensity(value);
+				if (ImGui::SliderFloat("##DirectionalIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) dLight->SetIntensity(intensity);
+				ImGui::Spacing();
+				float minBias = dLight->GetMinShadowBias();
+				float maxBias = dLight->GetMaxShadowBias();
+				ImGui::Text("Shadow Min Bias");
+				if (ImGui::SliderFloat("##DirectionalMinBias", &minBias, 0, 0.01f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
+				ImGui::Text("Shadow Max Bias");
+				if (ImGui::SliderFloat("##DirectionalMaxBias", &maxBias, 0, 0.01f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
 				ImGui::Spacing();
 				float color[3] = { dLight->GetColor().x, dLight->GetColor().y, dLight->GetColor().z };
 				ImGui::Text("Color");
@@ -447,6 +459,14 @@ void ModelViewer::UpdateImgui()
 				ImGui::Text("Intensity");
 				if (ImGui::SliderFloat("##PointIntensity", &value, 0, 500000.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) pLight->SetIntensity(value);
 
+				ImGui::Spacing();
+
+				float minBias = pLight->GetMinShadowBias();
+				float maxBias = pLight->GetMaxShadowBias();
+				ImGui::Text("Shadow Min Bias");
+				if (ImGui::SliderFloat("##PointMinBias", &minBias, 0, 0.01f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
+				ImGui::Text("Shadow Max Bias");
+				if (ImGui::SliderFloat("##PointMaxBias", &maxBias, 0, 0.01f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
 				ImGui::Spacing();
 
 				float color[3] = { pLight->GetColor().x, pLight->GetColor().y, pLight->GetColor().z };
@@ -477,6 +497,15 @@ void ModelViewer::UpdateImgui()
 				float angle = sLight->GetConeAngleDegrees();
 				ImGui::Text("Focus");
 				if (ImGui::SliderFloat("##SpotConeAngle", &angle, 600.0f, 50000.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) sLight->SetConeAngle(angle);
+				ImGui::Spacing();
+
+				float minBias = sLight->GetMinShadowBias();
+				float maxBias = sLight->GetMaxShadowBias();
+				ImGui::Text("Shadow Min Bias");
+				if (ImGui::SliderFloat("##SpotMinBias", &minBias, 0, 0.01f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
+				ImGui::Text("Shadow Max Bias");
+				if (ImGui::SliderFloat("##SpotMaxBias", &maxBias, 0, 0.01f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
+
 				ImGui::Spacing();
 				float color[3] = { sLight->GetColor().x, sLight->GetColor().y, sLight->GetColor().z };
 				ImGui::Text("Color");

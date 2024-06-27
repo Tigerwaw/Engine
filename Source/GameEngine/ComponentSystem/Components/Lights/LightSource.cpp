@@ -48,6 +48,12 @@ CU::Vector3f LightSource::GetPosition() const
     return myParent->Transform.GetTranslation();
 }
 
+void LightSource::SetShadowBias(float aMinShadowBias, float aMaxShadowBias)
+{
+    myMinShadowBias = aMinShadowBias;
+    myMaxShadowBias = aMaxShadowBias;
+}
+
 std::shared_ptr<Texture> LightSource::GetShadowMap()
 {
     return myShadowMap;

@@ -262,6 +262,7 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
     asset->material->SetAlbedoTexture(GetAsset<TextureAsset>("Default_C")->texture);
     asset->material->SetNormalTexture(GetAsset<TextureAsset>("Default_N")->texture);
     asset->material->SetMaterialTexture(GetAsset<TextureAsset>("Default_M")->texture);
+    asset->material->SetPSO(GraphicsEngine::Get().GetPSO(PipelineStateType::Default));
 
     std::ifstream path(aPath);
     nl::json data = nl::json();
@@ -277,10 +278,33 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
     }
     path.close();
 
-    asset->material->MaterialSettings().albedoTint = {data["AlbedoTint"]["R"].get<float>(),
-                                                      data["AlbedoTint"]["G"].get<float>(),
-                                                      data["AlbedoTint"]["B"].get<float>(),
-                                                      data["AlbedoTint"]["A"].get<float>() };
+    if (data.contains("Type"))
+    {
+        if (data["Type"].get<std::string>() == "PBR")
+        {
+            asset->material->SetPSO(GraphicsEngine::Get().GetPSO(PipelineStateType::Default));
+        }
+        else if (data["Type"].get<std::string>() == "Unlit")
+        {
+            asset->material->SetPSO(GraphicsEngine::Get().GetPSO(PipelineStateType::Unlit));
+        }
+        else if (data["Type"].get<std::string>() == "Gizmo")
+        {
+            asset->material->SetPSO(GraphicsEngine::Get().GetPSO(PipelineStateType::Gizmo));
+        }
+        else if (data["Type"].get<std::string>() == "Wireframe")
+        {
+            asset->material->SetPSO(GraphicsEngine::Get().GetPSO(PipelineStateType::Wireframe));
+        }
+    }
+
+    if (data.contains("AlbedoTint"))
+    {
+        asset->material->MaterialSettings().albedoTint = { data["AlbedoTint"]["R"].get<float>(),
+                                                           data["AlbedoTint"]["G"].get<float>(),
+                                                           data["AlbedoTint"]["B"].get<float>(),
+                                                           data["AlbedoTint"]["A"].get<float>() };
+    }
 
     if (data.contains("AlbedoTexture"))
     {

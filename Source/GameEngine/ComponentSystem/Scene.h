@@ -6,17 +6,6 @@
 class GraphicsCommandList;
 class GameObject;
 
-enum class DebugMode
-{
-	None,
-	Unlit,
-	Wireframe,
-	DebugVertexNormals,
-	DebugPixelNormals,
-	DebugTextureNormals,
-	DebugUVs
-};
-
 class Scene final
 {
 public:
@@ -43,7 +32,6 @@ public:
 	void AddSpotLight(std::shared_ptr<GameObject> aSpotLight);
 	std::shared_ptr<GameObject> GetSpotLight(int aIndex) { return mySpotLights[aIndex]; }
 
-	DebugMode myCurrentDebugMode = DebugMode::None;
 	std::vector<std::string> myDebugModeNames = {
 		"None",
 		"Unlit",
@@ -55,7 +43,6 @@ public:
 	};
 	bool myShowGizmos = false;
 private:
-	void DebugRender();
 	void QueueClearTextureResources();
 	void QueueShadowmapTextureResources();
 	void QueueUpdateLightBuffer();

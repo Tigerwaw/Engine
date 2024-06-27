@@ -34,6 +34,8 @@ void UpdateLightBuffer::Execute()
 		lightBufferData.DirLight.View = myDirectionalLight->GetParent()->Transform.GetMatrix().GetFastInverse();
 		lightBufferData.DirLight.Projection = myDirectionalLight->GetParent()->GetComponent<Camera>()->GetProjectionMatrix();
 		lightBufferData.DirLight.CastShadows = myDirectionalLight->CastsShadows();
+		lightBufferData.DirLight.MinBias = myDirectionalLight->GetMinShadowBias();
+		lightBufferData.DirLight.MaxBias = myDirectionalLight->GetMaxShadowBias();
 	}
 
 	int pIndex = 0;
@@ -47,6 +49,8 @@ void UpdateLightBuffer::Execute()
 		lightBufferData.PointLights[pIndex].Color = pointLight->GetColor();
 		lightBufferData.PointLights[pIndex].Intensity = pointLight->GetIntensity();
 		lightBufferData.PointLights[pIndex].CastShadows = pointLight->CastsShadows();
+		lightBufferData.PointLights[pIndex].MinBias = pointLight->GetMinShadowBias();
+		lightBufferData.PointLights[pIndex].MaxBias = pointLight->GetMaxShadowBias();
 		
 		lightBufferData.PointLights[pIndex].Projection = pointLight->GetParent()->GetComponent<Camera>()->GetProjectionMatrix();
 	}
@@ -65,6 +69,9 @@ void UpdateLightBuffer::Execute()
 		lightBufferData.SpotLights[sIndex].Color = spotLight->GetColor();
 		lightBufferData.SpotLights[sIndex].Intensity = spotLight->GetIntensity();
 		lightBufferData.SpotLights[sIndex].CastShadows = spotLight->CastsShadows();
+		lightBufferData.SpotLights[sIndex].MinBias = spotLight->GetMinShadowBias();
+		lightBufferData.SpotLights[sIndex].MaxBias = spotLight->GetMaxShadowBias();
+
 		lightBufferData.SpotLights[sIndex].View = spotLight->GetParent()->Transform.GetMatrix().GetFastInverse();
 		lightBufferData.SpotLights[sIndex].Projection = spotLight->GetParent()->GetComponent<Camera>()->GetProjectionMatrix();
 	}

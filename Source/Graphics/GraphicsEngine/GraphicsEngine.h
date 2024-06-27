@@ -20,6 +20,17 @@ struct ID3D11InputLayout;
 
 struct Vertex;
 
+enum class DebugMode
+{
+	None,
+	Unlit,
+	Wireframe,
+	DebugVertexNormals,
+	DebugPixelNormals,
+	DebugTextureNormals,
+	DebugUVs
+};
+
 enum class ConstantBufferType
 {
 	ObjectBuffer,
@@ -56,13 +67,20 @@ public:
 	bool CreateShadowMap(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture);
 	bool CreateShadowCubemap(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture);
 
+	void SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
+
 	void RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<Material>> aMaterialList);
 
 	template <typename VertexType>
 	bool CreateVertexBuffer(std::string_view aName, const std::vector<VertexType>& aVertexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer) const;
 	bool CreateIndexBuffer(std::string_view aName, const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer);
 
+	std::shared_ptr<Texture> GetBackBuffer() { return myRHI->GetBackBuffer(); }
+	std::shared_ptr<Texture> GetDepthBuffer() { return myRHI->GetDepthBuffer(); }
+
 	const unsigned GetDrawcallAmount() const { return myDrawcallAmount; }
+	void SetDebugMode(DebugMode aDebugMode) { myCurrentDebugMode = aDebugMode; }
+	const DebugMode GetCurrentDebugMode() const { return myCurrentDebugMode; }
 
 private:
 	GraphicsEngine();
@@ -79,6 +97,7 @@ private:
 	std::shared_ptr<GraphicsCommandList> myCommandList;
 
 	unsigned myDrawcallAmount = 0;
+	DebugMode myCurrentDebugMode = DebugMode::None;
 };
 
 template<typename BufferData>

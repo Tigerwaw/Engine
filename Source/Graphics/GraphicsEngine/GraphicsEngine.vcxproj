@@ -198,8 +198,8 @@
     <ClInclude Include="RHI\GraphicsCommands\Render\RenderAnimatedMesh.h" />
     <ClInclude Include="RHI\GraphicsCommands\Render\RenderMesh.h" />
     <ClInclude Include="RHI\GraphicsCommands\LambdaGraphicsCommand.h" />
-    <ClInclude Include="RHI\GraphicsCommands\Resource\SetShadowCubemap.h" />
-    <ClInclude Include="RHI\GraphicsCommands\Resource\SetShadowMap.h" />
+    <ClInclude Include="RHI\GraphicsCommands\SetDefaultRenderTarget.h" />
+    <ClInclude Include="RHI\GraphicsCommands\SetRenderTarget.h" />
     <ClInclude Include="RHI\GraphicsCommands\Resource\SetTextureResource.h" />
     <ClInclude Include="RHI\GraphicsCommands\ConstantBuffer\UpdateFrameBuffer.h" />
     <ClInclude Include="RHI\GraphicsCommands\ConstantBuffer\UpdateLightBuffer.h" />
@@ -239,8 +239,8 @@
     <ClCompile Include="RHI\GraphicsCommands\Render\RenderAnimatedMesh.cpp" />
     <ClCompile Include="RHI\GraphicsCommands\Render\RenderMesh.cpp" />
     <ClCompile Include="RHI\GraphicsCommands\LambdaGraphicsCommand.cpp" />
-    <ClCompile Include="RHI\GraphicsCommands\Resource\SetShadowCubemap.cpp" />
-    <ClCompile Include="RHI\GraphicsCommands\Resource\SetShadowMap.cpp" />
+    <ClCompile Include="RHI\GraphicsCommands\SetDefaultRenderTarget.cpp" />
+    <ClCompile Include="RHI\GraphicsCommands\SetRenderTarget.cpp" />
     <ClCompile Include="RHI\GraphicsCommands\Resource\SetTextureResource.cpp" />
     <ClCompile Include="RHI\GraphicsCommands\ConstantBuffer\UpdateFrameBuffer.cpp" />
     <ClCompile Include="RHI\GraphicsCommands\ConstantBuffer\UpdateLightBuffer.cpp" />

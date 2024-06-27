@@ -11,7 +11,6 @@ struct ID3D11DepthStencilView;
 struct ID3D11InputLayout;
 struct ID3D11SamplerState;
 
-class Texture;
 class Shader;
 
 
@@ -31,11 +30,5 @@ struct PipelineStateObject
 	std::shared_ptr<Shader> VertexShader;
 	std::shared_ptr<Shader> GeometryShader;
 	std::shared_ptr<Shader> PixelShader;
-
-	std::shared_ptr<Texture> RenderTarget;
-	bool ClearRenderTarget = false;
-
-	std::shared_ptr<Texture> DepthStencil;
-	bool ClearDepthStencil = false;
 };
 

@@ -50,7 +50,7 @@ public:
 	void Draw(unsigned aVertexCount);
 	void DrawIndexed(unsigned aStartIndex, unsigned aIndexCount) const;
 
-	void ChangePipelineState(const PipelineStateObject& aNewPSO, const PipelineStateObject& aOldPSO);
+	void ChangePipelineState(const PipelineStateObject& aNewPSO);
 
 	void CreateDefaultSamplerStates();
 	bool CreateSamplerState(std::string_view aName, const D3D11_SAMPLER_DESC& aSamplerDesc);
@@ -67,10 +67,9 @@ public:
 		bool aCpuAccessRead, bool aCpuAccessWrite) const;
 	bool CreateShadowMap(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture);
 	bool CreateShadowCubemap(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture);
-	bool CreateLUT(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture);
+	bool CreateLUT(std::string_view aName, unsigned aWidth, unsigned aHeight, std::shared_ptr<Texture> outTexture);
 
-	void SetRenderTarget(Texture& aRenderTarget);
-	void SetDepthStencil(Texture& aDepthStencil);
+	void SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
 
 	void BeginEvent(std::string_view aEvent) const;
 	void EndEvent() const;

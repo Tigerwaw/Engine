@@ -201,7 +201,7 @@ float3 BRDF_DirectionalLight(DirLightData dirLight, float3 viewPos, float4 world
     float intensity = dirLight.Intensity * lightAttenuation;
     directLight *= intensity;
     
-    float shadowFactor = ShadowFactorDLightSpotLight(dirLight.View, dirLight.Projection, dirLight.Direction.xyz, worldPos, pixelNormal, 0.0001, 0.0005, shadowMap, shadowSamples);
+    float shadowFactor = ShadowFactorDLightSpotLight(dirLight.View, dirLight.Projection, dirLight.Direction.xyz, worldPos, pixelNormal, dirLight.MinBias, dirLight.MaxBias, shadowMap, shadowSamples);
     directLight *= saturate(shadowFactor);
     return directLight;
 }
@@ -217,7 +217,7 @@ float3 BRDF_PointLight(PointLightData pointLight, float3 viewPos, float4 worldPo
     float intensity = pointLight.Intensity * lightAttenuation;
     directLight *= intensity;
     
-    float shadowFactor = ShadowFactorPointLight(pointLight, worldPos, pixelNormal, 0.0001, 0.0003, shadowCubemap, shadowSamples);
+    float shadowFactor = ShadowFactorPointLight(pointLight, worldPos, pixelNormal, pointLight.MinBias, pointLight.MaxBias, shadowCubemap, shadowSamples);
     directLight *= saturate(shadowFactor);
     return directLight;
 }
@@ -234,7 +234,7 @@ float3 BRDF_SpotLight(SpotLightData spotLight, float3 viewPos, float4 worldPos, 
     float intensity = spotLight.Intensity * lightAttenuation;
     directLight *= intensity;
             
-    float shadowFactor = ShadowFactorDLightSpotLight(spotLight.View, spotLight.Projection, spotLight.Direction, worldPos, pixelNormal, 0.0001, 0.0003, shadowMap, shadowSamples);
+    float shadowFactor = ShadowFactorDLightSpotLight(spotLight.View, spotLight.Projection, spotLight.Direction, worldPos, pixelNormal, spotLight.MinBias, spotLight.MaxBias, shadowMap, shadowSamples);
     directLight *= saturate(shadowFactor);
     return directLight;
 }

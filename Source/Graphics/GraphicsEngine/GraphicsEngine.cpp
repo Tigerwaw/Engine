@@ -81,10 +81,6 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	defaultPSO.SamplerStates[15] = myRHI->GetSamplerState("ShadowSS");
 
 	defaultPSO.VertexStride = sizeof(Vertex);
-	defaultPSO.RenderTarget = myRHI->GetBackBuffer();
-	defaultPSO.DepthStencil = myRHI->GetDepthBuffer();
-	defaultPSO.ClearRenderTarget = true;
-	defaultPSO.ClearDepthStencil = true;
 	myPSOmap.emplace(PipelineStateType::Default, std::make_shared<PipelineStateObject>(defaultPSO));
 	
 	PipelineStateObject unlitPSO;
@@ -92,10 +88,6 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	unlitPSO.VertexShader = defaultPSO.VertexShader;
 	unlitPSO.InputLayout = defaultPSO.InputLayout;
 	unlitPSO.VertexStride = sizeof(Vertex);
-	unlitPSO.RenderTarget = myRHI->GetBackBuffer();
-	unlitPSO.DepthStencil = myRHI->GetDepthBuffer();
-	unlitPSO.ClearRenderTarget = true;
-	unlitPSO.ClearDepthStencil = true;
 
 	unlitPSO.PixelShader = std::make_shared<Shader>();
 	if (!myRHI->LoadShaderFromMemory("Unlit_PS", *unlitPSO.PixelShader, BuiltIn_Unlit_PS_ByteCode, sizeof(BuiltIn_Unlit_PS_ByteCode)))
@@ -135,10 +127,6 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 
 	gizmoPSO.InputLayout = defaultPSO.InputLayout;
 	gizmoPSO.VertexStride = sizeof(Vertex);
-	gizmoPSO.RenderTarget = myRHI->GetBackBuffer();
-	gizmoPSO.DepthStencil = myRHI->GetDepthBuffer();
-	gizmoPSO.ClearRenderTarget = false;
-	gizmoPSO.ClearDepthStencil = false;
 
 	myPSOmap.emplace(PipelineStateType::Gizmo, std::make_shared<PipelineStateObject>(gizmoPSO));
 	
@@ -147,10 +135,6 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	shadowPSO.VertexShader = defaultPSO.VertexShader;
 	shadowPSO.InputLayout = defaultPSO.InputLayout;
 	shadowPSO.VertexStride = sizeof(Vertex);
-	shadowPSO.DepthStencil = std::make_shared<Texture>();
-	myRHI->CreateShadowMap("TrashShadowMap", 1, 1, *shadowPSO.DepthStencil);
-	shadowPSO.ClearRenderTarget = false;
-	shadowPSO.ClearDepthStencil = true;
 	myPSOmap.emplace(PipelineStateType::Shadow, std::make_shared<PipelineStateObject>(shadowPSO));
 	
 	PipelineStateObject shadowCubePSO;
@@ -170,10 +154,6 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 
 	shadowCubePSO.InputLayout = defaultPSO.InputLayout;
 	shadowCubePSO.VertexStride = sizeof(Vertex);
-	shadowCubePSO.DepthStencil = std::make_shared<Texture>();
-	myRHI->CreateShadowCubemap("TrashShadowCubeMap", 1, 1, *shadowCubePSO.DepthStencil);
-	shadowCubePSO.ClearRenderTarget = false;
-	shadowCubePSO.ClearDepthStencil = true;
 	myPSOmap.emplace(PipelineStateType::ShadowCube, std::make_shared<PipelineStateObject>(shadowCubePSO));
 
 	PipelineStateObject debugVertexNormalsPSO;
@@ -218,7 +198,7 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 
 
 	myLUTtexture = std::make_shared<Texture>();
-	if (!myRHI->CreateLUT("LUT", 512, 512, *myLUTtexture))
+	if (!myRHI->CreateLUT("LUT", 512, 512, myLUTtexture))
 	{
 		LOG(GraphicsLog, Error, "Failed to create LUT Texture!");
 	}
@@ -273,7 +253,7 @@ void GraphicsEngine::ChangePipelineState(PipelineStateType aPipelineState)
 void GraphicsEngine::ChangePipelineState(const std::shared_ptr<PipelineStateObject> aNewPSO)
 {
 	ClearTextureResource_PS(127);
-	myRHI->ChangePipelineState(*aNewPSO, *myCurrentPSO);
+	myRHI->ChangePipelineState(*aNewPSO);
 	myCurrentPSO = aNewPSO;
 	SetTextureResource_PS(127, *myLUTtexture);
 }
@@ -333,6 +313,11 @@ bool GraphicsEngine::CreateShadowCubemap(std::string_view aName, unsigned aWidth
 	return myRHI->CreateShadowCubemap(aName, aWidth, aHeight, outTexture);
 }
 
+void GraphicsEngine::SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget, bool aClearDepthStencil)
+{
+	myRHI->SetRenderTarget(aRenderTarget, aDepthStencil, aClearRenderTarget, aClearDepthStencil);
+}
+
 void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<Material>> aMaterialList)
 {
 	myRHI->SetVertexBuffer(aMesh.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
@@ -343,13 +328,48 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<M
 	{
 		if (aMaterialList.size() > element.MaterialIndex)
 		{
-			MaterialBuffer matBufferData = aMaterialList[element.MaterialIndex]->MaterialSettings();
-			GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, matBufferData);
-			//ChangePipelineState(*aMaterialList[element.MaterialIndex]->GetPSO());
+			// Surely there is a better way
+			if (myCurrentPSO != GetPSO(PipelineStateType::Shadow) && myCurrentPSO != GetPSO(PipelineStateType::ShadowCube))
+			{
+				MaterialBuffer matBufferData = aMaterialList[element.MaterialIndex]->MaterialSettings();
+				GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, matBufferData);
 
-			SetTextureResource_PS(0, aMaterialList[element.MaterialIndex]->GetAlbedoTexture());
-			SetTextureResource_PS(1, aMaterialList[element.MaterialIndex]->GetNormalTexture());
-			SetTextureResource_PS(2, aMaterialList[element.MaterialIndex]->GetMaterialTexture());
+				switch (myCurrentDebugMode)
+				{
+				case DebugMode::None:
+				{
+					if (aMaterialList[element.MaterialIndex]->GetPSO())
+					{
+						ChangePipelineState(aMaterialList[element.MaterialIndex]->GetPSO());
+					}
+					break;
+				}
+				case DebugMode::Unlit:
+					ChangePipelineState(PipelineStateType::Unlit);
+					break;
+				case DebugMode::Wireframe:
+					ChangePipelineState(PipelineStateType::Wireframe);
+					break;
+				case DebugMode::DebugVertexNormals:
+					ChangePipelineState(PipelineStateType::DebugVertexNormals);
+					break;
+				case DebugMode::DebugPixelNormals:
+					ChangePipelineState(PipelineStateType::DebugPixelNormals);
+					break;
+				case DebugMode::DebugTextureNormals:
+					ChangePipelineState(PipelineStateType::DebugTextureNormals);
+					break;
+				case DebugMode::DebugUVs:
+					ChangePipelineState(PipelineStateType::DebugUVs);
+					break;
+				default:
+					break;
+				}
+
+				SetTextureResource_PS(0, aMaterialList[element.MaterialIndex]->GetAlbedoTexture());
+				SetTextureResource_PS(1, aMaterialList[element.MaterialIndex]->GetNormalTexture());
+				SetTextureResource_PS(2, aMaterialList[element.MaterialIndex]->GetMaterialTexture());
+			}
 		}
 
 		myRHI->DrawIndexed(element.IndexOffset, element.NumIndices);

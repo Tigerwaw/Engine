@@ -99,9 +99,6 @@
     <ClInclude Include="RHI\GraphicsCommands\ConstantBuffer\UpdateFrameBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\Resource\SetShadowMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Objects\ConstantBuffers\ShadowBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -111,10 +108,13 @@
     <ClInclude Include="RHI\GraphicsCommands\ConstantBuffer\UpdateShadowBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\Resource\SetShadowCubemap.h">
+    <ClInclude Include="RHI\GraphicsCommands\Render\RenderDebugMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\Render\RenderDebugMesh.h">
+    <ClInclude Include="RHI\GraphicsCommands\SetRenderTarget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RHI\GraphicsCommands\SetDefaultRenderTarget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -179,19 +179,19 @@
     <ClCompile Include="RHI\GraphicsCommands\ConstantBuffer\UpdateFrameBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\Resource\SetShadowMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="RHI\GraphicsCommands\ConstantBuffer\UpdateLightBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RHI\GraphicsCommands\ConstantBuffer\UpdateShadowBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\Resource\SetShadowCubemap.cpp">
+    <ClCompile Include="RHI\GraphicsCommands\Render\RenderDebugMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\Render\RenderDebugMesh.cpp">
+    <ClCompile Include="RHI\GraphicsCommands\SetRenderTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RHI\GraphicsCommands\SetDefaultRenderTarget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

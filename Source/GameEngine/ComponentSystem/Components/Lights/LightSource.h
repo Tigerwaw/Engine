@@ -22,11 +22,16 @@ public:
 	CU::Vector3f GetDirection() const;
 	CU::Vector3f GetPosition() const;
 	const bool CastsShadows() const { return myCastsShadows; }
+	void SetShadowBias(float aMinShadowBias, float aMaxShadowBias);
+	const float GetMinShadowBias() const { return myMinShadowBias; }
+	const float GetMaxShadowBias() const { return myMaxShadowBias; }
 	std::shared_ptr<Texture> GetShadowMap();
 protected:
 	CU::Vector3f myColor = { 1.0f, 1.0f, 1.0f };
 	float myIntensity = 1.0f;
 	bool myCastsShadows = false;
 	std::shared_ptr<Texture> myShadowMap = nullptr;
+	float myMinShadowBias = 0.001f;
+	float myMaxShadowBias = 0.005f;
 };
 

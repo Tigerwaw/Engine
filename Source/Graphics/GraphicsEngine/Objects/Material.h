@@ -15,6 +15,7 @@ public:
 	Texture& GetNormalTexture() { return *myNormalTexture; }
 	Texture& GetMaterialTexture() { return *myMaterialTexture; }
 
+	void SetPSO(std::shared_ptr<PipelineStateObject> aPSO) { myPSO = aPSO; }
 	void SetAlbedoTexture(std::shared_ptr<Texture> aTexture) { myAlbedoTexture = aTexture; }
 	void SetNormalTexture(std::shared_ptr<Texture> aTexture) { myNormalTexture = aTexture; }
 	void SetMaterialTexture(std::shared_ptr<Texture> aTexture) { myMaterialTexture = aTexture; }
