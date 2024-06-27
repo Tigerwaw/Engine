@@ -500,8 +500,11 @@ void ModelViewer::UpdateImgui()
 	// Performance Info
 	{
 		ImGui::SetNextWindowPos({ 350.0f, 20.0f });
-		ImGui::SetNextWindowContentSize({ 300.0f, 100.0f });
+		ImGui::SetNextWindowContentSize({ 300.0f, 200.0f });
 		ImGui::Begin("Performance Info");
+		ImGui::BeginTable("PerformanceTable", 2, 0, { 350.0f, 0 });
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.CellPadding = { 20.0f, 4.0f };
 
 		// FPS
 		{
@@ -509,14 +512,39 @@ void ModelViewer::UpdateImgui()
 			int fps = Engine::GetInstance().GetTimer().GetFPS();
 			if (fps < 60) color = { 1.0f, 1.0f, 0.0f, 1.0f };
 			if (fps < 30) color = { 1.0f, 0.0f, 0.0f, 1.0f };
+			
+			ImGui::TableNextColumn();
+			ImGui::Text("FPS:");
+			ImGui::TableNextColumn();
+			ImGui::TextColored({ color.x, color.y, color.z, color.w }, std::to_string(fps).c_str());
+			ImGui::TableNextColumn();
 
-			ImGui::TextColored({ color.x, color.y, color.z, color.w }, std::string("FPS:\t" + std::to_string(fps)).c_str());
-			ImGui::Text(std::string("ms:\t" + std::to_string(Engine::GetInstance().GetTimer().GetFrameTimeMS())).c_str());
+			ImGui::Text("Frametime (ms):");
+			ImGui::TableNextColumn();
+			ImGui::Text("%.2f", Engine::GetInstance().GetTimer().GetFrameTimeMS());
+			ImGui::TableNextColumn();
 		}
 
 		// Draw calls
 		{
-			ImGui::Text(std::string("Drawcalls:\t" + std::to_string(GraphicsEngine::Get().GetDrawcallAmount())).c_str());
+			ImGui::Text("Drawcalls:");
+			ImGui::TableNextColumn();
+			ImGui::Text(std::to_string(GraphicsEngine::Get().GetDrawcallAmount()).c_str());
+			ImGui::TableNextColumn();
+		}
+
+		// Scene objects
+		{
+			ImGui::Text("Scene Objects:");
+			ImGui::TableNextColumn();
+			ImGui::Text(std::string(std::to_string(myScene.GetObjectAmount())).c_str());
+
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Active Scene Objects:");
+			ImGui::TableNextColumn();
+			ImGui::Text(std::to_string(myScene.GetActiveObjectAmount()).c_str());
+			ImGui::TableNextColumn();
 		}
 
 		ImGui::Spacing();
@@ -548,12 +576,19 @@ void ModelViewer::UpdateImgui()
 			CU::Vector4f color = { 1.0f, 0.0f, 0.0f, 1.0f };
 			if (ramUsageChange <= 0) color = { 0.0f, 1.0f, 0.0f, 1.0f };
 
-			ImGui::Text(std::string("RAM used: " + std::to_string(ramUsage) + " Mb").c_str());
-			ImGui::Text(std::string("RAM usage fluctuation: ").c_str());
-			ImGui::SameLine();
+			ImGui::Text("RAM used:");
+			ImGui::TableNextColumn();
+			ImGui::Text(std::string(std::to_string(ramUsage) + " Mb").c_str());
+
+			ImGui::TableNextColumn();
+
+			ImGui::Text("RAM usage fluctuation:");
+			ImGui::TableNextColumn();
 			ImGui::TextColored({ color.x, color.y, color.z, color.w }, std::string(std::to_string(ramUsageChange) + " Mb").c_str());
+			ImGui::TableNextColumn();
 		}
 
+		ImGui::EndTable();
 		ImGui::End();
 	}
 }

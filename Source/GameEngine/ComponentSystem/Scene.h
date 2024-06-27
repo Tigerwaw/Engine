@@ -29,6 +29,7 @@ public:
 	void Destroy(std::shared_ptr<GameObject> aGameObject);
 
 	const unsigned GetObjectAmount() const { return static_cast<unsigned>(myGameObjects.size()); }
+	const unsigned GetActiveObjectAmount() const { return myActiveGameObjectAmount; }
 
 	// TEMP
 	void SetMainCamera(std::shared_ptr<GameObject> aCamera);
@@ -66,6 +67,7 @@ private:
 	std::shared_ptr<GraphicsCommandList> myCommandList;
 
 	std::vector<std::shared_ptr<GameObject>> myGameObjects;
+	unsigned myActiveGameObjectAmount = 0;
 
 	// TEMP (?)
 	std::shared_ptr<GameObject> myCamera;

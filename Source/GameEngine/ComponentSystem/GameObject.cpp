@@ -36,6 +36,11 @@ void GameObject::SetActive(bool aActive)
 	}
 }
 
+void GameObject::SetStatic(bool aStatic)
+{
+	myIsStatic = aStatic;
+}
+
 void GameObject::SendEvent(const GameObjectEvent aEvent)
 {
 	for (auto& comp : myComponents)

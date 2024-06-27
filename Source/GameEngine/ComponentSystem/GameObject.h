@@ -33,6 +33,8 @@ public:
     void Update();
     void SetActive(bool aActive);
     bool GetActive() const { return myShouldUpdate; }
+    void SetStatic(bool aStatic);
+    bool GetStatic() const { return myIsStatic; }
     CU::Transform<float> Transform;
 
     void SetName(std::string aName) { myName = aName; }
@@ -57,6 +59,7 @@ private:
 
     std::vector<std::shared_ptr<Component>> myComponents;
     bool myShouldUpdate = true;
+    bool myIsStatic = false;
     float myTimeAlive = 0;
 
     std::string myName;

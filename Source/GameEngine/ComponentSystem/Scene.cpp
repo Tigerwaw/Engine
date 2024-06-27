@@ -38,9 +38,15 @@ Scene::~Scene()
 
 void Scene::Update()
 {
+	myActiveGameObjectAmount = 0;
+
 	for (auto& gameObject : myGameObjects)
 	{
-		gameObject->Update();
+		if (gameObject->GetActive())
+		{
+			gameObject->Update();
+			myActiveGameObjectAmount++;
+		}
 	}
 }
 
