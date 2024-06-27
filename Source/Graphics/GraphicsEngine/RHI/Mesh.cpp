@@ -1,0 +1,20 @@
+#include "GraphicsEngine.pch.h"
+#include "Graphics\GraphicsEngine\GraphicsEngine.h"
+#include "Mesh.h"
+#include "Vertex.h"
+
+using namespace Microsoft::WRL;
+
+Mesh::Mesh() = default;
+Mesh::~Mesh() = default;
+
+void Mesh::Initialize(std::vector<Vertex>&& aVertexList, std::vector<unsigned>&& aIndexList, std::vector<Element>&& aElementList, Skeleton aSkeleton)
+{
+	myVertices = std::move(aVertexList);
+	myIndices = std::move(aIndexList);
+	myElements = std::move(aElementList);
+	mySkeleton = aSkeleton;
+	myPrimitiveTopology = static_cast<int>(Topology::TRIANGLELIST);
+	GraphicsEngine::Get().CreateVertexBuffer("Vertex Buffer", myVertices, myVertexBuffer);
+	GraphicsEngine::Get().CreateIndexBuffer("Index Buffer", myIndices, myIndexBuffer);
+}

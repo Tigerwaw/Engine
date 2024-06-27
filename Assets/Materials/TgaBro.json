@@ -1,0 +1,12 @@
+{
+  "AlbedoTint":
+  {
+    "R": 1.0,
+    "G": 1.0,
+    "B": 1.0,
+    "A": 1.0
+  },
+  "AlbedoTexture": "Textures/TGABro/TGA_Bro_C.dds",
+  "NormalTexture": "Textures/TGABro/TGA_Bro_N.dds",
+  "MaterialTexture": "Textures/TGABro/TGA_Bro_M.dds"
+}

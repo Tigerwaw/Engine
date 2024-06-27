@@ -1,0 +1,51 @@
+#include "Timer.h"
+
+namespace CommonUtilities
+{
+	Timer::Timer()
+	{
+		myStartTime = std::chrono::high_resolution_clock::now();
+		myLastFrameTime = std::chrono::high_resolution_clock::now();
+		myCurrentFrameTime = std::chrono::high_resolution_clock::now();
+	}
+
+	void Timer::Update()
+	{
+		myLastFrameTime = myCurrentFrameTime;
+		myCurrentFrameTime = std::chrono::high_resolution_clock::now();
+
+		myCurrentFPSCountFrame++;
+		myTotalFPS += 1 / GetDeltaTime();
+
+		if (myCurrentFPSCountFrame >= myMaxFPSCountFrame)
+		{
+			myAverageFPS = static_cast<int>(myTotalFPS / myCurrentFPSCountFrame);
+			myCurrentFPSCountFrame = 0;
+			myTotalFPS = 0;
+		}
+
+	}
+
+	float Timer::GetDeltaTime() const
+	{
+		const std::chrono::duration<float, std::ratio<1, 1>> deltaTime = myCurrentFrameTime - myLastFrameTime;
+		return deltaTime.count();
+	}
+
+	double Timer::GetTotalTime() const
+	{
+		const std::chrono::duration<double, std::ratio<1, 1>> timeSinceStart = myCurrentFrameTime - myStartTime;
+		return timeSinceStart.count();
+	}
+
+	float Timer::GetFrameTimeMS() const
+	{
+		const std::chrono::duration<float, std::ratio<1, 1000>> frameTime = myCurrentFrameTime - myLastFrameTime;
+		return frameTime.count();
+	}
+
+	int Timer::GetFPS() const
+	{
+		return myAverageFPS;
+	}
+}

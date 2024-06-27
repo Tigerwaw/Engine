@@ -1,0 +1,32 @@
+#pragma once
+#include <memory>
+#include "GameEngine/ComponentSystem/Component.h"
+#include "GameEngine/Math/Vector.hpp"
+namespace CU = CommonUtilities;
+
+class Texture;
+
+class LightSource : public Component
+{
+public:
+	LightSource(float aIntensity = 1.0f, CU::Vector3f aColor = { 1.0f, 1.0f, 1.0f });
+	~LightSource() override;
+	void Start() override;
+	void Update() override;
+	virtual void EnableShadowCasting(unsigned aShadowMapWidth, unsigned aShadowMapHeight);
+
+	void SetColor(CU::Vector3f aColor);
+	void SetIntensity(float aIntensity);
+	CU::Vector3f GetColor() const { return myColor; }
+	float GetIntensity() const { return myIntensity; }
+	CU::Vector3f GetDirection() const;
+	CU::Vector3f GetPosition() const;
+	const bool CastsShadows() const { return myCastsShadows; }
+	std::shared_ptr<Texture> GetShadowMap();
+protected:
+	CU::Vector3f myColor = { 1.0f, 1.0f, 1.0f };
+	float myIntensity = 1.0f;
+	bool myCastsShadows = false;
+	std::shared_ptr<Texture> myShadowMap = nullptr;
+};
+

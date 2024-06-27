@@ -1,0 +1,11 @@
+{
+  "AlbedoTint": {
+    "R": 1.0,
+    "G": 1.0,
+    "B": 1.0,
+    "A": 1.0
+  },
+  "AlbedoTexture": "EngineAssets/Textures/TestCube/TestCube_C.dds",
+  "NormalTexture": "EngineAssets/Textures/TestCube/TestCube_N.dds",
+  "MaterialTexture": "EngineAssets/Textures/TestCube/TestCube_M.dds"
+}
