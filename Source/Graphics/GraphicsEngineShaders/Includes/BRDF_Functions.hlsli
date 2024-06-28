@@ -102,7 +102,6 @@ float3 Specular_IBL(float3 aPixelNormal, float3 toViewDir, float aRoughness, flo
 
 
 
-
 // Calculating different types of light (Direct & Indirect)
 
 // L = -LightDir for directional light, L = Lightpos - pixelPos for spot & point
@@ -151,11 +150,10 @@ float ShadowFactorDLightSpotLight(float4x4 lightView, float4x4 lightProj, float3
     [unroll(16)]
     for (int i = 0; i < samples; i++)
     {
-        int index = int(16.0 * RandomNumber((float4(floor(worldPos.xyz * 1000.0f), i)))) % 16.0;
-        float2 uv = shadowUV + PoissonDisk[index] * texelSize;
+        float2 uv = shadowUV + PoissonDisk[i] * texelSize;
         shadowFactor += shadowMap.SampleCmpLevelZero(ShadowCmpSampler, uv, D).r;
     }
-    //shadowFactor /= samples;
+    shadowFactor /= samples;
     
     return saturate(shadowFactor);
 }
@@ -178,12 +176,11 @@ float ShadowFactorPointLight(PointLightData pointLight, float4 worldPos, float3 
     [unroll(16)]
     for (int i = 0; i < samples; i++)
     {
-        int index = int(16.0 * RandomNumber((float4(floor(worldPos.xyz * 1000.0f), i)))) % 16.0;
-        float2 directionOffset = pixelToLight.xy + PoissonDisk[index] * texelSize;
+        float2 directionOffset = pixelToLight.xy + PoissonDisk[i] * texelSize;
         float3 offsetDirection = float3(directionOffset.xy, pixelToLight.z);
         shadowFactor += shadowCubemap.SampleCmpLevelZero(ShadowCmpSampler, offsetDirection, D).r;
     }
-    //shadowFactor /= samples;
+    shadowFactor /= samples;
     
     return saturate(shadowFactor);
 }

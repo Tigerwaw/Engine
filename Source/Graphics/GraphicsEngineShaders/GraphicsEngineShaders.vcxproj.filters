@@ -28,6 +28,9 @@
     <FxCompile Include="Debug\DebugTextureNormals_PS.hlsl" />
     <FxCompile Include="Debug\DebugUVs_PS.hlsl" />
     <FxCompile Include="Debug\Gizmo_PS.hlsl" />
+    <FxCompile Include="Sprite_VS.hlsl" />
+    <FxCompile Include="Sprite_PS.hlsl" />
+    <FxCompile Include="Sprite_GS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Includes\DefaultShaderIncludes.hlsli" />

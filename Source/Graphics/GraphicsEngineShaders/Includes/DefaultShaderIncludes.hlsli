@@ -61,6 +61,34 @@ struct GS_OUT
     uint RTIndex        : SV_RenderTargetArrayIndex;
 };
 
+struct SpriteVertex
+{
+    float4 Position     : POSITION;
+    float4 Size         : SIZE;
+};
+
+struct Sprite_VSout
+{
+    float4 Position     : POSITION;
+    float4 Size         : SIZE;
+};
+
+struct Sprite_GSout
+{
+    float4 Position     : SV_Position;
+    float4 WorldPos     : WORLDPOSITION;
+    float2 TexCoord0    : TEXCOORD0;
+    uint PrimID         : SV_PrimitiveID;
+};
+
+static const float2 defaultUVs[4] =
+{
+    float2(0.0f, 0.0f),
+    float2(1.0f, 0.0f),
+    float2(1.0f, 1.0f),
+    float2(0.0f, 1.0f)
+};
+
 static const float2 PoissonDisk[16] =
 {
     float2(-0.613392, 0.617481),

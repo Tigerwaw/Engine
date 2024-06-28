@@ -5,7 +5,9 @@
 
 #include "GraphicsEngine/RHI/Shader.h"
 #include "GraphicsEngine/RHI/Vertex.h"
+#include "GraphicsEngine/RHI/SpriteVertex.h"
 #include "GraphicsEngine/RHI/Mesh.h"
+#include "GraphicsEngine/RHI/Sprite.h"
 #include "GraphicsEngine/Objects/Material.h"
 #include "GraphicsEngine/RHI/Texture.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/FrameBuffer.h"
@@ -47,6 +49,10 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 #include "../Intermediate/Shaders/CompiledShaderHeaders/ShadowCube_VS.h"
 #include "../Intermediate/Shaders/CompiledShaderHeaders/ShadowCube_GS.h"
 
+#include "../Intermediate/Shaders/CompiledShaderHeaders/Sprite_VS.h"
+#include "../Intermediate/Shaders/CompiledShaderHeaders/Sprite_GS.h"
+#include "../Intermediate/Shaders/CompiledShaderHeaders/Sprite_PS.h"
+
 #include "../Intermediate/Shaders/CompiledShaderHeaders/Unlit_PS.h"
 #include "../Intermediate/Shaders/CompiledShaderHeaders/Wireframe_PS.h"
 #include "../Intermediate/Shaders/CompiledShaderHeaders/DebugVertexNormals_PS.h"
@@ -82,6 +88,39 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 
 	defaultPSO.VertexStride = sizeof(Vertex);
 	myPSOmap.emplace(PipelineStateType::Default, std::make_shared<PipelineStateObject>(defaultPSO));
+
+
+	PipelineStateObject spritePSO;
+	spritePSO.VertexShader = std::make_shared<Shader>();
+	if (!myRHI->LoadShaderFromMemory("Sprite_VS", *spritePSO.VertexShader, BuiltIn_Sprite_VS_ByteCode, sizeof(BuiltIn_Sprite_VS_ByteCode)))
+	{
+		LOG(GraphicsLog, Error, "Failed to load vertex shader!");
+		return false;
+	}
+
+	spritePSO.GeometryShader = std::make_shared<Shader>();
+	if (!myRHI->LoadShaderFromMemory("Sprite_GS", *spritePSO.GeometryShader, BuiltIn_Sprite_GS_ByteCode, sizeof(BuiltIn_Sprite_GS_ByteCode)))
+	{
+		LOG(GraphicsLog, Error, "Failed to load vertex shader!");
+		return false;
+	}
+
+	spritePSO.PixelShader = std::make_shared<Shader>();
+	if (!myRHI->LoadShaderFromMemory("Sprite_PS", *spritePSO.PixelShader, BuiltIn_Sprite_PS_ByteCode, sizeof(BuiltIn_Sprite_PS_ByteCode)))
+	{
+		LOG(GraphicsLog, Error, "Failed to load pixel shader!");
+		return false;
+	}
+
+	if (!myRHI->CreateInputLayout(spritePSO.InputLayout, SpriteVertex::InputLayoutDefinition, BuiltIn_Sprite_VS_ByteCode, sizeof(BuiltIn_Sprite_VS_ByteCode)))
+	{
+		LOG(GraphicsLog, Error, "Failed to create shader input layout!");
+		return false;
+	}
+
+	spritePSO.SamplerStates[0] = myRHI->GetSamplerState("DefaultSS");
+	myPSOmap.emplace(PipelineStateType::Sprite, std::make_shared<PipelineStateObject>(spritePSO));
+
 	
 	PipelineStateObject unlitPSO;
 	unlitPSO.SamplerStates[0] = myRHI->GetSamplerState("DefaultSS");
@@ -229,6 +268,9 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	
 	myCurrentPSO = myPSOmap[PipelineStateType::Default];
 	myCommandList = std::make_shared<GraphicsCommandList>();
+
+	myTestSprite = std::make_shared<Sprite>();
+	myTestSprite->Initialize({ 0, 300.0f, 0 }, { 500.0f, 500.0f });
 
 	LOG(GraphicsLog, Log, "Initialized Graphics Engine!");
 	return true;
@@ -379,6 +421,16 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<M
 	ClearTextureResource_PS(0);
 	ClearTextureResource_PS(1);
 	ClearTextureResource_PS(2);
+}
+
+void GraphicsEngine::RenderSprite()
+{
+	ChangePipelineState(PipelineStateType::Sprite);
+	SetRenderTarget(GetBackBuffer(), GetDepthBuffer(), false, false);
+	myRHI->SetVertexBuffer(myTestSprite->GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
+	myRHI->SetPrimitiveTopology(Topology::POINTLIST);
+	
+	myRHI->Draw(1);
 }
 
 bool GraphicsEngine::CreateIndexBuffer(std::string_view aName, const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer)

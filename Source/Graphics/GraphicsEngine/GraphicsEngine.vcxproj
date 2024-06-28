@@ -210,6 +210,8 @@
     <ClInclude Include="RHI\RenderHardwareInterface.h" />
     <ClInclude Include="RHI\RHIStructs.h" />
     <ClInclude Include="RHI\Shader.h" />
+    <ClInclude Include="RHI\Sprite.h" />
+    <ClInclude Include="RHI\SpriteVertex.h" />
     <ClInclude Include="RHI\Texture.h" />
     <ClInclude Include="RHI\Vertex.h" />
   </ItemGroup>
@@ -249,6 +251,8 @@
     <ClCompile Include="RHI\PipelineStateObject.cpp" />
     <ClCompile Include="RHI\RenderHardwareInterface.cpp" />
     <ClCompile Include="RHI\Shader.cpp" />
+    <ClCompile Include="RHI\Sprite.cpp" />
+    <ClCompile Include="RHI\SpriteVertex.cpp" />
     <ClCompile Include="RHI\Texture.cpp" />
     <ClCompile Include="RHI\Vertex.cpp" />
   </ItemGroup>

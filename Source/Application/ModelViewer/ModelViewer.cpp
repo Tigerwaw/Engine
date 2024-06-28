@@ -202,7 +202,7 @@ void ModelViewer::InitLights()
 	directionalLight->SetName("D_Light");
 	std::shared_ptr<DirectionalLight> dLight = directionalLight->AddComponent<DirectionalLight>();
 	dLight->EnableShadowCasting(2048, 2048);
-	dLight->SetShadowBias(0.0002f, 0.0007f);
+	dLight->SetShadowBias(0.0003f, 0.00175f);
 	directionalLight->AddComponent<Camera>(-1024.0f, 1024.0f, 1024.0f, -1024.0f, 1.0f, 6000.0f);
 	directionalLight->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/DirectionalLightGizmo.fbx")->mesh);
 	directionalLight->Transform.SetRotation(45.0f, 45.0f, 0);
@@ -213,7 +213,7 @@ void ModelViewer::InitLights()
 	pointLight->SetName("P_Light");
 	std::shared_ptr<PointLight> pLight = pointLight->AddComponent<PointLight>(50000.0f);
 	pLight->EnableShadowCasting(512, 512);
-	pLight->SetShadowBias(0.00001f, 0.00003f);
+	pLight->SetShadowBias(0, 0.00006f);
 	pointLight->AddComponent<Camera>(90.0f, 1.0f, 3000.0f, CU::Vector2f(512.0f, 512.0f));
 	pointLight->Transform.SetTranslation(50, 200.0f, 100.0f);
 	pointLight->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/PointLightGizmo.fbx")->mesh);
@@ -223,7 +223,7 @@ void ModelViewer::InitLights()
 	spotLight->SetName("S_Light");
 	std::shared_ptr<SpotLight> sLight = spotLight->AddComponent<SpotLight>(600.0f, 100000.0f);
 	sLight->EnableShadowCasting(512, 512);
-	sLight->SetShadowBias(0.00005f, 0.00024f);
+	sLight->SetShadowBias(0, 0.0001f);
 	spotLight->AddComponent<Camera>(90.0f, 1.0f, 2000.0f, CU::Vector2f(512.0f, 512.0f));
 	spotLight->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/SpotLightGizmo.fbx")->mesh);
 	spotLight->Transform.SetRotation(45.0f, -90.0f, 0);
@@ -436,9 +436,9 @@ void ModelViewer::UpdateImgui()
 				float minBias = dLight->GetMinShadowBias();
 				float maxBias = dLight->GetMaxShadowBias();
 				ImGui::Text("Shadow Min Bias");
-				if (ImGui::SliderFloat("##DirectionalMinBias", &minBias, 0, 0.01f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
+				if (ImGui::SliderFloat("##DirectionalMinBias", &minBias, 0, 0.001f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
 				ImGui::Text("Shadow Max Bias");
-				if (ImGui::SliderFloat("##DirectionalMaxBias", &maxBias, 0, 0.01f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
+				if (ImGui::SliderFloat("##DirectionalMaxBias", &maxBias, 0, 0.003f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
 				ImGui::Spacing();
 				float color[3] = { dLight->GetColor().x, dLight->GetColor().y, dLight->GetColor().z };
 				ImGui::Text("Color");
@@ -464,9 +464,9 @@ void ModelViewer::UpdateImgui()
 				float minBias = pLight->GetMinShadowBias();
 				float maxBias = pLight->GetMaxShadowBias();
 				ImGui::Text("Shadow Min Bias");
-				if (ImGui::SliderFloat("##PointMinBias", &minBias, 0, 0.01f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
+				if (ImGui::SliderFloat("##PointMinBias", &minBias, 0, 0.001f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
 				ImGui::Text("Shadow Max Bias");
-				if (ImGui::SliderFloat("##PointMaxBias", &maxBias, 0, 0.01f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
+				if (ImGui::SliderFloat("##PointMaxBias", &maxBias, 0, 0.001f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
 				ImGui::Spacing();
 
 				float color[3] = { pLight->GetColor().x, pLight->GetColor().y, pLight->GetColor().z };
@@ -502,9 +502,9 @@ void ModelViewer::UpdateImgui()
 				float minBias = sLight->GetMinShadowBias();
 				float maxBias = sLight->GetMaxShadowBias();
 				ImGui::Text("Shadow Min Bias");
-				if (ImGui::SliderFloat("##SpotMinBias", &minBias, 0, 0.01f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
+				if (ImGui::SliderFloat("##SpotMinBias", &minBias, 0, 0.001f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
 				ImGui::Text("Shadow Max Bias");
-				if (ImGui::SliderFloat("##SpotMaxBias", &maxBias, 0, 0.01f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
+				if (ImGui::SliderFloat("##SpotMaxBias", &maxBias, 0, 0.001f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
 
 				ImGui::Spacing();
 				float color[3] = { sLight->GetColor().x, sLight->GetColor().y, sLight->GetColor().z };

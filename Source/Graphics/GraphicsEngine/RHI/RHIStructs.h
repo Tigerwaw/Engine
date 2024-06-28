@@ -1,8 +1,5 @@
 #pragma once
-#include <memory>
 #include <string>
-
-class Texture;
 
 struct VertexElementDesc
 {
@@ -35,6 +32,7 @@ enum class RHITextureFormat : unsigned
 
 enum class Topology : unsigned
 {
+	POINTLIST = 1,
 	LINELIST = 2,
 	TRIANGLELIST = 4,
 	TRIANGLESTRIP = 5
