@@ -11,6 +11,7 @@
 #include "GameEngine/ComponentSystem/Components/Lights/SpotLight.h"
 
 #include "Logger/Logger.h"
+#include "GameEngine/Math/Vector.hpp"
 
 #if _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(LogScene, Scene, Verbose);
@@ -24,6 +25,9 @@ DEFINE_LOG_CATEGORY(LogScene);
 Scene::Scene()
 {
 	myCommandList = std::make_shared<GraphicsCommandList>();
+	myTestSprite = std::make_shared<SpriteObject>();
+	myTestSprite->SetPosition({ 1520.0f, 580.0f, 0 });
+	myTestSprite->SetSize({ 400.0f, 400.0f });
 }
 
 Scene::~Scene()
@@ -73,6 +77,8 @@ void Scene::Render()
 	}
 	
 	QueueClearTextureResources();
+
+	myCommandList->Enqueue<RenderUISprite>(myTestSprite);
 
 	// Run Command List
 	if (myCommandList->HasCommands() && !myCommandList->IsFinished())
@@ -137,6 +143,8 @@ void Scene::SetDirectionalLight(std::shared_ptr<GameObject> aDirectionalLight)
 {
 	std::shared_ptr<GameObject> dLight = myGameObjects.emplace_back(aDirectionalLight);
 	myDirectionalLight = dLight;
+
+	myTestSprite->SetTexture(dLight->GetComponent<DirectionalLight>()->GetShadowMap());
 }
 
 void Scene::AddPointLight(std::shared_ptr<GameObject> aPointLight)

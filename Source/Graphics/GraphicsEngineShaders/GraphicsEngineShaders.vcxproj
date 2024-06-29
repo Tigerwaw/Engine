@@ -137,6 +137,7 @@
     <None Include="Includes\MaterialBuffer.hlsli" />
     <None Include="Includes\ObjectBuffer.hlsli" />
     <None Include="Includes\ShadowBuffer.hlsli" />
+    <None Include="Includes\SpriteBuffer.hlsli" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

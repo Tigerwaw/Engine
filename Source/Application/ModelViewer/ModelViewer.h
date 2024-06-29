@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include <vector>
-#include "GameEngine/ComponentSystem/Scene.h"
 #include "Graphics\GraphicsEngine\GraphicsEngine.h"
 
 #include "Logger/Logger.h"
@@ -62,6 +61,7 @@ DECLARE_LOG_CATEGORY_WITH_NAME(LogModelViewer, ModelViewer, Warning);
 
 struct Animation;
 class GameObject;
+class Scene;
 
 namespace CommonUtilities
 {
@@ -91,7 +91,7 @@ private:
 	bool myIsRunning = false;
 	HWND myMainWindowHandle = nullptr;
 
-	Scene myScene;
+	std::shared_ptr<Scene> myScene;
 
 	int ramUsage = 0;
 	int ramUsageChange = 0;

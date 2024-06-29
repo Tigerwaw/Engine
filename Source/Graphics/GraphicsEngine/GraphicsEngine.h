@@ -39,7 +39,8 @@ enum class ConstantBufferType
 	AnimationBuffer,
 	MaterialBuffer,
 	LightBuffer,
-	ShadowBuffer
+	ShadowBuffer,
+	SpriteBuffer
 };
 
 class GraphicsEngine
@@ -71,7 +72,7 @@ public:
 	void SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
 
 	void RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<Material>> aMaterialList);
-	void RenderSprite();
+	void RenderSprite(const Sprite& aSprite);
 
 	template <typename VertexType>
 	bool CreateVertexBuffer(std::string_view aName, const std::vector<VertexType>& aVertexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer) const;
@@ -97,8 +98,6 @@ private:
 	std::shared_ptr<Texture> myLUTtexture;
 
 	std::shared_ptr<GraphicsCommandList> myCommandList;
-
-	std::shared_ptr<Sprite> myTestSprite;
 
 	unsigned myDrawcallAmount = 0;
 	DebugMode myCurrentDebugMode = DebugMode::None;

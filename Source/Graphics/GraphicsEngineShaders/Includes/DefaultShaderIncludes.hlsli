@@ -7,6 +7,7 @@
 #include "MaterialBuffer.hlsli"
 #include "LightBuffer.hlsli"
 #include "ShadowBuffer.hlsli"
+#include "SpriteBuffer.hlsli"
 
 Texture2D AlbedoTexture : register(t0);
 Texture2D NormalTexture : register(t1);
@@ -64,13 +65,13 @@ struct GS_OUT
 struct SpriteVertex
 {
     float4 Position     : POSITION;
-    float4 Size         : SIZE;
+    float2 Size         : SIZE;
 };
 
 struct Sprite_VSout
 {
     float4 Position     : POSITION;
-    float4 Size         : SIZE;
+    float2 Size         : SIZE;
 };
 
 struct Sprite_GSout

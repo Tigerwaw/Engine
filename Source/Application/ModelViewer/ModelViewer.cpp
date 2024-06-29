@@ -30,6 +30,7 @@ DEFINE_LOG_CATEGORY(LogModelViewer);
 #include "AssetManager.h"
 #include "Asset.h"
 
+#include "GameEngine/ComponentSystem/Scene.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
@@ -127,6 +128,7 @@ void ModelViewer::InitModelViewer()
 {
 	AssetManager::Get().Initialize(EngineSettings::GetContentRootPath());
 
+	myScene = std::make_shared<Scene>();
 	SetupImguiStyle();
 	InitCamera();
 	InitLights();
@@ -188,7 +190,7 @@ void ModelViewer::InitCamera()
 	camera->AddComponent<Camera>(90.0f, 1.0f, 10000.0f, CU::Vector2<float>(1920, 1080));
 	camera->AddComponent<FreecamController>(400.0f, 300.0f);
 	camera->Transform.SetTranslation(0, 100.0f, -300.0f);
-	myScene.SetMainCamera(camera);
+	myScene->SetMainCamera(camera);
 }
 
 void ModelViewer::InitLights()
@@ -196,7 +198,7 @@ void ModelViewer::InitLights()
 	std::shared_ptr<GameObject> ambientLight = std::make_shared<GameObject>();
 	ambientLight->SetName("A_Light");
 	ambientLight->AddComponent<AmbientLight>(AssetManager::Get().GetAsset<TextureAsset>("Textures/Cubemaps/Skansen_Cube.dds")->texture);
-	myScene.SetAmbientLight(ambientLight);
+	myScene->SetAmbientLight(ambientLight);
 
 	std::shared_ptr<GameObject> directionalLight = std::make_shared<GameObject>();
 	directionalLight->SetName("D_Light");
@@ -207,7 +209,7 @@ void ModelViewer::InitLights()
 	directionalLight->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/DirectionalLightGizmo.fbx")->mesh);
 	directionalLight->Transform.SetRotation(45.0f, 45.0f, 0);
 	directionalLight->Transform.SetTranslation(-500.0f, 500.0f, -500.0f);
-	myScene.SetDirectionalLight(directionalLight);
+	myScene->SetDirectionalLight(directionalLight);
 
 	std::shared_ptr<GameObject> pointLight = std::make_shared<GameObject>();
 	pointLight->SetName("P_Light");
@@ -217,7 +219,7 @@ void ModelViewer::InitLights()
 	pointLight->AddComponent<Camera>(90.0f, 1.0f, 3000.0f, CU::Vector2f(512.0f, 512.0f));
 	pointLight->Transform.SetTranslation(50, 200.0f, 100.0f);
 	pointLight->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/PointLightGizmo.fbx")->mesh);
-	myScene.AddPointLight(pointLight);
+	myScene->AddPointLight(pointLight);
 
 	std::shared_ptr<GameObject> spotLight = std::make_shared<GameObject>();
 	spotLight->SetName("S_Light");
@@ -228,7 +230,7 @@ void ModelViewer::InitLights()
 	spotLight->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/SpotLightGizmo.fbx")->mesh);
 	spotLight->Transform.SetRotation(45.0f, -90.0f, 0);
 	spotLight->Transform.SetTranslation(-150.0f, 150.0f, 0);
-	myScene.AddSpotLight(spotLight);
+	myScene->AddSpotLight(spotLight);
 }
 
 void ModelViewer::InitGameObjects()
@@ -237,34 +239,34 @@ void ModelViewer::InitGameObjects()
 	plane->Transform = CU::Transform<float>({ 0, 0, 0 }, { 0, 0, 0 }, { 800.0f, 800.0f, 800.0f });
 	plane->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("PlanePrimitive")->mesh,
 							    AssetManager::Get().GetAsset<MaterialAsset>("DefaultMaterial")->material);
-	myScene.Instantiate(plane);
+	myScene->Instantiate(plane);
 	
 	
 	std::shared_ptr<GameObject> cube = std::make_shared<GameObject>();
 	cube->Transform = CU::Transform<float>({ 200.0f, 50.0f, 200.0f }, { 0, 0, 0 }, { 50.0f, 50.0f, 50.0f });
 	cube->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("CubePrimitive")->mesh,
 							   AssetManager::Get().GetAsset<MaterialAsset>("DefaultMaterial")->material);
-	myScene.Instantiate(cube);
+	myScene->Instantiate(cube);
 
 	std::shared_ptr<GameObject> ramp = std::make_shared<GameObject>();
 	ramp->Transform = CU::Transform<float>({ 300.0f, 50.0f, 0 }, { 0, 45.0f, 0 }, { 50.0f, 50.0f, 50.0f });
 	ramp->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("RampPrimitive")->mesh,
 							   AssetManager::Get().GetAsset<MaterialAsset>("DefaultMaterial")->material);
-	myScene.Instantiate(ramp);
+	myScene->Instantiate(ramp);
 
 	std::shared_ptr<GameObject> chest = std::make_shared<GameObject>();
 	chest->Transform = CU::Transform<float>({ -500.0f, 0, 0 }, { 0, 180.0f, 0 });
 	chest->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("Models/SM_Chest.fbx")->mesh,
 							    AssetManager::Get().GetAsset<MaterialAsset>("Materials/Chest.json")->material);
 	chest->AddComponent<Rotator>(CU::Vector3f(0, 30.0f, 0));
-	myScene.Instantiate(chest);
+	myScene->Instantiate(chest);
 
 	std::shared_ptr<GameObject> colorChecker = std::make_shared<GameObject>();
 	colorChecker->Transform = CU::Transform<float>({ 100.0f, 40.0f, 0 }, { -90.0f, 0, 0 });
 	colorChecker->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/SM_Color_Checker.fbx")->mesh,
 									AssetManager::Get().GetAsset<MaterialAsset>("EngineAssets/Materials/ColorChecker.json")->material);
 	colorChecker->AddComponent<Rotator>(CU::Vector3f(0, 30.0f, 0));
-	myScene.Instantiate(colorChecker);
+	myScene->Instantiate(colorChecker);
 
 
 	std::shared_ptr<GameObject> matballOne = std::make_shared<GameObject>();
@@ -272,22 +274,22 @@ void ModelViewer::InitGameObjects()
 	std::shared_ptr<Model> matballOneModel = matballOne->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("Models/TMA_Matball.fbx")->mesh,
 									AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballOne.json")->material);
 	matballOneModel->SetMaterialOnSlot(1, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballTwo.json")->material);
-	myScene.Instantiate(matballOne);
+	myScene->Instantiate(matballOne);
 
 	std::shared_ptr<GameObject> matballTwo = std::make_shared<GameObject>();
 	matballTwo->Transform = CU::Transform<float>({ -100.0f, 0, 200.0f }, { 0, -45.0f, 0 });
 	std::shared_ptr<Model> matballTwoModel = matballTwo->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("Models/TMA_Matball.fbx")->mesh,
 									AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballTwo.json")->material);
 	matballTwoModel->SetMaterialOnSlot(1, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballOne.json")->material);
-	myScene.Instantiate(matballTwo);
+	myScene->Instantiate(matballTwo);
 
 	std::shared_ptr<GameObject> tgaBro = std::make_shared<GameObject>();
 	tgaBro->SetName("TgaBro");
 	tgaBro->Transform = CU::Transform<float>({ -250.0f, 0, 150.0f }, { 0, 180.0f, 0 });
 	tgaBro->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Models/SK_C_TGA_Bro.fbx")->mesh,
 										 AssetManager::Get().GetAsset<MaterialAsset>("Materials/TgaBro.json")->material);
-	myScene.Instantiate(tgaBro);
-	myTgaBro = myScene.FindGameObjectByName("TgaBro");
+	myScene->Instantiate(tgaBro);
+	myTgaBro = myScene->FindGameObjectByName("TgaBro");
 
 	myAnimations.emplace_back(AssetManager::Get().GetAsset<AnimationAsset>("Animations/Idle/A_C_TGA_Bro_Idle_Brething.fbx")->animation);
 	myAnimationNames.emplace_back("Idle");
@@ -361,12 +363,12 @@ void ModelViewer::UpdateImgui()
 		ImGui::SetNextWindowContentSize({ 300.0f, 200.0f });
 		ImGui::Begin("Modelviewer");
 
-		ImGui::Checkbox("Show Gizmos", &myScene.myShowGizmos);
+		ImGui::Checkbox("Show Gizmos", &myScene->myShowGizmos);
 
 		// Rendering
 		{
 			ImGui::Text("Rendering Mode");
-			if (ImGui::BeginCombo("##RenderModeDropdown", myScene.myDebugModeNames[static_cast<int>(GraphicsEngine::Get().GetCurrentDebugMode())].c_str()))
+			if (ImGui::BeginCombo("##RenderModeDropdown", myScene->myDebugModeNames[static_cast<int>(GraphicsEngine::Get().GetCurrentDebugMode())].c_str()))
 			{
 				if (ImGui::Selectable("None")) GraphicsEngine::Get().SetDebugMode(DebugMode::None);
 				if (ImGui::Selectable("Unlit")) GraphicsEngine::Get().SetDebugMode(DebugMode::Unlit);
@@ -403,7 +405,7 @@ void ModelViewer::UpdateImgui()
 		ImGui::SetNextWindowContentSize({ 300.0f, 600.0f });
 		ImGui::Begin("Lighting Settings");
 		{
-			std::shared_ptr<GameObject> ambientLight = myScene.GetAmbientLight();
+			std::shared_ptr<GameObject> ambientLight = myScene->GetAmbientLight();
 			bool active = ambientLight->GetActive();
 			if (ImGui::Checkbox("##AmbLightCheck", &active)) ambientLight->SetActive(active);
 			ImGui::SameLine();
@@ -422,7 +424,7 @@ void ModelViewer::UpdateImgui()
 		}
 		ImGui::Spacing();
 		{
-			std::shared_ptr<GameObject> directionalLight = myScene.GetDirectionalLight();
+			std::shared_ptr<GameObject> directionalLight = myScene->GetDirectionalLight();
 			bool active = directionalLight->GetActive();
 			if (ImGui::Checkbox("##DLightCheck", &active)) directionalLight->SetActive(active);
 			ImGui::SameLine();
@@ -448,7 +450,7 @@ void ModelViewer::UpdateImgui()
 
 		ImGui::Spacing();
 		{
-			std::shared_ptr<GameObject> pointLight = myScene.GetPointLight(0);
+			std::shared_ptr<GameObject> pointLight = myScene->GetPointLight(0);
 			bool active = pointLight->GetActive();
 			if (ImGui::Checkbox("##PLightCheck", &active))  pointLight->SetActive(active);
 			ImGui::SameLine();
@@ -483,7 +485,7 @@ void ModelViewer::UpdateImgui()
 
 		ImGui::Spacing();
 		{
-			std::shared_ptr<GameObject> spotLight = myScene.GetSpotLight(0);
+			std::shared_ptr<GameObject> spotLight = myScene->GetSpotLight(0);
 			bool active = spotLight->GetActive();
 			if (ImGui::Checkbox("##SLightCheck", &active)) spotLight->SetActive(active);
 			ImGui::SameLine();
@@ -566,13 +568,13 @@ void ModelViewer::UpdateImgui()
 		{
 			ImGui::Text("Scene Objects:");
 			ImGui::TableNextColumn();
-			ImGui::Text(std::string(std::to_string(myScene.GetObjectAmount())).c_str());
+			ImGui::Text(std::string(std::to_string(myScene->GetObjectAmount())).c_str());
 
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Active Scene Objects:");
 			ImGui::TableNextColumn();
-			ImGui::Text(std::to_string(myScene.GetActiveObjectAmount()).c_str());
+			ImGui::Text(std::to_string(myScene->GetActiveObjectAmount()).c_str());
 			ImGui::TableNextColumn();
 		}
 
@@ -624,10 +626,10 @@ void ModelViewer::UpdateImgui()
 
 void ModelViewer::Update()
 {
-	myScene.Update();
+	myScene->Update();
 }
 
 void ModelViewer::Render()
 {
-	myScene.Render();
+	myScene->Render();
 }

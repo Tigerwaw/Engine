@@ -16,6 +16,7 @@
 #include "GraphicsEngine/Objects/ConstantBuffers/MaterialBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/LightBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/ShadowBuffer.h"
+#include "GraphicsEngine/Objects/ConstantBuffers/SpriteBuffer.h"
 
 #ifdef _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(GraphicsLog, "GraphicsEngine", Verbose);
@@ -265,12 +266,13 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	ConstantBuffer shadowBuffer;
 	myRHI->CreateConstantBuffer("ShadowBuffer", sizeof(ShadowBuffer), 5, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_GEOMETRY_SHADER | PIPELINE_STAGE_PIXEL_SHADER, shadowBuffer);
 	myConstantBuffers.emplace(ConstantBufferType::ShadowBuffer, std::move(shadowBuffer));
+
+	ConstantBuffer spriteBuffer;
+	myRHI->CreateConstantBuffer("SpriteBuffer", sizeof(SpriteBuffer), 6, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_GEOMETRY_SHADER | PIPELINE_STAGE_PIXEL_SHADER, spriteBuffer);
+	myConstantBuffers.emplace(ConstantBufferType::SpriteBuffer, std::move(spriteBuffer));
 	
 	myCurrentPSO = myPSOmap[PipelineStateType::Default];
 	myCommandList = std::make_shared<GraphicsCommandList>();
-
-	myTestSprite = std::make_shared<Sprite>();
-	myTestSprite->Initialize({ 0, 300.0f, 0 }, { 500.0f, 500.0f });
 
 	LOG(GraphicsLog, Log, "Initialized Graphics Engine!");
 	return true;
@@ -423,11 +425,10 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<M
 	ClearTextureResource_PS(2);
 }
 
-void GraphicsEngine::RenderSprite()
+void GraphicsEngine::RenderSprite(const Sprite& aSprite)
 {
 	ChangePipelineState(PipelineStateType::Sprite);
-	SetRenderTarget(GetBackBuffer(), GetDepthBuffer(), false, false);
-	myRHI->SetVertexBuffer(myTestSprite->GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
+	myRHI->SetVertexBuffer(aSprite.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
 	myRHI->SetPrimitiveTopology(Topology::POINTLIST);
 	
 	myRHI->Draw(1);

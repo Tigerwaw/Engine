@@ -22,8 +22,12 @@ void main(
 	for (uint i = 0; i < 4; i++)
 	{
 		Sprite_GSout element;
-        element.Position = mul(FB_InvView, v[i]);
-        element.Position = mul(FB_Projection, element.Position);
+        //float4 viewPos = mul(FB_InvView, v[i]);
+		//float4 screenPos = mul(FB_Projection, viewPos);
+        //element.Position = screenPos;
+        element.Position = v[i];
+        element.Position.x /= FB_Resolution.x;
+        element.Position.y /= FB_Resolution.y;
         element.WorldPos = v[i];
         element.TexCoord0 = defaultUVs[i];
         element.PrimID = primID;

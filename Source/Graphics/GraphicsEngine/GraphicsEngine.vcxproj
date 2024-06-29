@@ -185,6 +185,7 @@
     <ClInclude Include="Objects\ConstantBuffers\LightBuffer.h" />
     <ClInclude Include="Objects\ConstantBuffers\MaterialBuffer.h" />
     <ClInclude Include="Objects\ConstantBuffers\ShadowBuffer.h" />
+    <ClInclude Include="Objects\ConstantBuffers\SpriteBuffer.h" />
     <ClInclude Include="Objects\Material.h" />
     <ClInclude Include="PipelineStateType.h" />
     <ClInclude Include="RHI\Animation.h" />
@@ -192,6 +193,7 @@
     <ClInclude Include="Objects\ConstantBuffers\FrameBuffer.h" />
     <ClInclude Include="RHI\GraphicsCommands\ChangePipelineState.h" />
     <ClInclude Include="RHI\GraphicsCommands\Render\RenderDebugMesh.h" />
+    <ClInclude Include="RHI\GraphicsCommands\Render\RenderUISprite.h" />
     <ClInclude Include="RHI\GraphicsCommands\Resource\ClearTextureResource.h" />
     <ClInclude Include="RHI\GraphicsCommands\GraphicsCommandBase.h" />
     <ClInclude Include="RHI\GraphicsCommands\GraphicsCommandList.h" />
@@ -235,6 +237,7 @@
     <ClCompile Include="Objects\Material.cpp" />
     <ClCompile Include="RHI\GraphicsCommands\ChangePipelineState.cpp" />
     <ClCompile Include="RHI\GraphicsCommands\Render\RenderDebugMesh.cpp" />
+    <ClCompile Include="RHI\GraphicsCommands\Render\RenderUISprite.cpp" />
     <ClCompile Include="RHI\GraphicsCommands\Resource\ClearTextureResource.cpp" />
     <ClCompile Include="RHI\GraphicsCommands\GraphicsCommandBase.cpp" />
     <ClCompile Include="RHI\GraphicsCommands\GraphicsCommandList.cpp" />

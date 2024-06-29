@@ -10,6 +10,7 @@
 #include "Render/RenderMesh.h"
 #include "Render/RenderAnimatedMesh.h"
 #include "Render/RenderDebugMesh.h"
+#include "Render/RenderUISprite.h"
 #include "Resource/SetTextureResource.h"
 #include "Resource/ClearTextureResource.h"
 #include "ChangePipelineState.h"

@@ -9,7 +9,6 @@ ClearTextureResource::ClearTextureResource(unsigned aSlot)
 void ClearTextureResource::Execute()
 {
     GraphicsEngine::Get().ClearTextureResource_PS(mySlot);
-    GraphicsEngine::Get().RenderSprite();
 }
 
 void ClearTextureResource::Destroy()

@@ -3,7 +3,7 @@
 Sprite_VSout main(SpriteVertex input)
 {
     Sprite_VSout result;
-    result.Position = input.Position;
-    result.Size = input.Size;
+    result.Position = SPB_Position;
+    result.Size = SPB_Size;
 	return result;
 }
