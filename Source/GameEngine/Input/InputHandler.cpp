@@ -1,5 +1,4 @@
 #include "InputHandler.h"
-#include <iostream>
 #include <Windows.h>
 #include <Windowsx.h>
 

@@ -5,13 +5,16 @@
 
 Engine::Engine()
 {
-    myTimer = std::make_shared<CU::Timer>();
-    myInputHandler = std::make_shared<CU::InputHandler>();
-    myGlobalEventHandler = std::make_shared<GlobalEventHandler>();
+    myTimer = std::make_unique<CU::Timer>();
+    myInputHandler = std::make_unique<CU::InputHandler>();
+    myGlobalEventHandler = std::make_unique<GlobalEventHandler>();
 
     myResolution = { 1920.0f, 1080.0f };
 }
 
 Engine::~Engine()
 {
+    myTimer = nullptr;
+    myInputHandler = nullptr;
+    myGlobalEventHandler = nullptr;
 }

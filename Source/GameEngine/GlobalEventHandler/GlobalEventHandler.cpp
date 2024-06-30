@@ -1,5 +1,4 @@
 #include "GlobalEventHandler.h"
-#include <iostream>
 
 GlobalEventHandler::GlobalEventHandler()
 {

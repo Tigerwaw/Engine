@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <array>
 #include <unordered_map>
 
 // The reason why this class doesn't inherit from the Model class is that it creates problems with type-casting.
@@ -44,9 +45,9 @@ public:
     void PlayAnimation();
     void StopAnimation();
 
-    CU::Matrix4x4<float>* GetCurrentPose() { return myJointTransforms; }
+    std::array<CU::Matrix4x4f, 128> GetCurrentPose() { return myJointTransforms; }
 private:
-    void UpdateAnimation(AnimationLayer aAnimLayer, unsigned aJointIdx, const CU::Matrix4x4<float>& aParentJointTransform, CU::Matrix4x4<float>* outTransforms);
+    void UpdateAnimation(AnimationLayer aAnimLayer, unsigned aJointIdx, const CU::Matrix4x4<float>& aParentJointTransform, std::array<CU::Matrix4x4f, 128>& outTransforms);
 
     std::shared_ptr<Mesh> myMesh = nullptr;
     std::vector<std::shared_ptr<Material>> myMaterials;
@@ -54,7 +55,7 @@ private:
 
     std::vector<AnimationLayer> myAnimationLayers;
 
-    CU::Matrix4x4<float> myJointTransforms[128];
+    std::array<CU::Matrix4x4f, 128> myJointTransforms;
     bool myIsPlaying = false;
     float myAnimTime = 0;
     float myFrametime = 0;

@@ -33,9 +33,9 @@ private:
     void operator=(Engine const&) = delete;
     static Engine* myInstance;
 
-    std::shared_ptr<CU::Timer> myTimer;
-    std::shared_ptr<CU::InputHandler> myInputHandler;
-    std::shared_ptr<GlobalEventHandler> myGlobalEventHandler;
+    std::unique_ptr<CU::Timer> myTimer;
+    std::unique_ptr<CU::InputHandler> myInputHandler;
+    std::unique_ptr<GlobalEventHandler> myGlobalEventHandler;
 
     CU::Vector2f myResolution;
 };

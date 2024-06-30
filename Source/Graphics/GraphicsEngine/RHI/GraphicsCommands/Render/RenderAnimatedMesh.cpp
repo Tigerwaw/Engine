@@ -27,7 +27,7 @@ void RenderAnimatedMesh::Execute()
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
     AnimationBuffer animBufferData;
-    memcpy_s(animBufferData.JointTransforms, sizeof(CU::Matrix4x4<float>) * 128, jointTransforms, sizeof(CU::Matrix4x4<float>) * 128);
+    memcpy_s(animBufferData.JointTransforms, sizeof(CU::Matrix4x4<float>) * 128, jointTransforms.data(), sizeof(CU::Matrix4x4<float>) * 128);
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::AnimationBuffer, animBufferData);
 
     GraphicsEngine::Get().RenderMesh(*mesh, materialList);
@@ -36,6 +36,5 @@ void RenderAnimatedMesh::Execute()
 void RenderAnimatedMesh::Destroy()
 {
     mesh = nullptr;
-    jointTransforms = nullptr;
     materialList.clear();
 }

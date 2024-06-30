@@ -6,6 +6,7 @@
 #include "Windows.h"
 
 #include "Utilities/StringHelpers.h"
+#include "GameEngine/Engine.h"
 #include "GameEngine/EngineDefines.h"
 
 #ifdef _DEBUG
@@ -16,6 +17,30 @@
 #define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #define new DEBUG_NEW
 #endif
+
+//struct AllocationMetrics
+//{
+//    size_t TotalAllocated = 0;
+//    size_t TotalFreed = 0;
+//
+//    const size_t CurrentUsage() const { return TotalAllocated - TotalFreed; }
+//};
+//
+//static AllocationMetrics globalAllocationMetrics;
+//
+//void* operator new(size_t size)
+//{
+//    globalAllocationMetrics.TotalAllocated += size;
+//
+//    return malloc(size);
+//}
+//
+//void operator delete(void* memory, size_t size)
+//{
+//    globalAllocationMetrics.TotalFreed += size;
+//
+//    free(memory);
+//}
 #endif
 
 LRESULT CALLBACK WinProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam);
@@ -69,8 +94,8 @@ int GuardedMain()
     GetWindowRect(consoleWindow, &consoleSize);
     MoveWindow(consoleWindow, consoleSize.left, consoleSize.top, 1280, 720, true);
 
-    constexpr SIZE windowSize = { 1920, 1080 };
-    constexpr LPCWSTR windowTitle = L"TGP Modelviewer";
+    SIZE windowSize = { static_cast<long>(Engine::GetInstance().GetResolution().x), static_cast<long>(Engine::GetInstance().GetResolution().y) };
+    LPCWSTR windowTitle = L"TGP Modelviewer";
 
     ModelViewer MV;
     MV.Initialize(windowSize, WinProc, windowTitle);

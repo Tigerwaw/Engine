@@ -122,7 +122,7 @@ void AnimatedModel::StopAnimation()
     myIsPlaying = false;
 }
 
-void AnimatedModel::UpdateAnimation(AnimationLayer aAnimLayer, unsigned aJointIdx, const CU::Matrix4x4<float>& aParentJointTransform, CU::Matrix4x4<float>* outTransforms)
+void AnimatedModel::UpdateAnimation(AnimationLayer aAnimLayer, unsigned aJointIdx, const CU::Matrix4x4<float>& aParentJointTransform, std::array<CU::Matrix4x4f, 128>& outTransforms)
 {
     Mesh::Skeleton::Joint currentJoint = myMesh->GetSkeleton().myJoints[aJointIdx];
 
