@@ -7,17 +7,15 @@
 namespace CU = CommonUtilities;
 
 class Sprite;
-class SpriteObject;
 class Texture;
 
-struct RenderUISprite : GraphicsCommandBase
+struct RenderSprite : GraphicsCommandBase
 {
 public:
-	RenderUISprite(std::shared_ptr<SpriteObject> aSpriteObject);
+	RenderSprite(std::shared_ptr<Sprite> aSprite);
 	void Execute() override;
 	void Destroy() override;
 private:
-	std::shared_ptr<Sprite> sprite;
 	std::shared_ptr<Texture> texture;
 	CU::Vector4f position;
 	CU::Vector2f size;

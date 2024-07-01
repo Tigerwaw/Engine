@@ -3,13 +3,12 @@
 
 #include "Logger\Logger.h"
 
-#include "GraphicsEngine/RHI/Shader.h"
-#include "GraphicsEngine/RHI/Vertex.h"
-#include "GraphicsEngine/RHI/SpriteVertex.h"
-#include "GraphicsEngine/RHI/Mesh.h"
-#include "GraphicsEngine/RHI/Sprite.h"
+#include "GraphicsEngine/Objects/Shader.h"
+#include "GraphicsEngine/Objects/Vertex.h"
+#include "GraphicsEngine/Objects/Mesh.h"
+#include "GraphicsEngine/Objects/Sprite.h"
 #include "GraphicsEngine/Objects/Material.h"
-#include "GraphicsEngine/RHI/Texture.h"
+#include "GraphicsEngine/Objects/Texture.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/FrameBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/ObjectBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/AnimationBuffer.h"
@@ -110,12 +109,6 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	if (!myRHI->LoadShaderFromMemory("Sprite_PS", *spritePSO.PixelShader, BuiltIn_Sprite_PS_ByteCode, sizeof(BuiltIn_Sprite_PS_ByteCode)))
 	{
 		LOG(GraphicsLog, Error, "Failed to load pixel shader!");
-		return false;
-	}
-
-	if (!myRHI->CreateInputLayout(spritePSO.InputLayout, SpriteVertex::InputLayoutDefinition, BuiltIn_Sprite_VS_ByteCode, sizeof(BuiltIn_Sprite_VS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to create shader input layout!");
 		return false;
 	}
 
@@ -272,7 +265,7 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	myConstantBuffers.emplace(ConstantBufferType::SpriteBuffer, std::move(spriteBuffer));
 	
 	myCurrentPSO = myPSOmap[PipelineStateType::Default];
-	myCommandList = std::make_shared<GraphicsCommandList>();
+	myCommandList = std::make_unique<GraphicsCommandList>();
 
 	LOG(GraphicsLog, Log, "Initialized Graphics Engine!");
 	return true;
@@ -282,6 +275,15 @@ void GraphicsEngine::BeginFrame()
 {
 	myDrawcallAmount = 0;
 	ChangePipelineState(myCurrentPSO);
+}
+
+void GraphicsEngine::RenderFrame()
+{
+	if (myCommandList->HasCommands() && !myCommandList->IsFinished())
+	{
+		myCommandList->Execute();
+	}
+	myCommandList->Reset();
 }
 
 void GraphicsEngine::EndFrame()
@@ -296,10 +298,8 @@ void GraphicsEngine::ChangePipelineState(PipelineStateType aPipelineState)
 
 void GraphicsEngine::ChangePipelineState(const std::shared_ptr<PipelineStateObject> aNewPSO)
 {
-	ClearTextureResource_PS(127);
 	myRHI->ChangePipelineState(*aNewPSO);
 	myCurrentPSO = aNewPSO;
-	SetTextureResource_PS(127, *myLUTtexture);
 }
 
 std::shared_ptr<PipelineStateObject> GraphicsEngine::GetPSO(PipelineStateType aPipelineState)
@@ -368,6 +368,8 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<M
 	myRHI->SetIndexBuffer(aMesh.GetIndexBuffer());
 	myRHI->SetPrimitiveTopology(Topology::TRIANGLELIST);
 
+	SetTextureResource_PS(127, *myLUTtexture);
+
 	for (const auto& element : aMesh.GetElements())
 	{
 		if (aMaterialList.size() > element.MaterialIndex)
@@ -423,14 +425,13 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<M
 	ClearTextureResource_PS(0);
 	ClearTextureResource_PS(1);
 	ClearTextureResource_PS(2);
+	ClearTextureResource_PS(127);
 }
 
-void GraphicsEngine::RenderSprite(const Sprite& aSprite)
+void GraphicsEngine::RenderSprite()
 {
 	ChangePipelineState(PipelineStateType::Sprite);
-	myRHI->SetVertexBuffer(aSprite.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
 	myRHI->SetPrimitiveTopology(Topology::POINTLIST);
-	
 	myRHI->Draw(1);
 }
 

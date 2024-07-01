@@ -1,8 +1,8 @@
 #include "GameEngine/ComponentSystem/GameObject.h"
 
 #include "AnimatedModel.h"
-#include "GraphicsEngine/RHI/Mesh.h"
-#include "RHI/Animation.h"
+#include "GraphicsEngine/Objects/Mesh.h"
+#include "GraphicsEngine/Objects/Animation.h"
 #include "GameEngine/Engine.h"
 #include "GameEngine/Time/Timer.h"
 

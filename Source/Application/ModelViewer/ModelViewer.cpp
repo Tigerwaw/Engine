@@ -22,10 +22,10 @@ DEFINE_LOG_CATEGORY(LogModelViewer);
 #include "GraphicsEngine/Objects/ConstantBuffers/LightBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/ShadowBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/ConstantBuffer.h"
-#include "GraphicsEngine/RHI/GraphicsCommands/GraphicsCommandList.h"
-#include "GraphicsEngine/RHI/Mesh.h"
-#include "GraphicsEngine/RHI/Vertex.h"
-#include "GraphicsEngine/RHI/Animation.h"
+#include "GraphicsEngine/GraphicsCommands/GraphicsCommandList.h"
+#include "GraphicsEngine/Objects/Mesh.h"
+#include "GraphicsEngine/Objects/Vertex.h"
+#include "GraphicsEngine/Objects/Animation.h"
 
 #include "AssetManager.h"
 #include "Asset.h"
@@ -174,6 +174,7 @@ int ModelViewer::Run()
 		Engine::GetInstance().GetInputHandler().UpdateInput();
 
 		Render();
+		GraphicsEngine::Get().RenderFrame();
 
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

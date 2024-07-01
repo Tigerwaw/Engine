@@ -1,7 +1,7 @@
 #include "PointLight.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "Graphics/GraphicsEngine/GraphicsEngine.h"
-#include "Graphics/GraphicsEngine/RHI/Texture.h"
+#include "Graphics/GraphicsEngine/Objects/Texture.h"
 
 PointLight::PointLight(float aIntensity, CU::Vector3f aColor) : LightSource(aIntensity, aColor)
 {

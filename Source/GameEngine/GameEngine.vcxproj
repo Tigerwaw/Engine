@@ -179,7 +179,6 @@
     <ClCompile Include="Input\InputHandler.cpp" />
     <ClCompile Include="ComponentSystem\Components\Lights\LightSource.cpp" />
     <ClCompile Include="Time\Timer.cpp" />
-    <ClCompile Include="UI\SpriteObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComponentSystem\Components\Graphics\AnimatedModel.h" />
@@ -228,7 +227,6 @@
     <ClInclude Include="Math\Vector3.hpp" />
     <ClInclude Include="Math\Vector4.hpp" />
     <ClInclude Include="Time\Timer.h" />
-    <ClInclude Include="UI\SpriteObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

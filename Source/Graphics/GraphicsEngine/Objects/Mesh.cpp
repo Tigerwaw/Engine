@@ -14,7 +14,6 @@ void Mesh::Initialize(std::vector<Vertex>&& aVertexList, std::vector<unsigned>&&
 	myIndices = std::move(aIndexList);
 	myElements = std::move(aElementList);
 	mySkeleton = aSkeleton;
-	myPrimitiveTopology = static_cast<int>(Topology::TRIANGLELIST);
 	GraphicsEngine::Get().CreateVertexBuffer("Vertex Buffer", myVertices, myVertexBuffer);
 	GraphicsEngine::Get().CreateIndexBuffer("Index Buffer", myIndices, myIndexBuffer);
 }

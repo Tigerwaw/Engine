@@ -1,5 +1,5 @@
 #include "Model.h"
-#include "GraphicsEngine/RHI/Mesh.h"
+#include "GraphicsEngine/Objects/Mesh.h"
 #include "GraphicsEngine/Objects/Material.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 

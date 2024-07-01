@@ -12,10 +12,10 @@
 #include "backends/imgui_impl_win32.h"
 #include "backends/imgui_impl_dx11.h"
 
-#include "Texture.h"
-#include "Shader.h"
+#include "GraphicsEngine/Objects/Texture.h"
+#include "GraphicsEngine/Objects/Shader.h"
+#include "GraphicsEngine/Objects/PipelineStateObject.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/ConstantBuffer.h"
-#include "PipelineStateObject.h"
 
 #ifdef _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(RhiLog, "RHI", Verbose);

@@ -1,6 +1,6 @@
 #include "AmbientLight.h"
 #include "Graphics/GraphicsEngine/GraphicsEngine.h"
-#include "Graphics/GraphicsEngine/RHI/Texture.h"
+#include "Graphics/GraphicsEngine/Objects/Texture.h"
 
 AmbientLight::AmbientLight(std::shared_ptr<Texture> aEnvironmentTexture, CU::Vector3f aColor, float aIntensity)
 {

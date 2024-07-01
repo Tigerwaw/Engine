@@ -1,7 +1,7 @@
 #include "GraphicsEngine.pch.h"
 #include "Material.h"
 #include "GraphicsEngine/GraphicsEngine.h"
-#include "GraphicsEngine/RHI/Texture.h"
+#include "GraphicsEngine/Objects/Texture.h"
 
 Material::Material()
 {

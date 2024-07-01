@@ -1,7 +1,7 @@
 #include "LightSource.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "Graphics/GraphicsEngine/GraphicsEngine.h"
-#include "Graphics/GraphicsEngine/RHI/Texture.h"
+#include "Graphics/GraphicsEngine/Objects/Texture.h"
 
 LightSource::LightSource(float aIntensity, CU::Vector3f aColor)
 {

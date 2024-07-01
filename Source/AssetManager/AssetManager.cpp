@@ -3,7 +3,7 @@
 #include <d3d11.h>
 #include "Asset.h"
 #include "GraphicsEngine.h"
-#include "RHI/Vertex.h"
+#include "Graphics/GraphicsEngine/Objects/Vertex.h"
 
 #include <iostream>
 #include <fstream>

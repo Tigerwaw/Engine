@@ -62,12 +62,6 @@ struct GS_OUT
     uint RTIndex        : SV_RenderTargetArrayIndex;
 };
 
-struct SpriteVertex
-{
-    float4 Position     : POSITION;
-    float2 Size         : SIZE;
-};
-
 struct Sprite_VSout
 {
     float4 Position     : POSITION;

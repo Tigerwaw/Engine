@@ -3,10 +3,10 @@
 #include <string>
 
 #include "Asset.h"
-#include "RHI/Mesh.h"
-#include "RHI/Animation.h"
-#include "RHI/Texture.h"
-#include "Objects/Material.h"
+#include "Graphics/GraphicsEngine/Objects/Mesh.h"
+#include "Graphics/GraphicsEngine/Objects/Animation.h"
+#include "Graphics/GraphicsEngine/Objects/Texture.h"
+#include "Graphics/GraphicsEngine/Objects/Material.h"
 
 struct Asset
 {

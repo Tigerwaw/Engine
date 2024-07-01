@@ -2,7 +2,7 @@
 #include <vector>
 #include "GameEngine\Math\Vector.hpp"
 
-#include "RHIStructs.h"
+#include "Graphics/GraphicsEngine/RHI/RHIStructs.h"
 
 namespace CU = CommonUtilities;
 

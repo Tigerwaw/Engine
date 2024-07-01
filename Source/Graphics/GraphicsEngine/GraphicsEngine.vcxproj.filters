@@ -24,16 +24,16 @@
     <ClInclude Include="RHI\RenderHardwareInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\Texture.h">
+    <ClInclude Include="Objects\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\Vertex.h">
+    <ClInclude Include="Objects\Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RHI\RHIStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\Shader.h">
+    <ClInclude Include="Objects\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Objects\ConstantBuffers\ConstantBuffer.h">
@@ -45,16 +45,16 @@
     <ClInclude Include="Objects\ConstantBuffers\ObjectBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\Mesh.h">
+    <ClInclude Include="Objects\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\PipelineStateObject.h">
+    <ClInclude Include="Objects\PipelineStateObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\GraphicsCommandList.h">
+    <ClInclude Include="GraphicsCommands\GraphicsCommandList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\Animation.h">
+    <ClInclude Include="Objects\Animation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Objects\ConstantBuffers\AnimationBuffer.h">
@@ -66,16 +66,16 @@
     <ClInclude Include="Objects\ConstantBuffers\MaterialBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\Render\RenderMesh.h">
+    <ClInclude Include="GraphicsCommands\Render\RenderMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\GraphicsCommandBase.h">
+    <ClInclude Include="GraphicsCommands\GraphicsCommandBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\Render\RenderAnimatedMesh.h">
+    <ClInclude Include="GraphicsCommands\Render\RenderAnimatedMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\LambdaGraphicsCommand.h">
+    <ClInclude Include="GraphicsCommands\LambdaGraphicsCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DDSTextureLoader\DDSTextureLoader11.h">
@@ -84,49 +84,46 @@
     <ClInclude Include="Objects\ConstantBuffers\LightBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\Resource\SetTextureResource.h">
+    <ClInclude Include="GraphicsCommands\Resource\SetTextureResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\Resource\ClearTextureResource.h">
+    <ClInclude Include="GraphicsCommands\Resource\ClearTextureResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\ChangePipelineState.h">
+    <ClInclude Include="GraphicsCommands\ChangePipelineState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PipelineStateType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\ConstantBuffer\UpdateFrameBuffer.h">
+    <ClInclude Include="GraphicsCommands\ConstantBuffer\UpdateFrameBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Objects\ConstantBuffers\ShadowBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\ConstantBuffer\UpdateLightBuffer.h">
+    <ClInclude Include="GraphicsCommands\ConstantBuffer\UpdateLightBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\ConstantBuffer\UpdateShadowBuffer.h">
+    <ClInclude Include="GraphicsCommands\ConstantBuffer\UpdateShadowBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\Render\RenderDebugMesh.h">
+    <ClInclude Include="GraphicsCommands\Render\RenderDebugMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\SetRenderTarget.h">
+    <ClInclude Include="GraphicsCommands\SetRenderTarget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\SetDefaultRenderTarget.h">
+    <ClInclude Include="GraphicsCommands\SetDefaultRenderTarget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\SpriteVertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RHI\Sprite.h">
+    <ClInclude Include="Objects\Sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Objects\ConstantBuffers\SpriteBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RHI\GraphicsCommands\Render\RenderUISprite.h">
+    <ClInclude Include="GraphicsCommands\Render\RenderSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -140,79 +137,76 @@
     <ClCompile Include="RHI\RenderHardwareInterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\Texture.cpp">
+    <ClCompile Include="Objects\Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\Vertex.cpp">
+    <ClCompile Include="Objects\Vertex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\Shader.cpp">
+    <ClCompile Include="Objects\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Objects\ConstantBuffers\ConstantBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\Mesh.cpp">
+    <ClCompile Include="Objects\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\PipelineStateObject.cpp">
+    <ClCompile Include="Objects\PipelineStateObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\GraphicsCommandList.cpp">
+    <ClCompile Include="GraphicsCommands\GraphicsCommandList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Objects\Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\Render\RenderMesh.cpp">
+    <ClCompile Include="GraphicsCommands\Render\RenderMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\GraphicsCommandBase.cpp">
+    <ClCompile Include="GraphicsCommands\GraphicsCommandBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\Render\RenderAnimatedMesh.cpp">
+    <ClCompile Include="GraphicsCommands\Render\RenderAnimatedMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\LambdaGraphicsCommand.cpp">
+    <ClCompile Include="GraphicsCommands\LambdaGraphicsCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DDSTextureLoader\DDSTextureLoader11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\Resource\SetTextureResource.cpp">
+    <ClCompile Include="GraphicsCommands\Resource\SetTextureResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\Resource\ClearTextureResource.cpp">
+    <ClCompile Include="GraphicsCommands\Resource\ClearTextureResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\ChangePipelineState.cpp">
+    <ClCompile Include="GraphicsCommands\ChangePipelineState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\ConstantBuffer\UpdateFrameBuffer.cpp">
+    <ClCompile Include="GraphicsCommands\ConstantBuffer\UpdateFrameBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\ConstantBuffer\UpdateLightBuffer.cpp">
+    <ClCompile Include="GraphicsCommands\ConstantBuffer\UpdateLightBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\ConstantBuffer\UpdateShadowBuffer.cpp">
+    <ClCompile Include="GraphicsCommands\ConstantBuffer\UpdateShadowBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\Render\RenderDebugMesh.cpp">
+    <ClCompile Include="GraphicsCommands\Render\RenderDebugMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\SetRenderTarget.cpp">
+    <ClCompile Include="GraphicsCommands\SetRenderTarget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\SetDefaultRenderTarget.cpp">
+    <ClCompile Include="GraphicsCommands\SetDefaultRenderTarget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\SpriteVertex.cpp">
+    <ClCompile Include="Objects\Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RHI\Sprite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RHI\GraphicsCommands\Render\RenderUISprite.cpp">
+    <ClCompile Include="GraphicsCommands\Render\RenderSprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

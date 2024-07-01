@@ -2,10 +2,9 @@
 #include <memory>
 #include <vector>
 #include <string>
-#include "GameEngine/UI/SpriteObject.h"
 
-class GraphicsCommandList;
 class GameObject;
+class Sprite;
 
 class Scene final
 {
@@ -52,7 +51,6 @@ private:
 	void QueueDirectionalLightShadows();
 	void QueueDebugGizmos();
 	void QueueGameObjects();
-	std::shared_ptr<GraphicsCommandList> myCommandList;
 
 	std::vector<std::shared_ptr<GameObject>> myGameObjects;
 	unsigned myActiveGameObjectAmount = 0;
@@ -63,5 +61,6 @@ private:
 	std::shared_ptr<GameObject> myDirectionalLight;
 	std::vector<std::shared_ptr<GameObject>> myPointLights;
 	std::vector<std::shared_ptr<GameObject>> mySpotLights;
+	std::shared_ptr<Sprite> myTestSprite;
 };
 

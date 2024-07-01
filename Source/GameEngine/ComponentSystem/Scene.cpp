@@ -1,5 +1,6 @@
 #include "Scene.h"
-#include "GraphicsEngine/RHI/GraphicsCommands/GraphicsCommandList.h"
+#include "GraphicsEngine/GraphicsEngine.h"
+#include "GraphicsEngine/Objects/Sprite.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
@@ -24,7 +25,7 @@ DEFINE_LOG_CATEGORY(LogScene);
 
 Scene::Scene()
 {
-	myCommandList = std::make_shared<GraphicsCommandList>();
+	myTestSprite = std::make_shared<Sprite>(CU::Vector3f(0, 0, 0), CU::Vector2f(500.0f, 500.0f));
 }
 
 Scene::~Scene()
@@ -59,14 +60,14 @@ void Scene::Render()
 	QueueUpdateLightBuffer();
 
 	// Final Render
-	myCommandList->Enqueue<ChangePipelineState>(PipelineStateType::Default);
-	myCommandList->Enqueue<SetDefaultRenderTarget>();
-	myCommandList->Enqueue<UpdateFrameBuffer>(myCamera->GetComponent<Camera>());
-	myCommandList->Enqueue<SetTextureResource>(126, myAmbientLight->GetComponent<AmbientLight>()->GetEnvironmentTexture());
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(PipelineStateType::Default);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetDefaultRenderTarget>();
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(myCamera->GetComponent<Camera>());
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(126, myAmbientLight->GetComponent<AmbientLight>()->GetEnvironmentTexture());
 	QueueShadowmapTextureResources();
 
 	QueueGameObjects();
-	myCommandList->Enqueue<ChangePipelineState>(PipelineStateType::Gizmo);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(PipelineStateType::Gizmo);
 
 	if (myShowGizmos)
 	{
@@ -75,12 +76,7 @@ void Scene::Render()
 	
 	QueueClearTextureResources();
 
-	// Run Command List
-	if (myCommandList->HasCommands() && !myCommandList->IsFinished())
-	{
-		myCommandList->Execute();
-	}
-	myCommandList->Reset();
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderSprite>(myTestSprite);
 }
 
 std::shared_ptr<GameObject> Scene::FindGameObjectByName(std::string aName)
@@ -138,6 +134,8 @@ void Scene::SetDirectionalLight(std::shared_ptr<GameObject> aDirectionalLight)
 {
 	std::shared_ptr<GameObject> dLight = myGameObjects.emplace_back(aDirectionalLight);
 	myDirectionalLight = dLight;
+
+	myTestSprite->SetTexture(dLight->GetComponent<DirectionalLight>()->GetShadowMap());
 }
 
 void Scene::AddPointLight(std::shared_ptr<GameObject> aPointLight)
@@ -156,14 +154,14 @@ void Scene::QueueClearTextureResources()
 {
 	for (int i = 100; i < 110; i++)
 	{
-		myCommandList->Enqueue<ClearTextureResource>(i);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ClearTextureResource>(i);
 	}
-	myCommandList->Enqueue<ClearTextureResource>(126);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ClearTextureResource>(126);
 }
 
 void Scene::QueueShadowmapTextureResources()
 {
-	myCommandList->Enqueue<SetTextureResource>(100, myDirectionalLight->GetComponent<DirectionalLight>()->GetShadowMap());
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(100, myDirectionalLight->GetComponent<DirectionalLight>()->GetShadowMap());
 
 	for (int i = 0; i < myPointLights.size(); i++)
 	{
@@ -176,7 +174,7 @@ void Scene::QueueShadowmapTextureResources()
 		std::shared_ptr<Texture> shadowMap = pLight->GetShadowMap();
 		if (!shadowMap) continue;
 
-		myCommandList->Enqueue<SetTextureResource>(101 + i, shadowMap);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(101 + i, shadowMap);
 	}
 
 	for (int i = 0; i < mySpotLights.size(); i++)
@@ -190,7 +188,7 @@ void Scene::QueueShadowmapTextureResources()
 		std::shared_ptr<Texture> shadowMap = sLight->GetShadowMap();
 		if (!shadowMap) continue;
 
-		myCommandList->Enqueue<SetTextureResource>(105 + i, shadowMap);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(105 + i, shadowMap);
 	}
 }
 
@@ -215,7 +213,7 @@ void Scene::QueueUpdateLightBuffer()
 		}
 	}
 
-	myCommandList->Enqueue<UpdateLightBuffer>(ambientLight, dirLight, pointLights, spotLights);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateLightBuffer>(ambientLight, dirLight, pointLights, spotLights);
 }
 
 void Scene::QueueSpotLightShadows()
@@ -226,9 +224,9 @@ void Scene::QueueSpotLightShadows()
 		if (!spotLight->GetActive()) continue;
 		if (!spotLight->CastsShadows()) continue;
 
-		myCommandList->Enqueue<ChangePipelineState>(PipelineStateType::Shadow);
-		myCommandList->Enqueue<SetRenderTarget>(nullptr, spotLight->GetShadowMap(), false, true);
-		myCommandList->Enqueue<UpdateFrameBuffer>(mySpotLights[i]->GetComponent<Camera>());
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(PipelineStateType::Shadow);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, spotLight->GetShadowMap(), false, true);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(mySpotLights[i]->GetComponent<Camera>());
 		QueueGameObjects();
 	}
 }
@@ -241,10 +239,10 @@ void Scene::QueuePointLightShadows()
 		if (!pointLight->GetActive()) continue;
 		if (!pointLight->CastsShadows()) continue;
 		
-		myCommandList->Enqueue<SetRenderTarget>(nullptr, pointLight->GetShadowMap(), false, true);
-		myCommandList->Enqueue<ChangePipelineState>(PipelineStateType::ShadowCube);
-		myCommandList->Enqueue<UpdateFrameBuffer>(myPointLights[i]->GetComponent<Camera>());
-		myCommandList->Enqueue<UpdateShadowBuffer>(pointLight);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, pointLight->GetShadowMap(), false, true);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(PipelineStateType::ShadowCube);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(myPointLights[i]->GetComponent<Camera>());
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateShadowBuffer>(pointLight);
 		QueueGameObjects();
 	}
 }
@@ -255,9 +253,9 @@ void Scene::QueueDirectionalLightShadows()
 	if (!dLight->GetActive()) return;
 	if (!dLight->CastsShadows()) return;
 	
-	myCommandList->Enqueue<SetRenderTarget>(nullptr, dLight->GetShadowMap(), false, true);
-	myCommandList->Enqueue<ChangePipelineState>(PipelineStateType::Shadow);
-	myCommandList->Enqueue<UpdateFrameBuffer>(myDirectionalLight->GetComponent<Camera>());
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, dLight->GetShadowMap(), false, true);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(PipelineStateType::Shadow);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(myDirectionalLight->GetComponent<Camera>());
 	QueueGameObjects();
 }
 
@@ -268,7 +266,7 @@ void Scene::QueueDebugGizmos()
 		std::shared_ptr<DebugModel> model = gameObject->GetComponent<DebugModel>();
 		if (model && model->GetActive())
 		{
-			myCommandList->Enqueue<RenderDebugMesh>(model);
+			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderDebugMesh>(model);
 		}
 	}
 }
@@ -280,14 +278,13 @@ void Scene::QueueGameObjects()
 		std::shared_ptr<Model> model = gameObject->GetComponent<Model>();
 		if (model && model->GetActive())
 		{
-			myCommandList->Enqueue<RenderMesh>(model);
+			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model);
 		}
-
 
 		std::shared_ptr<AnimatedModel> animModel = gameObject->GetComponent<AnimatedModel>();
 		if (animModel && animModel->GetActive())
 		{
-			myCommandList->Enqueue<RenderAnimatedMesh>(animModel);
+			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel);
 		}
 	}
 }

@@ -13,8 +13,6 @@ namespace CU = CommonUtilities;
 
 class Mesh
 {
-	friend class RenderHardwareInterface;
-
 public:
 	struct Element
 	{
@@ -54,8 +52,6 @@ private:
 	std::vector<unsigned> myIndices;
 	std::vector<Element> myElements;
 	Skeleton mySkeleton;
-
-	unsigned myPrimitiveTopology = 0;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> myVertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> myIndexBuffer;

@@ -1,23 +1,20 @@
 #include "GraphicsEngine.pch.h"
-#include "RenderUISprite.h"
+#include "RenderSprite.h"
 
 #include "GraphicsEngine/GraphicsEngine.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/SpriteBuffer.h"
-#include "GameEngine/UI/SpriteObject.h"
-#include "GraphicsEngine/RHI/Sprite.h"
-#include "GraphicsEngine/RHI/Texture.h"
+#include "GraphicsEngine/Objects/Sprite.h"
+#include "GraphicsEngine/Objects/Texture.h"
 
-RenderUISprite::RenderUISprite(std::shared_ptr<SpriteObject> aSpriteObject)
+RenderSprite::RenderSprite(std::shared_ptr<Sprite> aSprite)
 {
-    sprite = aSpriteObject->GetSprite();
-    texture = aSpriteObject->GetTexture();
-    position = CU::ToVector4(aSpriteObject->GetPosition());
-    size = aSpriteObject->GetSize();
+    texture = aSprite->GetTexture();
+    position = CU::ToVector4(aSprite->GetPosition());
+    size = aSprite->GetSize();
 }
 
-void RenderUISprite::Execute()
+void RenderSprite::Execute()
 {
-    if (!sprite) return;
     if (!texture) return;
 
     SpriteBuffer spriteBufferData;
@@ -27,12 +24,11 @@ void RenderUISprite::Execute()
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::SpriteBuffer, spriteBufferData);
 
     GraphicsEngine::Get().SetTextureResource_PS(0, *texture);
-    GraphicsEngine::Get().RenderSprite(*sprite);
+    GraphicsEngine::Get().RenderSprite();
     GraphicsEngine::Get().ClearTextureResource_PS(0);
 }
 
-void RenderUISprite::Destroy()
+void RenderSprite::Destroy()
 {
-    sprite = nullptr;
     texture = nullptr;
 }
