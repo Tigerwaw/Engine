@@ -12,19 +12,10 @@ namespace CommonUtilities
 		T z;
 		T w;
 
-		//Creates a null-vector
 		Vector4<T>();
-
-		//Creates a vector (aX, aY, aZ)
 		Vector4<T>(const T& aX, const T& aY, const T& aZ, const T& aW);
-
-		//Copy constructor (compiler generated)
 		Vector4<T>(const Vector4<T>& aVector) = default;
-
-		//Assignment operator (compiler generated)
 		Vector4<T>& operator=(const Vector4<T>& aVector4) = default;
-
-		//Destructor (compiler generated)
 		~Vector4<T>() = default;
 
 		//Explicit Type operator, create a different vector with the same values.
@@ -32,23 +23,15 @@ namespace CommonUtilities
 		template <class OtherVectorClass>
 		explicit operator OtherVectorClass() const;
 
-		//Returns a negated copy of the vector
 		Vector4<T> operator-() const;
-
-		//Returns the squared length of the vector
 		T LengthSqr() const;
-
-		//Returns the length of the vector
 		T Length() const;
-
-		//Returns a normalized copy of this vector
 		Vector4<T> GetNormalized() const;
-
-		//Normalizes the vector
 		void Normalize();
-
-		//Returns the dot product of this and aVector
 		T Dot(const Vector4<T>& aVector) const;
+		static Vector4<T> Abs(const Vector4<T>& aVector);
+		static T Distance(const Vector4<T>& aVector0, const Vector4<T>& aVector1);
+		static Vector4<T> Lerp(const Vector4<T>& aStart, const Vector4<T>& aEnd, const float aPercent);
 	};
 
 	template<class T>
@@ -112,6 +95,25 @@ namespace CommonUtilities
 	T Vector4<T>::Dot(const Vector4<T>& aVector) const
 	{
 		return x * aVector.x + y * aVector.y + z * aVector.z + w * aVector.w;
+	}
+
+	template<class T>
+	inline Vector4<T> Vector4<T>::Abs(const Vector4<T>& aVector)
+	{
+		return { Abs(aVector.x), Abs(aVector.y), Abs(aVector.z), Abs(aVector.w) };
+	}
+
+	template<class T>
+	inline T Vector4<T>::Distance(const Vector4<T>& aVector0, const Vector4<T>& aVector1)
+	{
+		const Vector4<T> direction = aVector1 - aVector0;
+		return direction.Length();
+	}
+
+	template<class T>
+	inline Vector4<T> Vector4<T>::Lerp(const Vector4<T>& aStart, const Vector4<T>& aEnd, const float aPercent)
+	{
+		return (aStart + aPercent * (aEnd - aStart));
 	}
 
 	//Returns the vector sum of aVector0 and aVector1

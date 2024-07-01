@@ -4,7 +4,6 @@
 #include <string>
 
 class GameObject;
-class Sprite;
 
 class Scene final
 {
@@ -61,6 +60,4 @@ private:
 	std::shared_ptr<GameObject> myDirectionalLight;
 	std::vector<std::shared_ptr<GameObject>> myPointLights;
 	std::vector<std::shared_ptr<GameObject>> mySpotLights;
-	std::shared_ptr<Sprite> myTestSprite;
 };
-

@@ -9,6 +9,13 @@
 namespace CommonUtilities
 {
 	template <class T>
+	class Matrix4x4;
+
+#ifdef max
+#undef max
+#endif
+
+	template <class T>
 	class Quaternion
 	{
 	public:
@@ -22,6 +29,7 @@ namespace CommonUtilities
 		Quaternion<T>(const T& aPitch, const T& aYaw, const T& aRoll);
 		Quaternion<T>(const Vector3<T>& aPitchYawRoll);
 		Quaternion<T>(const Vector3<T>& aVector, const T aAngle);
+		Quaternion<T>(const Matrix4x4<T>& aMatrix);
 
 		void RotateWithEuler(const Vector3<T>& aEuler);
 
@@ -36,12 +44,13 @@ namespace CommonUtilities
 		inline Vector3<T> GetEulerAnglesRadians() const;
 		inline Vector3<T> GetEulerAnglesRadiansd() const;
 		inline Vector3<T> GetEulerAnglesDegrees() const;
-		/*inline Matrix4x4<T> GetRotationMatrix4x4f() const;*/
+		inline Matrix4x4<T> GetRotationMatrix4x4f() const;
 		inline T Dot(const Quaternion<T>& aQuat) const;
 
 		inline Vector3<T> GetRight() const;
 		inline Vector3<T> GetUp() const;
 		inline Vector3<T> GetForward() const;
+
 		// Rotates a vector by the rotation stored in the Quaternion.
 		inline static Vector3<T> RotateVectorByQuaternion(const Quaternion<T>& aQuaternion, const Vector3<T>& aVectorToRotate);
 		inline static Quaternion<T> Lerp(const Quaternion<T>& aQuatA, const Quaternion<T>& aQuatB, const T& aDelta);
@@ -114,6 +123,18 @@ namespace CommonUtilities
 		//X = cos(axis.x) * sin(aAngle / T(2));
 		//Y = cos(axis.y) * sin(aAngle / T(2));
 		//Z = cos(axis.z) * sin(aAngle / T(2));
+	}
+
+	template<class T>
+	inline Quaternion<T>::Quaternion(const Matrix4x4<T>& aMatrix)
+	{
+		w = std::sqrt(std::max(T(0), T(1) + aMatrix(1, 1) + aMatrix(2, 2) + aMatrix(3, 3))) * T(0.5);
+		x = std::sqrt(std::max(T(0), T(1) + aMatrix(1, 1) - aMatrix(2, 2) - aMatrix(3, 3))) * T(0.5);
+		y = std::sqrt(std::max(T(0), T(1) - aMatrix(1, 1) + aMatrix(2, 2) - aMatrix(3, 3))) * T(0.5);
+		z = std::sqrt(std::max(T(0), T(1) - aMatrix(1, 1) - aMatrix(2, 2) + aMatrix(3, 3))) * T(0.5);
+		x = std::copysign(x, aMatrix(3, 2) - aMatrix(2, 3));
+		y = std::copysign(y, aMatrix(1, 3) - aMatrix(3, 1));
+		z = std::copysign(z, aMatrix(2, 1) - aMatrix(1, 2));
 	}
 
 	template <class T> inline Quaternion<T> operator*(const Quaternion<T>& aQuat, const T& aScalar)
@@ -233,37 +254,37 @@ namespace CommonUtilities
 		return sqrt(Length2());
 	}
 
-	//template<class T>
-	//inline Matrix4x4<T> Quaternion<T>::GetRotationMatrix4x4f() const
-	//{
-	//	Matrix4x4<T> result;
+	template<class T>
+	inline Matrix4x4<T> Quaternion<T>::GetRotationMatrix4x4f() const
+	{
+		Matrix4x4<T> result;
 
-	//	T qxx(x * x);
-	//	T qyy(y * y);
-	//	T qzz(z * z);
+		T qxx(x * x);
+		T qyy(y * y);
+		T qzz(z * z);
 
-	//	T qxz(x * z);
-	//	T qxy(x * y);
-	//	T qyz(y * z);
+		T qxz(x * z);
+		T qxy(x * y);
+		T qyz(y * z);
 
-	//	T qwx(w * x);
-	//	T qwy(w * y);
-	//	T qwz(w * z);
+		T qwx(w * x);
+		T qwy(w * y);
+		T qwz(w * z);
 
 
-	//	result(1, 1) = T(1) - T(2) * (qyy + qzz);
-	//	result(2, 1) = T(2) * (qxy + qwz);
-	//	result(3, 1) = T(2) * (qxz - qwy);
+		result(1, 1) = T(1) - T(2) * (qyy + qzz);
+		result(2, 1) = T(2) * (qxy + qwz);
+		result(3, 1) = T(2) * (qxz - qwy);
 
-	//	result(1, 2) = T(2) * (qxy - qwz);
-	//	result(2, 2) = T(1) - T(2) * (qxx + qzz);
-	//	result(3, 2) = T(2) * (qyz + qwx);
+		result(1, 2) = T(2) * (qxy - qwz);
+		result(2, 2) = T(1) - T(2) * (qxx + qzz);
+		result(3, 2) = T(2) * (qyz + qwx);
 
-	//	result(1, 3) = T(2) * (qxz + qwy);
-	//	result(2, 3) = T(2) * (qyz - qwx);
-	//	result(3, 3) = T(1) - T(2) * (qxx + qyy);
-	//	return result;
-	//}
+		result(1, 3) = T(2) * (qxz + qwy);
+		result(2, 3) = T(2) * (qyz - qwx);
+		result(3, 3) = T(1) - T(2) * (qxx + qyy);
+		return result;
+	}
 
 	template<class T>
 	inline T Quaternion<T>::Dot(const Quaternion<T>& aQuat) const

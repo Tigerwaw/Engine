@@ -25,7 +25,6 @@ DEFINE_LOG_CATEGORY(LogScene);
 
 Scene::Scene()
 {
-	myTestSprite = std::make_shared<Sprite>(CU::Vector3f(0, 0, 0), CU::Vector2f(500.0f, 500.0f));
 }
 
 Scene::~Scene()
@@ -75,8 +74,6 @@ void Scene::Render()
 	}
 	
 	QueueClearTextureResources();
-
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderSprite>(myTestSprite);
 }
 
 std::shared_ptr<GameObject> Scene::FindGameObjectByName(std::string aName)
@@ -134,8 +131,6 @@ void Scene::SetDirectionalLight(std::shared_ptr<GameObject> aDirectionalLight)
 {
 	std::shared_ptr<GameObject> dLight = myGameObjects.emplace_back(aDirectionalLight);
 	myDirectionalLight = dLight;
-
-	myTestSprite->SetTexture(dLight->GetComponent<DirectionalLight>()->GetShadowMap());
 }
 
 void Scene::AddPointLight(std::shared_ptr<GameObject> aPointLight)

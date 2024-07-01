@@ -256,9 +256,11 @@ void ModelViewer::InitGameObjects()
 	myScene->Instantiate(ramp);
 
 	std::shared_ptr<GameObject> chest = std::make_shared<GameObject>();
+	chest->SetName("Chest");
 	chest->Transform = CU::Transform<float>({ -500.0f, 0, 0 }, { 0, 180.0f, 0 });
 	chest->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("Models/SM_Chest.fbx")->mesh,
 							    AssetManager::Get().GetAsset<MaterialAsset>("Materials/Chest.json")->material);
+	chest->AddComponent<Rotator>(CU::Vector3f(0, 30.0f, 0));
 	chest->AddComponent<Rotator>(CU::Vector3f(0, 30.0f, 0));
 	myScene->Instantiate(chest);
 
@@ -302,9 +304,10 @@ void ModelViewer::InitGameObjects()
 	myAnimationNames.emplace_back("Wave");
 
 	std::shared_ptr<AnimatedModel> tgaBroModel = myTgaBro->GetComponent<AnimatedModel>();
-	tgaBroModel->AddAnimation(myAnimations[0]);
+	tgaBroModel->SetAnimation(myAnimations[0], 0, "", 0, true);
 	tgaBroModel->PlayAnimation();
-	tgaBroModel->AddAnimation(myAnimations[3], "RightShoulder");
+	tgaBroModel->AddAnimationLayer("RightShoulder");
+	tgaBroModel->SetAnimation(myAnimations[3], 0, "RightShoulder", 0, true);
 	tgaBroModel->PlayAnimation();
 }
 
@@ -314,7 +317,7 @@ void ModelViewer::ChangeAnimation(int aIndex)
 
 	myCurrentAnimIndex = aIndex;
 	myTgaBro->GetComponent<AnimatedModel>()->StopAnimation();
-	myTgaBro->GetComponent<AnimatedModel>()->SetBaseAnimation(myAnimations[aIndex]);
+	myTgaBro->GetComponent<AnimatedModel>()->SetAnimation(myAnimations[aIndex], 0, "", 2.0f, true);
 	myTgaBro->GetComponent<AnimatedModel>()->PlayAnimation();
 }
 

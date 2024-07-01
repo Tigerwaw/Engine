@@ -59,6 +59,11 @@ namespace CommonUtilities
 		static Matrix4x4<T> CreateRollPitchYawMatrix(Vector3<T> aPitchYawRollVector);
 		static Matrix4x4<T> CreateRotationMatrixFromQuaternionVectorXYZW(Vector4<T> aVector);
 
+		static Matrix4x4<T> CreateScaleMatrix(Vector3<T> aScaleVector);
+		static Vector3<T> CreateScaleVector(Matrix4x4<T> aMatrix);
+		static Matrix4x4<T> CreateTranslationMatrix(Vector3<T> aTranslationVector);
+		static Vector3<T> CreateTranslationVector(Matrix4x4<T> aMatrix);
+
 	private:
 		std::array<std::array<T, 4>, 4> myMatrix;
 	};
@@ -356,6 +361,38 @@ namespace CommonUtilities
 		result(3, 2) = T(2) * (qyz - qwx);
 		result(3, 3) = T(1) - T(2) * (qxx + qyy);
 		return result;
+	}
+
+	template<class T>
+	inline Matrix4x4<T> Matrix4x4<T>::CreateScaleMatrix(Vector3<T> aScaleVector)
+	{
+		Matrix4x4<T> result;
+		result(1, 1) = aScaleVector.x;
+		result(2, 2) = aScaleVector.y;
+		result(3, 3) = aScaleVector.z;
+		return result;
+	}
+
+	template<class T>
+	inline Vector3<T> Matrix4x4<T>::CreateScaleVector(Matrix4x4<T> aMatrix)
+	{
+		return { aMatrix(1, 1), aMatrix(2, 2), aMatrix(3, 3) };
+	}
+
+	template<class T>
+	inline Matrix4x4<T> Matrix4x4<T>::CreateTranslationMatrix(Vector3<T> aTranslationVector)
+	{
+		Matrix4x4<T> result;
+		result(4, 1) = aTranslationVector.x;
+		result(4, 2) = aTranslationVector.y;
+		result(4, 3) = aTranslationVector.z;
+		return result;
+	}
+
+	template<class T>
+	inline Vector3<T> Matrix4x4<T>::CreateTranslationVector(Matrix4x4<T> aMatrix)
+	{
+		return { aMatrix(4, 1), aMatrix(4, 2), aMatrix(4, 3) };
 	}
 
 	template <class T>

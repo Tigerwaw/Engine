@@ -12,19 +12,10 @@ namespace CommonUtilities
 		T y;
 		T z;
 
-		//Creates a null-vector
 		Vector3<T>();
-
-		//Creates a vector (aX, aY, aZ)
 		Vector3<T>(const T& aX, const T& aY, const T& aZ);
-
-		//Copy constructor (compiler generated)
 		Vector3<T>(const Vector3<T>& aVector) = default;
-
-		//Assignment operator (compiler generated)
 		Vector3<T>& operator=(const Vector3<T>& aVector3) = default;
-
-		//Destructor (compiler generated)
 		~Vector3<T>() = default;
 
 		//Explicit Type operator, create a different vector with the same values.
@@ -32,26 +23,17 @@ namespace CommonUtilities
 		template <class OtherVectorClass>
 		explicit operator OtherVectorClass() const;
 
-		//Returns a negated copy of the vector
 		Vector3<T> operator-() const;
-
-		//Returns the squared length of the vector
 		T LengthSqr() const;
-
-		//Returns the length of the vector
 		T Length() const;
-
-		//Returns a normalized copy of this vector
 		Vector3<T> GetNormalized() const;
 
-		//Normalizes the vector
 		void Normalize();
-
-		//Returns the dot product of this and aVector
 		T Dot(const Vector3<T>& aVector) const;
-
-		//Returns the cross product of this and aVector
 		Vector3<T> Cross(const Vector3<T>& aVector) const;
+		static Vector3<T> Abs(const Vector3<T>& aVector);
+		static T Distance(const Vector3<T>& aVector0, const Vector3<T>& aVector1);
+		static Vector3<T> Lerp(const Vector3<T>& aStart, const Vector3<T>& aEnd, const float aPercent);
 	};
 
 	template<class T>
@@ -122,6 +104,25 @@ namespace CommonUtilities
 		T newY = z * aVector.x - x * aVector.z;
 		T newZ = x * aVector.y - y * aVector.x;
 		return Vector3<T>(newX, newY, newZ);
+	}
+
+	template<class T>
+	inline Vector3<T> Vector3<T>::Abs(const Vector3<T>& aVector)
+	{
+		return { Abs(aVector.x), Abs(aVector.y), Abs(aVector.z) };
+	}
+
+	template<class T>
+	inline T Vector3<T>::Distance(const Vector3<T>& aVector0, const Vector3<T>& aVector1)
+	{
+		const Vector3<T> direction = aVector1 - aVector0;
+		return direction.Length();
+	}
+
+	template<class T>
+	inline Vector3<T> Vector3<T>::Lerp(const Vector3<T>& aStart, const Vector3<T>& aEnd, const float aPercent)
+	{
+		return (aStart + aPercent * (aEnd - aStart));
 	}
 
 	//Returns the vector sum of aVector0 and aVector1

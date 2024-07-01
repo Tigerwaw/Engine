@@ -16,13 +16,23 @@ struct Animation;
 class AnimatedModel : public Component
 {
 public:
-    struct AnimationLayer
+    struct AnimationState
     {
         std::shared_ptr<Animation> animation;
         unsigned currentFrame = 0;
-        unsigned startBoneID = 0;
         float frameTime = 0;
         float currentTime = 0;
+        bool isLooping = false;
+    };
+
+    struct AnimationLayer
+    {
+        AnimationState currentState;
+        AnimationState nextState;
+        unsigned startJointID = 0;
+        bool isBlending = false;
+        float currentBlendTime = 0;
+        float maxBlendTime = 0;
     };
 
     ~AnimatedModel() override;
@@ -40,20 +50,26 @@ public:
     std::shared_ptr<Material> GetMaterialOnSlot(unsigned aSlot) { return myMaterials[mySlotToIndex[aSlot]]; }
     std::vector<std::shared_ptr<Material>> GetMaterials() { return myMaterials; }
 
-    void SetBaseAnimation(std::shared_ptr<Animation> aNewAnimation, unsigned aStartingFrame = 0);
-    void AddAnimation(std::shared_ptr<Animation> aNewAnimation, std::string aStartBone = "", unsigned aStartingFrame = 0);
+    void AddAnimationLayer(unsigned aJointID = 0);
+    void AddAnimationLayer(std::string aStartJoint = "");
+    void SetAnimation(std::shared_ptr<Animation> aNewAnimation, unsigned aStartingFrame = 0, unsigned aLayerIndex = 0, float aBlendTime = 0, bool aShouldLoop = false);
+    void SetAnimation(std::shared_ptr<Animation> aNewAnimation, unsigned aStartingFrame = 0, std::string aStartJoint = "", float aBlendTime = 0, bool aShouldLoop = false);
     void PlayAnimation();
     void StopAnimation();
 
     std::array<CU::Matrix4x4f, 128> GetCurrentPose() { return myJointTransforms; }
 private:
-    void UpdateAnimation(AnimationLayer aAnimLayer, unsigned aJointIdx, const CU::Matrix4x4<float>& aParentJointTransform, std::array<CU::Matrix4x4f, 128>& outTransforms);
+    void UpdateAnimationLayer(AnimationLayer& aAnimationLayer);
+    void UpdateAnimationState(AnimationState& aAnimationState);
+    void UpdateAnimation(AnimationLayer& aAnimLayer, unsigned aJointIdx, const CU::Matrix4x4f& aParentJointTransform, std::array<CU::Matrix4x4f, 128>& outTransforms);
+    CU::Matrix4x4f BlendJoints(const CU::Matrix4x4f& aCurrentJointTransform, const CU::Matrix4x4f& aNextJointTransform, float aBlendFactor);
 
     std::shared_ptr<Mesh> myMesh = nullptr;
     std::vector<std::shared_ptr<Material>> myMaterials;
     std::unordered_map<unsigned, unsigned> mySlotToIndex;
 
     std::vector<AnimationLayer> myAnimationLayers;
+    std::unordered_map<std::string, unsigned> myJointNameToLayerIndex;
 
     std::array<CU::Matrix4x4f, 128> myJointTransforms;
     bool myIsPlaying = false;

@@ -5,6 +5,9 @@
 #include "GraphicsEngine/Objects/Animation.h"
 #include "GameEngine/Engine.h"
 #include "GameEngine/Time/Timer.h"
+#include "GameEngine/Math/Transform.hpp"
+#include "GameEngine/Math/Quaternion.hpp"
+namespace CU = CommonUtilities;
 
 #include "Logger/Logger.h"
 
@@ -26,12 +29,12 @@ AnimatedModel::~AnimatedModel()
 
 AnimatedModel::AnimatedModel(std::shared_ptr<Mesh> aMesh)
 {
-    myMesh = aMesh;
+    SetMesh(aMesh);
 }
 
 AnimatedModel::AnimatedModel(std::shared_ptr<Mesh> aMesh, std::shared_ptr<Material> aMaterial)
 {
-    myMesh = aMesh;
+    SetMesh(aMesh);
     SetMaterialOnSlot(0, aMaterial);
 }
 
@@ -53,22 +56,7 @@ void AnimatedModel::Update()
 
         for (auto& animationLayer : myAnimationLayers)
         {
-            animationLayer.currentTime = 0;
-
-            animationLayer.currentFrame++;
-            if (animationLayer.animation->Frames.size() <= animationLayer.currentFrame)
-            {
-                animationLayer.currentFrame = 0;
-            }
-
-            CU::Matrix4x4<float> parentBoneMatrix;
-            if (animationLayer.startBoneID > 0)
-            {
-                int parentID = myMesh->GetSkeleton().myJoints[animationLayer.startBoneID].Parent;
-                parentBoneMatrix = myMesh->GetSkeleton().myJoints[parentID].BindPoseInverse.GetFastInverse() * myJointTransforms[parentID];
-            }
-
-            UpdateAnimation(animationLayer, animationLayer.startBoneID, parentBoneMatrix, myJointTransforms);
+            UpdateAnimationLayer(animationLayer);
         }
     }
 }
@@ -76,6 +64,7 @@ void AnimatedModel::Update()
 void AnimatedModel::SetMesh(std::shared_ptr<Mesh> aMesh)
 {
     myMesh = aMesh;
+    AddAnimationLayer(0);
 }
 
 void AnimatedModel::SetMaterialOnSlot(unsigned aSlot, std::shared_ptr<Material> aMaterial)
@@ -84,32 +73,83 @@ void AnimatedModel::SetMaterialOnSlot(unsigned aSlot, std::shared_ptr<Material> 
     mySlotToIndex.emplace(aSlot, static_cast<unsigned>(myMaterials.size() - 1));
 }
 
-void AnimatedModel::SetBaseAnimation(std::shared_ptr<Animation> aNewAnimation, unsigned aStartingFrame)
-{
-    myAnimationLayers[0].animation = aNewAnimation;
-    myAnimationLayers[0].currentFrame = aStartingFrame;
-    myAnimationLayers[0].currentTime = 0;
-    myFrametime = 1.0f / myAnimationLayers[0].animation->FramesPerSecond;
-}
-
-void AnimatedModel::AddAnimation(std::shared_ptr<Animation> aNewAnimation, std::string aStartBone, unsigned aStartingFrame)
+void AnimatedModel::AddAnimationLayer(unsigned aJointID)
 {
     if (!myMesh.get())
     {
-        LOG(ComponentSystem, Error, "Could not add animation to mesh!");
+        LOG(ComponentSystem, Error, "Could not find mesh!");
+        return;
+    }
+
+    if (aJointID >= myMesh->GetSkeleton().myJoints.size())
+    {
+        LOG(ComponentSystem, Error, "Joint index {} out of range!", aJointID);
         return;
     }
 
     AnimationLayer& newAnimLayer = myAnimationLayers.emplace_back(AnimationLayer());
-    newAnimLayer.animation = aNewAnimation;
-    newAnimLayer.currentFrame = aStartingFrame;
-    newAnimLayer.startBoneID = 0;
-    myFrametime = 1.0f / myAnimationLayers[0].animation->FramesPerSecond;
+    myJointNameToLayerIndex.emplace(myMesh->GetSkeleton().myJoints[aJointID].Name, static_cast<unsigned>(myAnimationLayers.size() - 1));
+    newAnimLayer.startJointID = aJointID;
+}
 
-    if (myMesh->GetSkeleton().JointNameToIndex.find(aStartBone) != myMesh->GetSkeleton().JointNameToIndex.end())
+void AnimatedModel::AddAnimationLayer(std::string aStartJoint)
+{
+    if (!myMesh.get())
     {
-        newAnimLayer.startBoneID = static_cast<unsigned>(myMesh->GetSkeleton().JointNameToIndex.at(aStartBone));
+        LOG(ComponentSystem, Error, "Could not find mesh!");
+        return;
     }
+
+    if (myMesh->GetSkeleton().JointNameToIndex.find(aStartJoint) == myMesh->GetSkeleton().JointNameToIndex.end())
+    {
+        LOG(ComponentSystem, Error, "Could not find joint with name {}!", aStartJoint);
+        return;
+    }
+
+    AnimationLayer& newAnimLayer = myAnimationLayers.emplace_back(AnimationLayer());
+    myJointNameToLayerIndex.emplace(aStartJoint, static_cast<unsigned>(myAnimationLayers.size() - 1));
+    newAnimLayer.startJointID = static_cast<unsigned>(myMesh->GetSkeleton().JointNameToIndex.at(aStartJoint));
+}
+
+void AnimatedModel::SetAnimation(std::shared_ptr<Animation> aNewAnimation, unsigned aStartingFrame, unsigned aLayerIndex, float aBlendTime, bool aShouldLoop)
+{
+    if (aBlendTime > 0)
+    {
+        myAnimationLayers[aLayerIndex].isBlending = true;
+        myAnimationLayers[aLayerIndex].maxBlendTime = aBlendTime;
+        myAnimationLayers[aLayerIndex].currentBlendTime = 0;
+
+        myAnimationLayers[aLayerIndex].nextState.animation = aNewAnimation;
+        myAnimationLayers[aLayerIndex].nextState.currentFrame = aStartingFrame;
+        myAnimationLayers[aLayerIndex].nextState.currentTime = 0;
+        myAnimationLayers[aLayerIndex].nextState.isLooping = aShouldLoop;
+        myFrametime = 1.0f / myAnimationLayers[aLayerIndex].nextState.animation->FramesPerSecond;
+    }
+    else
+    {
+        myAnimationLayers[aLayerIndex].currentState.animation = aNewAnimation;
+        myAnimationLayers[aLayerIndex].currentState.currentFrame = aStartingFrame;
+        myAnimationLayers[aLayerIndex].currentState.currentTime = 0;
+        myAnimationLayers[aLayerIndex].currentState.isLooping = aShouldLoop;
+        myFrametime = 1.0f / myAnimationLayers[aLayerIndex].currentState.animation->FramesPerSecond;
+    }
+}
+
+void AnimatedModel::SetAnimation(std::shared_ptr<Animation> aNewAnimation, unsigned aStartingFrame, std::string aStartJoint, float aBlendTime, bool aShouldLoop)
+{
+    if (aStartJoint == "")
+    {
+        SetAnimation(aNewAnimation, aStartingFrame, 0, aBlendTime, aShouldLoop);
+        return;
+    }
+
+    if (myJointNameToLayerIndex.find(aStartJoint) == myJointNameToLayerIndex.end())
+    {
+        LOG(ComponentSystem, Error, "Could not find a layer by the name of {}!", aStartJoint);
+        return;
+    }
+
+    SetAnimation(aNewAnimation, aStartingFrame, myJointNameToLayerIndex.at(aStartJoint), aBlendTime, aShouldLoop);
 }
 
 void AnimatedModel::PlayAnimation()
@@ -122,17 +162,83 @@ void AnimatedModel::StopAnimation()
     myIsPlaying = false;
 }
 
-void AnimatedModel::UpdateAnimation(AnimationLayer aAnimLayer, unsigned aJointIdx, const CU::Matrix4x4<float>& aParentJointTransform, std::array<CU::Matrix4x4f, 128>& outTransforms)
+void AnimatedModel::UpdateAnimationLayer(AnimationLayer& aAnimationLayer)
+{
+    UpdateAnimationState(aAnimationLayer.currentState);
+
+    if (aAnimationLayer.isBlending)
+    {
+        UpdateAnimationState(aAnimationLayer.nextState);
+
+        if (aAnimationLayer.currentBlendTime >= aAnimationLayer.maxBlendTime)
+        {
+            aAnimationLayer.currentState = aAnimationLayer.nextState;
+            aAnimationLayer.isBlending = false;
+        }
+    }
+
+    CU::Matrix4x4<float> parentBoneMatrix;
+    if (aAnimationLayer.startJointID > 0)
+    {
+        int parentID = myMesh->GetSkeleton().myJoints[aAnimationLayer.startJointID].Parent;
+        parentBoneMatrix = myMesh->GetSkeleton().myJoints[parentID].BindPoseInverse.GetFastInverse() * myJointTransforms[parentID];
+    }
+
+    UpdateAnimation(aAnimationLayer, aAnimationLayer.startJointID, parentBoneMatrix, myJointTransforms);
+}
+
+void AnimatedModel::UpdateAnimationState(AnimationState& aAnimationState)
+{
+    aAnimationState.currentTime = 0;
+
+    aAnimationState.currentFrame++;
+    if (aAnimationState.animation->Frames.size() <= aAnimationState.currentFrame)
+    {
+        if (aAnimationState.isLooping)
+        {
+            aAnimationState.currentFrame = 0;
+        }
+        else
+        {
+            // Freeze last frame
+            aAnimationState.currentFrame = static_cast<unsigned>(aAnimationState.animation->Frames.size() - 1);
+        }
+    }
+}
+
+void AnimatedModel::UpdateAnimation(AnimationLayer& aAnimLayer, unsigned aJointIdx, const CU::Matrix4x4f& aParentJointTransform, std::array<CU::Matrix4x4f, 128>& outTransforms)
 {
     Mesh::Skeleton::Joint currentJoint = myMesh->GetSkeleton().myJoints[aJointIdx];
 
-    CU::Matrix4x4<float> currentFrameJointTransform = aAnimLayer.animation->Frames[aAnimLayer.currentFrame].BoneTransforms[currentJoint.Name];
+    CU::Matrix4x4f currentFrameJointTransform = aAnimLayer.currentState.animation->Frames[aAnimLayer.currentState.currentFrame].BoneTransforms[currentJoint.Name];
     currentFrameJointTransform = currentFrameJointTransform * aParentJointTransform;
-    CU::Matrix4x4<float> result = currentJoint.BindPoseInverse * currentFrameJointTransform;
+    CU::Matrix4x4f result = currentJoint.BindPoseInverse * currentFrameJointTransform;
+
+    if (aAnimLayer.isBlending)
+    {
+        CU::Matrix4x4f nextAnimationJointTransform = aAnimLayer.nextState.animation->Frames[aAnimLayer.nextState.currentFrame].BoneTransforms[currentJoint.Name];
+        nextAnimationJointTransform = nextAnimationJointTransform * aParentJointTransform;
+        CU::Matrix4x4f nextAnimationResult = currentJoint.BindPoseInverse * nextAnimationJointTransform;
+
+        aAnimLayer.currentBlendTime += Engine::GetInstance().GetTimer().GetDeltaTime();
+        float blendFactor = aAnimLayer.currentBlendTime / aAnimLayer.maxBlendTime;
+        result = BlendJoints(result, nextAnimationResult, blendFactor);
+    }
+
     outTransforms[aJointIdx] = result;
 
     for (auto& childIndex : currentJoint.Children)
     {
         UpdateAnimation(aAnimLayer, childIndex, currentFrameJointTransform, outTransforms);
     }
+}
+
+CU::Matrix4x4f AnimatedModel::BlendJoints(const CU::Matrix4x4f& aCurrentJointTransform, const CU::Matrix4x4f& aNextJointTransform, float aBlendFactor)
+{
+    const CU::Vector3f T = CU::Vector3f::Lerp(CU::Matrix4x4f::CreateTranslationVector(aCurrentJointTransform), CU::Matrix4x4f::CreateTranslationVector(aNextJointTransform), aBlendFactor);
+    const CU::Quatf R = CU::Quatf::Slerp(CU::Quatf(aCurrentJointTransform), CU::Quatf(aNextJointTransform), aBlendFactor);
+    const CU::Vector3f S = CU::Vector3f::Lerp(CU::Matrix4x4f::CreateScaleVector(aCurrentJointTransform), CU::Matrix4x4f::CreateScaleVector(aNextJointTransform), aBlendFactor);
+
+    CU::Matrix4x4f currentAnimJointMatrix = CU::Matrix4x4f::CreateScaleMatrix(S) * R.GetRotationMatrix4x4f() * CU::Matrix4x4f::CreateTranslationMatrix(T);
+    return currentAnimJointMatrix;
 }

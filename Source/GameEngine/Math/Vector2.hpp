@@ -10,19 +10,10 @@ namespace CommonUtilities
 		T x;
 		T y;
 
-		//Creates a null-vector
 		Vector2<T>();
-
-		//Creates a vector (aX, aY)
 		Vector2<T>(const T& aX, const T& aY);
-
-		//Copy constructor (compiler generated)
 		Vector2<T>(const Vector2<T>& aVector) = default;
-
-		//Assignment operator (compiler generated)
 		Vector2<T>& operator=(const Vector2<T>& aVector2) = default;
-
-		//Destructor (compiler generated)
 		~Vector2<T>() = default;
 
 		//Explicit Type operator, create a different vector with the same values.
@@ -30,23 +21,15 @@ namespace CommonUtilities
 		template <class OtherVectorClass>
 		explicit operator OtherVectorClass() const;
 
-		//Returns a negated copy of the vector
 		Vector2<T> operator-() const;
-
-		//Returns the squared length of the vector
 		T LengthSqr() const;
-
-		//Returns the length of the vector
 		T Length() const;
-
-		//Returns a normalized copy of this vector
 		Vector2<T> GetNormalized() const;
-
-		//Normalizes the vector
 		void Normalize();
-
-		//Returns the dot product of this and aVector
 		T Dot(const Vector2<T>& aVector) const;
+		static Vector2<T> Abs(const Vector2<T>& aVector);
+		static T Distance(const Vector2<T>& aVector0, const Vector2<T>& aVector1);
+		static Vector2<T> Lerp(const Vector2<T>& aStart, const Vector2<T>& aEnd, const float aPercent);
 	};
 
 	template<class T>
@@ -106,6 +89,25 @@ namespace CommonUtilities
 	T Vector2<T>::Dot(const Vector2<T>& aVector) const
 	{
 		return x * aVector.x + y * aVector.y;
+	}
+
+	template<class T>
+	inline Vector2<T> Vector2<T>::Abs(const Vector2<T>& aVector)
+	{
+		return { Abs(aVector.x), Abs(aVector.y) };
+	}
+
+	template<class T>
+	inline T Vector2<T>::Distance(const Vector2<T>& aVector0, const Vector2<T>& aVector1)
+	{
+		const Vector2<T> direction = aVector1 - aVector0;
+		return direction.Length();
+	}
+
+	template<class T>
+	inline Vector2<T> Vector2<T>::Lerp(const Vector2<T>& aStart, const Vector2<T>& aEnd, const float aPercent)
+	{
+		return (aStart + aPercent * (aEnd - aStart));
 	}
 
 	//Returns the vector sum of aVector0 and aVector1

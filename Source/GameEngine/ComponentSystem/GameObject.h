@@ -46,6 +46,9 @@ public:
 
     template <typename T>
     const std::shared_ptr<T> GetComponent();
+
+    template <typename T>
+    const std::vector<std::shared_ptr<T>> GetComponents();
     // --
 
     // INTERNAL EVENT HANDLER
@@ -94,4 +97,21 @@ inline const std::shared_ptr<T> GameObject::GetComponent()
     }
 
     return std::shared_ptr<T>();
+}
+
+template<typename T>
+inline const std::vector<std::shared_ptr<T>> GameObject::GetComponents()
+{
+    std::vector<std::shared_ptr<T>> componentVector;
+
+    for (auto& comp : myComponents)
+    {
+        std::shared_ptr<T> castedComp = std::dynamic_pointer_cast<T>(comp);
+        if (castedComp.get())
+        {
+            componentVector.emplace_back(castedComp);
+        }
+    }
+
+    return componentVector;
 }

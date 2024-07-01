@@ -42357,3 +42357,1043 @@ Logging has started at 2024-07-01 20:30:16.
 [20:30:23][   LOG   ]["AssetManager"] Registered material asset MatballTwo.json
 [20:30:23][   LOG   ]["AssetManager"] Registered material asset TgaBro.json
 [20:30:23][   LOG   ]["AssetManager"] Asset Manager Initialized! Root content directory set to 'C:\Users\Axel\Desktop\TGP\Assets\'.
+****************************************************************************************************
+Logging has started at 2024-07-01 21:09:10.
+****************************************************************************************************
+[21:09:10][   LOG   ][ModelViewer] ModelViewer starting...
+[21:09:10][   LOG   ][ModelViewer] Initializing Graphics Engine...
+[21:09:10][   LOG   ]["GraphicsEngine"] Initializing Graphics Engine...
+[21:09:10][   LOG   ]["RHI"] Initializing RHI...
+[21:09:10][   LOG   ]["RHI"] Selected adapter is NVIDIA GeForce GTX 980 Ti
+[21:09:10][   LOG   ]["RHI"]  * VRAM: 6085 MB
+[21:09:10][   LOG   ]["RHI"] Created sampler state DefaultSS
+[21:09:10][   LOG   ]["RHI"] Created sampler state ShadowSS
+[21:09:10][   LOG   ]["RHI"] Created sampler state LutSS
+[21:09:10][   LOG   ]["RHI"] RHI Initialized!
+[21:09:10][   LOG   ]["RHI"] Created rasterizer state WireframePSO_Rasterizer
+[21:09:10][   LOG   ]["RHI"] Successfully created LUT Texture LUT!
+[21:09:10][   LOG   ]["RHI"] Created constant buffer FrameBuffer.
+[21:09:10][   LOG   ]["RHI"] Created constant buffer ObjectBuffer.
+[21:09:10][   LOG   ]["RHI"] Created constant buffer AnimationBuffer.
+[21:09:10][   LOG   ]["RHI"] Created constant buffer MaterialBuffer.
+[21:09:10][   LOG   ]["RHI"] Created constant buffer LightBuffer.
+[21:09:10][   LOG   ]["RHI"] Created constant buffer ShadowBuffer.
+[21:09:10][   LOG   ]["RHI"] Created constant buffer SpriteBuffer.
+[21:09:10][   LOG   ]["GraphicsEngine"] Initialized Graphics Engine!
+[21:09:10][   LOG   ][ModelViewer] Ready!
+[21:09:10][   LOG   ]["AssetManager"] Initializing Asset Manager...
+[21:09:10][   LOG   ]["RHI"] Succesfully loaded texture Default_C
+[21:09:10][   LOG   ]["AssetManager"] Registered default texture asset Default_C
+[21:09:10][   LOG   ]["RHI"] Succesfully loaded texture Default_N
+[21:09:10][   LOG   ]["AssetManager"] Registered default texture asset Default_N
+[21:09:10][   LOG   ]["RHI"] Succesfully loaded texture Default_M
+[21:09:10][   LOG   ]["AssetManager"] Registered default texture asset Default_M
+[21:09:10][   LOG   ]["RHI"] Succesfully loaded texture Default_FX
+[21:09:10][   LOG   ]["AssetManager"] Registered default texture asset Default_FX
+[21:09:10][   LOG   ]["AssetManager"] Registered material asset DefaultMaterial
+[21:09:10][   LOG   ]["AssetManager"] Registered mesh asset PlanePrimitive
+[21:09:10][   LOG   ]["AssetManager"] Registered mesh asset CubePrimitive
+[21:09:10][   LOG   ]["AssetManager"] Registered mesh asset RampPrimitive
+[21:09:10][   LOG   ]["AssetManager"] Registered mesh asset CameraGizmo.fbx
+[21:09:10][   LOG   ]["AssetManager"] Registered mesh asset DirectionalLightGizmo.fbx
+[21:09:10][   LOG   ]["AssetManager"] Registered mesh asset PointLightGizmo.fbx
+[21:09:11][   LOG   ]["AssetManager"] Registered mesh asset SM_Color_Checker.fbx
+[21:09:11][   LOG   ]["AssetManager"] Registered mesh asset SpotLightGizmo.fbx
+[21:09:11][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_C.dds
+[21:09:11][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_C.dds
+[21:09:11][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_M.dds
+[21:09:11][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_M.dds
+[21:09:11][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_N.dds
+[21:09:11][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_N.dds
+[21:09:11][   LOG   ]["RHI"] Succesfully loaded texture TestCube_C.dds
+[21:09:11][   LOG   ]["AssetManager"] Registered texture asset TestCube_C.dds
+[21:09:11][   LOG   ]["RHI"] Succesfully loaded texture TestCube_M.dds
+[21:09:11][   LOG   ]["AssetManager"] Registered texture asset TestCube_M.dds
+[21:09:11][   LOG   ]["RHI"] Succesfully loaded texture TestCube_N.dds
+[21:09:11][   LOG   ]["AssetManager"] Registered texture asset TestCube_N.dds
+[21:09:11][   LOG   ]["RHI"] Succesfully loaded texture Flat_Normal.dds
+[21:09:11][   LOG   ]["AssetManager"] Registered texture asset Flat_Normal.dds
+[21:09:11][   LOG   ]["RHI"] Succesfully loaded texture perlin.dds
+[21:09:11][   LOG   ]["AssetManager"] Registered texture asset perlin.dds
+[21:09:11][   LOG   ]["AssetManager"] Registered material asset ColorChecker.json
+[21:09:11][   LOG   ]["AssetManager"] Registered material asset TestCube.json
+[21:09:12][   LOG   ]["AssetManager"] Registered mesh asset SK_C_TGA_Bro.fbx
+[21:09:12][   LOG   ]["AssetManager"] Registered mesh asset SM_Chest.fbx
+[21:09:16][   LOG   ]["AssetManager"] Registered mesh asset TMA_Matball.fbx
+[21:09:16][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Brething.fbx
+[21:09:17][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Wave.fbx
+[21:09:17][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Run.fbx
+[21:09:17][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Walk.fbx
+[21:09:17][   LOG   ]["RHI"] Succesfully loaded texture Chest_C.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered texture asset Chest_C.dds
+[21:09:17][   LOG   ]["RHI"] Succesfully loaded texture Chest_FX.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered texture asset Chest_FX.dds
+[21:09:17][   LOG   ]["RHI"] Succesfully loaded texture Chest_M.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered texture asset Chest_M.dds
+[21:09:17][   LOG   ]["RHI"] Succesfully loaded texture Chest_N.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered texture asset Chest_N.dds
+[21:09:17][   LOG   ]["RHI"] Succesfully loaded texture Skansen_Cube.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered texture asset Skansen_Cube.dds
+[21:09:17][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_c.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered texture asset Matball_One_c.dds
+[21:09:17][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_fx.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered texture asset Matball_One_fx.dds
+[21:09:17][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_m.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered texture asset Matball_One_m.dds
+[21:09:17][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_n.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered texture asset Matball_One_n.dds
+[21:09:17][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_c.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_c.dds
+[21:09:17][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_fx.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_fx.dds
+[21:09:17][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_m.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_m.dds
+[21:09:17][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_n.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_n.dds
+[21:09:17][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_C.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_C.dds
+[21:09:17][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_M.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_M.dds
+[21:09:17][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_N.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_N.dds
+[21:09:17][   LOG   ]["AssetManager"] Registered material asset Chest.json
+[21:09:17][   LOG   ]["AssetManager"] Registered material asset MatballOne.json
+[21:09:17][   LOG   ]["AssetManager"] Registered material asset MatballTwo.json
+[21:09:17][   LOG   ]["AssetManager"] Registered material asset TgaBro.json
+[21:09:17][   LOG   ]["AssetManager"] Asset Manager Initialized! Root content directory set to 'C:\Users\Axel\Desktop\TGP\Assets\'.
+****************************************************************************************************
+Logging has started at 2024-07-01 22:29:44.
+****************************************************************************************************
+[22:29:44][   LOG   ][ModelViewer] ModelViewer starting...
+[22:29:44][   LOG   ][ModelViewer] Initializing Graphics Engine...
+[22:29:44][   LOG   ]["GraphicsEngine"] Initializing Graphics Engine...
+[22:29:44][   LOG   ]["RHI"] Initializing RHI...
+[22:29:44][   LOG   ]["RHI"] Selected adapter is NVIDIA GeForce GTX 980 Ti
+[22:29:44][   LOG   ]["RHI"]  * VRAM: 6085 MB
+[22:29:45][   LOG   ]["RHI"] Created sampler state DefaultSS
+[22:29:45][   LOG   ]["RHI"] Created sampler state ShadowSS
+[22:29:45][   LOG   ]["RHI"] Created sampler state LutSS
+[22:29:45][   LOG   ]["RHI"] RHI Initialized!
+[22:29:45][   LOG   ]["RHI"] Created rasterizer state WireframePSO_Rasterizer
+[22:29:45][   LOG   ]["RHI"] Successfully created LUT Texture LUT!
+[22:29:45][   LOG   ]["RHI"] Created constant buffer FrameBuffer.
+[22:29:45][   LOG   ]["RHI"] Created constant buffer ObjectBuffer.
+[22:29:45][   LOG   ]["RHI"] Created constant buffer AnimationBuffer.
+[22:29:45][   LOG   ]["RHI"] Created constant buffer MaterialBuffer.
+[22:29:45][   LOG   ]["RHI"] Created constant buffer LightBuffer.
+[22:29:45][   LOG   ]["RHI"] Created constant buffer ShadowBuffer.
+[22:29:45][   LOG   ]["RHI"] Created constant buffer SpriteBuffer.
+[22:29:45][   LOG   ]["GraphicsEngine"] Initialized Graphics Engine!
+[22:29:45][   LOG   ][ModelViewer] Ready!
+[22:29:45][   LOG   ]["AssetManager"] Initializing Asset Manager...
+[22:29:45][   LOG   ]["RHI"] Succesfully loaded texture Default_C
+[22:29:45][   LOG   ]["AssetManager"] Registered default texture asset Default_C
+[22:29:45][   LOG   ]["RHI"] Succesfully loaded texture Default_N
+[22:29:45][   LOG   ]["AssetManager"] Registered default texture asset Default_N
+[22:29:45][   LOG   ]["RHI"] Succesfully loaded texture Default_M
+[22:29:45][   LOG   ]["AssetManager"] Registered default texture asset Default_M
+[22:29:45][   LOG   ]["RHI"] Succesfully loaded texture Default_FX
+[22:29:45][   LOG   ]["AssetManager"] Registered default texture asset Default_FX
+[22:29:45][   LOG   ]["AssetManager"] Registered material asset DefaultMaterial
+[22:29:45][   LOG   ]["AssetManager"] Registered mesh asset PlanePrimitive
+[22:29:45][   LOG   ]["AssetManager"] Registered mesh asset CubePrimitive
+[22:29:45][   LOG   ]["AssetManager"] Registered mesh asset RampPrimitive
+[22:29:45][   LOG   ]["AssetManager"] Registered mesh asset CameraGizmo.fbx
+[22:29:45][   LOG   ]["AssetManager"] Registered mesh asset DirectionalLightGizmo.fbx
+[22:29:45][   LOG   ]["AssetManager"] Registered mesh asset PointLightGizmo.fbx
+[22:29:46][   LOG   ]["AssetManager"] Registered mesh asset SM_Color_Checker.fbx
+[22:29:46][   LOG   ]["AssetManager"] Registered mesh asset SpotLightGizmo.fbx
+[22:29:46][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_C.dds
+[22:29:46][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_C.dds
+[22:29:46][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_M.dds
+[22:29:46][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_M.dds
+[22:29:46][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_N.dds
+[22:29:46][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_N.dds
+[22:29:46][   LOG   ]["RHI"] Succesfully loaded texture TestCube_C.dds
+[22:29:46][   LOG   ]["AssetManager"] Registered texture asset TestCube_C.dds
+[22:29:46][   LOG   ]["RHI"] Succesfully loaded texture TestCube_M.dds
+[22:29:46][   LOG   ]["AssetManager"] Registered texture asset TestCube_M.dds
+[22:29:46][   LOG   ]["RHI"] Succesfully loaded texture TestCube_N.dds
+[22:29:46][   LOG   ]["AssetManager"] Registered texture asset TestCube_N.dds
+[22:29:46][   LOG   ]["RHI"] Succesfully loaded texture Flat_Normal.dds
+[22:29:46][   LOG   ]["AssetManager"] Registered texture asset Flat_Normal.dds
+[22:29:46][   LOG   ]["RHI"] Succesfully loaded texture perlin.dds
+[22:29:46][   LOG   ]["AssetManager"] Registered texture asset perlin.dds
+[22:29:46][   LOG   ]["AssetManager"] Registered material asset ColorChecker.json
+[22:29:46][   LOG   ]["AssetManager"] Registered material asset TestCube.json
+[22:29:47][   LOG   ]["AssetManager"] Registered mesh asset SK_C_TGA_Bro.fbx
+[22:29:47][   LOG   ]["AssetManager"] Registered mesh asset SM_Chest.fbx
+[22:29:51][   LOG   ]["AssetManager"] Registered mesh asset TMA_Matball.fbx
+[22:29:52][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Brething.fbx
+[22:29:52][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Wave.fbx
+[22:29:52][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Run.fbx
+[22:29:52][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Walk.fbx
+[22:29:52][   LOG   ]["RHI"] Succesfully loaded texture Chest_C.dds
+[22:29:52][   LOG   ]["AssetManager"] Registered texture asset Chest_C.dds
+[22:29:53][   LOG   ]["RHI"] Succesfully loaded texture Chest_FX.dds
+[22:29:53][   LOG   ]["AssetManager"] Registered texture asset Chest_FX.dds
+[22:29:53][   LOG   ]["RHI"] Succesfully loaded texture Chest_M.dds
+[22:29:53][   LOG   ]["AssetManager"] Registered texture asset Chest_M.dds
+[22:29:53][   LOG   ]["RHI"] Succesfully loaded texture Chest_N.dds
+[22:29:53][   LOG   ]["AssetManager"] Registered texture asset Chest_N.dds
+[22:29:53][   LOG   ]["RHI"] Succesfully loaded texture Skansen_Cube.dds
+[22:29:53][   LOG   ]["AssetManager"] Registered texture asset Skansen_Cube.dds
+[22:29:53][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_c.dds
+[22:29:53][   LOG   ]["AssetManager"] Registered texture asset Matball_One_c.dds
+[22:29:53][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_fx.dds
+[22:29:53][   LOG   ]["AssetManager"] Registered texture asset Matball_One_fx.dds
+[22:29:53][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_m.dds
+[22:29:53][   LOG   ]["AssetManager"] Registered texture asset Matball_One_m.dds
+[22:29:53][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_n.dds
+[22:29:53][   LOG   ]["AssetManager"] Registered texture asset Matball_One_n.dds
+[22:29:53][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_c.dds
+[22:29:53][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_c.dds
+[22:29:53][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_fx.dds
+[22:29:53][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_fx.dds
+[22:29:53][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_m.dds
+[22:29:53][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_m.dds
+[22:29:53][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_n.dds
+[22:29:53][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_n.dds
+[22:29:53][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_C.dds
+[22:29:53][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_C.dds
+[22:29:53][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_M.dds
+[22:29:53][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_M.dds
+[22:29:53][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_N.dds
+[22:29:53][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_N.dds
+[22:29:53][   LOG   ]["AssetManager"] Registered material asset Chest.json
+[22:29:53][   LOG   ]["AssetManager"] Registered material asset MatballOne.json
+[22:29:53][   LOG   ]["AssetManager"] Registered material asset MatballTwo.json
+[22:29:53][   LOG   ]["AssetManager"] Registered material asset TgaBro.json
+[22:29:53][   LOG   ]["AssetManager"] Asset Manager Initialized! Root content directory set to 'C:\Users\Axel\Desktop\TGP\Assets\'.
+****************************************************************************************************
+Logging has started at 2024-07-01 23:47:02.
+****************************************************************************************************
+[23:47:02][   LOG   ][ModelViewer] ModelViewer starting...
+[23:47:02][   LOG   ][ModelViewer] Initializing Graphics Engine...
+[23:47:02][   LOG   ]["GraphicsEngine"] Initializing Graphics Engine...
+[23:47:02][   LOG   ]["RHI"] Initializing RHI...
+[23:47:02][   LOG   ]["RHI"] Selected adapter is NVIDIA GeForce GTX 980 Ti
+[23:47:02][   LOG   ]["RHI"]  * VRAM: 6085 MB
+[23:47:03][   LOG   ]["RHI"] Created sampler state DefaultSS
+[23:47:03][   LOG   ]["RHI"] Created sampler state ShadowSS
+[23:47:03][   LOG   ]["RHI"] Created sampler state LutSS
+[23:47:03][   LOG   ]["RHI"] RHI Initialized!
+[23:47:03][   LOG   ]["RHI"] Created rasterizer state WireframePSO_Rasterizer
+[23:47:03][   LOG   ]["RHI"] Successfully created LUT Texture LUT!
+[23:47:03][   LOG   ]["RHI"] Created constant buffer FrameBuffer.
+[23:47:03][   LOG   ]["RHI"] Created constant buffer ObjectBuffer.
+[23:47:03][   LOG   ]["RHI"] Created constant buffer AnimationBuffer.
+[23:47:03][   LOG   ]["RHI"] Created constant buffer MaterialBuffer.
+[23:47:03][   LOG   ]["RHI"] Created constant buffer LightBuffer.
+[23:47:03][   LOG   ]["RHI"] Created constant buffer ShadowBuffer.
+[23:47:03][   LOG   ]["RHI"] Created constant buffer SpriteBuffer.
+[23:47:03][   LOG   ]["GraphicsEngine"] Initialized Graphics Engine!
+[23:47:03][   LOG   ][ModelViewer] Ready!
+[23:47:03][   LOG   ]["AssetManager"] Initializing Asset Manager...
+[23:47:03][   LOG   ]["RHI"] Succesfully loaded texture Default_C
+[23:47:03][   LOG   ]["AssetManager"] Registered default texture asset Default_C
+[23:47:03][   LOG   ]["RHI"] Succesfully loaded texture Default_N
+[23:47:03][   LOG   ]["AssetManager"] Registered default texture asset Default_N
+[23:47:03][   LOG   ]["RHI"] Succesfully loaded texture Default_M
+[23:47:03][   LOG   ]["AssetManager"] Registered default texture asset Default_M
+[23:47:03][   LOG   ]["RHI"] Succesfully loaded texture Default_FX
+[23:47:03][   LOG   ]["AssetManager"] Registered default texture asset Default_FX
+[23:47:03][   LOG   ]["AssetManager"] Registered material asset DefaultMaterial
+[23:47:03][   LOG   ]["AssetManager"] Registered mesh asset PlanePrimitive
+[23:47:03][   LOG   ]["AssetManager"] Registered mesh asset CubePrimitive
+[23:47:03][   LOG   ]["AssetManager"] Registered mesh asset RampPrimitive
+[23:47:03][   LOG   ]["AssetManager"] Registered mesh asset CameraGizmo.fbx
+[23:47:03][   LOG   ]["AssetManager"] Registered mesh asset DirectionalLightGizmo.fbx
+[23:47:03][   LOG   ]["AssetManager"] Registered mesh asset PointLightGizmo.fbx
+[23:47:04][   LOG   ]["AssetManager"] Registered mesh asset SM_Color_Checker.fbx
+[23:47:04][   LOG   ]["AssetManager"] Registered mesh asset SpotLightGizmo.fbx
+[23:47:04][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_C.dds
+[23:47:04][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_C.dds
+[23:47:04][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_M.dds
+[23:47:04][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_M.dds
+[23:47:04][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_N.dds
+[23:47:04][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_N.dds
+[23:47:04][   LOG   ]["RHI"] Succesfully loaded texture TestCube_C.dds
+[23:47:04][   LOG   ]["AssetManager"] Registered texture asset TestCube_C.dds
+[23:47:04][   LOG   ]["RHI"] Succesfully loaded texture TestCube_M.dds
+[23:47:04][   LOG   ]["AssetManager"] Registered texture asset TestCube_M.dds
+[23:47:04][   LOG   ]["RHI"] Succesfully loaded texture TestCube_N.dds
+[23:47:04][   LOG   ]["AssetManager"] Registered texture asset TestCube_N.dds
+[23:47:04][   LOG   ]["RHI"] Succesfully loaded texture Flat_Normal.dds
+[23:47:04][   LOG   ]["AssetManager"] Registered texture asset Flat_Normal.dds
+[23:47:04][   LOG   ]["RHI"] Succesfully loaded texture perlin.dds
+[23:47:04][   LOG   ]["AssetManager"] Registered texture asset perlin.dds
+[23:47:04][   LOG   ]["AssetManager"] Registered material asset ColorChecker.json
+[23:47:04][   LOG   ]["AssetManager"] Registered material asset TestCube.json
+[23:47:05][   LOG   ]["AssetManager"] Registered mesh asset SK_C_TGA_Bro.fbx
+[23:47:05][   LOG   ]["AssetManager"] Registered mesh asset SM_Chest.fbx
+[23:47:08][   LOG   ]["AssetManager"] Registered mesh asset TMA_Matball.fbx
+[23:47:08][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Brething.fbx
+[23:47:08][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Wave.fbx
+[23:47:09][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Run.fbx
+[23:47:09][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Walk.fbx
+[23:47:09][   LOG   ]["RHI"] Succesfully loaded texture Chest_C.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered texture asset Chest_C.dds
+[23:47:09][   LOG   ]["RHI"] Succesfully loaded texture Chest_FX.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered texture asset Chest_FX.dds
+[23:47:09][   LOG   ]["RHI"] Succesfully loaded texture Chest_M.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered texture asset Chest_M.dds
+[23:47:09][   LOG   ]["RHI"] Succesfully loaded texture Chest_N.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered texture asset Chest_N.dds
+[23:47:09][   LOG   ]["RHI"] Succesfully loaded texture Skansen_Cube.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered texture asset Skansen_Cube.dds
+[23:47:09][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_c.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered texture asset Matball_One_c.dds
+[23:47:09][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_fx.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered texture asset Matball_One_fx.dds
+[23:47:09][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_m.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered texture asset Matball_One_m.dds
+[23:47:09][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_n.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered texture asset Matball_One_n.dds
+[23:47:09][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_c.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_c.dds
+[23:47:09][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_fx.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_fx.dds
+[23:47:09][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_m.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_m.dds
+[23:47:09][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_n.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_n.dds
+[23:47:09][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_C.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_C.dds
+[23:47:09][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_M.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_M.dds
+[23:47:09][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_N.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_N.dds
+[23:47:09][   LOG   ]["AssetManager"] Registered material asset Chest.json
+[23:47:09][   LOG   ]["AssetManager"] Registered material asset MatballOne.json
+[23:47:09][   LOG   ]["AssetManager"] Registered material asset MatballTwo.json
+[23:47:09][   LOG   ]["AssetManager"] Registered material asset TgaBro.json
+[23:47:09][   LOG   ]["AssetManager"] Asset Manager Initialized! Root content directory set to 'C:\Users\Axel\Desktop\TGP\Assets\'.
+****************************************************************************************************
+Logging has started at 2024-07-01 23:51:39.
+****************************************************************************************************
+[23:51:39][   LOG   ][ModelViewer] ModelViewer starting...
+[23:51:39][   LOG   ][ModelViewer] Initializing Graphics Engine...
+[23:51:39][   LOG   ]["GraphicsEngine"] Initializing Graphics Engine...
+[23:51:39][   LOG   ]["RHI"] Initializing RHI...
+[23:51:39][   LOG   ]["RHI"] Selected adapter is NVIDIA GeForce GTX 980 Ti
+[23:51:39][   LOG   ]["RHI"]  * VRAM: 6085 MB
+[23:51:40][   LOG   ]["RHI"] Created sampler state DefaultSS
+[23:51:40][   LOG   ]["RHI"] Created sampler state ShadowSS
+[23:51:40][   LOG   ]["RHI"] Created sampler state LutSS
+[23:51:40][   LOG   ]["RHI"] RHI Initialized!
+[23:51:40][   LOG   ]["RHI"] Created rasterizer state WireframePSO_Rasterizer
+[23:51:40][   LOG   ]["RHI"] Successfully created LUT Texture LUT!
+[23:51:40][   LOG   ]["RHI"] Created constant buffer FrameBuffer.
+[23:51:40][   LOG   ]["RHI"] Created constant buffer ObjectBuffer.
+[23:51:40][   LOG   ]["RHI"] Created constant buffer AnimationBuffer.
+[23:51:40][   LOG   ]["RHI"] Created constant buffer MaterialBuffer.
+[23:51:40][   LOG   ]["RHI"] Created constant buffer LightBuffer.
+[23:51:40][   LOG   ]["RHI"] Created constant buffer ShadowBuffer.
+[23:51:40][   LOG   ]["RHI"] Created constant buffer SpriteBuffer.
+[23:51:40][   LOG   ]["GraphicsEngine"] Initialized Graphics Engine!
+[23:51:40][   LOG   ][ModelViewer] Ready!
+[23:51:40][   LOG   ]["AssetManager"] Initializing Asset Manager...
+[23:51:40][   LOG   ]["RHI"] Succesfully loaded texture Default_C
+[23:51:40][   LOG   ]["AssetManager"] Registered default texture asset Default_C
+[23:51:40][   LOG   ]["RHI"] Succesfully loaded texture Default_N
+[23:51:40][   LOG   ]["AssetManager"] Registered default texture asset Default_N
+[23:51:40][   LOG   ]["RHI"] Succesfully loaded texture Default_M
+[23:51:40][   LOG   ]["AssetManager"] Registered default texture asset Default_M
+[23:51:40][   LOG   ]["RHI"] Succesfully loaded texture Default_FX
+[23:51:40][   LOG   ]["AssetManager"] Registered default texture asset Default_FX
+[23:51:40][   LOG   ]["AssetManager"] Registered material asset DefaultMaterial
+[23:51:40][   LOG   ]["AssetManager"] Registered mesh asset PlanePrimitive
+[23:51:40][   LOG   ]["AssetManager"] Registered mesh asset CubePrimitive
+[23:51:40][   LOG   ]["AssetManager"] Registered mesh asset RampPrimitive
+[23:51:40][   LOG   ]["AssetManager"] Registered mesh asset CameraGizmo.fbx
+[23:51:40][   LOG   ]["AssetManager"] Registered mesh asset DirectionalLightGizmo.fbx
+[23:51:40][   LOG   ]["AssetManager"] Registered mesh asset PointLightGizmo.fbx
+[23:51:41][   LOG   ]["AssetManager"] Registered mesh asset SM_Color_Checker.fbx
+[23:51:41][   LOG   ]["AssetManager"] Registered mesh asset SpotLightGizmo.fbx
+[23:51:41][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_C.dds
+[23:51:41][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_C.dds
+[23:51:41][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_M.dds
+[23:51:41][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_M.dds
+[23:51:41][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_N.dds
+[23:51:41][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_N.dds
+[23:51:41][   LOG   ]["RHI"] Succesfully loaded texture TestCube_C.dds
+[23:51:41][   LOG   ]["AssetManager"] Registered texture asset TestCube_C.dds
+[23:51:41][   LOG   ]["RHI"] Succesfully loaded texture TestCube_M.dds
+[23:51:41][   LOG   ]["AssetManager"] Registered texture asset TestCube_M.dds
+[23:51:41][   LOG   ]["RHI"] Succesfully loaded texture TestCube_N.dds
+[23:51:41][   LOG   ]["AssetManager"] Registered texture asset TestCube_N.dds
+[23:51:41][   LOG   ]["RHI"] Succesfully loaded texture Flat_Normal.dds
+[23:51:41][   LOG   ]["AssetManager"] Registered texture asset Flat_Normal.dds
+[23:51:41][   LOG   ]["RHI"] Succesfully loaded texture perlin.dds
+[23:51:41][   LOG   ]["AssetManager"] Registered texture asset perlin.dds
+[23:51:41][   LOG   ]["AssetManager"] Registered material asset ColorChecker.json
+[23:51:41][   LOG   ]["AssetManager"] Registered material asset TestCube.json
+[23:51:41][   LOG   ]["AssetManager"] Registered mesh asset SK_C_TGA_Bro.fbx
+[23:51:41][   LOG   ]["AssetManager"] Registered mesh asset SM_Chest.fbx
+[23:51:45][   LOG   ]["AssetManager"] Registered mesh asset TMA_Matball.fbx
+[23:51:45][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Brething.fbx
+[23:51:45][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Wave.fbx
+[23:51:45][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Run.fbx
+[23:51:45][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Walk.fbx
+[23:51:45][   LOG   ]["RHI"] Succesfully loaded texture Chest_C.dds
+[23:51:45][   LOG   ]["AssetManager"] Registered texture asset Chest_C.dds
+[23:51:45][   LOG   ]["RHI"] Succesfully loaded texture Chest_FX.dds
+[23:51:45][   LOG   ]["AssetManager"] Registered texture asset Chest_FX.dds
+[23:51:45][   LOG   ]["RHI"] Succesfully loaded texture Chest_M.dds
+[23:51:45][   LOG   ]["AssetManager"] Registered texture asset Chest_M.dds
+[23:51:45][   LOG   ]["RHI"] Succesfully loaded texture Chest_N.dds
+[23:51:45][   LOG   ]["AssetManager"] Registered texture asset Chest_N.dds
+[23:51:46][   LOG   ]["RHI"] Succesfully loaded texture Skansen_Cube.dds
+[23:51:46][   LOG   ]["AssetManager"] Registered texture asset Skansen_Cube.dds
+[23:51:46][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_c.dds
+[23:51:46][   LOG   ]["AssetManager"] Registered texture asset Matball_One_c.dds
+[23:51:46][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_fx.dds
+[23:51:46][   LOG   ]["AssetManager"] Registered texture asset Matball_One_fx.dds
+[23:51:46][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_m.dds
+[23:51:46][   LOG   ]["AssetManager"] Registered texture asset Matball_One_m.dds
+[23:51:46][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_n.dds
+[23:51:46][   LOG   ]["AssetManager"] Registered texture asset Matball_One_n.dds
+[23:51:46][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_c.dds
+[23:51:46][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_c.dds
+[23:51:46][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_fx.dds
+[23:51:46][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_fx.dds
+[23:51:46][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_m.dds
+[23:51:46][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_m.dds
+[23:51:46][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_n.dds
+[23:51:46][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_n.dds
+[23:51:46][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_C.dds
+[23:51:46][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_C.dds
+[23:51:46][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_M.dds
+[23:51:46][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_M.dds
+[23:51:46][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_N.dds
+[23:51:46][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_N.dds
+[23:51:46][   LOG   ]["AssetManager"] Registered material asset Chest.json
+[23:51:46][   LOG   ]["AssetManager"] Registered material asset MatballOne.json
+[23:51:46][   LOG   ]["AssetManager"] Registered material asset MatballTwo.json
+[23:51:46][   LOG   ]["AssetManager"] Registered material asset TgaBro.json
+[23:51:46][   LOG   ]["AssetManager"] Asset Manager Initialized! Root content directory set to 'C:\Users\Axel\Desktop\TGP\Assets\'.
+****************************************************************************************************
+Logging has started at 2024-07-01 23:53:02.
+****************************************************************************************************
+[23:53:02][   LOG   ][ModelViewer] ModelViewer starting...
+[23:53:02][   LOG   ][ModelViewer] Initializing Graphics Engine...
+[23:53:02][   LOG   ]["GraphicsEngine"] Initializing Graphics Engine...
+[23:53:02][   LOG   ]["RHI"] Initializing RHI...
+[23:53:02][   LOG   ]["RHI"] Selected adapter is NVIDIA GeForce GTX 980 Ti
+[23:53:02][   LOG   ]["RHI"]  * VRAM: 6085 MB
+[23:53:02][   LOG   ]["RHI"] Created sampler state DefaultSS
+[23:53:02][   LOG   ]["RHI"] Created sampler state ShadowSS
+[23:53:02][   LOG   ]["RHI"] Created sampler state LutSS
+[23:53:02][   LOG   ]["RHI"] RHI Initialized!
+[23:53:02][   LOG   ]["RHI"] Created rasterizer state WireframePSO_Rasterizer
+[23:53:02][   LOG   ]["RHI"] Successfully created LUT Texture LUT!
+[23:53:02][   LOG   ]["RHI"] Created constant buffer FrameBuffer.
+[23:53:02][   LOG   ]["RHI"] Created constant buffer ObjectBuffer.
+[23:53:02][   LOG   ]["RHI"] Created constant buffer AnimationBuffer.
+[23:53:02][   LOG   ]["RHI"] Created constant buffer MaterialBuffer.
+[23:53:02][   LOG   ]["RHI"] Created constant buffer LightBuffer.
+[23:53:02][   LOG   ]["RHI"] Created constant buffer ShadowBuffer.
+[23:53:02][   LOG   ]["RHI"] Created constant buffer SpriteBuffer.
+[23:53:02][   LOG   ]["GraphicsEngine"] Initialized Graphics Engine!
+[23:53:02][   LOG   ][ModelViewer] Ready!
+[23:53:02][   LOG   ]["AssetManager"] Initializing Asset Manager...
+[23:53:02][   LOG   ]["RHI"] Succesfully loaded texture Default_C
+[23:53:02][   LOG   ]["AssetManager"] Registered default texture asset Default_C
+[23:53:02][   LOG   ]["RHI"] Succesfully loaded texture Default_N
+[23:53:02][   LOG   ]["AssetManager"] Registered default texture asset Default_N
+[23:53:02][   LOG   ]["RHI"] Succesfully loaded texture Default_M
+[23:53:02][   LOG   ]["AssetManager"] Registered default texture asset Default_M
+[23:53:02][   LOG   ]["RHI"] Succesfully loaded texture Default_FX
+[23:53:02][   LOG   ]["AssetManager"] Registered default texture asset Default_FX
+[23:53:02][   LOG   ]["AssetManager"] Registered material asset DefaultMaterial
+[23:53:02][   LOG   ]["AssetManager"] Registered mesh asset PlanePrimitive
+[23:53:02][   LOG   ]["AssetManager"] Registered mesh asset CubePrimitive
+[23:53:02][   LOG   ]["AssetManager"] Registered mesh asset RampPrimitive
+[23:53:02][   LOG   ]["AssetManager"] Registered mesh asset CameraGizmo.fbx
+[23:53:02][   LOG   ]["AssetManager"] Registered mesh asset DirectionalLightGizmo.fbx
+[23:53:02][   LOG   ]["AssetManager"] Registered mesh asset PointLightGizmo.fbx
+[23:53:03][   LOG   ]["AssetManager"] Registered mesh asset SM_Color_Checker.fbx
+[23:53:03][   LOG   ]["AssetManager"] Registered mesh asset SpotLightGizmo.fbx
+[23:53:03][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_C.dds
+[23:53:03][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_C.dds
+[23:53:03][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_M.dds
+[23:53:03][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_M.dds
+[23:53:03][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_N.dds
+[23:53:03][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_N.dds
+[23:53:03][   LOG   ]["RHI"] Succesfully loaded texture TestCube_C.dds
+[23:53:03][   LOG   ]["AssetManager"] Registered texture asset TestCube_C.dds
+[23:53:03][   LOG   ]["RHI"] Succesfully loaded texture TestCube_M.dds
+[23:53:03][   LOG   ]["AssetManager"] Registered texture asset TestCube_M.dds
+[23:53:03][   LOG   ]["RHI"] Succesfully loaded texture TestCube_N.dds
+[23:53:03][   LOG   ]["AssetManager"] Registered texture asset TestCube_N.dds
+[23:53:03][   LOG   ]["RHI"] Succesfully loaded texture Flat_Normal.dds
+[23:53:03][   LOG   ]["AssetManager"] Registered texture asset Flat_Normal.dds
+[23:53:03][   LOG   ]["RHI"] Succesfully loaded texture perlin.dds
+[23:53:03][   LOG   ]["AssetManager"] Registered texture asset perlin.dds
+[23:53:03][   LOG   ]["AssetManager"] Registered material asset ColorChecker.json
+[23:53:03][   LOG   ]["AssetManager"] Registered material asset TestCube.json
+[23:53:04][   LOG   ]["AssetManager"] Registered mesh asset SK_C_TGA_Bro.fbx
+[23:53:04][   LOG   ]["AssetManager"] Registered mesh asset SM_Chest.fbx
+[23:53:07][   LOG   ]["AssetManager"] Registered mesh asset TMA_Matball.fbx
+[23:53:07][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Brething.fbx
+[23:53:08][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Wave.fbx
+[23:53:08][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Run.fbx
+[23:53:08][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Walk.fbx
+[23:53:08][   LOG   ]["RHI"] Succesfully loaded texture Chest_C.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered texture asset Chest_C.dds
+[23:53:08][   LOG   ]["RHI"] Succesfully loaded texture Chest_FX.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered texture asset Chest_FX.dds
+[23:53:08][   LOG   ]["RHI"] Succesfully loaded texture Chest_M.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered texture asset Chest_M.dds
+[23:53:08][   LOG   ]["RHI"] Succesfully loaded texture Chest_N.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered texture asset Chest_N.dds
+[23:53:08][   LOG   ]["RHI"] Succesfully loaded texture Skansen_Cube.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered texture asset Skansen_Cube.dds
+[23:53:08][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_c.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered texture asset Matball_One_c.dds
+[23:53:08][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_fx.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered texture asset Matball_One_fx.dds
+[23:53:08][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_m.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered texture asset Matball_One_m.dds
+[23:53:08][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_n.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered texture asset Matball_One_n.dds
+[23:53:08][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_c.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_c.dds
+[23:53:08][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_fx.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_fx.dds
+[23:53:08][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_m.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_m.dds
+[23:53:08][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_n.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_n.dds
+[23:53:08][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_C.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_C.dds
+[23:53:08][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_M.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_M.dds
+[23:53:08][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_N.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_N.dds
+[23:53:08][   LOG   ]["AssetManager"] Registered material asset Chest.json
+[23:53:08][   LOG   ]["AssetManager"] Registered material asset MatballOne.json
+[23:53:08][   LOG   ]["AssetManager"] Registered material asset MatballTwo.json
+[23:53:08][   LOG   ]["AssetManager"] Registered material asset TgaBro.json
+[23:53:08][   LOG   ]["AssetManager"] Asset Manager Initialized! Root content directory set to 'C:\Users\Axel\Desktop\TGP\Assets\'.
+****************************************************************************************************
+Logging has started at 2024-07-01 23:54:15.
+****************************************************************************************************
+[23:54:15][   LOG   ][ModelViewer] ModelViewer starting...
+[23:54:15][   LOG   ][ModelViewer] Initializing Graphics Engine...
+[23:54:15][   LOG   ]["GraphicsEngine"] Initializing Graphics Engine...
+[23:54:15][   LOG   ]["RHI"] Initializing RHI...
+[23:54:15][   LOG   ]["RHI"] Selected adapter is NVIDIA GeForce GTX 980 Ti
+[23:54:15][   LOG   ]["RHI"]  * VRAM: 6085 MB
+[23:54:15][   LOG   ]["RHI"] Created sampler state DefaultSS
+[23:54:15][   LOG   ]["RHI"] Created sampler state ShadowSS
+[23:54:15][   LOG   ]["RHI"] Created sampler state LutSS
+[23:54:15][   LOG   ]["RHI"] RHI Initialized!
+[23:54:15][   LOG   ]["RHI"] Created rasterizer state WireframePSO_Rasterizer
+[23:54:15][   LOG   ]["RHI"] Successfully created LUT Texture LUT!
+[23:54:15][   LOG   ]["RHI"] Created constant buffer FrameBuffer.
+[23:54:15][   LOG   ]["RHI"] Created constant buffer ObjectBuffer.
+[23:54:15][   LOG   ]["RHI"] Created constant buffer AnimationBuffer.
+[23:54:15][   LOG   ]["RHI"] Created constant buffer MaterialBuffer.
+[23:54:15][   LOG   ]["RHI"] Created constant buffer LightBuffer.
+[23:54:15][   LOG   ]["RHI"] Created constant buffer ShadowBuffer.
+[23:54:15][   LOG   ]["RHI"] Created constant buffer SpriteBuffer.
+[23:54:15][   LOG   ]["GraphicsEngine"] Initialized Graphics Engine!
+[23:54:15][   LOG   ][ModelViewer] Ready!
+[23:54:15][   LOG   ]["AssetManager"] Initializing Asset Manager...
+[23:54:15][   LOG   ]["RHI"] Succesfully loaded texture Default_C
+[23:54:15][   LOG   ]["AssetManager"] Registered default texture asset Default_C
+[23:54:15][   LOG   ]["RHI"] Succesfully loaded texture Default_N
+[23:54:15][   LOG   ]["AssetManager"] Registered default texture asset Default_N
+[23:54:15][   LOG   ]["RHI"] Succesfully loaded texture Default_M
+[23:54:15][   LOG   ]["AssetManager"] Registered default texture asset Default_M
+[23:54:15][   LOG   ]["RHI"] Succesfully loaded texture Default_FX
+[23:54:15][   LOG   ]["AssetManager"] Registered default texture asset Default_FX
+[23:54:15][   LOG   ]["AssetManager"] Registered material asset DefaultMaterial
+[23:54:15][   LOG   ]["AssetManager"] Registered mesh asset PlanePrimitive
+[23:54:15][   LOG   ]["AssetManager"] Registered mesh asset CubePrimitive
+[23:54:15][   LOG   ]["AssetManager"] Registered mesh asset RampPrimitive
+[23:54:15][   LOG   ]["AssetManager"] Registered mesh asset CameraGizmo.fbx
+[23:54:15][   LOG   ]["AssetManager"] Registered mesh asset DirectionalLightGizmo.fbx
+[23:54:15][   LOG   ]["AssetManager"] Registered mesh asset PointLightGizmo.fbx
+[23:54:16][   LOG   ]["AssetManager"] Registered mesh asset SM_Color_Checker.fbx
+[23:54:16][   LOG   ]["AssetManager"] Registered mesh asset SpotLightGizmo.fbx
+[23:54:16][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_C.dds
+[23:54:16][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_C.dds
+[23:54:16][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_M.dds
+[23:54:16][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_M.dds
+[23:54:16][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_N.dds
+[23:54:16][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_N.dds
+[23:54:16][   LOG   ]["RHI"] Succesfully loaded texture TestCube_C.dds
+[23:54:16][   LOG   ]["AssetManager"] Registered texture asset TestCube_C.dds
+[23:54:17][   LOG   ]["RHI"] Succesfully loaded texture TestCube_M.dds
+[23:54:17][   LOG   ]["AssetManager"] Registered texture asset TestCube_M.dds
+[23:54:17][   LOG   ]["RHI"] Succesfully loaded texture TestCube_N.dds
+[23:54:17][   LOG   ]["AssetManager"] Registered texture asset TestCube_N.dds
+[23:54:17][   LOG   ]["RHI"] Succesfully loaded texture Flat_Normal.dds
+[23:54:17][   LOG   ]["AssetManager"] Registered texture asset Flat_Normal.dds
+[23:54:17][   LOG   ]["RHI"] Succesfully loaded texture perlin.dds
+[23:54:17][   LOG   ]["AssetManager"] Registered texture asset perlin.dds
+[23:54:17][   LOG   ]["AssetManager"] Registered material asset ColorChecker.json
+[23:54:17][   LOG   ]["AssetManager"] Registered material asset TestCube.json
+[23:54:17][   LOG   ]["AssetManager"] Registered mesh asset SK_C_TGA_Bro.fbx
+[23:54:17][   LOG   ]["AssetManager"] Registered mesh asset SM_Chest.fbx
+[23:54:20][   LOG   ]["AssetManager"] Registered mesh asset TMA_Matball.fbx
+[23:54:20][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Brething.fbx
+[23:54:21][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Wave.fbx
+[23:54:21][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Run.fbx
+[23:54:21][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Walk.fbx
+[23:54:21][   LOG   ]["RHI"] Succesfully loaded texture Chest_C.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered texture asset Chest_C.dds
+[23:54:21][   LOG   ]["RHI"] Succesfully loaded texture Chest_FX.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered texture asset Chest_FX.dds
+[23:54:21][   LOG   ]["RHI"] Succesfully loaded texture Chest_M.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered texture asset Chest_M.dds
+[23:54:21][   LOG   ]["RHI"] Succesfully loaded texture Chest_N.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered texture asset Chest_N.dds
+[23:54:21][   LOG   ]["RHI"] Succesfully loaded texture Skansen_Cube.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered texture asset Skansen_Cube.dds
+[23:54:21][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_c.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered texture asset Matball_One_c.dds
+[23:54:21][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_fx.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered texture asset Matball_One_fx.dds
+[23:54:21][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_m.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered texture asset Matball_One_m.dds
+[23:54:21][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_n.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered texture asset Matball_One_n.dds
+[23:54:21][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_c.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_c.dds
+[23:54:21][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_fx.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_fx.dds
+[23:54:21][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_m.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_m.dds
+[23:54:21][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_n.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_n.dds
+[23:54:21][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_C.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_C.dds
+[23:54:21][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_M.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_M.dds
+[23:54:21][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_N.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_N.dds
+[23:54:21][   LOG   ]["AssetManager"] Registered material asset Chest.json
+[23:54:21][   LOG   ]["AssetManager"] Registered material asset MatballOne.json
+[23:54:21][   LOG   ]["AssetManager"] Registered material asset MatballTwo.json
+[23:54:21][   LOG   ]["AssetManager"] Registered material asset TgaBro.json
+[23:54:21][   LOG   ]["AssetManager"] Asset Manager Initialized! Root content directory set to 'C:\Users\Axel\Desktop\TGP\Assets\'.
+****************************************************************************************************
+Logging has started at 2024-07-02 00:03:31.
+****************************************************************************************************
+[00:03:31][   LOG   ][ModelViewer] ModelViewer starting...
+[00:03:31][   LOG   ][ModelViewer] Initializing Graphics Engine...
+[00:03:31][   LOG   ]["GraphicsEngine"] Initializing Graphics Engine...
+[00:03:31][   LOG   ]["RHI"] Initializing RHI...
+[00:03:31][   LOG   ]["RHI"] Selected adapter is NVIDIA GeForce GTX 980 Ti
+[00:03:31][   LOG   ]["RHI"]  * VRAM: 6085 MB
+[00:03:31][   LOG   ]["RHI"] Created sampler state DefaultSS
+[00:03:31][   LOG   ]["RHI"] Created sampler state ShadowSS
+[00:03:31][   LOG   ]["RHI"] Created sampler state LutSS
+[00:03:31][   LOG   ]["RHI"] RHI Initialized!
+[00:03:31][   LOG   ]["RHI"] Created rasterizer state WireframePSO_Rasterizer
+[00:03:31][   LOG   ]["RHI"] Successfully created LUT Texture LUT!
+[00:03:31][   LOG   ]["RHI"] Created constant buffer FrameBuffer.
+[00:03:31][   LOG   ]["RHI"] Created constant buffer ObjectBuffer.
+[00:03:31][   LOG   ]["RHI"] Created constant buffer AnimationBuffer.
+[00:03:31][   LOG   ]["RHI"] Created constant buffer MaterialBuffer.
+[00:03:31][   LOG   ]["RHI"] Created constant buffer LightBuffer.
+[00:03:31][   LOG   ]["RHI"] Created constant buffer ShadowBuffer.
+[00:03:31][   LOG   ]["RHI"] Created constant buffer SpriteBuffer.
+[00:03:31][   LOG   ]["GraphicsEngine"] Initialized Graphics Engine!
+[00:03:31][   LOG   ][ModelViewer] Ready!
+[00:03:31][   LOG   ]["AssetManager"] Initializing Asset Manager...
+[00:03:31][   LOG   ]["RHI"] Succesfully loaded texture Default_C
+[00:03:31][   LOG   ]["AssetManager"] Registered default texture asset Default_C
+[00:03:31][   LOG   ]["RHI"] Succesfully loaded texture Default_N
+[00:03:31][   LOG   ]["AssetManager"] Registered default texture asset Default_N
+[00:03:31][   LOG   ]["RHI"] Succesfully loaded texture Default_M
+[00:03:31][   LOG   ]["AssetManager"] Registered default texture asset Default_M
+[00:03:31][   LOG   ]["RHI"] Succesfully loaded texture Default_FX
+[00:03:31][   LOG   ]["AssetManager"] Registered default texture asset Default_FX
+[00:03:31][   LOG   ]["AssetManager"] Registered material asset DefaultMaterial
+[00:03:31][   LOG   ]["AssetManager"] Registered mesh asset PlanePrimitive
+[00:03:31][   LOG   ]["AssetManager"] Registered mesh asset CubePrimitive
+[00:03:31][   LOG   ]["AssetManager"] Registered mesh asset RampPrimitive
+[00:03:31][   LOG   ]["AssetManager"] Registered mesh asset CameraGizmo.fbx
+[00:03:31][   LOG   ]["AssetManager"] Registered mesh asset DirectionalLightGizmo.fbx
+[00:03:31][   LOG   ]["AssetManager"] Registered mesh asset PointLightGizmo.fbx
+[00:03:32][   LOG   ]["AssetManager"] Registered mesh asset SM_Color_Checker.fbx
+[00:03:32][   LOG   ]["AssetManager"] Registered mesh asset SpotLightGizmo.fbx
+[00:03:32][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_C.dds
+[00:03:32][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_C.dds
+[00:03:32][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_M.dds
+[00:03:32][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_M.dds
+[00:03:32][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_N.dds
+[00:03:32][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_N.dds
+[00:03:32][   LOG   ]["RHI"] Succesfully loaded texture TestCube_C.dds
+[00:03:32][   LOG   ]["AssetManager"] Registered texture asset TestCube_C.dds
+[00:03:32][   LOG   ]["RHI"] Succesfully loaded texture TestCube_M.dds
+[00:03:32][   LOG   ]["AssetManager"] Registered texture asset TestCube_M.dds
+[00:03:32][   LOG   ]["RHI"] Succesfully loaded texture TestCube_N.dds
+[00:03:32][   LOG   ]["AssetManager"] Registered texture asset TestCube_N.dds
+[00:03:32][   LOG   ]["RHI"] Succesfully loaded texture Flat_Normal.dds
+[00:03:32][   LOG   ]["AssetManager"] Registered texture asset Flat_Normal.dds
+[00:03:32][   LOG   ]["RHI"] Succesfully loaded texture perlin.dds
+[00:03:32][   LOG   ]["AssetManager"] Registered texture asset perlin.dds
+[00:03:32][   LOG   ]["AssetManager"] Registered material asset ColorChecker.json
+[00:03:32][   LOG   ]["AssetManager"] Registered material asset TestCube.json
+[00:03:33][   LOG   ]["AssetManager"] Registered mesh asset SK_C_TGA_Bro.fbx
+[00:03:33][   LOG   ]["AssetManager"] Registered mesh asset SM_Chest.fbx
+[00:03:36][   LOG   ]["AssetManager"] Registered mesh asset TMA_Matball.fbx
+[00:03:36][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Brething.fbx
+[00:03:36][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Wave.fbx
+[00:03:37][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Run.fbx
+[00:03:37][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Walk.fbx
+[00:03:37][   LOG   ]["RHI"] Succesfully loaded texture Chest_C.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered texture asset Chest_C.dds
+[00:03:37][   LOG   ]["RHI"] Succesfully loaded texture Chest_FX.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered texture asset Chest_FX.dds
+[00:03:37][   LOG   ]["RHI"] Succesfully loaded texture Chest_M.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered texture asset Chest_M.dds
+[00:03:37][   LOG   ]["RHI"] Succesfully loaded texture Chest_N.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered texture asset Chest_N.dds
+[00:03:37][   LOG   ]["RHI"] Succesfully loaded texture Skansen_Cube.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered texture asset Skansen_Cube.dds
+[00:03:37][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_c.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered texture asset Matball_One_c.dds
+[00:03:37][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_fx.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered texture asset Matball_One_fx.dds
+[00:03:37][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_m.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered texture asset Matball_One_m.dds
+[00:03:37][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_n.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered texture asset Matball_One_n.dds
+[00:03:37][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_c.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_c.dds
+[00:03:37][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_fx.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_fx.dds
+[00:03:37][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_m.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_m.dds
+[00:03:37][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_n.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_n.dds
+[00:03:37][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_C.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_C.dds
+[00:03:37][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_M.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_M.dds
+[00:03:37][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_N.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_N.dds
+[00:03:37][   LOG   ]["AssetManager"] Registered material asset Chest.json
+[00:03:37][   LOG   ]["AssetManager"] Registered material asset MatballOne.json
+[00:03:37][   LOG   ]["AssetManager"] Registered material asset MatballTwo.json
+[00:03:37][   LOG   ]["AssetManager"] Registered material asset TgaBro.json
+[00:03:37][   LOG   ]["AssetManager"] Asset Manager Initialized! Root content directory set to 'C:\Users\Axel\Desktop\TGP\Assets\'.
+****************************************************************************************************
+Logging has started at 2024-07-02 00:38:11.
+****************************************************************************************************
+[00:38:11][   LOG   ][ModelViewer] ModelViewer starting...
+[00:38:11][   LOG   ][ModelViewer] Initializing Graphics Engine...
+[00:38:11][   LOG   ]["GraphicsEngine"] Initializing Graphics Engine...
+[00:38:11][   LOG   ]["RHI"] Initializing RHI...
+[00:38:11][   LOG   ]["RHI"] Selected adapter is NVIDIA GeForce GTX 980 Ti
+[00:38:11][   LOG   ]["RHI"]  * VRAM: 6085 MB
+[00:38:12][   LOG   ]["RHI"] Created sampler state DefaultSS
+[00:38:12][   LOG   ]["RHI"] Created sampler state ShadowSS
+[00:38:12][   LOG   ]["RHI"] Created sampler state LutSS
+[00:38:12][   LOG   ]["RHI"] RHI Initialized!
+[00:38:12][   LOG   ]["RHI"] Created rasterizer state WireframePSO_Rasterizer
+[00:38:12][   LOG   ]["RHI"] Successfully created LUT Texture LUT!
+[00:38:12][   LOG   ]["RHI"] Created constant buffer FrameBuffer.
+[00:38:12][   LOG   ]["RHI"] Created constant buffer ObjectBuffer.
+[00:38:12][   LOG   ]["RHI"] Created constant buffer AnimationBuffer.
+[00:38:12][   LOG   ]["RHI"] Created constant buffer MaterialBuffer.
+[00:38:12][   LOG   ]["RHI"] Created constant buffer LightBuffer.
+[00:38:12][   LOG   ]["RHI"] Created constant buffer ShadowBuffer.
+[00:38:12][   LOG   ]["RHI"] Created constant buffer SpriteBuffer.
+[00:38:12][   LOG   ]["GraphicsEngine"] Initialized Graphics Engine!
+[00:38:12][   LOG   ][ModelViewer] Ready!
+[00:38:12][   LOG   ]["AssetManager"] Initializing Asset Manager...
+[00:38:12][   LOG   ]["RHI"] Succesfully loaded texture Default_C
+[00:38:12][   LOG   ]["AssetManager"] Registered default texture asset Default_C
+[00:38:12][   LOG   ]["RHI"] Succesfully loaded texture Default_N
+[00:38:12][   LOG   ]["AssetManager"] Registered default texture asset Default_N
+[00:38:12][   LOG   ]["RHI"] Succesfully loaded texture Default_M
+[00:38:12][   LOG   ]["AssetManager"] Registered default texture asset Default_M
+[00:38:12][   LOG   ]["RHI"] Succesfully loaded texture Default_FX
+[00:38:12][   LOG   ]["AssetManager"] Registered default texture asset Default_FX
+[00:38:12][   LOG   ]["AssetManager"] Registered material asset DefaultMaterial
+[00:38:12][   LOG   ]["AssetManager"] Registered mesh asset PlanePrimitive
+[00:38:12][   LOG   ]["AssetManager"] Registered mesh asset CubePrimitive
+[00:38:12][   LOG   ]["AssetManager"] Registered mesh asset RampPrimitive
+[00:38:12][   LOG   ]["AssetManager"] Registered mesh asset CameraGizmo.fbx
+[00:38:12][   LOG   ]["AssetManager"] Registered mesh asset DirectionalLightGizmo.fbx
+[00:38:12][   LOG   ]["AssetManager"] Registered mesh asset PointLightGizmo.fbx
+[00:38:13][   LOG   ]["AssetManager"] Registered mesh asset SM_Color_Checker.fbx
+[00:38:13][   LOG   ]["AssetManager"] Registered mesh asset SpotLightGizmo.fbx
+[00:38:13][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_C.dds
+[00:38:13][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_C.dds
+[00:38:13][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_M.dds
+[00:38:13][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_M.dds
+[00:38:13][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_N.dds
+[00:38:13][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_N.dds
+[00:38:13][   LOG   ]["RHI"] Succesfully loaded texture TestCube_C.dds
+[00:38:13][   LOG   ]["AssetManager"] Registered texture asset TestCube_C.dds
+[00:38:13][   LOG   ]["RHI"] Succesfully loaded texture TestCube_M.dds
+[00:38:13][   LOG   ]["AssetManager"] Registered texture asset TestCube_M.dds
+[00:38:13][   LOG   ]["RHI"] Succesfully loaded texture TestCube_N.dds
+[00:38:13][   LOG   ]["AssetManager"] Registered texture asset TestCube_N.dds
+[00:38:13][   LOG   ]["RHI"] Succesfully loaded texture Flat_Normal.dds
+[00:38:13][   LOG   ]["AssetManager"] Registered texture asset Flat_Normal.dds
+[00:38:13][   LOG   ]["RHI"] Succesfully loaded texture perlin.dds
+[00:38:13][   LOG   ]["AssetManager"] Registered texture asset perlin.dds
+[00:38:13][   LOG   ]["AssetManager"] Registered material asset ColorChecker.json
+[00:38:13][   LOG   ]["AssetManager"] Registered material asset TestCube.json
+[00:38:14][   LOG   ]["AssetManager"] Registered mesh asset SK_C_TGA_Bro.fbx
+[00:38:14][   LOG   ]["AssetManager"] Registered mesh asset SM_Chest.fbx
+[00:38:17][   LOG   ]["AssetManager"] Registered mesh asset TMA_Matball.fbx
+[00:38:17][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Brething.fbx
+[00:38:18][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Wave.fbx
+[00:38:18][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Run.fbx
+[00:38:18][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Walk.fbx
+[00:38:18][   LOG   ]["RHI"] Succesfully loaded texture Chest_C.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered texture asset Chest_C.dds
+[00:38:18][   LOG   ]["RHI"] Succesfully loaded texture Chest_FX.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered texture asset Chest_FX.dds
+[00:38:18][   LOG   ]["RHI"] Succesfully loaded texture Chest_M.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered texture asset Chest_M.dds
+[00:38:18][   LOG   ]["RHI"] Succesfully loaded texture Chest_N.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered texture asset Chest_N.dds
+[00:38:18][   LOG   ]["RHI"] Succesfully loaded texture Skansen_Cube.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered texture asset Skansen_Cube.dds
+[00:38:18][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_c.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered texture asset Matball_One_c.dds
+[00:38:18][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_fx.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered texture asset Matball_One_fx.dds
+[00:38:18][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_m.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered texture asset Matball_One_m.dds
+[00:38:18][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_n.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered texture asset Matball_One_n.dds
+[00:38:18][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_c.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_c.dds
+[00:38:18][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_fx.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_fx.dds
+[00:38:18][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_m.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_m.dds
+[00:38:18][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_n.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_n.dds
+[00:38:18][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_C.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_C.dds
+[00:38:18][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_M.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_M.dds
+[00:38:18][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_N.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_N.dds
+[00:38:18][   LOG   ]["AssetManager"] Registered material asset Chest.json
+[00:38:18][   LOG   ]["AssetManager"] Registered material asset MatballOne.json
+[00:38:18][   LOG   ]["AssetManager"] Registered material asset MatballTwo.json
+[00:38:18][   LOG   ]["AssetManager"] Registered material asset TgaBro.json
+[00:38:18][   LOG   ]["AssetManager"] Asset Manager Initialized! Root content directory set to 'C:\Users\Axel\Desktop\TGP\Assets\'.
+****************************************************************************************************
+Logging has started at 2024-07-02 01:53:03.
+****************************************************************************************************
+[01:53:03][   LOG   ][ModelViewer] ModelViewer starting...
+[01:53:03][   LOG   ][ModelViewer] Initializing Graphics Engine...
+[01:53:03][   LOG   ]["GraphicsEngine"] Initializing Graphics Engine...
+[01:53:03][   LOG   ]["RHI"] Initializing RHI...
+[01:53:03][   LOG   ]["RHI"] Selected adapter is NVIDIA GeForce GTX 980 Ti
+[01:53:03][   LOG   ]["RHI"]  * VRAM: 6085 MB
+[01:53:04][   LOG   ]["RHI"] Created sampler state DefaultSS
+[01:53:04][   LOG   ]["RHI"] Created sampler state ShadowSS
+[01:53:04][   LOG   ]["RHI"] Created sampler state LutSS
+[01:53:04][   LOG   ]["RHI"] RHI Initialized!
+[01:53:04][   LOG   ]["RHI"] Created rasterizer state WireframePSO_Rasterizer
+[01:53:04][   LOG   ]["RHI"] Successfully created LUT Texture LUT!
+[01:53:04][   LOG   ]["RHI"] Created constant buffer FrameBuffer.
+[01:53:04][   LOG   ]["RHI"] Created constant buffer ObjectBuffer.
+[01:53:04][   LOG   ]["RHI"] Created constant buffer AnimationBuffer.
+[01:53:04][   LOG   ]["RHI"] Created constant buffer MaterialBuffer.
+[01:53:04][   LOG   ]["RHI"] Created constant buffer LightBuffer.
+[01:53:04][   LOG   ]["RHI"] Created constant buffer ShadowBuffer.
+[01:53:04][   LOG   ]["RHI"] Created constant buffer SpriteBuffer.
+[01:53:04][   LOG   ]["GraphicsEngine"] Initialized Graphics Engine!
+[01:53:04][   LOG   ][ModelViewer] Ready!
+[01:53:04][   LOG   ]["AssetManager"] Initializing Asset Manager...
+[01:53:04][   LOG   ]["RHI"] Succesfully loaded texture Default_C
+[01:53:04][   LOG   ]["AssetManager"] Registered default texture asset Default_C
+[01:53:04][   LOG   ]["RHI"] Succesfully loaded texture Default_N
+[01:53:04][   LOG   ]["AssetManager"] Registered default texture asset Default_N
+[01:53:04][   LOG   ]["RHI"] Succesfully loaded texture Default_M
+[01:53:04][   LOG   ]["AssetManager"] Registered default texture asset Default_M
+[01:53:04][   LOG   ]["RHI"] Succesfully loaded texture Default_FX
+[01:53:04][   LOG   ]["AssetManager"] Registered default texture asset Default_FX
+[01:53:04][   LOG   ]["AssetManager"] Registered material asset DefaultMaterial
+[01:53:04][   LOG   ]["AssetManager"] Registered mesh asset PlanePrimitive
+[01:53:04][   LOG   ]["AssetManager"] Registered mesh asset CubePrimitive
+[01:53:04][   LOG   ]["AssetManager"] Registered mesh asset RampPrimitive
+[01:53:04][   LOG   ]["AssetManager"] Registered mesh asset CameraGizmo.fbx
+[01:53:04][   LOG   ]["AssetManager"] Registered mesh asset DirectionalLightGizmo.fbx
+[01:53:04][   LOG   ]["AssetManager"] Registered mesh asset PointLightGizmo.fbx
+[01:53:05][   LOG   ]["AssetManager"] Registered mesh asset SM_Color_Checker.fbx
+[01:53:05][   LOG   ]["AssetManager"] Registered mesh asset SpotLightGizmo.fbx
+[01:53:05][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_C.dds
+[01:53:05][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_C.dds
+[01:53:05][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_M.dds
+[01:53:05][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_M.dds
+[01:53:05][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_N.dds
+[01:53:05][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_N.dds
+[01:53:05][   LOG   ]["RHI"] Succesfully loaded texture TestCube_C.dds
+[01:53:05][   LOG   ]["AssetManager"] Registered texture asset TestCube_C.dds
+[01:53:05][   LOG   ]["RHI"] Succesfully loaded texture TestCube_M.dds
+[01:53:05][   LOG   ]["AssetManager"] Registered texture asset TestCube_M.dds
+[01:53:05][   LOG   ]["RHI"] Succesfully loaded texture TestCube_N.dds
+[01:53:05][   LOG   ]["AssetManager"] Registered texture asset TestCube_N.dds
+[01:53:05][   LOG   ]["RHI"] Succesfully loaded texture Flat_Normal.dds
+[01:53:05][   LOG   ]["AssetManager"] Registered texture asset Flat_Normal.dds
+[01:53:05][   LOG   ]["RHI"] Succesfully loaded texture perlin.dds
+[01:53:05][   LOG   ]["AssetManager"] Registered texture asset perlin.dds
+[01:53:05][   LOG   ]["AssetManager"] Registered material asset ColorChecker.json
+[01:53:05][   LOG   ]["AssetManager"] Registered material asset TestCube.json
+[01:53:05][   LOG   ]["AssetManager"] Registered mesh asset SK_C_TGA_Bro.fbx
+[01:53:05][   LOG   ]["AssetManager"] Registered mesh asset SM_Chest.fbx
+[01:53:08][   LOG   ]["AssetManager"] Registered mesh asset TMA_Matball.fbx
+[01:53:09][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Brething.fbx
+[01:53:09][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Wave.fbx
+[01:53:09][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Run.fbx
+[01:53:09][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Walk.fbx
+[01:53:09][   LOG   ]["RHI"] Succesfully loaded texture Chest_C.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered texture asset Chest_C.dds
+[01:53:09][   LOG   ]["RHI"] Succesfully loaded texture Chest_FX.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered texture asset Chest_FX.dds
+[01:53:09][   LOG   ]["RHI"] Succesfully loaded texture Chest_M.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered texture asset Chest_M.dds
+[01:53:09][   LOG   ]["RHI"] Succesfully loaded texture Chest_N.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered texture asset Chest_N.dds
+[01:53:09][   LOG   ]["RHI"] Succesfully loaded texture Skansen_Cube.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered texture asset Skansen_Cube.dds
+[01:53:09][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_c.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered texture asset Matball_One_c.dds
+[01:53:09][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_fx.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered texture asset Matball_One_fx.dds
+[01:53:09][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_m.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered texture asset Matball_One_m.dds
+[01:53:09][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_n.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered texture asset Matball_One_n.dds
+[01:53:09][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_c.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_c.dds
+[01:53:09][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_fx.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_fx.dds
+[01:53:09][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_m.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_m.dds
+[01:53:09][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_n.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_n.dds
+[01:53:09][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_C.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_C.dds
+[01:53:09][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_M.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_M.dds
+[01:53:09][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_N.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_N.dds
+[01:53:09][   LOG   ]["AssetManager"] Registered material asset Chest.json
+[01:53:09][   LOG   ]["AssetManager"] Registered material asset MatballOne.json
+[01:53:09][   LOG   ]["AssetManager"] Registered material asset MatballTwo.json
+[01:53:09][   LOG   ]["AssetManager"] Registered material asset TgaBro.json
+[01:53:09][   LOG   ]["AssetManager"] Asset Manager Initialized! Root content directory set to 'C:\Users\Axel\Desktop\TGP\Assets\'.
+****************************************************************************************************
+Logging has started at 2024-07-02 01:55:43.
+****************************************************************************************************
+[01:55:43][   LOG   ][ModelViewer] ModelViewer starting...
+[01:55:43][   LOG   ][ModelViewer] Initializing Graphics Engine...
+[01:55:43][   LOG   ]["GraphicsEngine"] Initializing Graphics Engine...
+[01:55:43][   LOG   ]["RHI"] Initializing RHI...
+[01:55:43][   LOG   ]["RHI"] Selected adapter is NVIDIA GeForce GTX 980 Ti
+[01:55:43][   LOG   ]["RHI"]  * VRAM: 6085 MB
+[01:55:43][   LOG   ]["RHI"] Created sampler state DefaultSS
+[01:55:43][   LOG   ]["RHI"] Created sampler state ShadowSS
+[01:55:43][   LOG   ]["RHI"] Created sampler state LutSS
+[01:55:43][   LOG   ]["RHI"] RHI Initialized!
+[01:55:43][   LOG   ]["RHI"] Created rasterizer state WireframePSO_Rasterizer
+[01:55:43][   LOG   ]["RHI"] Successfully created LUT Texture LUT!
+[01:55:43][   LOG   ]["RHI"] Created constant buffer FrameBuffer.
+[01:55:43][   LOG   ]["RHI"] Created constant buffer ObjectBuffer.
+[01:55:43][   LOG   ]["RHI"] Created constant buffer AnimationBuffer.
+[01:55:43][   LOG   ]["RHI"] Created constant buffer MaterialBuffer.
+[01:55:43][   LOG   ]["RHI"] Created constant buffer LightBuffer.
+[01:55:43][   LOG   ]["RHI"] Created constant buffer ShadowBuffer.
+[01:55:43][   LOG   ]["RHI"] Created constant buffer SpriteBuffer.
+[01:55:43][   LOG   ]["GraphicsEngine"] Initialized Graphics Engine!
+[01:55:43][   LOG   ][ModelViewer] Ready!
+[01:55:43][   LOG   ]["AssetManager"] Initializing Asset Manager...
+[01:55:43][   LOG   ]["RHI"] Succesfully loaded texture Default_C
+[01:55:43][   LOG   ]["AssetManager"] Registered default texture asset Default_C
+[01:55:43][   LOG   ]["RHI"] Succesfully loaded texture Default_N
+[01:55:43][   LOG   ]["AssetManager"] Registered default texture asset Default_N
+[01:55:43][   LOG   ]["RHI"] Succesfully loaded texture Default_M
+[01:55:43][   LOG   ]["AssetManager"] Registered default texture asset Default_M
+[01:55:43][   LOG   ]["RHI"] Succesfully loaded texture Default_FX
+[01:55:43][   LOG   ]["AssetManager"] Registered default texture asset Default_FX
+[01:55:43][   LOG   ]["AssetManager"] Registered material asset DefaultMaterial
+[01:55:43][   LOG   ]["AssetManager"] Registered mesh asset PlanePrimitive
+[01:55:43][   LOG   ]["AssetManager"] Registered mesh asset CubePrimitive
+[01:55:43][   LOG   ]["AssetManager"] Registered mesh asset RampPrimitive
+[01:55:43][   LOG   ]["AssetManager"] Registered mesh asset CameraGizmo.fbx
+[01:55:43][   LOG   ]["AssetManager"] Registered mesh asset DirectionalLightGizmo.fbx
+[01:55:43][   LOG   ]["AssetManager"] Registered mesh asset PointLightGizmo.fbx
+[01:55:44][   LOG   ]["AssetManager"] Registered mesh asset SM_Color_Checker.fbx
+[01:55:45][   LOG   ]["AssetManager"] Registered mesh asset SpotLightGizmo.fbx
+[01:55:45][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_C.dds
+[01:55:45][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_C.dds
+[01:55:45][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_M.dds
+[01:55:45][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_M.dds
+[01:55:45][   LOG   ]["RHI"] Succesfully loaded texture T_Color_Checker_N.dds
+[01:55:45][   LOG   ]["AssetManager"] Registered texture asset T_Color_Checker_N.dds
+[01:55:45][   LOG   ]["RHI"] Succesfully loaded texture TestCube_C.dds
+[01:55:45][   LOG   ]["AssetManager"] Registered texture asset TestCube_C.dds
+[01:55:45][   LOG   ]["RHI"] Succesfully loaded texture TestCube_M.dds
+[01:55:45][   LOG   ]["AssetManager"] Registered texture asset TestCube_M.dds
+[01:55:45][   LOG   ]["RHI"] Succesfully loaded texture TestCube_N.dds
+[01:55:45][   LOG   ]["AssetManager"] Registered texture asset TestCube_N.dds
+[01:55:45][   LOG   ]["RHI"] Succesfully loaded texture Flat_Normal.dds
+[01:55:45][   LOG   ]["AssetManager"] Registered texture asset Flat_Normal.dds
+[01:55:45][   LOG   ]["RHI"] Succesfully loaded texture perlin.dds
+[01:55:45][   LOG   ]["AssetManager"] Registered texture asset perlin.dds
+[01:55:45][   LOG   ]["AssetManager"] Registered material asset ColorChecker.json
+[01:55:45][   LOG   ]["AssetManager"] Registered material asset TestCube.json
+[01:55:45][   LOG   ]["AssetManager"] Registered mesh asset SK_C_TGA_Bro.fbx
+[01:55:45][   LOG   ]["AssetManager"] Registered mesh asset SM_Chest.fbx
+[01:55:48][   LOG   ]["AssetManager"] Registered mesh asset TMA_Matball.fbx
+[01:55:49][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Brething.fbx
+[01:55:49][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Idle_Wave.fbx
+[01:55:49][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Run.fbx
+[01:55:49][   LOG   ]["AssetManager"] Registered animation asset A_C_TGA_Bro_Walk.fbx
+[01:55:49][   LOG   ]["RHI"] Succesfully loaded texture Chest_C.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered texture asset Chest_C.dds
+[01:55:49][   LOG   ]["RHI"] Succesfully loaded texture Chest_FX.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered texture asset Chest_FX.dds
+[01:55:49][   LOG   ]["RHI"] Succesfully loaded texture Chest_M.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered texture asset Chest_M.dds
+[01:55:49][   LOG   ]["RHI"] Succesfully loaded texture Chest_N.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered texture asset Chest_N.dds
+[01:55:49][   LOG   ]["RHI"] Succesfully loaded texture Skansen_Cube.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered texture asset Skansen_Cube.dds
+[01:55:49][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_c.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered texture asset Matball_One_c.dds
+[01:55:49][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_fx.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered texture asset Matball_One_fx.dds
+[01:55:49][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_m.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered texture asset Matball_One_m.dds
+[01:55:49][   LOG   ]["RHI"] Succesfully loaded texture Matball_One_n.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered texture asset Matball_One_n.dds
+[01:55:49][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_c.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_c.dds
+[01:55:49][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_fx.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_fx.dds
+[01:55:49][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_m.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_m.dds
+[01:55:49][   LOG   ]["RHI"] Succesfully loaded texture Matball_Two_n.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered texture asset Matball_Two_n.dds
+[01:55:49][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_C.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_C.dds
+[01:55:49][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_M.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_M.dds
+[01:55:49][   LOG   ]["RHI"] Succesfully loaded texture TGA_Bro_N.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered texture asset TGA_Bro_N.dds
+[01:55:49][   LOG   ]["AssetManager"] Registered material asset Chest.json
+[01:55:49][   LOG   ]["AssetManager"] Registered material asset MatballOne.json
+[01:55:49][   LOG   ]["AssetManager"] Registered material asset MatballTwo.json
+[01:55:49][   LOG   ]["AssetManager"] Registered material asset TgaBro.json
+[01:55:49][   LOG   ]["AssetManager"] Asset Manager Initialized! Root content directory set to 'C:\Users\Axel\Desktop\TGP\Assets\'.
