@@ -66,9 +66,8 @@ void Scene::Render()
 	QueueShadowmapTextureResources();
 
 	QueueGameObjects();
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(PipelineStateType::Gizmo);
 
-	if (myShowGizmos)
+	if (GraphicsEngine::Get().ShowGizmos)
 	{
 		QueueDebugGizmos();
 	}
@@ -92,14 +91,42 @@ std::shared_ptr<GameObject> Scene::FindGameObjectByName(std::string aName)
 
 void Scene::Instantiate(std::shared_ptr<GameObject> aGameObject)
 {
+	if (!aGameObject)
+	{
+		SCENELOG(Warning, "Tried to instantiate a non-existing gameobject!");
+		return;
+	}
+
 	myGameObjects.emplace_back(aGameObject);
+
+	// Temp
+	if (aGameObject->GetComponent<AmbientLight>())
+	{
+		myAmbientLight = aGameObject;
+	}
+	else if (aGameObject->GetComponent<DirectionalLight>())
+	{
+		myDirectionalLight = aGameObject;
+	}
+	else if (aGameObject->GetComponent<PointLight>())
+	{
+		myPointLights.emplace_back(aGameObject);
+	}
+	else if (aGameObject->GetComponent<SpotLight>())
+	{
+		mySpotLights.emplace_back(aGameObject);
+	}
+	else if (aGameObject->GetComponent<Camera>())
+	{
+		myCamera = aGameObject;
+	}
 }
 
 void Scene::Destroy(std::shared_ptr<GameObject> aGameObject)
 {
 	if (!aGameObject)
 	{
-		SCENELOG(Warning, "Tried to destroy non-existing gameobject!");
+		SCENELOG(Warning, "Tried to destroy a non-existing gameobject!");
 		return;
 	}
 
@@ -113,36 +140,6 @@ void Scene::Destroy(std::shared_ptr<GameObject> aGameObject)
 	}
 
 	SCENELOG(Warning, "Could not find GameObject {} in scene!", aGameObject->GetName());
-}
-
-void Scene::SetMainCamera(std::shared_ptr<GameObject> aCamera)
-{
-	std::shared_ptr<GameObject> camera = myGameObjects.emplace_back(aCamera);
-	myCamera = camera;
-}
-
-void Scene::SetAmbientLight(std::shared_ptr<GameObject> aAmbientLight)
-{
-	std::shared_ptr<GameObject> aLight = myGameObjects.emplace_back(aAmbientLight);
-	myAmbientLight = aLight;
-}
-
-void Scene::SetDirectionalLight(std::shared_ptr<GameObject> aDirectionalLight)
-{
-	std::shared_ptr<GameObject> dLight = myGameObjects.emplace_back(aDirectionalLight);
-	myDirectionalLight = dLight;
-}
-
-void Scene::AddPointLight(std::shared_ptr<GameObject> aPointLight)
-{
-	std::shared_ptr<GameObject> pLight = myGameObjects.emplace_back(aPointLight);
-	myPointLights.emplace_back(pLight);
-}
-
-void Scene::AddSpotLight(std::shared_ptr<GameObject> aSpotLight)
-{
-	std::shared_ptr<GameObject> sLight = myGameObjects.emplace_back(aSpotLight);
-	mySpotLights.emplace_back(sLight);
 }
 
 void Scene::QueueClearTextureResources()
@@ -256,6 +253,8 @@ void Scene::QueueDirectionalLightShadows()
 
 void Scene::QueueDebugGizmos()
 {
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(PipelineStateType::Gizmo);
+
 	for (auto& gameObject : myGameObjects)
 	{
 		std::shared_ptr<DebugModel> model = gameObject->GetComponent<DebugModel>();

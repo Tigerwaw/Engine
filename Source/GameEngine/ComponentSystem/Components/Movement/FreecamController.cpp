@@ -20,21 +20,21 @@ void FreecamController::Update()
 	float deltaTime = Engine::GetInstance().GetTimer().GetDeltaTime();
 	CU::InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
 
-	if (!inputHandler.GetKeyDown(static_cast<int>(Keys::MOUSERBUTTON)))
+	if (!inputHandler.GetKeyDown(Keys::MOUSERBUTTON))
 	{
 		return;
 	}
 
-	if (inputHandler.GetKeyClicked(static_cast<int>(Keys::SHIFT)))
+	if (inputHandler.GetKeyClicked(Keys::SHIFT))
 	{
 		myMoveSpeedMultiplier = 2.0f;
 	}
-	else if (inputHandler.GetKeyReleased(static_cast<int>(Keys::SHIFT)))
+	else if (inputHandler.GetKeyReleased(Keys::SHIFT))
 	{
 		myMoveSpeedMultiplier = 1.0f;
 	}
 
-	if (inputHandler.GetKeyClicked(static_cast<int>(Keys::R)))
+	if (inputHandler.GetKeyClicked(Keys::R))
 	{
 		myParent->Transform.SetRotation(0, 0, 0);
 		myParent->Transform.SetTranslation(0, 0, 0);
@@ -42,29 +42,29 @@ void FreecamController::Update()
 
 	CU::Vector3<float> inputDelta;
 
-	if (inputHandler.GetKeyDown(static_cast<int>(Keys::D)) || inputHandler.GetKeyDown(static_cast<int>(Keys::RIGHT)))
+	if (inputHandler.GetKeyDown(Keys::D) || inputHandler.GetKeyDown(Keys::RIGHT))
 	{
 		inputDelta += myParent->Transform.GetRightVector();
 	}
-	else if (inputHandler.GetKeyDown(static_cast<int>(Keys::A)) || inputHandler.GetKeyDown(static_cast<int>(Keys::LEFT)))
+	else if (inputHandler.GetKeyDown(Keys::A) || inputHandler.GetKeyDown(Keys::LEFT))
 	{
 		inputDelta -= myParent->Transform.GetRightVector();
 	}
 
-	if (inputHandler.GetKeyDown(static_cast<int>(Keys::W)) || inputHandler.GetKeyDown(static_cast<int>(Keys::UP)))
+	if (inputHandler.GetKeyDown(Keys::W) || inputHandler.GetKeyDown(Keys::UP))
 	{
 		inputDelta += myParent->Transform.GetForwardVector();
 	}
-	else if (inputHandler.GetKeyDown(static_cast<int>(Keys::S)) || inputHandler.GetKeyDown(static_cast<int>(Keys::DOWN)))
+	else if (inputHandler.GetKeyDown(Keys::S) || inputHandler.GetKeyDown(Keys::DOWN))
 	{
 		inputDelta -= myParent->Transform.GetForwardVector();
 	}
 
-	if (inputHandler.GetKeyDown(static_cast<int>(Keys::SPACE)))
+	if (inputHandler.GetKeyDown(Keys::SPACE))
 	{
 		inputDelta += myParent->Transform.GetUpVector();
 	}
-	else if (inputHandler.GetKeyDown(static_cast<int>(Keys::CONTROL)))
+	else if (inputHandler.GetKeyDown(Keys::CONTROL))
 	{
 		inputDelta -= myParent->Transform.GetUpVector();
 	}

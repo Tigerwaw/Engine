@@ -74,19 +74,22 @@ namespace CommonUtilities
 		}
 	}
 
-	bool InputHandler::GetKeyClicked(const int aKeyCode) const
+	bool InputHandler::GetKeyClicked(const Keys aKeyCode) const
 	{
-		return myCurrentState[aKeyCode] == true && myPreviousState[aKeyCode] == false;
+		int keyCode = static_cast<int>(aKeyCode);
+		return myCurrentState[keyCode] == true && myPreviousState[keyCode] == false;
 	}
 
-	bool InputHandler::GetKeyDown(const int aKeyCode) const
+	bool InputHandler::GetKeyDown(const Keys aKeyCode) const
 	{
-		return myCurrentState[aKeyCode] == true;
+		int keyCode = static_cast<int>(aKeyCode);
+		return myCurrentState[keyCode] == true;
 	}
 
-	bool InputHandler::GetKeyReleased(const int aKeyCode) const
+	bool InputHandler::GetKeyReleased(const Keys aKeyCode) const
 	{
-		return myCurrentState[aKeyCode] == false && myPreviousState[aKeyCode] == true;
+		int keyCode = static_cast<int>(aKeyCode);
+		return myCurrentState[keyCode] == false && myPreviousState[keyCode] == true;
 	}
 
 	CU::Vector2<int> InputHandler::GetMousePosition() const

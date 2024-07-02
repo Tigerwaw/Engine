@@ -88,6 +88,17 @@ public:
 	void SetDebugMode(DebugMode aDebugMode) { myCurrentDebugMode = aDebugMode; }
 	const DebugMode GetCurrentDebugMode() const { return myCurrentDebugMode; }
 
+	std::vector<std::string> DebugModeNames = {
+		"None",
+		"Unlit",
+		"Wireframe",
+		"DebugVertexNormals",
+		"DebugPixelNormals",
+		"DebugTextureNormals",
+		"DebugUVs"
+	};
+	bool ShowGizmos = false;
+
 private:
 	GraphicsEngine();
 	~GraphicsEngine();

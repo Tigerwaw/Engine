@@ -79,26 +79,15 @@ public:
 	int Run();
 
 private:
-	void Update();
-	void Render();
 	void InitCamera();
 	void InitLights();
 	void InitGameObjects();
 	void ChangeAnimation(int aIndex);
-	void SetupImguiStyle();
 	void UpdateImgui();
 
 	bool myIsRunning = false;
 	HWND myMainWindowHandle = nullptr;
 
-	std::shared_ptr<Scene> myScene;
-
-	int ramUsage = 0;
-	int ramUsageChange = 0;
-	float timeSinceLastMemoryCheck = 0;
-	float memoryCheckTimeInterval = 1.0f;
-
-	std::shared_ptr<GameObject> myTgaBro;
 	std::vector<std::shared_ptr<Animation>> myAnimations;
 	std::vector<std::string> myAnimationNames;
 	unsigned myCurrentAnimIndex = 0;

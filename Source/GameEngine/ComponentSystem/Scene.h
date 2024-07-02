@@ -4,6 +4,7 @@
 #include <string>
 
 class GameObject;
+class SceneHandler;
 
 class Scene final
 {
@@ -19,28 +20,9 @@ public:
 	const unsigned GetObjectAmount() const { return static_cast<unsigned>(myGameObjects.size()); }
 	const unsigned GetActiveObjectAmount() const { return myActiveGameObjectAmount; }
 
-	// TEMP
-	void SetMainCamera(std::shared_ptr<GameObject> aCamera);
-	std::shared_ptr<GameObject> GetMainCamera() { return myCamera; }
-	void SetDirectionalLight(std::shared_ptr<GameObject> aDirectionalLight);
-	std::shared_ptr<GameObject> GetDirectionalLight() { return myDirectionalLight; }
-	void SetAmbientLight(std::shared_ptr<GameObject> aAmbientLight);
-	std::shared_ptr<GameObject> GetAmbientLight() { return myAmbientLight; }
-	void AddPointLight(std::shared_ptr<GameObject> aPointLight);
-	std::shared_ptr<GameObject> GetPointLight(int aIndex) { return myPointLights[aIndex]; }
-	void AddSpotLight(std::shared_ptr<GameObject> aSpotLight);
-	std::shared_ptr<GameObject> GetSpotLight(int aIndex) { return mySpotLights[aIndex]; }
+	void SetActive(bool aIsActive) { myIsActive = aIsActive; }
+	const bool GetActive() const { return myIsActive; }
 
-	std::vector<std::string> myDebugModeNames = {
-		"None",
-		"Unlit",
-		"Wireframe",
-		"DebugVertexNormals",
-		"DebugPixelNormals",
-		"DebugTextureNormals",
-		"DebugUVs"
-	};
-	bool myShowGizmos = false;
 private:
 	void QueueClearTextureResources();
 	void QueueShadowmapTextureResources();
@@ -53,6 +35,7 @@ private:
 
 	std::vector<std::shared_ptr<GameObject>> myGameObjects;
 	unsigned myActiveGameObjectAmount = 0;
+	bool myIsActive = false;
 
 	// TEMP (?)
 	std::shared_ptr<GameObject> myCamera;

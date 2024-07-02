@@ -178,6 +178,7 @@
     <ClCompile Include="GlobalEventHandler\GlobalEventHandler.cpp" />
     <ClCompile Include="Input\InputHandler.cpp" />
     <ClCompile Include="ComponentSystem\Components\Lights\LightSource.cpp" />
+    <ClCompile Include="SceneHandler\SceneHandler.cpp" />
     <ClCompile Include="Time\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -226,6 +227,7 @@
     <ClInclude Include="Math\Vector2.hpp" />
     <ClInclude Include="Math\Vector3.hpp" />
     <ClInclude Include="Math\Vector4.hpp" />
+    <ClInclude Include="SceneHandler\SceneHandler.h" />
     <ClInclude Include="Time\Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

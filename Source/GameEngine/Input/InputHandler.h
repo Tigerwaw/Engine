@@ -21,11 +21,11 @@ namespace CommonUtilities
 		void UpdateInput();
 
 		// Key was active this frame but not the frame before
-		bool GetKeyClicked(const int aKeyCode) const;
+		bool GetKeyClicked(const Keys aKeyCode) const;
 		// Key was active this frame, last frame not taken into account
-		bool GetKeyDown(const int aKeyCode) const;
+		bool GetKeyDown(const Keys aKeyCode) const;
 		// Key was active last frame, but not this frame
-		bool GetKeyReleased(const int aKeyCode) const;
+		bool GetKeyReleased(const Keys aKeyCode) const;
 		CU::Vector2<int> GetMousePosition() const;
 		CU::Vector2<int> GetMouseDelta() const;
 		float GetScrollwheelDelta() const;
