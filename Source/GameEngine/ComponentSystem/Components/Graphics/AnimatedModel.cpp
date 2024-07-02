@@ -52,12 +52,12 @@ void AnimatedModel::Update()
     myAnimTime += deltaTime;
     if (myAnimTime >= myFrametime)
     {
-        myAnimTime = 0;
-
         for (auto& animationLayer : myAnimationLayers)
         {
             UpdateAnimationLayer(animationLayer);
         }
+
+        myAnimTime = 0;
     }
 }
 
@@ -170,11 +170,18 @@ void AnimatedModel::UpdateAnimationLayer(AnimationLayer& aAnimationLayer)
     {
         UpdateAnimationState(aAnimationLayer.nextState);
 
+        aAnimationLayer.currentBlendTime += myAnimTime;
+        float blendFactor = aAnimationLayer.currentBlendTime / aAnimationLayer.maxBlendTime;
+        BlendPoses(aAnimationLayer, blendFactor);
         if (aAnimationLayer.currentBlendTime >= aAnimationLayer.maxBlendTime)
         {
             aAnimationLayer.currentState = aAnimationLayer.nextState;
             aAnimationLayer.isBlending = false;
         }
+    }
+    else
+    {
+        UpdatePose(aAnimationLayer);
     }
 
     CU::Matrix4x4<float> parentBoneMatrix;
@@ -210,20 +217,9 @@ void AnimatedModel::UpdateAnimation(AnimationLayer& aAnimLayer, unsigned aJointI
 {
     Mesh::Skeleton::Joint currentJoint = myMesh->GetSkeleton().myJoints[aJointIdx];
 
-    CU::Matrix4x4f currentFrameJointTransform = aAnimLayer.currentState.animation->Frames[aAnimLayer.currentState.currentFrame].BoneTransforms[currentJoint.Name];
+    CU::Matrix4x4f currentFrameJointTransform = aAnimLayer.currentPose[aJointIdx];
     currentFrameJointTransform = currentFrameJointTransform * aParentJointTransform;
     CU::Matrix4x4f result = currentJoint.BindPoseInverse * currentFrameJointTransform;
-
-    if (aAnimLayer.isBlending)
-    {
-        CU::Matrix4x4f nextAnimationJointTransform = aAnimLayer.nextState.animation->Frames[aAnimLayer.nextState.currentFrame].BoneTransforms[currentJoint.Name];
-        nextAnimationJointTransform = nextAnimationJointTransform * aParentJointTransform;
-        CU::Matrix4x4f nextAnimationResult = currentJoint.BindPoseInverse * nextAnimationJointTransform;
-
-        aAnimLayer.currentBlendTime += Engine::GetInstance().GetTimer().GetDeltaTime();
-        float blendFactor = aAnimLayer.currentBlendTime / aAnimLayer.maxBlendTime;
-        result = BlendJoints(result, nextAnimationResult, blendFactor);
-    }
 
     outTransforms[aJointIdx] = result;
 
@@ -233,12 +229,33 @@ void AnimatedModel::UpdateAnimation(AnimationLayer& aAnimLayer, unsigned aJointI
     }
 }
 
-CU::Matrix4x4f AnimatedModel::BlendJoints(const CU::Matrix4x4f& aCurrentJointTransform, const CU::Matrix4x4f& aNextJointTransform, float aBlendFactor)
+void AnimatedModel::UpdatePose(AnimationLayer& aAnimLayer)
 {
-    const CU::Vector3f T = CU::Vector3f::Lerp(CU::Matrix4x4f::CreateTranslationVector(aCurrentJointTransform), CU::Matrix4x4f::CreateTranslationVector(aNextJointTransform), aBlendFactor);
-    const CU::Quatf R = CU::Quatf::Slerp(CU::Quatf(aCurrentJointTransform), CU::Quatf(aNextJointTransform), aBlendFactor);
-    const CU::Vector3f S = CU::Vector3f::Lerp(CU::Matrix4x4f::CreateScaleVector(aCurrentJointTransform), CU::Matrix4x4f::CreateScaleVector(aNextJointTransform), aBlendFactor);
+    const Mesh::Skeleton& skeleton = myMesh->GetSkeleton();
+    for (size_t i = aAnimLayer.startJointID; i < skeleton.myJoints.size(); i++)
+    {
+        Mesh::Skeleton::Joint currentJoint = myMesh->GetSkeleton().myJoints[i];
+        aAnimLayer.currentPose[i] = aAnimLayer.currentState.animation->Frames[aAnimLayer.currentState.currentFrame].BoneTransforms[currentJoint.Name];
+    }
+}
 
-    CU::Matrix4x4f currentAnimJointMatrix = CU::Matrix4x4f::CreateScaleMatrix(S) * R.GetRotationMatrix4x4f() * CU::Matrix4x4f::CreateTranslationMatrix(T);
-    return currentAnimJointMatrix;
+void AnimatedModel::BlendPoses(AnimationLayer& aAnimLayer, float aBlendFactor)
+{
+    const Mesh::Skeleton& skeleton = myMesh->GetSkeleton();
+    for (size_t i = aAnimLayer.startJointID; i < skeleton.myJoints.size(); i++)
+    {
+        Mesh::Skeleton::Joint currentJoint = myMesh->GetSkeleton().myJoints[i];
+        CU::Matrix4x4f currentStateJointTransform = aAnimLayer.currentState.animation->Frames[aAnimLayer.currentState.currentFrame].BoneTransforms[currentJoint.Name];
+        CU::Matrix4x4f nextStateJointTransform = aAnimLayer.nextState.animation->Frames[aAnimLayer.nextState.currentFrame].BoneTransforms[currentJoint.Name];
+         
+        const CU::Vector3f T = CU::Vector3f::Lerp(CU::Matrix4x4f::CreateTranslationVector(currentStateJointTransform), CU::Matrix4x4f::CreateTranslationVector(nextStateJointTransform), aBlendFactor);
+        const CU::Quatf R = CU::Quatf::Slerp(CU::Quatf(currentStateJointTransform), CU::Quatf(nextStateJointTransform), aBlendFactor);
+        //CU::Vector3 currentS = CU::Matrix4x4f::CreateScaleVector(currentStateJointTransform);
+        //CU::Vector3 nextS = CU::Matrix4x4f::CreateScaleVector(nextStateJointTransform);
+        //const CU::Vector3f S = CU::Vector3f::Lerp(currentS, nextS, aBlendFactor);
+        //std::cout << S.x << ", " << S.y << ", " << S.z << std::endl;
+        const CU::Vector3f S = { 1.0f, 1.0f, 1.0f };
+
+        aAnimLayer.currentPose[i] = CU::Matrix4x4f::CreateScaleMatrix(S) * R.GetRotationMatrix4x4f() * CU::Matrix4x4f::CreateTranslationMatrix(T);
+    }
 }

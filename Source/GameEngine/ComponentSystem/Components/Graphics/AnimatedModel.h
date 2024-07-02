@@ -29,6 +29,7 @@ public:
     {
         AnimationState currentState;
         AnimationState nextState;
+        std::array<CU::Matrix4x4f, 128> currentPose;
         unsigned startJointID = 0;
         bool isBlending = false;
         float currentBlendTime = 0;
@@ -62,7 +63,8 @@ private:
     void UpdateAnimationLayer(AnimationLayer& aAnimationLayer);
     void UpdateAnimationState(AnimationState& aAnimationState);
     void UpdateAnimation(AnimationLayer& aAnimLayer, unsigned aJointIdx, const CU::Matrix4x4f& aParentJointTransform, std::array<CU::Matrix4x4f, 128>& outTransforms);
-    CU::Matrix4x4f BlendJoints(const CU::Matrix4x4f& aCurrentJointTransform, const CU::Matrix4x4f& aNextJointTransform, float aBlendFactor);
+    void UpdatePose(AnimationLayer& aAnimLayer);
+    void BlendPoses(AnimationLayer& aAnimLayer, float aBlendFactor);
 
     std::shared_ptr<Mesh> myMesh = nullptr;
     std::vector<std::shared_ptr<Material>> myMaterials;

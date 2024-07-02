@@ -294,13 +294,13 @@ void ModelViewer::InitGameObjects()
 	myScene->Instantiate(tgaBro);
 	myTgaBro = myScene->FindGameObjectByName("TgaBro");
 
-	myAnimations.emplace_back(AssetManager::Get().GetAsset<AnimationAsset>("Animations/Idle/A_C_TGA_Bro_Idle_Brething.fbx")->animation);
+	myAnimations.emplace_back(AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Brething.fbx")->animation);
 	myAnimationNames.emplace_back("Idle");
-	myAnimations.emplace_back(AssetManager::Get().GetAsset<AnimationAsset>("Animations/Locomotion/A_C_TGA_Bro_Walk.fbx")->animation);
+	myAnimations.emplace_back(AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Locomotion/A_C_TGA_Bro_Walk.fbx")->animation);
 	myAnimationNames.emplace_back("Walk");
-	myAnimations.emplace_back(AssetManager::Get().GetAsset<AnimationAsset>("Animations/Locomotion/A_C_TGA_Bro_Run.fbx")->animation);
+	myAnimations.emplace_back(AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx")->animation);
 	myAnimationNames.emplace_back("Run");
-	myAnimations.emplace_back(AssetManager::Get().GetAsset<AnimationAsset>("Animations/Idle/A_C_TGA_Bro_Idle_Wave.fbx")->animation);
+	myAnimations.emplace_back(AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Wave.fbx")->animation);
 	myAnimationNames.emplace_back("Wave");
 
 	std::shared_ptr<AnimatedModel> tgaBroModel = myTgaBro->GetComponent<AnimatedModel>();
@@ -316,9 +316,7 @@ void ModelViewer::ChangeAnimation(int aIndex)
 	if (aIndex >= myAnimations.size() || aIndex < 0) return;
 
 	myCurrentAnimIndex = aIndex;
-	myTgaBro->GetComponent<AnimatedModel>()->StopAnimation();
 	myTgaBro->GetComponent<AnimatedModel>()->SetAnimation(myAnimations[aIndex], 0, "", 2.0f, true);
-	myTgaBro->GetComponent<AnimatedModel>()->PlayAnimation();
 }
 
 void ModelViewer::SetupImguiStyle()
