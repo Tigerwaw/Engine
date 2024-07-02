@@ -48,16 +48,9 @@ void AnimatedModel::Update()
     if (myAnimationLayers.size() <= 0) return;
     if (!myIsPlaying) return;
 
-    float deltaTime = Engine::GetInstance().GetTimer().GetDeltaTime();
-    myAnimTime += deltaTime;
-    if (myAnimTime >= myFrametime)
+    for (auto& animationLayer : myAnimationLayers)
     {
-        for (auto& animationLayer : myAnimationLayers)
-        {
-            UpdateAnimationLayer(animationLayer);
-        }
-
-        myAnimTime = 0;
+        UpdateAnimationLayer(animationLayer);
     }
 }
 
@@ -122,16 +115,16 @@ void AnimatedModel::SetAnimation(std::shared_ptr<Animation> aNewAnimation, unsig
         myAnimationLayers[aLayerIndex].nextState.animation = aNewAnimation;
         myAnimationLayers[aLayerIndex].nextState.currentFrame = aStartingFrame;
         myAnimationLayers[aLayerIndex].nextState.currentTime = 0;
+        myAnimationLayers[aLayerIndex].nextState.frameTime = 1.0f / myAnimationLayers[aLayerIndex].nextState.animation->FramesPerSecond;
         myAnimationLayers[aLayerIndex].nextState.isLooping = aShouldLoop;
-        myFrametime = 1.0f / myAnimationLayers[aLayerIndex].nextState.animation->FramesPerSecond;
     }
     else
     {
         myAnimationLayers[aLayerIndex].currentState.animation = aNewAnimation;
         myAnimationLayers[aLayerIndex].currentState.currentFrame = aStartingFrame;
         myAnimationLayers[aLayerIndex].currentState.currentTime = 0;
+        myAnimationLayers[aLayerIndex].currentState.frameTime = 1.0f / myAnimationLayers[aLayerIndex].currentState.animation->FramesPerSecond;
         myAnimationLayers[aLayerIndex].currentState.isLooping = aShouldLoop;
-        myFrametime = 1.0f / myAnimationLayers[aLayerIndex].currentState.animation->FramesPerSecond;
     }
 }
 
@@ -170,7 +163,7 @@ void AnimatedModel::UpdateAnimationLayer(AnimationLayer& aAnimationLayer)
     {
         UpdateAnimationState(aAnimationLayer.nextState);
 
-        aAnimationLayer.currentBlendTime += myAnimTime;
+        aAnimationLayer.currentBlendTime += Engine::GetInstance().GetTimer().GetDeltaTime();
         float blendFactor = aAnimationLayer.currentBlendTime / aAnimationLayer.maxBlendTime;
         BlendPoses(aAnimationLayer, blendFactor);
         if (aAnimationLayer.currentBlendTime >= aAnimationLayer.maxBlendTime)
@@ -196,8 +189,10 @@ void AnimatedModel::UpdateAnimationLayer(AnimationLayer& aAnimationLayer)
 
 void AnimatedModel::UpdateAnimationState(AnimationState& aAnimationState)
 {
-    aAnimationState.currentTime = 0;
+    aAnimationState.currentTime += Engine::GetInstance().GetTimer().GetDeltaTime();
+    if (aAnimationState.currentTime < aAnimationState.frameTime) return;
 
+    aAnimationState.currentTime = 0;
     aAnimationState.currentFrame++;
     if (aAnimationState.animation->Frames.size() <= aAnimationState.currentFrame)
     {

@@ -75,7 +75,5 @@ private:
 
     std::array<CU::Matrix4x4f, 128> myJointTransforms;
     bool myIsPlaying = false;
-    float myAnimTime = 0;
-    float myFrametime = 0;
 };
 

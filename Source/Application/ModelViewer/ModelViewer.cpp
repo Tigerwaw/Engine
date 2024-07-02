@@ -316,7 +316,7 @@ void ModelViewer::ChangeAnimation(int aIndex)
 	if (aIndex >= myAnimations.size() || aIndex < 0) return;
 
 	myCurrentAnimIndex = aIndex;
-	myTgaBro->GetComponent<AnimatedModel>()->SetAnimation(myAnimations[aIndex], 0, "", 2.0f, true);
+	myTgaBro->GetComponent<AnimatedModel>()->SetAnimation(myAnimations[aIndex], 0, "", 1.0f, true);
 }
 
 void ModelViewer::SetupImguiStyle()

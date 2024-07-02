@@ -29,6 +29,12 @@ namespace CommonUtilities
 	float Timer::GetDeltaTime() const
 	{
 		const std::chrono::duration<float, std::ratio<1, 1>> deltaTime = myCurrentFrameTime - myLastFrameTime;
+		return deltaTime.count() * GetTimeScale();
+	}
+
+	float Timer::GetUnscaledDeltaTime() const
+	{
+		const std::chrono::duration<float, std::ratio<1, 1>> deltaTime = myCurrentFrameTime - myLastFrameTime;
 		return deltaTime.count();
 	}
 
@@ -41,7 +47,7 @@ namespace CommonUtilities
 	float Timer::GetFrameTimeMS() const
 	{
 		const std::chrono::duration<float, std::ratio<1, 1000>> frameTime = myCurrentFrameTime - myLastFrameTime;
-		return frameTime.count();
+		return frameTime.count() * GetTimeScale();
 	}
 
 	int Timer::GetFPS() const
