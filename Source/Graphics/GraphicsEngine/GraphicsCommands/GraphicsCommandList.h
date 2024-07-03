@@ -19,6 +19,7 @@
 #include "ConstantBuffer/UpdateFrameBuffer.h"
 #include "ConstantBuffer/UpdateLightBuffer.h"
 #include "ConstantBuffer/UpdateShadowBuffer.h"
+#include "ConstantBuffer/UpdateDebugBuffer.h"
 
 namespace CU = CommonUtilities;
 

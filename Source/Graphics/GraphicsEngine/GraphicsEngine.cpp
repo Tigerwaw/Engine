@@ -16,6 +16,28 @@
 #include "GraphicsEngine/Objects/ConstantBuffers/LightBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/ShadowBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/SpriteBuffer.h"
+#include "GraphicsEngine/Objects/ConstantBuffers/DebugBuffer.h"
+
+#include "../Intermediate/Shaders/CompiledShaderHeaders/Default_VS.h"
+#include "../Intermediate/Shaders/CompiledShaderHeaders/Default_PS.h"
+#include "../Intermediate/Shaders/CompiledShaderHeaders/ShadowCube_VS.h"
+#include "../Intermediate/Shaders/CompiledShaderHeaders/ShadowCube_GS.h"
+
+#include "../Intermediate/Shaders/CompiledShaderHeaders/Sprite_VS.h"
+#include "../Intermediate/Shaders/CompiledShaderHeaders/Sprite_GS.h"
+#include "../Intermediate/Shaders/CompiledShaderHeaders/Sprite_PS.h"
+
+#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugObject_VS.h"
+#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugLine_GS.h"
+#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugObject_PS.h"
+
+#include "../Intermediate/Shaders/CompiledShaderHeaders/Unlit_PS.h"
+#include "../Intermediate/Shaders/CompiledShaderHeaders/Wireframe_PS.h"
+#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugVertexNormals_PS.h"
+#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugPixelNormals_PS.h"
+#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugTextureNormals_PS.h"
+#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugUVs_PS.h"
+#include "../Intermediate/Shaders/CompiledShaderHeaders/Gizmo_PS.h"
 
 #ifdef _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(GraphicsLog, "GraphicsEngine", Verbose);
@@ -43,23 +65,6 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 		LOG(GraphicsLog, Error, "Failed to initialize graphics engine!");
 		return false;
 	}
-
-#include "../Intermediate/Shaders/CompiledShaderHeaders/Default_VS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/Default_PS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/ShadowCube_VS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/ShadowCube_GS.h"
-
-#include "../Intermediate/Shaders/CompiledShaderHeaders/Sprite_VS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/Sprite_GS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/Sprite_PS.h"
-
-#include "../Intermediate/Shaders/CompiledShaderHeaders/Unlit_PS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/Wireframe_PS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugVertexNormals_PS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugPixelNormals_PS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugTextureNormals_PS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugUVs_PS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/Gizmo_PS.h"
 
 	PipelineStateObject defaultPSO;
 	defaultPSO.VertexShader = std::make_shared<Shader>();
@@ -114,6 +119,32 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 
 	spritePSO.SamplerStates[0] = myRHI->GetSamplerState("DefaultSS");
 	myPSOmap.emplace(PipelineStateType::Sprite, std::make_shared<PipelineStateObject>(spritePSO));
+
+
+	PipelineStateObject debugPSO;
+	debugPSO.VertexShader = std::make_shared<Shader>();
+	if (!myRHI->LoadShaderFromMemory("DebugObject_VS", *debugPSO.VertexShader, BuiltIn_DebugObject_VS_ByteCode, sizeof(BuiltIn_DebugObject_VS_ByteCode)))
+	{
+		LOG(GraphicsLog, Error, "Failed to load vertex shader!");
+		return false;
+	}
+
+	debugPSO.GeometryShader = std::make_shared<Shader>();
+	if (!myRHI->LoadShaderFromMemory("DebugLine_GS", *debugPSO.GeometryShader, BuiltIn_DebugLine_GS_ByteCode, sizeof(BuiltIn_DebugLine_GS_ByteCode)))
+	{
+		LOG(GraphicsLog, Error, "Failed to load vertex shader!");
+		return false;
+	}
+
+	debugPSO.PixelShader = std::make_shared<Shader>();
+	if (!myRHI->LoadShaderFromMemory("DebugObject_PS", *debugPSO.PixelShader, BuiltIn_DebugObject_PS_ByteCode, sizeof(BuiltIn_DebugObject_PS_ByteCode)))
+	{
+		LOG(GraphicsLog, Error, "Failed to load pixel shader!");
+		return false;
+	}
+
+	debugPSO.SamplerStates[0] = myRHI->GetSamplerState("DefaultSS");
+	myPSOmap.emplace(PipelineStateType::DebugLine, std::make_shared<PipelineStateObject>(debugPSO));
 
 	
 	PipelineStateObject unlitPSO;
@@ -236,33 +267,7 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 		LOG(GraphicsLog, Error, "Failed to create LUT Texture!");
 	}
 
-	ConstantBuffer frameBuffer;
-	myRHI->CreateConstantBuffer("FrameBuffer", sizeof(FrameBuffer), 0, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_GEOMETRY_SHADER | PIPELINE_STAGE_PIXEL_SHADER, frameBuffer);
-	myConstantBuffers.emplace(ConstantBufferType::FrameBuffer, std::move(frameBuffer));
-
-	ConstantBuffer objectBuffer;
-	myRHI->CreateConstantBuffer("ObjectBuffer", sizeof(ObjectBuffer), 1, PIPELINE_STAGE_VERTEX_SHADER, objectBuffer);
-	myConstantBuffers.emplace(ConstantBufferType::ObjectBuffer, std::move(objectBuffer));
-
-	ConstantBuffer animationBuffer;
-	myRHI->CreateConstantBuffer("AnimationBuffer", sizeof(AnimationBuffer), 2, PIPELINE_STAGE_VERTEX_SHADER, animationBuffer);
-	myConstantBuffers.emplace(ConstantBufferType::AnimationBuffer, std::move(animationBuffer));
-
-	ConstantBuffer materialBuffer;
-	myRHI->CreateConstantBuffer("MaterialBuffer", sizeof(MaterialBuffer), 3, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_PIXEL_SHADER, materialBuffer);
-	myConstantBuffers.emplace(ConstantBufferType::MaterialBuffer, std::move(materialBuffer));
-
-	ConstantBuffer lightBuffer;
-	myRHI->CreateConstantBuffer("LightBuffer", sizeof(LightBuffer), 4, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_PIXEL_SHADER, lightBuffer);
-	myConstantBuffers.emplace(ConstantBufferType::LightBuffer, std::move(lightBuffer));
-
-	ConstantBuffer shadowBuffer;
-	myRHI->CreateConstantBuffer("ShadowBuffer", sizeof(ShadowBuffer), 5, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_GEOMETRY_SHADER | PIPELINE_STAGE_PIXEL_SHADER, shadowBuffer);
-	myConstantBuffers.emplace(ConstantBufferType::ShadowBuffer, std::move(shadowBuffer));
-
-	ConstantBuffer spriteBuffer;
-	myRHI->CreateConstantBuffer("SpriteBuffer", sizeof(SpriteBuffer), 6, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_GEOMETRY_SHADER | PIPELINE_STAGE_PIXEL_SHADER, spriteBuffer);
-	myConstantBuffers.emplace(ConstantBufferType::SpriteBuffer, std::move(spriteBuffer));
+	CreateConstantBuffers();
 	
 	myCurrentPSO = myPSOmap[PipelineStateType::Default];
 	myCommandList = std::make_unique<GraphicsCommandList>();
@@ -435,6 +440,13 @@ void GraphicsEngine::RenderSprite()
 	myRHI->Draw(1);
 }
 
+void GraphicsEngine::RenderDebugLine()
+{
+	ChangePipelineState(PipelineStateType::DebugLine);
+	myRHI->SetPrimitiveTopology(Topology::POINTLIST);
+	myRHI->Draw(1);
+}
+
 bool GraphicsEngine::CreateIndexBuffer(std::string_view aName, const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer)
 {
 	return myRHI->CreateIndexBuffer(aName, aIndexList, outIxBuffer);
@@ -442,3 +454,38 @@ bool GraphicsEngine::CreateIndexBuffer(std::string_view aName, const std::vector
 
 GraphicsEngine::GraphicsEngine() = default;
 GraphicsEngine::~GraphicsEngine() = default;
+
+void GraphicsEngine::CreateConstantBuffers()
+{
+	ConstantBuffer frameBuffer;
+	myRHI->CreateConstantBuffer("FrameBuffer", sizeof(FrameBuffer), 0, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_GEOMETRY_SHADER | PIPELINE_STAGE_PIXEL_SHADER, frameBuffer);
+	myConstantBuffers.emplace(ConstantBufferType::FrameBuffer, std::move(frameBuffer));
+
+	ConstantBuffer objectBuffer;
+	myRHI->CreateConstantBuffer("ObjectBuffer", sizeof(ObjectBuffer), 1, PIPELINE_STAGE_VERTEX_SHADER, objectBuffer);
+	myConstantBuffers.emplace(ConstantBufferType::ObjectBuffer, std::move(objectBuffer));
+
+	ConstantBuffer animationBuffer;
+	myRHI->CreateConstantBuffer("AnimationBuffer", sizeof(AnimationBuffer), 2, PIPELINE_STAGE_VERTEX_SHADER, animationBuffer);
+	myConstantBuffers.emplace(ConstantBufferType::AnimationBuffer, std::move(animationBuffer));
+
+	ConstantBuffer materialBuffer;
+	myRHI->CreateConstantBuffer("MaterialBuffer", sizeof(MaterialBuffer), 3, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_PIXEL_SHADER, materialBuffer);
+	myConstantBuffers.emplace(ConstantBufferType::MaterialBuffer, std::move(materialBuffer));
+
+	ConstantBuffer lightBuffer;
+	myRHI->CreateConstantBuffer("LightBuffer", sizeof(LightBuffer), 4, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_PIXEL_SHADER, lightBuffer);
+	myConstantBuffers.emplace(ConstantBufferType::LightBuffer, std::move(lightBuffer));
+
+	ConstantBuffer shadowBuffer;
+	myRHI->CreateConstantBuffer("ShadowBuffer", sizeof(ShadowBuffer), 5, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_GEOMETRY_SHADER | PIPELINE_STAGE_PIXEL_SHADER, shadowBuffer);
+	myConstantBuffers.emplace(ConstantBufferType::ShadowBuffer, std::move(shadowBuffer));
+
+	ConstantBuffer spriteBuffer;
+	myRHI->CreateConstantBuffer("SpriteBuffer", sizeof(SpriteBuffer), 6, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_GEOMETRY_SHADER | PIPELINE_STAGE_PIXEL_SHADER, spriteBuffer);
+	myConstantBuffers.emplace(ConstantBufferType::SpriteBuffer, std::move(spriteBuffer));
+
+	ConstantBuffer debugBuffer;
+	myRHI->CreateConstantBuffer("DebugBuffer", sizeof(DebugBuffer), 7, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_GEOMETRY_SHADER | PIPELINE_STAGE_PIXEL_SHADER, debugBuffer);
+	myConstantBuffers.emplace(ConstantBufferType::DebugBuffer, std::move(debugBuffer));
+}

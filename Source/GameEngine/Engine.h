@@ -13,6 +13,7 @@ namespace CU = CommonUtilities;
 
 class GlobalEventHandler;
 class SceneHandler;
+class DebugDrawer;
 
 class Engine
 {
@@ -27,6 +28,7 @@ public:
     CU::InputHandler& GetInputHandler() { return *myInputHandler; }
     GlobalEventHandler& GetGlobalEventHandler() { return *myGlobalEventHandler; }
     SceneHandler& GetSceneHandler() { return *mySceneHandler; }
+    DebugDrawer& GetDebugDrawer() { return *myDebugDrawer; }
 
     const CU::Vector2f& GetResolution() const { return myResolution; }
 
@@ -46,6 +48,7 @@ private:
     std::unique_ptr<CU::InputHandler> myInputHandler;
     std::unique_ptr<GlobalEventHandler> myGlobalEventHandler;
     std::unique_ptr<SceneHandler> mySceneHandler;
+    std::unique_ptr<DebugDrawer> myDebugDrawer;
 
     CU::Vector2f myResolution;
 };

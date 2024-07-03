@@ -40,7 +40,8 @@ enum class ConstantBufferType
 	MaterialBuffer,
 	LightBuffer,
 	ShadowBuffer,
-	SpriteBuffer
+	SpriteBuffer,
+	DebugBuffer
 };
 
 class GraphicsEngine
@@ -74,6 +75,7 @@ public:
 
 	void RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<Material>> aMaterialList);
 	void RenderSprite();
+	void RenderDebugLine();
 
 	template <typename VertexType>
 	bool CreateVertexBuffer(std::string_view aName, const std::vector<VertexType>& aVertexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer) const;
@@ -102,6 +104,8 @@ public:
 private:
 	GraphicsEngine();
 	~GraphicsEngine();
+
+	void CreateConstantBuffers();
 
 	std::unique_ptr<RenderHardwareInterface> myRHI;
 	std::unordered_map<ConstantBufferType, ConstantBuffer> myConstantBuffers;

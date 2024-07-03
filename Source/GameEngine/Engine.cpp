@@ -3,6 +3,7 @@
 #include "GameEngine/Input/InputHandler.h"
 #include "GameEngine/GlobalEventHandler/GlobalEventHandler.h"
 #include "GameEngine/SceneHandler/SceneHandler.h"
+#include "GameEngine/DebugDrawer/DebugDrawer.h"
 
 Engine::Engine()
 {
@@ -10,6 +11,7 @@ Engine::Engine()
     myInputHandler = std::make_unique<CU::InputHandler>();
     myGlobalEventHandler = std::make_unique<GlobalEventHandler>();
     mySceneHandler = std::make_unique<SceneHandler>();
+    myDebugDrawer = std::make_unique<DebugDrawer>();
 
     myResolution = { 1920.0f, 1080.0f };
 }
@@ -20,4 +22,5 @@ Engine::~Engine()
     myInputHandler = nullptr;
     myGlobalEventHandler = nullptr;
     mySceneHandler = nullptr;
+    myDebugDrawer = nullptr;
 }

@@ -1,7 +1,7 @@
 #pragma once
+#include "GameEngine/EngineDefines.h"
 #include "GameEngine/Math/Vector.hpp"
 #include "GameEngine/Math/Matrix.hpp"
-#include "GameEngine/EngineDefines.h"
 
 namespace CU = CommonUtilities;
 

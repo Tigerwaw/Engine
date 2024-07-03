@@ -179,9 +179,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DDSTextureLoader\DDSTextureLoader11.h" />
+    <ClInclude Include="GraphicsCommands\ConstantBuffer\UpdateDebugBuffer.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="GraphicsEngine.pch.h" />
     <ClInclude Include="Objects\ConstantBuffers\ConstantBuffer.h" />
+    <ClInclude Include="Objects\ConstantBuffers\DebugBuffer.h" />
     <ClInclude Include="Objects\ConstantBuffers\LightBuffer.h" />
     <ClInclude Include="Objects\ConstantBuffers\MaterialBuffer.h" />
     <ClInclude Include="Objects\ConstantBuffers\ShadowBuffer.h" />
@@ -225,6 +227,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="GraphicsCommands\ConstantBuffer\UpdateDebugBuffer.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="GraphicsEngine.pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

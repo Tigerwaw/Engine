@@ -8,6 +8,7 @@
 #include "LightBuffer.hlsli"
 #include "ShadowBuffer.hlsli"
 #include "SpriteBuffer.hlsli"
+#include "DebugBuffer.hlsli"
 
 Texture2D AlbedoTexture : register(t0);
 Texture2D NormalTexture : register(t1);
@@ -74,6 +75,18 @@ struct Sprite_GSout
     float4 WorldPos     : WORLDPOSITION;
     float2 TexCoord0    : TEXCOORD0;
     uint PrimID         : SV_PrimitiveID;
+};
+
+
+struct DebugObject_VSout
+{
+    uint vertexID       : VERTEXID;
+};
+
+struct DebugObject_GSout
+{
+    float4 Position     : SV_Position;
+    float4 Color        : COLOR;
 };
 
 static const float2 defaultUVs[4] =

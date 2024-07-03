@@ -24,8 +24,6 @@ DEFINE_LOG_CATEGORY(LogModelViewer);
 #include "AssetManager.h"
 #include "Asset.h"
 
-#include "GameEngine/ComponentSystem/Scene.h"
-
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
@@ -44,6 +42,7 @@ DEFINE_LOG_CATEGORY(LogModelViewer);
 #include "GameEngine/Time/Timer.h"
 #include "GameEngine/Input/InputHandler.h"
 #include "GameEngine/SceneHandler/SceneHandler.h"
+#include "GameEngine/DebugDrawer/DebugDrawer.h"
 
 namespace CU = CommonUtilities;
 
@@ -162,12 +161,15 @@ int ModelViewer::Run()
 
 		// TODO: Frame Update and Rendering goes here
 		GraphicsEngine::Get().BeginFrame();
+		Engine::GetInstance().GetDebugDrawer().ClearObjects();
 
 		Engine::GetInstance().GetTimer().Update();
 		Engine::GetInstance().GetSceneHandler().UpdateActiveScene();
 		Engine::GetInstance().GetInputHandler().UpdateInput();
 
 		Engine::GetInstance().GetSceneHandler().RenderActiveScene();
+
+		Engine::GetInstance().GetDebugDrawer().DrawObjects();
 		GraphicsEngine::Get().RenderFrame();
 
 		ImGui::Render();

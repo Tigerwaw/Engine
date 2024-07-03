@@ -126,6 +126,12 @@
     <ClInclude Include="GraphicsCommands\Render\RenderSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Objects\ConstantBuffers\DebugBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCommands\ConstantBuffer\UpdateDebugBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsEngine.cpp">
@@ -207,6 +213,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCommands\Render\RenderSprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsCommands\ConstantBuffer\UpdateDebugBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

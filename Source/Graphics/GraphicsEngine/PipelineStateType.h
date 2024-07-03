@@ -12,5 +12,6 @@ enum class PipelineStateType
 	DebugTextureNormals,
 	DebugUVs,
 	Gizmo,
-	Sprite
+	Sprite,
+	DebugLine
 };

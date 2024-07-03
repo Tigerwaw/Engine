@@ -11,6 +11,9 @@
 #include "GameEngine/ComponentSystem/Components/Lights/PointLight.h"
 #include "GameEngine/ComponentSystem/Components/Lights/SpotLight.h"
 
+#include "GameEngine/Engine.h"
+#include "GameEngine/DebugDrawer/DebugDrawer.h"
+
 #include "Logger/Logger.h"
 #include "GameEngine/Math/Vector.hpp"
 
@@ -73,6 +76,8 @@ void Scene::Render()
 	}
 	
 	QueueClearTextureResources();
+
+	Engine::GetInstance().GetDebugDrawer().DrawLine({ -200.0f, 200.0f, 0 }, { 200.0f, 200.0f, 0 });
 }
 
 std::shared_ptr<GameObject> Scene::FindGameObjectByName(std::string aName)
