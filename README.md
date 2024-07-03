@@ -7,6 +7,7 @@
 * Game objects have an internal event system that lets components communicate with eachother without being coupled.
 * Worldspace and screenspace sprites.
 * Simplified communication with graphics engine through render commands.
+* Debug Drawer that supports line drawing
 
 * Animation blending
 * Animation layers
