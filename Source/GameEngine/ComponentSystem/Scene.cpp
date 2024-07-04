@@ -77,7 +77,9 @@ void Scene::Render()
 	
 	QueueClearTextureResources();
 
-	Engine::GetInstance().GetDebugDrawer().DrawLine({ -200.0f, 200.0f, 0 }, { 200.0f, 200.0f, 0 });
+	//Engine::GetInstance().GetDebugDrawer().DrawLine({ -200.0f, 200.0f, 0 }, { 200.0f, 200.0f, 0 });
+	//Engine::GetInstance().GetDebugDrawer().DrawCameraFrustum(myDirectionalLight->GetComponent<Camera>());
+	Engine::GetInstance().GetDebugDrawer().DrawCameraFrustum(mySpotLights[0]->GetComponent<Camera>());
 }
 
 std::shared_ptr<GameObject> Scene::FindGameObjectByName(std::string aName)

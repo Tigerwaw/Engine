@@ -75,7 +75,7 @@ public:
 
 	void RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<Material>> aMaterialList);
 	void RenderSprite();
-	void RenderDebugLine();
+	void RenderDebugLine(unsigned aLineAmount);
 
 	template <typename VertexType>
 	bool CreateVertexBuffer(std::string_view aName, const std::vector<VertexType>& aVertexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer) const;

@@ -3,7 +3,7 @@
 #include "GameEngine/DebugDrawer/DebugDrawer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/DebugBuffer.h"
 
-UpdateDebugBuffer::UpdateDebugBuffer(std::vector<Line> aLineList)
+UpdateDebugBuffer::UpdateDebugBuffer(std::vector<DebugLine> aLineList)
 {
 	myLineList = aLineList;
 }
@@ -20,7 +20,7 @@ void UpdateDebugBuffer::Execute()
 	}
 	
 	GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::DebugBuffer, debugBuffer);
-	GraphicsEngine::Get().RenderDebugLine();
+	GraphicsEngine::Get().RenderDebugLine(static_cast<unsigned>(myLineList.size()));
 }
 
 void UpdateDebugBuffer::Destroy()

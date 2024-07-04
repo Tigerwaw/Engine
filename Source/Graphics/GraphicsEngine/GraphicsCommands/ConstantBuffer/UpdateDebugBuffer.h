@@ -5,15 +5,15 @@
 
 namespace CU = CommonUtilities;
 
-struct Line;
+struct DebugLine;
 
 class UpdateDebugBuffer : public GraphicsCommandBase
 {
 public:
-	UpdateDebugBuffer(std::vector<Line> aLineList);
+	UpdateDebugBuffer(std::vector<DebugLine> aLineList);
 	void Execute() override;
 	void Destroy() override;
 private:
-	std::vector<Line> myLineList;
+	std::vector<DebugLine> myLineList;
 };
 

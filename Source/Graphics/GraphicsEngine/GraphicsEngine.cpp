@@ -440,11 +440,11 @@ void GraphicsEngine::RenderSprite()
 	myRHI->Draw(1);
 }
 
-void GraphicsEngine::RenderDebugLine()
+void GraphicsEngine::RenderDebugLine(unsigned aLineAmount)
 {
 	ChangePipelineState(PipelineStateType::DebugLine);
 	myRHI->SetPrimitiveTopology(Topology::POINTLIST);
-	myRHI->Draw(1);
+	myRHI->Draw(aLineAmount);
 }
 
 bool GraphicsEngine::CreateIndexBuffer(std::string_view aName, const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer)

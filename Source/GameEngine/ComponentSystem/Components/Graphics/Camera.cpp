@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "GameEngine/ComponentSystem/GameObject.h"
 
 #define PI 3.14159265358979323846
 
@@ -37,6 +38,20 @@ void Camera::InitPerspectiveProjection(float aFOV, float aNearPlane, float aFarP
 	myProjectionMatrix(3, 4) = 1.0f;
 	myProjectionMatrix(4, 3) = -aNearPlane * myProjectionMatrix(3, 3);
 	myProjectionMatrix(4, 4) = 0;
+
+	CU::Vector3f topLeft = CU::Vector3f(-cos(horizontalFOV), sin(verticalFOV), 1.0f).GetNormalized();
+	CU::Vector3f topRight = CU::Vector3f(cos(horizontalFOV), sin(verticalFOV), 1.0f).GetNormalized();
+	CU::Vector3f bottomRight = CU::Vector3f(cos(horizontalFOV), -sin(verticalFOV), 1.0f).GetNormalized();
+	CU::Vector3f bottomLeft = CU::Vector3f(-cos(horizontalFOV), -sin(verticalFOV), 1.0f).GetNormalized();
+
+	myFrustumVolume[0] = bottomLeft * aNearPlane;
+	myFrustumVolume[1] = topLeft * aNearPlane;
+	myFrustumVolume[2] = topRight * aNearPlane;
+	myFrustumVolume[3] = bottomRight * aNearPlane;
+	myFrustumVolume[4] = bottomLeft * aFarPlane;
+	myFrustumVolume[5] = topLeft * aFarPlane;
+	myFrustumVolume[6] = topRight * aFarPlane;
+	myFrustumVolume[7] = bottomRight * aFarPlane;
 }
 
 void Camera::InitOrtographicProjection(float aLeft, float aRight, float aTop, float aBottom, float aNearPlane, float aFarPlane)
@@ -51,4 +66,13 @@ void Camera::InitOrtographicProjection(float aLeft, float aRight, float aTop, fl
 	myProjectionMatrix(4, 1) = -(aRight + aLeft) / (aRight - aLeft);
 	myProjectionMatrix(4, 2) = -(aTop + aBottom) / (aTop - aBottom);
 	myProjectionMatrix(4, 3) = -(aNearPlane) / (aFarPlane - aNearPlane);
+
+	myFrustumVolume[0] = CU::Vector3f(aLeft, aBottom, aNearPlane);
+	myFrustumVolume[1] = CU::Vector3f(aLeft, aTop, aNearPlane);
+	myFrustumVolume[2] = CU::Vector3f(aRight, aTop, aNearPlane);
+	myFrustumVolume[3] = CU::Vector3f(aRight, aBottom, aNearPlane);
+	myFrustumVolume[4] = CU::Vector3f(aLeft, aBottom, aFarPlane);
+	myFrustumVolume[5] = CU::Vector3f(aLeft, aTop, aFarPlane);
+	myFrustumVolume[6] = CU::Vector3f(aRight, aTop, aFarPlane);
+	myFrustumVolume[7] = CU::Vector3f(aRight, aBottom, aFarPlane);
 }
