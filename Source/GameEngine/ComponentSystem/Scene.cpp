@@ -71,7 +71,7 @@ void Scene::Render()
 
 	QueueGameObjects(myCamera->GetComponent<Camera>());
 
-	if (GraphicsEngine::Get().ShowGizmos)
+	if (GraphicsEngine::Get().DrawGizmos)
 	{
 		QueueDebugGizmos(myCamera->GetComponent<Camera>());
 	}
@@ -285,7 +285,7 @@ void Scene::QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disable
 		std::shared_ptr<Model> model = gameObject->GetComponent<Model>();
 		if (model && model->GetActive())
 		{
-			if (disableViewCulling || !GraphicsEngine::Get().ViewCull || CU::IntersectionBetweenPlaneVolumeAABB(aRenderCamera->GetFrustumPlaneVolume(gameObject->Transform.GetMatrix(true)), model->GetBoundingBox()))
+			if (disableViewCulling || !GraphicsEngine::Get().UseViewCulling || CU::IntersectionBetweenPlaneVolumeAABB(aRenderCamera->GetFrustumPlaneVolume(gameObject->Transform.GetMatrix(true)), model->GetBoundingBox()))
 			{
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model);
 			}
@@ -294,7 +294,7 @@ void Scene::QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disable
 		std::shared_ptr<AnimatedModel> animModel = gameObject->GetComponent<AnimatedModel>();
 		if (animModel && animModel->GetActive())
 		{
-			if (disableViewCulling || !GraphicsEngine::Get().ViewCull || CU::IntersectionBetweenPlaneVolumeAABB(aRenderCamera->GetFrustumPlaneVolume(gameObject->Transform.GetMatrix(true)), animModel->GetBoundingBox()))
+			if (disableViewCulling || !GraphicsEngine::Get().UseViewCulling || CU::IntersectionBetweenPlaneVolumeAABB(aRenderCamera->GetFrustumPlaneVolume(gameObject->Transform.GetMatrix(true)), animModel->GetBoundingBox()))
 			{
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel);
 			}

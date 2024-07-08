@@ -99,9 +99,9 @@ public:
 		"DebugTextureNormals",
 		"DebugUVs"
 	};
-	bool ShowGizmos = false;
+	bool DrawGizmos = false;
 	bool DrawBoundingBoxes = false;
-	bool ViewCull = true;
+	bool UseViewCulling = true;
 
 private:
 	GraphicsEngine();
