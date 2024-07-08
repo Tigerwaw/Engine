@@ -325,8 +325,9 @@ void ModelViewer::UpdateImgui()
 		ImGui::SetNextWindowContentSize({ 300.0f, 200.0f });
 		ImGui::Begin("Modelviewer");
 
-		ImGui::Checkbox("Show Gizmos", &GraphicsEngine::Get().ShowGizmos);
-		ImGui::Checkbox("Show Bounding Boxes", &GraphicsEngine::Get().DrawBoundingBoxes);
+		ImGui::Checkbox("Use Viewculling", &GraphicsEngine::Get().UseViewCulling);
+		ImGui::Checkbox("Draw Gizmos", &GraphicsEngine::Get().DrawGizmos);
+		ImGui::Checkbox("Draw Bounding Boxes", &GraphicsEngine::Get().DrawBoundingBoxes);
 
 		// Rendering
 		{

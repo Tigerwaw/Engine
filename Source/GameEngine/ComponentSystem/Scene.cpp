@@ -82,13 +82,6 @@ void Scene::Render()
 	//Engine::GetInstance().GetDebugDrawer().DrawCameraFrustum(myDirectionalLight->GetComponent<Camera>());
 	//Engine::GetInstance().GetDebugDrawer().DrawCameraFrustum(mySpotLights[0]->GetComponent<Camera>());
 	Engine::GetInstance().GetDebugDrawer().DrawCameraFrustum(mySpotLights[0]->GetComponent<Camera>());
-	CU::Vector3f pos = mySpotLights[0]->Transform.GetTranslation();
-	Engine::GetInstance().GetDebugDrawer().DrawLine(pos, pos + mySpotLights[0]->GetComponent<Camera>()->GetFrustumPlaneVolume().GetPlane(0).GetNormal() * 10.0f, { 0.25f, 0, 1.0f, 1.0f });
-	Engine::GetInstance().GetDebugDrawer().DrawLine(pos, pos + mySpotLights[0]->GetComponent<Camera>()->GetFrustumPlaneVolume().GetPlane(1).GetNormal() * 10.0f, { 0, 0, 1.0f, 1.0f });
-	Engine::GetInstance().GetDebugDrawer().DrawLine(pos, pos + mySpotLights[0]->GetComponent<Camera>()->GetFrustumPlaneVolume().GetPlane(2).GetNormal() * 10.0f, { 1.0f, 0.25f, 0, 1.0f });
-	Engine::GetInstance().GetDebugDrawer().DrawLine(pos, pos + mySpotLights[0]->GetComponent<Camera>()->GetFrustumPlaneVolume().GetPlane(3).GetNormal() * 10.0f, { 1.0f, 0, 0, 1.0f });
-	Engine::GetInstance().GetDebugDrawer().DrawLine(pos, pos + mySpotLights[0]->GetComponent<Camera>()->GetFrustumPlaneVolume().GetPlane(4).GetNormal() * 10.0f, { 0, 1.0f, 0.5f, 1.0f });
-	Engine::GetInstance().GetDebugDrawer().DrawLine(pos, pos + mySpotLights[0]->GetComponent<Camera>()->GetFrustumPlaneVolume().GetPlane(5).GetNormal() * 10.0f, { 0, 1.0f, 0, 1.0f });
 }
 
 std::shared_ptr<GameObject> Scene::FindGameObjectByName(std::string aName)
@@ -251,7 +244,7 @@ void Scene::QueuePointLightShadows()
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(PipelineStateType::ShadowCube);
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(myPointLights[i]->GetComponent<Camera>());
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateShadowBuffer>(pointLight);
-		QueueGameObjects(myPointLights[i]->GetComponent<Camera>());
+		QueueGameObjects(myPointLights[i]->GetComponent<Camera>(), true);
 	}
 }
 
@@ -285,14 +278,14 @@ void Scene::QueueDebugGizmos(std::shared_ptr<Camera> aRenderCamera)
 	}
 }
 
-void Scene::QueueGameObjects(std::shared_ptr<Camera> aRenderCamera)
+void Scene::QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disableViewCulling)
 {
 	for (auto& gameObject : myGameObjects)
 	{
 		std::shared_ptr<Model> model = gameObject->GetComponent<Model>();
 		if (model && model->GetActive())
 		{
-			if (CU::IntersectionBetweenPlaneVolumeAABB(aRenderCamera->GetFrustumPlaneVolume(gameObject->Transform.GetMatrix()), model->GetBoundingBox()))
+			if (disableViewCulling || !GraphicsEngine::Get().ViewCull || CU::IntersectionBetweenPlaneVolumeAABB(aRenderCamera->GetFrustumPlaneVolume(gameObject->Transform.GetMatrix(true)), model->GetBoundingBox()))
 			{
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model);
 			}
@@ -301,7 +294,7 @@ void Scene::QueueGameObjects(std::shared_ptr<Camera> aRenderCamera)
 		std::shared_ptr<AnimatedModel> animModel = gameObject->GetComponent<AnimatedModel>();
 		if (animModel && animModel->GetActive())
 		{
-			if (CU::IntersectionBetweenPlaneVolumeAABB(aRenderCamera->GetFrustumPlaneVolume(gameObject->Transform.GetMatrix()), animModel->GetBoundingBox()))
+			if (disableViewCulling || !GraphicsEngine::Get().ViewCull || CU::IntersectionBetweenPlaneVolumeAABB(aRenderCamera->GetFrustumPlaneVolume(gameObject->Transform.GetMatrix(true)), animModel->GetBoundingBox()))
 			{
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel);
 			}

@@ -34,7 +34,7 @@ private:
 	void QueuePointLightShadows();
 	void QueueDirectionalLightShadows();
 	void QueueDebugGizmos(std::shared_ptr<Camera> aRenderCamera);
-	void QueueGameObjects(std::shared_ptr<Camera> aRenderCamera);
+	void QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disableViewCulling = false);
 
 	std::vector<std::shared_ptr<GameObject>> myGameObjects;
 	unsigned myActiveGameObjectAmount = 0;

@@ -101,6 +101,7 @@ public:
 	};
 	bool ShowGizmos = false;
 	bool DrawBoundingBoxes = false;
+	bool ViewCull = true;
 
 private:
 	GraphicsEngine();
