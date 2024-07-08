@@ -241,12 +241,14 @@ void ModelViewer::InitGameObjects()
 	
 	
 	std::shared_ptr<GameObject> cube = std::make_shared<GameObject>();
+	cube->SetName("Cube");
 	cube->Transform = CU::Transform<float>({ 200.0f, 50.0f, 200.0f }, { 0, 0, 0 }, { 50.0f, 50.0f, 50.0f });
 	cube->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("CubePrimitive")->mesh,
 							   AssetManager::Get().GetAsset<MaterialAsset>("DefaultMaterial")->material);
 	Engine::GetInstance().GetSceneHandler().Instantiate(cube);
 
 	std::shared_ptr<GameObject> ramp = std::make_shared<GameObject>();
+	ramp->SetName("Ramp");
 	ramp->Transform = CU::Transform<float>({ 300.0f, 50.0f, 0 }, { 0, 45.0f, 0 }, { 50.0f, 50.0f, 50.0f });
 	ramp->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("RampPrimitive")->mesh,
 							   AssetManager::Get().GetAsset<MaterialAsset>("DefaultMaterial")->material);
@@ -324,6 +326,7 @@ void ModelViewer::UpdateImgui()
 		ImGui::Begin("Modelviewer");
 
 		ImGui::Checkbox("Show Gizmos", &GraphicsEngine::Get().ShowGizmos);
+		ImGui::Checkbox("Show Bounding Boxes", &GraphicsEngine::Get().DrawBoundingBoxes);
 
 		// Rendering
 		{

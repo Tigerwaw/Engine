@@ -17,3 +17,8 @@ void Mesh::Initialize(std::vector<Vertex>&& aVertexList, std::vector<unsigned>&&
 	GraphicsEngine::Get().CreateVertexBuffer("Vertex Buffer", myVertices, myVertexBuffer);
 	GraphicsEngine::Get().CreateIndexBuffer("Index Buffer", myIndices, myIndexBuffer);
 }
+
+void Mesh::InitBoundingBox(CU::Vector3f aMinPoint, CU::Vector3f aMaxPoint)
+{
+	myBoundingBox.InitWithMinAndMax(aMinPoint, aMaxPoint);
+}

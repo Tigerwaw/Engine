@@ -66,6 +66,16 @@ void AnimatedModel::SetMaterialOnSlot(unsigned aSlot, std::shared_ptr<Material> 
     mySlotToIndex.emplace(aSlot, static_cast<unsigned>(myMaterials.size() - 1));
 }
 
+const CU::AABB3D<float> AnimatedModel::GetBoundingBox() const
+{
+    if (!myMesh)
+    {
+        return CU::AABB3D<float>();
+    }
+
+    return myMesh->GetBoundingBox();
+}
+
 void AnimatedModel::AddAnimationLayer(unsigned aJointID)
 {
     if (!myMesh.get())

@@ -1,5 +1,5 @@
 #pragma once
-#include "Math/Vector3.hpp"
+#include "GameEngine/Math/Vector.hpp"
 
 namespace CommonUtilities
 {

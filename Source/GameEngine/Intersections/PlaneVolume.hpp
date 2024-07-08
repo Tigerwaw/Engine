@@ -58,9 +58,9 @@ namespace CommonUtilities
 	template <class T>
 	bool PlaneVolume<T>::IsInside(const Vector3<T>& aPosition) const
 	{
-		for each (Plane<T> plane in myPlanes)
+		for (int i = 0; i < myPlanes.size(); i++)
 		{
-			if (!plane.IsInside(aPosition))
+			if (!myPlanes[i].IsInside(aPosition))
 			{
 				return false;
 			}

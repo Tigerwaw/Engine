@@ -87,8 +87,8 @@ public:
 	GraphicsCommandList& GetGraphicsCommandList() const { return *myCommandList; }
 
 	const unsigned GetDrawcallAmount() const { return myDrawcallAmount; }
-	void SetDebugMode(DebugMode aDebugMode) { myCurrentDebugMode = aDebugMode; }
 	const DebugMode GetCurrentDebugMode() const { return myCurrentDebugMode; }
+	void SetDebugMode(DebugMode aDebugMode) { myCurrentDebugMode = aDebugMode; }
 
 	std::vector<std::string> DebugModeNames = {
 		"None",
@@ -100,6 +100,7 @@ public:
 		"DebugUVs"
 	};
 	bool ShowGizmos = false;
+	bool DrawBoundingBoxes = false;
 
 private:
 	GraphicsEngine();

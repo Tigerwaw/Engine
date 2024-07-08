@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include "GameEngine/Math/Matrix4x4.hpp"
 #include "GameEngine/Math/Vector.hpp"
+#include "GameEngine/Intersections/AABB3D.hpp"
 
 struct ID3D11Buffer;
 struct Vertex;
@@ -41,17 +42,20 @@ public:
 	~Mesh();
 
 	void Initialize(std::vector<Vertex>&& aVertexList, std::vector<unsigned>&& aIndexList, std::vector<Element>&& aElementList, Skeleton aSkeleton);
+	void InitBoundingBox(CU::Vector3f aMinPoint, CU::Vector3f aMaxPoint);
 
 	FORCEINLINE const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetVertexBuffer() const { return myVertexBuffer; }
 	FORCEINLINE const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetIndexBuffer() const { return myIndexBuffer; }
 	FORCEINLINE const std::vector<Element>& GetElements() const { return myElements; }
 	FORCEINLINE const Skeleton& GetSkeleton() const { return mySkeleton; }
+	FORCEINLINE const CU::AABB3D<float>& GetBoundingBox() const { return myBoundingBox; }
 
 private:
 	std::vector<Vertex> myVertices;
 	std::vector<unsigned> myIndices;
 	std::vector<Element> myElements;
 	Skeleton mySkeleton;
+	CU::AABB3D<float> myBoundingBox;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> myVertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> myIndexBuffer;

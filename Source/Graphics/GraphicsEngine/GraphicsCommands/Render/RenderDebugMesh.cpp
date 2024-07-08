@@ -9,6 +9,9 @@
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/DebugModel.h"
 
+#include "GameEngine/Engine.h"
+#include "GameEngine/DebugDrawer/DebugDrawer.h"
+
 RenderDebugMesh::RenderDebugMesh(std::shared_ptr<DebugModel> aModel)
 {
     if (!aModel.get()) return;
@@ -16,6 +19,11 @@ RenderDebugMesh::RenderDebugMesh(std::shared_ptr<DebugModel> aModel)
     mesh = aModel->GetMesh();
     transform = aModel->GetParent()->Transform.GetMatrix();
     materialList = aModel->GetMaterials();
+
+    if (GraphicsEngine::Get().DrawBoundingBoxes)
+    {
+        Engine::GetInstance().GetDebugDrawer().DrawBoundingBox(aModel);
+    }
 }
 
 void RenderDebugMesh::Execute()

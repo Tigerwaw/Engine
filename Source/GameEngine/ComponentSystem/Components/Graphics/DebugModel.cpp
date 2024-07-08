@@ -39,3 +39,13 @@ void DebugModel::SetMaterialOnSlot(unsigned aSlot, std::shared_ptr<Material> aMa
     myMaterials.emplace_back(aMaterial);
     mySlotToIndex.emplace(aSlot, static_cast<unsigned>(myMaterials.size() - 1));
 }
+
+const CU::AABB3D<float> DebugModel::GetBoundingBox() const
+{
+    if (!myMesh)
+    {
+        return CU::AABB3D<float>();
+    }
+
+    return myMesh->GetBoundingBox();
+}

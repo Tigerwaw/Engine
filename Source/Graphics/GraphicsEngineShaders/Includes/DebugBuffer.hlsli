@@ -5,5 +5,5 @@ cbuffer DebugBuffer : register(b7)
         float4 From;            // 16 bytes
         float4 To;              // 16 bytes
         float4 Color;           // 16 bytes
-    } DB_Lines[128];            // 48 * 128 = 6144
+    } DB_Lines[256];            // 48 * 256 = 12 288
 }

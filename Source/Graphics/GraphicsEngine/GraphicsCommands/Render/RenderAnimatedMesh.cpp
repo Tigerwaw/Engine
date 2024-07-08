@@ -1,12 +1,16 @@
 #include "GraphicsEngine.pch.h"
 #include "RenderAnimatedMesh.h"
 
+#include "GraphicsEngine/GraphicsEngine.h"
 #include "GraphicsEngine/Objects/Mesh.h"
 #include "GraphicsEngine/Objects/Material.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/ObjectBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/AnimationBuffer.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
+
+#include "GameEngine/Engine.h"
+#include "GameEngine/DebugDrawer/DebugDrawer.h"
 
 RenderAnimatedMesh::RenderAnimatedMesh(std::shared_ptr<AnimatedModel> aModel)
 {
@@ -16,6 +20,11 @@ RenderAnimatedMesh::RenderAnimatedMesh(std::shared_ptr<AnimatedModel> aModel)
     transform = aModel->GetParent()->Transform.GetMatrix();
     materialList = aModel->GetMaterials();
     jointTransforms = aModel->GetCurrentPose();
+    
+    if (GraphicsEngine::Get().DrawBoundingBoxes)
+    {
+        Engine::GetInstance().GetDebugDrawer().DrawBoundingBox(aModel);
+    }
 }
 
 void RenderAnimatedMesh::Execute()

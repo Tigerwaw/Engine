@@ -149,6 +149,9 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
     std::vector<unsigned> indices;
     std::vector<Mesh::Element> elements;
 
+    CU::Vector3<float> minBBPoint;
+    CU::Vector3<float> maxBBPoint;
+
     unsigned nextVertexOffset = 0;
     unsigned nextIndexOffset = 0;
 
@@ -166,6 +169,14 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
         {
             vertices.push_back(Vertex(v.Position, v.VertexColors, v.BoneIDs, v.BoneWeights, v.UVs, v.Normal, v.Tangent));
             nextVertexOffset++;
+
+            minBBPoint.x = v.Position[0] < minBBPoint.x ? v.Position[0] : minBBPoint.x;
+            minBBPoint.y = v.Position[1] < minBBPoint.y ? v.Position[1] : minBBPoint.y;
+            minBBPoint.z = v.Position[2] < minBBPoint.z ? v.Position[2] : minBBPoint.z;
+
+            maxBBPoint.x = v.Position[0] > maxBBPoint.x ? v.Position[0] : maxBBPoint.x;
+            maxBBPoint.y = v.Position[1] > maxBBPoint.y ? v.Position[1] : maxBBPoint.y;
+            maxBBPoint.z = v.Position[2] > maxBBPoint.z ? v.Position[2] : maxBBPoint.z;
         }
 
         for (auto& i : tgaElement.Indices)
@@ -195,6 +206,7 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
     skeleton.JointNameToIndex = tgaMesh.Skeleton.BoneNameToIndex;
 
     Mesh mesh;
+    mesh.InitBoundingBox(minBBPoint, maxBBPoint);
     mesh.Initialize(std::move(vertices), std::move(indices), std::move(elements), std::move(skeleton));
 
     std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
@@ -466,6 +478,7 @@ bool AssetManager::RegisterPlanePrimitive()
     std::vector<Mesh::Element> elementList = { element };
 
     Mesh plane;
+    plane.InitBoundingBox({ -1.0f, -0.001f, -1.0f }, { 1.0f, 0.001f, 1.0f });
     plane.Initialize(std::move(vertexList), std::move(indexList), std::move(elementList), Mesh::Skeleton());
     
     std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
@@ -656,6 +669,7 @@ bool AssetManager::RegisterCubePrimitive()
     std::vector<Mesh::Element> elementList = { element };
 
     Mesh cube;
+    cube.InitBoundingBox({ -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f });
     cube.Initialize(std::move(vertexList), std::move(indexList), std::move(elementList), Mesh::Skeleton());
 
     std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
@@ -811,6 +825,7 @@ bool AssetManager::RegisterRampPrimitive()
     std::vector<Mesh::Element> elementList = { element };
 
     Mesh ramp;
+    ramp.InitBoundingBox({ -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f });
     ramp.Initialize(std::move(vertexList), std::move(indexList), std::move(elementList), Mesh::Skeleton());
 
     std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();

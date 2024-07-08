@@ -5,6 +5,7 @@
 #include "Sphere.hpp"
 #include "AABB3D.hpp"
 #include "Ray.hpp"
+#include "PlaneVolume.hpp"
 
 namespace CommonUtilities
 {
@@ -195,6 +196,20 @@ namespace CommonUtilities
 		if (distance <= aSphereTwo.GetRadiusSqr() + aSphereOne.GetRadiusSqr())
 		{
 			return true;
+		}
+
+		return false;
+	}
+
+	template<class T>
+	bool IntersectionBetweenPlaneVolumeAABB(const PlaneVolume<T>& aPlaneVolume, const AABB3D<T> aBoundingBox)
+	{
+		for (Vector3<T> corner : aBoundingBox.GetCorners())
+		{
+			if (aPlaneVolume.IsInside(corner))
+			{
+				return true;
+			}
 		}
 
 		return false;

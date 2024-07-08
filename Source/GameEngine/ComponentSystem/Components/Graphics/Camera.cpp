@@ -39,19 +39,24 @@ void Camera::InitPerspectiveProjection(float aFOV, float aNearPlane, float aFarP
 	myProjectionMatrix(4, 3) = -aNearPlane * myProjectionMatrix(3, 3);
 	myProjectionMatrix(4, 4) = 0;
 
-	CU::Vector3f topLeft = CU::Vector3f(-cos(horizontalFOV), sin(verticalFOV), 1.0f).GetNormalized();
-	CU::Vector3f topRight = CU::Vector3f(cos(horizontalFOV), sin(verticalFOV), 1.0f).GetNormalized();
-	CU::Vector3f bottomRight = CU::Vector3f(cos(horizontalFOV), -sin(verticalFOV), 1.0f).GetNormalized();
-	CU::Vector3f bottomLeft = CU::Vector3f(-cos(horizontalFOV), -sin(verticalFOV), 1.0f).GetNormalized();
+	//CU::Vector3f topLeft = CU::Vector3f(-cos(horizontalFOV), sin(verticalFOV), 1.0f).GetNormalized();
+	//CU::Vector3f topRight = CU::Vector3f(cos(horizontalFOV), sin(verticalFOV), 1.0f).GetNormalized();
+	//CU::Vector3f bottomRight = CU::Vector3f(cos(horizontalFOV), -sin(verticalFOV), 1.0f).GetNormalized();
+	//CU::Vector3f bottomLeft = CU::Vector3f(-cos(horizontalFOV), -sin(verticalFOV), 1.0f).GetNormalized();
+	
+	CU::Vector3f topLeft = CU::Vector3f(-1.0f, 1.0f, 1.0f).GetNormalized();
+	CU::Vector3f topRight = CU::Vector3f(1.0f, 1.0f, 1.0f).GetNormalized();
+	CU::Vector3f bottomRight = CU::Vector3f(1.0f, -1.0f, 1.0f).GetNormalized();
+	CU::Vector3f bottomLeft = CU::Vector3f(-1.0f, -1.0f, 1.0f).GetNormalized();
 
-	myFrustumVolume[0] = bottomLeft * aNearPlane;
-	myFrustumVolume[1] = topLeft * aNearPlane;
-	myFrustumVolume[2] = topRight * aNearPlane;
-	myFrustumVolume[3] = bottomRight * aNearPlane;
-	myFrustumVolume[4] = bottomLeft * aFarPlane;
-	myFrustumVolume[5] = topLeft * aFarPlane;
-	myFrustumVolume[6] = topRight * aFarPlane;
-	myFrustumVolume[7] = bottomRight * aFarPlane;
+	myFrustumCorners[0] = bottomLeft * aNearPlane;
+	myFrustumCorners[1] = topLeft * aNearPlane;
+	myFrustumCorners[2] = topRight * aNearPlane;
+	myFrustumCorners[3] = bottomRight * aNearPlane;
+	myFrustumCorners[4] = bottomLeft * aFarPlane;
+	myFrustumCorners[5] = topLeft * aFarPlane;
+	myFrustumCorners[6] = topRight * aFarPlane;
+	myFrustumCorners[7] = bottomRight * aFarPlane;
 }
 
 void Camera::InitOrtographicProjection(float aLeft, float aRight, float aTop, float aBottom, float aNearPlane, float aFarPlane)
@@ -67,12 +72,41 @@ void Camera::InitOrtographicProjection(float aLeft, float aRight, float aTop, fl
 	myProjectionMatrix(4, 2) = -(aTop + aBottom) / (aTop - aBottom);
 	myProjectionMatrix(4, 3) = -(aNearPlane) / (aFarPlane - aNearPlane);
 
-	myFrustumVolume[0] = CU::Vector3f(aLeft, aBottom, aNearPlane);
-	myFrustumVolume[1] = CU::Vector3f(aLeft, aTop, aNearPlane);
-	myFrustumVolume[2] = CU::Vector3f(aRight, aTop, aNearPlane);
-	myFrustumVolume[3] = CU::Vector3f(aRight, aBottom, aNearPlane);
-	myFrustumVolume[4] = CU::Vector3f(aLeft, aBottom, aFarPlane);
-	myFrustumVolume[5] = CU::Vector3f(aLeft, aTop, aFarPlane);
-	myFrustumVolume[6] = CU::Vector3f(aRight, aTop, aFarPlane);
-	myFrustumVolume[7] = CU::Vector3f(aRight, aBottom, aFarPlane);
+	myFrustumCorners[0] = CU::Vector3f(aLeft, aBottom, aNearPlane);
+	myFrustumCorners[1] = CU::Vector3f(aLeft, aTop, aNearPlane);
+	myFrustumCorners[2] = CU::Vector3f(aRight, aTop, aNearPlane);
+	myFrustumCorners[3] = CU::Vector3f(aRight, aBottom, aNearPlane);
+	myFrustumCorners[4] = CU::Vector3f(aLeft, aBottom, aFarPlane);
+	myFrustumCorners[5] = CU::Vector3f(aLeft, aTop, aFarPlane);
+	myFrustumCorners[6] = CU::Vector3f(aRight, aTop, aFarPlane);
+	myFrustumCorners[7] = CU::Vector3f(aRight, aBottom, aFarPlane);
+}
+
+// Does not work with scale yet.
+CU::PlaneVolume<float> Camera::GetFrustumPlaneVolume(CU::Matrix4x4f aObjectSpace)
+{
+	std::vector<CU::Vector3f> corners;
+
+	CU::Matrix4x4f matrix = myParent->Transform.GetMatrix();
+	if (aObjectSpace != CU::Matrix4x4f())
+	{
+		matrix = matrix * aObjectSpace.GetFastInverse();
+	}
+
+	for (auto& corner : myFrustumCorners)
+	{
+		corners.emplace_back(CU::ToVector3(CU::ToVector4(corner, 1.0f) * matrix));
+	}
+
+	CU::PlaneVolume<float> volume;
+	volume.AddPlane(CU::Plane<float>(corners[0], corners[1], corners[2]));
+	volume.AddPlane(CU::Plane<float>(corners[6], corners[5], corners[4]));
+	
+	volume.AddPlane(CU::Plane<float>(corners[4], corners[5], corners[1]));
+	volume.AddPlane(CU::Plane<float>(corners[2], corners[6], corners[7]));
+	
+	volume.AddPlane(CU::Plane<float>(corners[7], corners[4], corners[0]));
+	volume.AddPlane(CU::Plane<float>(corners[1], corners[5], corners[6]));
+
+	return volume;
 }

@@ -1,5 +1,6 @@
 #pragma once
-#include "Math/Vector3.hpp"
+#include <vector>
+#include "GameEngine/Math/Vector.hpp"
 
 namespace CommonUtilities
 {
@@ -21,6 +22,7 @@ namespace CommonUtilities
 		bool IsInside(const Vector3<T>& aPosition) const;
 		const Vector3<T> GetMin() const;
 		const Vector3<T> GetMax() const;
+		const std::vector<Vector3<T>> GetCorners() const;
 	private:
 		Vector3<T> minPoint;
 		Vector3<T> maxPoint;
@@ -77,5 +79,20 @@ namespace CommonUtilities
 	const Vector3<T> AABB3D<T>::GetMax() const
 	{
 		return maxPoint;
+	}
+	template<class T>
+	inline const std::vector<Vector3<T>> AABB3D<T>::GetCorners() const
+	{
+		std::vector<Vector3<T>> corners;
+		corners.emplace_back(minPoint);
+		corners.emplace_back(Vector3<T>(maxPoint.x, minPoint.y, minPoint.z));
+		corners.emplace_back(Vector3<T>(maxPoint.x, minPoint.y, maxPoint.z));
+		corners.emplace_back(Vector3<T>(minPoint.x, minPoint.y, maxPoint.z));
+
+		corners.emplace_back(Vector3<T>(minPoint.x, maxPoint.y, minPoint.z));
+		corners.emplace_back(Vector3<T>(maxPoint.x, maxPoint.y, minPoint.z));
+		corners.emplace_back(maxPoint);
+		corners.emplace_back(Vector3<T>(minPoint.x, maxPoint.y, maxPoint.z));
+		return corners;
 	}
 }

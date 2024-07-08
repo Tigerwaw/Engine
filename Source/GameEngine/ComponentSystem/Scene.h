@@ -3,8 +3,11 @@
 #include <vector>
 #include <string>
 
+#include "GameEngine/Intersections/AABB3D.hpp"
+
 class GameObject;
 class SceneHandler;
+class Camera;
 
 class Scene final
 {
@@ -30,8 +33,8 @@ private:
 	void QueueSpotLightShadows();
 	void QueuePointLightShadows();
 	void QueueDirectionalLightShadows();
-	void QueueDebugGizmos();
-	void QueueGameObjects();
+	void QueueDebugGizmos(std::shared_ptr<Camera> aRenderCamera);
+	void QueueGameObjects(std::shared_ptr<Camera> aRenderCamera);
 
 	std::vector<std::shared_ptr<GameObject>> myGameObjects;
 	unsigned myActiveGameObjectAmount = 0;

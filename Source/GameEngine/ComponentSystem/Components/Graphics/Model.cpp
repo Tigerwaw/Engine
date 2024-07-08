@@ -39,3 +39,13 @@ void Model::SetMaterialOnSlot(unsigned aSlot, std::shared_ptr<Material> aMateria
     myMaterials.emplace_back(aMaterial);
     mySlotToIndex.emplace(aSlot, static_cast<unsigned>(myMaterials.size() - 1));
 }
+
+const CU::AABB3D<float> Model::GetBoundingBox() const
+{
+    if (!myMesh)
+    {
+        return CU::AABB3D<float>();
+    }
+
+    return myMesh->GetBoundingBox();
+}

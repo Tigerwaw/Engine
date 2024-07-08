@@ -1,5 +1,7 @@
 #pragma once
 #include "GameEngine/ComponentSystem/Component.h"
+#include "GameEngine/Intersections/AABB3D.hpp"
+namespace CU = CommonUtilities;
 
 #include <memory>
 #include <vector>
@@ -50,6 +52,7 @@ public:
     void SetMaterialOnSlot(unsigned aSlot, std::shared_ptr<Material> aMaterial);
     std::shared_ptr<Material> GetMaterialOnSlot(unsigned aSlot) { return myMaterials[mySlotToIndex[aSlot]]; }
     std::vector<std::shared_ptr<Material>> GetMaterials() { return myMaterials; }
+    const CU::AABB3D<float> GetBoundingBox() const;
 
     void AddAnimationLayer(unsigned aJointID = 0);
     void AddAnimationLayer(std::string aStartJoint = "");
