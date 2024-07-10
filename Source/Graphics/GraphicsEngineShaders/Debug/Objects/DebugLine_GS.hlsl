@@ -1,4 +1,6 @@
-#include "../../Includes/DefaultShaderIncludes.hlsli"
+#include "../../Includes/Debug_Includes.hlsli"
+#include "../../Includes/ConstantBuffers/DebugBuffer.hlsli"
+#include "../../Includes/ConstantBuffers/FrameBuffer.hlsli"
 
 [maxvertexcount(2)]
 void main(point DebugObject_VSout input[1],

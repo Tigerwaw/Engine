@@ -77,11 +77,6 @@ void Scene::Render()
 	}
 	
 	QueueClearTextureResources();
-
-	//Engine::GetInstance().GetDebugDrawer().DrawLine({ -200.0f, 200.0f, 0 }, { 200.0f, 200.0f, 0 });
-	//Engine::GetInstance().GetDebugDrawer().DrawCameraFrustum(myDirectionalLight->GetComponent<Camera>());
-	//Engine::GetInstance().GetDebugDrawer().DrawCameraFrustum(mySpotLights[0]->GetComponent<Camera>());
-	Engine::GetInstance().GetDebugDrawer().DrawCameraFrustum(mySpotLights[0]->GetComponent<Camera>());
 }
 
 std::shared_ptr<GameObject> Scene::FindGameObjectByName(std::string aName)
@@ -297,6 +292,15 @@ void Scene::QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disable
 			if (disableViewCulling || !GraphicsEngine::Get().UseViewCulling || CU::IntersectionBetweenPlaneVolumeAABB(aRenderCamera->GetFrustumPlaneVolume(gameObject->Transform.GetMatrix(true)), animModel->GetBoundingBox()))
 			{
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel);
+			}
+		}
+
+		if (GraphicsEngine::Get().DrawCameraFrustums)
+		{
+			std::shared_ptr<Camera> cam = gameObject->GetComponent<Camera>();
+			if (cam && cam->GetActive())
+			{
+				Engine::GetInstance().GetDebugDrawer().DrawCameraFrustum(cam);
 			}
 		}
 	}

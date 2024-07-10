@@ -1,4 +1,5 @@
 #include "DefaultShaderIncludes.hlsli"
+#include "ConstantBuffers/LightBuffer.hlsli"
 
 #ifndef _BRDF_INCLUDES_
 #define _BRDF_INCLUDES_

@@ -68,24 +68,12 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 
 	PipelineStateObject defaultPSO;
 	defaultPSO.VertexShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("Default_VS", *defaultPSO.VertexShader, BuiltIn_Default_VS_ByteCode, sizeof(BuiltIn_Default_VS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to load vertex shader!");
-		return false;
-	}
+	myRHI->LoadShaderFromMemory("Default_VS", *defaultPSO.VertexShader, BuiltIn_Default_VS_ByteCode, sizeof(BuiltIn_Default_VS_ByteCode));
 
 	defaultPSO.PixelShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("Default_PS", *defaultPSO.PixelShader, BuiltIn_Default_PS_ByteCode, sizeof(BuiltIn_Default_PS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to load pixel shader!");
-		return false;
-	}
+	myRHI->LoadShaderFromMemory("Default_PS", *defaultPSO.PixelShader, BuiltIn_Default_PS_ByteCode, sizeof(BuiltIn_Default_PS_ByteCode));
 
-	if (!myRHI->CreateInputLayout(defaultPSO.InputLayout, Vertex::InputLayoutDefinition, BuiltIn_Default_VS_ByteCode, sizeof(BuiltIn_Default_VS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to create shader input layout!");
-		return false;
-	}
+	myRHI->CreateInputLayout(defaultPSO.InputLayout, Vertex::InputLayoutDefinition, BuiltIn_Default_VS_ByteCode, sizeof(BuiltIn_Default_VS_ByteCode));
 	
 	defaultPSO.SamplerStates[0] = myRHI->GetSamplerState("DefaultSS");
 	defaultPSO.SamplerStates[14] = myRHI->GetSamplerState("LutSS");
@@ -97,25 +85,13 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 
 	PipelineStateObject spritePSO;
 	spritePSO.VertexShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("Sprite_VS", *spritePSO.VertexShader, BuiltIn_Sprite_VS_ByteCode, sizeof(BuiltIn_Sprite_VS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to load vertex shader!");
-		return false;
-	}
+	myRHI->LoadShaderFromMemory("Sprite_VS", *spritePSO.VertexShader, BuiltIn_Sprite_VS_ByteCode, sizeof(BuiltIn_Sprite_VS_ByteCode));
 
 	spritePSO.GeometryShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("Sprite_GS", *spritePSO.GeometryShader, BuiltIn_Sprite_GS_ByteCode, sizeof(BuiltIn_Sprite_GS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to load vertex shader!");
-		return false;
-	}
+	myRHI->LoadShaderFromMemory("Sprite_GS", *spritePSO.GeometryShader, BuiltIn_Sprite_GS_ByteCode, sizeof(BuiltIn_Sprite_GS_ByteCode));
 
 	spritePSO.PixelShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("Sprite_PS", *spritePSO.PixelShader, BuiltIn_Sprite_PS_ByteCode, sizeof(BuiltIn_Sprite_PS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to load pixel shader!");
-		return false;
-	}
+	myRHI->LoadShaderFromMemory("Sprite_PS", *spritePSO.PixelShader, BuiltIn_Sprite_PS_ByteCode, sizeof(BuiltIn_Sprite_PS_ByteCode));
 
 	spritePSO.SamplerStates[0] = myRHI->GetSamplerState("DefaultSS");
 	myPSOmap.emplace(PipelineStateType::Sprite, std::make_shared<PipelineStateObject>(spritePSO));
@@ -123,25 +99,27 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 
 	PipelineStateObject debugPSO;
 	debugPSO.VertexShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("DebugObject_VS", *debugPSO.VertexShader, BuiltIn_DebugObject_VS_ByteCode, sizeof(BuiltIn_DebugObject_VS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to load vertex shader!");
-		return false;
-	}
+	myRHI->LoadShaderFromMemory("DebugObject_VS", *debugPSO.VertexShader, BuiltIn_DebugObject_VS_ByteCode, sizeof(BuiltIn_DebugObject_VS_ByteCode));
 
 	debugPSO.GeometryShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("DebugLine_GS", *debugPSO.GeometryShader, BuiltIn_DebugLine_GS_ByteCode, sizeof(BuiltIn_DebugLine_GS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to load vertex shader!");
-		return false;
-	}
+	myRHI->LoadShaderFromMemory("DebugLine_GS", *debugPSO.GeometryShader, BuiltIn_DebugLine_GS_ByteCode, sizeof(BuiltIn_DebugLine_GS_ByteCode));
 
 	debugPSO.PixelShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("DebugObject_PS", *debugPSO.PixelShader, BuiltIn_DebugObject_PS_ByteCode, sizeof(BuiltIn_DebugObject_PS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to load pixel shader!");
-		return false;
-	}
+	myRHI->LoadShaderFromMemory("DebugObject_PS", *debugPSO.PixelShader, BuiltIn_DebugObject_PS_ByteCode, sizeof(BuiltIn_DebugObject_PS_ByteCode));
+
+	D3D11_RASTERIZER_DESC debugRastDesc = {};
+	debugRastDesc.FillMode = D3D11_FILL_SOLID;
+	debugRastDesc.CullMode = D3D11_CULL_NONE;
+	debugRastDesc.FrontCounterClockwise = false;
+	debugRastDesc.DepthBias = 0;
+	debugRastDesc.SlopeScaledDepthBias = 0;
+	debugRastDesc.DepthBiasClamp = 0;
+	debugRastDesc.DepthClipEnable = true;
+	debugRastDesc.ScissorEnable = false;
+	debugRastDesc.AntialiasedLineEnable = true;
+	debugRastDesc.MultisampleEnable = false;
+
+	myRHI->CreateRasterizerState("DebugPSO_Rasterizer", debugRastDesc, debugPSO);
 
 	debugPSO.SamplerStates[0] = myRHI->GetSamplerState("DefaultSS");
 	myPSOmap.emplace(PipelineStateType::DebugLine, std::make_shared<PipelineStateObject>(debugPSO));
@@ -170,24 +148,16 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	myRHI->CreateRasterizerState("WireframePSO_Rasterizer", wireframeRastDesc, wireframePSO);
 
 	wireframePSO.PixelShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("Wireframe_PS", *wireframePSO.PixelShader, BuiltIn_Wireframe_PS_ByteCode, sizeof(BuiltIn_Wireframe_PS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to load pixel shader!");
-		return false;
-	}
-
-
+	myRHI->LoadShaderFromMemory("Wireframe_PS", *wireframePSO.PixelShader, BuiltIn_Wireframe_PS_ByteCode, sizeof(BuiltIn_Wireframe_PS_ByteCode));
 	myPSOmap.emplace(PipelineStateType::Wireframe, std::make_shared<PipelineStateObject>(wireframePSO));
+
+
 
 	PipelineStateObject gizmoPSO;
 	gizmoPSO.VertexShader = defaultPSO.VertexShader;
 
 	gizmoPSO.PixelShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("Gizmo_PS", *gizmoPSO.PixelShader, BuiltIn_Gizmo_PS_ByteCode, sizeof(BuiltIn_Gizmo_PS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to load pixel shader!");
-		return false;
-	}
+	myRHI->LoadShaderFromMemory("Gizmo_PS", *gizmoPSO.PixelShader, BuiltIn_Gizmo_PS_ByteCode, sizeof(BuiltIn_Gizmo_PS_ByteCode));
 
 	gizmoPSO.InputLayout = defaultPSO.InputLayout;
 	gizmoPSO.VertexStride = sizeof(Vertex);
@@ -203,18 +173,10 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	
 	PipelineStateObject shadowCubePSO;
 	shadowCubePSO.VertexShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("ShadowCube_VS", *shadowCubePSO.VertexShader, BuiltIn_ShadowCube_VS_ByteCode, sizeof(BuiltIn_ShadowCube_VS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to load vertex shader!");
-		return false;
-	}
+	myRHI->LoadShaderFromMemory("ShadowCube_VS", *shadowCubePSO.VertexShader, BuiltIn_ShadowCube_VS_ByteCode, sizeof(BuiltIn_ShadowCube_VS_ByteCode));
 
 	shadowCubePSO.GeometryShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("ShadowCube_GS", *shadowCubePSO.GeometryShader, BuiltIn_ShadowCube_GS_ByteCode, sizeof(BuiltIn_ShadowCube_GS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to load geometry shader!");
-		return false;
-	}
+	myRHI->LoadShaderFromMemory("ShadowCube_GS", *shadowCubePSO.GeometryShader, BuiltIn_ShadowCube_GS_ByteCode, sizeof(BuiltIn_ShadowCube_GS_ByteCode));
 
 	shadowCubePSO.InputLayout = defaultPSO.InputLayout;
 	shadowCubePSO.VertexStride = sizeof(Vertex);
@@ -223,49 +185,30 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	PipelineStateObject debugVertexNormalsPSO;
 	debugVertexNormalsPSO = unlitPSO;
 	debugVertexNormalsPSO.PixelShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("DebugVertexNormals_PS", *debugVertexNormalsPSO.PixelShader, BuiltIn_DebugVertexNormals_PS_ByteCode, sizeof(BuiltIn_DebugVertexNormals_PS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to load pixel shader!");
-		return false;
-	}
+	myRHI->LoadShaderFromMemory("DebugVertexNormals_PS", *debugVertexNormalsPSO.PixelShader, BuiltIn_DebugVertexNormals_PS_ByteCode, sizeof(BuiltIn_DebugVertexNormals_PS_ByteCode));
 	myPSOmap.emplace(PipelineStateType::DebugVertexNormals, std::make_shared<PipelineStateObject>(debugVertexNormalsPSO));
 
 	PipelineStateObject debugPixelNormalsPSO;
 	debugPixelNormalsPSO = unlitPSO;
 	debugPixelNormalsPSO.PixelShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("DebugPixelNormals_PS", *debugPixelNormalsPSO.PixelShader, BuiltIn_DebugPixelNormals_PS_ByteCode, sizeof(BuiltIn_DebugPixelNormals_PS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to load pixel shader!");
-		return false;
-	}
+	myRHI->LoadShaderFromMemory("DebugPixelNormals_PS", *debugPixelNormalsPSO.PixelShader, BuiltIn_DebugPixelNormals_PS_ByteCode, sizeof(BuiltIn_DebugPixelNormals_PS_ByteCode));
 	myPSOmap.emplace(PipelineStateType::DebugPixelNormals, std::make_shared<PipelineStateObject>(debugPixelNormalsPSO));
 
 	PipelineStateObject debugTextureNormalsPSO;
 	debugTextureNormalsPSO = unlitPSO;
 	debugTextureNormalsPSO.PixelShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("DebugPixelNormals_PS", *debugTextureNormalsPSO.PixelShader, BuiltIn_DebugTextureNormals_PS_ByteCode, sizeof(BuiltIn_DebugTextureNormals_PS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to load pixel shader!");
-		return false;
-	}
+	myRHI->LoadShaderFromMemory("DebugPixelNormals_PS", *debugTextureNormalsPSO.PixelShader, BuiltIn_DebugTextureNormals_PS_ByteCode, sizeof(BuiltIn_DebugTextureNormals_PS_ByteCode));
 	myPSOmap.emplace(PipelineStateType::DebugTextureNormals, std::make_shared<PipelineStateObject>(debugTextureNormalsPSO));
 
 	PipelineStateObject debugUVsPSO;
 	debugUVsPSO = unlitPSO;
 	debugUVsPSO.PixelShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("DebugUVs_PS", *debugUVsPSO.PixelShader, BuiltIn_DebugUVs_PS_ByteCode, sizeof(BuiltIn_DebugUVs_PS_ByteCode)))
-	{
-		LOG(GraphicsLog, Error, "Failed to load pixel shader!");
-		return false;
-	}
+	myRHI->LoadShaderFromMemory("DebugUVs_PS", *debugUVsPSO.PixelShader, BuiltIn_DebugUVs_PS_ByteCode, sizeof(BuiltIn_DebugUVs_PS_ByteCode));
 	myPSOmap.emplace(PipelineStateType::DebugUVs, std::make_shared<PipelineStateObject>(debugUVsPSO));
 
 
 	myLUTtexture = std::make_shared<Texture>();
-	if (!myRHI->CreateLUT("LUT", 512, 512, myLUTtexture))
-	{
-		LOG(GraphicsLog, Error, "Failed to create LUT Texture!");
-	}
+	myRHI->CreateLUT("LUT", 512, 512, myLUTtexture);
 
 	CreateConstantBuffers();
 	

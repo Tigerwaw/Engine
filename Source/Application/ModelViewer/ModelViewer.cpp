@@ -328,6 +328,7 @@ void ModelViewer::UpdateImgui()
 		ImGui::Checkbox("Use Viewculling", &GraphicsEngine::Get().UseViewCulling);
 		ImGui::Checkbox("Draw Gizmos", &GraphicsEngine::Get().DrawGizmos);
 		ImGui::Checkbox("Draw Bounding Boxes", &GraphicsEngine::Get().DrawBoundingBoxes);
+		ImGui::Checkbox("Draw Camera Frustums", &GraphicsEngine::Get().DrawCameraFrustums);
 
 		// Rendering
 		{

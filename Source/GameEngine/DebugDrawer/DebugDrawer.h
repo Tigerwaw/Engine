@@ -32,5 +32,6 @@ private:
     void DrawBoundingBoxInternal(CU::AABB3D<float> aAABB, CU::Matrix4x4f aWorldMatrix, CU::Vector4f aColor);
 
     std::vector<DebugLine> myLines;
+    bool myHasWarned;
 };
 

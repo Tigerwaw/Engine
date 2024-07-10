@@ -2,6 +2,9 @@
 #define PI 3.14159265358979323846f
 #endif
 
+#ifndef _LAMBERTIAN_FUNCS_
+#define _LAMBERTIAN_FUNCS_
+
 float3 Lambertian_Light(float3 aLightDirection, float3 aPixelNormal, float3 aLightColor, float aLightIntensity)
 {
     return dot(aLightDirection, aPixelNormal) * aLightColor * aLightIntensity;
@@ -31,3 +34,5 @@ float3 Lambertian_Spotlight(float3 L, float3 aPixelNormal, float3 aLightColor, f
     light *= saturate(spotCone);
     return saturate(light);
 }
+
+#endif // _LAMBERTIAN_FUNCS_

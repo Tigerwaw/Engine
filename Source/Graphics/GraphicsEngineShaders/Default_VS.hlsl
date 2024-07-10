@@ -1,4 +1,7 @@
 #include "Includes/DefaultShaderIncludes.hlsli"
+#include "Includes/ConstantBuffers/AnimationBuffer.hlsli"
+#include "Includes/ConstantBuffers/ObjectBuffer.hlsli"
+#include "Includes/ConstantBuffers/FrameBuffer.hlsli"
 
 DefaultVStoPS main(DefaultVertex vertex)
 {

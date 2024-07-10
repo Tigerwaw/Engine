@@ -26,6 +26,12 @@ void DebugDrawer::DrawObjects()
 {
     if (!myLines.empty())
     {
+        if (!myHasWarned && myLines.size() >= MAX_DEBUG_LINES)
+        {
+            DEBUGDRAWERLOG(Warning, "Maximum amount of debug lines has been reached and all lines will not be drawn! Consider raising the max amount in EngineDefines if needed.");
+            myHasWarned = true;
+        }
+
         GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateDebugBuffer>(myLines);
     }
 }
@@ -42,7 +48,6 @@ void DebugDrawer::DrawLine(CU::Vector3f aFromPosition, CU::Vector3f aToPosition,
 {
     if (myLines.size() >= MAX_DEBUG_LINES)
     {
-        DEBUGDRAWERLOG(Warning, "Maximum amount of debug lines has been reached and current line will not be drawn! Consider raising the max amount in EngineDefines if needed.");
         return;
     }
 

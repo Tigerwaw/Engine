@@ -1,8 +1,10 @@
 #include "Includes/DefaultShaderIncludes.hlsli"
+#include "Includes/ConstantBuffers/AnimationBuffer.hlsli"
+#include "Includes/ConstantBuffers/ObjectBuffer.hlsli"
 
-VS_to_GS main(DefaultVertex vertex)
+ShadowCube_VSout main(DefaultVertex vertex)
 {
-    VS_to_GS result;
+    ShadowCube_VSout result;
     
     float4x4 skinMatrix =
     {

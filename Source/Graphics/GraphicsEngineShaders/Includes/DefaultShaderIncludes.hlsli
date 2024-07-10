@@ -1,14 +1,7 @@
+#include "ConstantBuffers/FrameBuffer.hlsli"
+
 #ifndef _DEFAULT_INCLUDES_
 #define _DEFAULT_INCLUDES_
-
-#include "FrameBuffer.hlsli"
-#include "ObjectBuffer.hlsli"
-#include "AnimationBuffer.hlsli"
-#include "MaterialBuffer.hlsli"
-#include "LightBuffer.hlsli"
-#include "ShadowBuffer.hlsli"
-#include "SpriteBuffer.hlsli"
-#include "DebugBuffer.hlsli"
 
 Texture2D AlbedoTexture : register(t0);
 Texture2D NormalTexture : register(t1);
@@ -52,41 +45,15 @@ struct DefaultVStoPS
     float3 Binormal     : BINORMAL;
 };
 
-struct VS_to_GS
+struct ShadowCube_VSout
 {
     float4 Position     : POSITION;
 };
 
-struct GS_OUT
+struct ShadowCube_GSout
 {
     float4 Position     : SV_POSITION;
     uint RTIndex        : SV_RenderTargetArrayIndex;
-};
-
-struct Sprite_VSout
-{
-    float4 Position     : POSITION;
-    float2 Size         : SIZE;
-};
-
-struct Sprite_GSout
-{
-    float4 Position     : SV_Position;
-    float4 WorldPos     : WORLDPOSITION;
-    float2 TexCoord0    : TEXCOORD0;
-    uint PrimID         : SV_PrimitiveID;
-};
-
-
-struct DebugObject_VSout
-{
-    uint vertexID       : VERTEXID;
-};
-
-struct DebugObject_GSout
-{
-    float4 Position     : SV_Position;
-    float4 Color        : COLOR;
 };
 
 static const float2 defaultUVs[4] =
