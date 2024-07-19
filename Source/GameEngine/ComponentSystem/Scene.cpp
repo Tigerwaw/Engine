@@ -298,7 +298,7 @@ void Scene::QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disable
 		if (GraphicsEngine::Get().DrawCameraFrustums)
 		{
 			std::shared_ptr<Camera> cam = gameObject->GetComponent<Camera>();
-			if (cam && cam->GetActive())
+			if (cam && cam->GetActive() && gameObject != myCamera)
 			{
 				Engine::GetInstance().GetDebugDrawer().DrawCameraFrustum(cam);
 			}

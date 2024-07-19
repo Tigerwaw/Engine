@@ -9,6 +9,7 @@ struct PipelineStateObject;
 class ConstantBuffer;
 class Shader;
 class Texture;
+class DynamicVertexBuffer;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct IDXGISwapChain;
@@ -30,12 +31,17 @@ public:
 
 	template <typename VertexType>
 	bool CreateVertexBuffer(std::string_view aName, const std::vector<VertexType>& aVertexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer) const;
+	template <typename VertexType>
+	bool CreateDynamicVertexBuffer(std::string_view aName, const std::vector<VertexType>& aVertexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer, size_t aMaxVertexCount) const;
 	bool CreateIndexBuffer(std::string_view aName, const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer);
 	bool CreateConstantBuffer(std::string_view aName, size_t aSize, unsigned aSlot, unsigned aPipelineStages, ConstantBuffer& outBuffer);
 
 	void SetVertexBuffer(const Microsoft::WRL::ComPtr<ID3D11Buffer>& aVertexBuffer, size_t aVertexSize, size_t aVertexOffset = 0) const;
 	void SetIndexBuffer(const Microsoft::WRL::ComPtr<ID3D11Buffer>& aIndexBuffer) const;
 	void SetConstantBuffer(const ConstantBuffer& aBuffer);
+
+	template <typename VertexType>
+	bool UpdateDynamicVertexBuffer(const std::vector<VertexType>& aVertexList, DynamicVertexBuffer& outVxBuffer) const;
 
 	template<typename BufferData>
 	bool UpdateConstantBuffer(const ConstantBuffer& aBuffer, const BufferData& aBufferData);
@@ -79,7 +85,8 @@ public:
 	FORCEINLINE std::shared_ptr<Texture> GetDepthBuffer() { return myDepthBuffer; }
 
 private:
-	bool CreateVertexBufferInternal(std::string_view aName, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer, const uint8_t* aVertexDataPointer, size_t aNumVertices, size_t aVertexSize) const;
+	bool CreateVertexBufferInternal(std::string_view aName, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer, const uint8_t* aVertexDataPointer, size_t aNumVertices, size_t aVertexSize, bool aIsDynamic = false) const;
+	bool UpdateDynamicVertexBufferInternal(DynamicVertexBuffer& outVxBuffer, const uint8_t* aVertexDataPointer, size_t aNumVertices, size_t aVertexSize) const;
 	bool UpdateConstantBufferInternal(const ConstantBuffer& aBuffer, const void* aBufferData, size_t aBufferDataSize);
 
 	void SetObjectName(Microsoft::WRL::ComPtr<ID3D11DeviceChild> aObject, std::string_view aName) const;
@@ -100,6 +107,21 @@ bool RenderHardwareInterface::CreateVertexBuffer(std::string_view aName, const s
 	const size_t vxSize = sizeof(VertexType);
 	const size_t vxCount = aVertexList.size();
 	return CreateVertexBufferInternal(aName, outVxBuffer, reinterpret_cast<const uint8_t*>(aVertexList.data()), vxCount, vxSize);
+}
+
+template<typename VertexType>
+inline bool RenderHardwareInterface::CreateDynamicVertexBuffer(std::string_view aName, const std::vector<VertexType>& aVertexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer, size_t aMaxVertexCount) const
+{
+	const size_t vxSize = sizeof(VertexType);
+	return CreateVertexBufferInternal(aName, outVxBuffer, reinterpret_cast<const uint8_t*>(aVertexList.data()), aMaxVertexCount, vxSize, true);
+}
+
+template<typename VertexType>
+inline bool RenderHardwareInterface::UpdateDynamicVertexBuffer(const std::vector<VertexType>& aVertexList, DynamicVertexBuffer& outVxBuffer) const
+{
+	const size_t vxSize = sizeof(VertexType);
+	const size_t vxCount = aVertexList.size();
+	return UpdateDynamicVertexBufferInternal(outVxBuffer, reinterpret_cast<const uint8_t*>(aVertexList.data()), vxCount, vxSize);
 }
 
 template<typename BufferData>

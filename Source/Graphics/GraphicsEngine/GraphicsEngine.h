@@ -14,6 +14,7 @@
 class Shader;
 class Mesh;
 class Sprite;
+class DynamicVertexBuffer;
 class GraphicsCommandList;
 struct GraphicsCommandBase;
 
@@ -40,8 +41,7 @@ enum class ConstantBufferType
 	MaterialBuffer,
 	LightBuffer,
 	ShadowBuffer,
-	SpriteBuffer,
-	DebugBuffer
+	SpriteBuffer
 };
 
 class GraphicsEngine
@@ -75,11 +75,16 @@ public:
 
 	void RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<Material>> aMaterialList);
 	void RenderSprite();
-	void RenderDebugLine(unsigned aLineAmount);
+	void RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsigned aLineAmount);
 
 	template <typename VertexType>
 	bool CreateVertexBuffer(std::string_view aName, const std::vector<VertexType>& aVertexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer) const;
+	template <typename VertexType>
+	bool CreateDynamicVertexBuffer(std::string_view aName, const std::vector<VertexType>& aVertexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer, size_t aMaxVertexCount) const;
 	bool CreateIndexBuffer(std::string_view aName, const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer);
+
+	template <typename VertexType>
+	bool UpdateDynamicVertexBuffer(const std::vector<VertexType>& aVertexList, DynamicVertexBuffer& outVxBuffer) const;
 
 	std::shared_ptr<Texture> GetBackBuffer() { return myRHI->GetBackBuffer(); }
 	std::shared_ptr<Texture> GetDepthBuffer() { return myRHI->GetDepthBuffer(); }
@@ -146,4 +151,16 @@ template<typename VertexType>
 inline bool GraphicsEngine::CreateVertexBuffer(std::string_view aName, const std::vector<VertexType>& aVertexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer) const
 {
 	return myRHI->CreateVertexBuffer(aName, aVertexList, outVxBuffer);
+}
+
+template<typename VertexType>
+inline bool GraphicsEngine::CreateDynamicVertexBuffer(std::string_view aName, const std::vector<VertexType>& aVertexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer, size_t aMaxVertexCount) const
+{
+	return myRHI->CreateDynamicVertexBuffer(aName, aVertexList, outVxBuffer, aMaxVertexCount);
+}
+
+template<typename VertexType>
+inline bool GraphicsEngine::UpdateDynamicVertexBuffer(const std::vector<VertexType>& aVertexList, DynamicVertexBuffer& outVxBuffer) const
+{
+	return myRHI->UpdateDynamicVertexBuffer(aVertexList, outVxBuffer);
 }

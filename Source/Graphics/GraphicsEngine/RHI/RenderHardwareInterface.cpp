@@ -16,6 +16,7 @@
 #include "GraphicsEngine/Objects/Shader.h"
 #include "GraphicsEngine/Objects/PipelineStateObject.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/ConstantBuffer.h"
+#include "GraphicsEngine/Objects/DynamicVertexBuffer.h"
 
 #ifdef _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(RhiLog, "RHI", Verbose);
@@ -848,12 +849,23 @@ void RenderHardwareInterface::SetMarker(std::string_view aMarker) const
 }
 
 bool RenderHardwareInterface::CreateVertexBufferInternal(std::string_view aName, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer,
-														const uint8_t* aVertexDataPointer, size_t aNumVertices, size_t aVertexSize) const
+														const uint8_t* aVertexDataPointer, size_t aNumVertices, size_t aVertexSize, bool aIsDynamic) const
 {
 	D3D11_BUFFER_DESC vxBufferDesc = {};
 	vxBufferDesc.ByteWidth = static_cast<unsigned>(aNumVertices * aVertexSize);
-	vxBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 	vxBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	if (aIsDynamic)
+	{
+		vxBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		vxBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		vxBufferDesc.MiscFlags = 0;
+		vxBufferDesc.StructureByteStride = 0;
+	}
+	else
+	{
+		vxBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	}
 
 	D3D11_SUBRESOURCE_DATA vxResource = {};
 	vxResource.pSysMem = aVertexDataPointer;
@@ -866,6 +878,41 @@ bool RenderHardwareInterface::CreateVertexBufferInternal(std::string_view aName,
 	}
 
 	SetObjectName(outVxBuffer, aName);
+
+	if (aIsDynamic)
+	{
+		LOG(RhiLog, Log, "Created Vertex Buffer {}!", aName);
+	}
+
+	return true;
+}
+
+bool RenderHardwareInterface::UpdateDynamicVertexBufferInternal(DynamicVertexBuffer& outVxBuffer, const uint8_t* aVertexDataPointer, size_t aNumVertices, size_t aVertexSize) const
+{
+	if (!outVxBuffer.GetVertexBuffer())
+	{
+		LOG(RhiLog, Error, "Failed to update dynamic vertex buffer. Vertex Buffer is invalid.");
+		return false;
+	}
+
+	size_t bufferDataSize = aVertexSize * aNumVertices;
+	size_t bufferSize = outVxBuffer.GetMaxVertexCount() * aVertexSize;
+	if (bufferDataSize > bufferSize)
+	{
+		LOG(RhiLog, Error, "Failed to update dynamic vertex buffer. Data too large.");
+		return false;
+	}
+
+	D3D11_MAPPED_SUBRESOURCE bufferData = {};
+	HRESULT result = myContext->Map(outVxBuffer.GetVertexBuffer().Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &bufferData);
+	if (FAILED(result))
+	{
+		LOG(RhiLog, Error, "Failed to map dynamic vertex buffer!");
+		return false;
+	}
+
+	memcpy_s(bufferData.pData, bufferSize, aVertexDataPointer, bufferDataSize);
+	myContext->Unmap(outVxBuffer.GetVertexBuffer().Get(), 0);
 
 	return true;
 }

@@ -67,7 +67,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="Debug\Objects\DebugObject_VS.hlsl">
+    <FxCompile Include="Debug\Objects\DebugLine_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -152,7 +152,6 @@
   <ItemGroup>
     <None Include="Includes\ConstantBuffers\AnimationBuffer.hlsli" />
     <None Include="Includes\BRDF_Functions.hlsli" />
-    <None Include="Includes\ConstantBuffers\DebugBuffer.hlsli" />
     <None Include="Includes\Debug_Includes.hlsli" />
     <None Include="Includes\DefaultShaderIncludes.hlsli" />
     <None Include="Includes\ConstantBuffers\FrameBuffer.hlsli" />

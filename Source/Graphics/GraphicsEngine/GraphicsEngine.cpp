@@ -5,6 +5,7 @@
 
 #include "GraphicsEngine/Objects/Shader.h"
 #include "GraphicsEngine/Objects/Vertex.h"
+#include "GraphicsEngine/Objects/DebugLineVertex.h"
 #include "GraphicsEngine/Objects/Mesh.h"
 #include "GraphicsEngine/Objects/Sprite.h"
 #include "GraphicsEngine/Objects/Material.h"
@@ -16,7 +17,8 @@
 #include "GraphicsEngine/Objects/ConstantBuffers/LightBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/ShadowBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/SpriteBuffer.h"
-#include "GraphicsEngine/Objects/ConstantBuffers/DebugBuffer.h"
+
+#include "GraphicsEngine/Objects/DynamicVertexBuffer.h"
 
 #include "../Intermediate/Shaders/CompiledShaderHeaders/Default_VS.h"
 #include "../Intermediate/Shaders/CompiledShaderHeaders/Default_PS.h"
@@ -27,7 +29,7 @@
 #include "../Intermediate/Shaders/CompiledShaderHeaders/Sprite_GS.h"
 #include "../Intermediate/Shaders/CompiledShaderHeaders/Sprite_PS.h"
 
-#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugObject_VS.h"
+#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugLine_VS.h"
 #include "../Intermediate/Shaders/CompiledShaderHeaders/DebugLine_GS.h"
 #include "../Intermediate/Shaders/CompiledShaderHeaders/DebugObject_PS.h"
 
@@ -98,8 +100,11 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 
 
 	PipelineStateObject debugPSO;
+	myRHI->CreateInputLayout(debugPSO.InputLayout, DebugLineVertex::InputLayoutDefinition, BuiltIn_DebugLine_VS_ByteCode, sizeof(BuiltIn_DebugLine_VS_ByteCode));
+	debugPSO.VertexStride = sizeof(DebugLineVertex);
+
 	debugPSO.VertexShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("DebugObject_VS", *debugPSO.VertexShader, BuiltIn_DebugObject_VS_ByteCode, sizeof(BuiltIn_DebugObject_VS_ByteCode));
+	myRHI->LoadShaderFromMemory("DebugLine_VS", *debugPSO.VertexShader, BuiltIn_DebugLine_VS_ByteCode, sizeof(BuiltIn_DebugLine_VS_ByteCode));
 
 	debugPSO.GeometryShader = std::make_shared<Shader>();
 	myRHI->LoadShaderFromMemory("DebugLine_GS", *debugPSO.GeometryShader, BuiltIn_DebugLine_GS_ByteCode, sizeof(BuiltIn_DebugLine_GS_ByteCode));
@@ -383,9 +388,10 @@ void GraphicsEngine::RenderSprite()
 	myRHI->Draw(1);
 }
 
-void GraphicsEngine::RenderDebugLine(unsigned aLineAmount)
+void GraphicsEngine::RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsigned aLineAmount)
 {
 	ChangePipelineState(PipelineStateType::DebugLine);
+	myRHI->SetVertexBuffer(aDynamicBuffer.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
 	myRHI->SetPrimitiveTopology(Topology::POINTLIST);
 	myRHI->Draw(aLineAmount);
 }
@@ -427,8 +433,4 @@ void GraphicsEngine::CreateConstantBuffers()
 	ConstantBuffer spriteBuffer;
 	myRHI->CreateConstantBuffer("SpriteBuffer", sizeof(SpriteBuffer), 6, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_GEOMETRY_SHADER | PIPELINE_STAGE_PIXEL_SHADER, spriteBuffer);
 	myConstantBuffers.emplace(ConstantBufferType::SpriteBuffer, std::move(spriteBuffer));
-
-	ConstantBuffer debugBuffer;
-	myRHI->CreateConstantBuffer("DebugBuffer", sizeof(DebugBuffer), 7, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_GEOMETRY_SHADER | PIPELINE_STAGE_PIXEL_SHADER, debugBuffer);
-	myConstantBuffers.emplace(ConstantBufferType::DebugBuffer, std::move(debugBuffer));
 }

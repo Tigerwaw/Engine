@@ -1,5 +1,6 @@
 #include "DebugDrawer.h"
 #include "Graphics/GraphicsEngine/GraphicsEngine.h"
+#include "Graphics/GraphicsEngine/Objects/DynamicVertexBuffer.h"
 #include "Graphics/GraphicsEngine/GraphicsCommands/GraphicsCommandList.h"
 #include "GameEngine/EngineDefines.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/Camera.h"
@@ -22,40 +23,49 @@ DECLARE_LOG_CATEGORY_WITH_NAME(LogDebugDrawer, DebugDrawer, Warning);
 #define DEBUGDRAWERLOG(Verbosity, Message, ...) LOG(LogDebugDrawer, Verbosity, Message, ##__VA_ARGS__)
 DEFINE_LOG_CATEGORY(LogDebugDrawer);
 
+void DebugDrawer::InitializeDebugDrawer()
+{
+    myLineVertices.emplace_back(DebugLineVertex({ 0, 0, 0 }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }));
+
+    myLineBuffer = std::make_shared<DynamicVertexBuffer>();
+    if (!myLineBuffer->CreateBuffer("Debug_Line_Buffer", myLineVertices, MAX_DEBUG_LINES))
+    {
+        DEBUGDRAWERLOG(Error, "Failed to create debug line buffer!");
+    }
+
+    myLineVertices.clear();
+}
+
 void DebugDrawer::DrawObjects()
 {
-    if (!myLines.empty())
+    if (!myLineVertices.empty())
     {
-        if (!myHasWarned && myLines.size() >= MAX_DEBUG_LINES)
-        {
-            DEBUGDRAWERLOG(Warning, "Maximum amount of debug lines has been reached and all lines will not be drawn! Consider raising the max amount in EngineDefines if needed.");
-            myHasWarned = true;
-        }
-
-        GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateDebugBuffer>(myLines);
+        GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderDebugLines>(myLineVertices, myLineBuffer);
     }
 }
 
 void DebugDrawer::ClearObjects()
 {
-    if (!myLines.empty())
+    if (!myLineVertices.empty())
     {
-        myLines.clear();
+        myLineVertices.clear();
     }
 }
 
 void DebugDrawer::DrawLine(CU::Vector3f aFromPosition, CU::Vector3f aToPosition, CU::Vector4f aColor)
 {
-    if (myLines.size() >= MAX_DEBUG_LINES)
+    if (myLineVertices.size() >= MAX_DEBUG_LINES)
     {
+        if (!myHasWarned)
+        {
+            myHasWarned = true;
+            DEBUGDRAWERLOG(Warning, "Debug Drawer Lines has exceeded its limit and all lines are not being drawn! Either draw less lines or consider increasing the max amount in engine defines.");
+        }
+        
         return;
     }
 
-    DebugLine line;
-    line.color = aColor;
-    line.fromPosition = CU::ToVector4(aFromPosition, 1.0f);
-    line.toPosition = CU::ToVector4(aToPosition, 1.0f);
-    myLines.emplace_back(line);
+    myLineVertices.emplace_back(DebugLineVertex(aFromPosition, aToPosition, aColor));
 }
 
 void DebugDrawer::DrawCameraFrustum(std::shared_ptr<Camera> aCamera, CU::Vector4f aColor)

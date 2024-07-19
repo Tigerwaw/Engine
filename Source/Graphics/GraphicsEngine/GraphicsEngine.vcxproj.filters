@@ -126,10 +126,13 @@
     <ClInclude Include="GraphicsCommands\Render\RenderSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\ConstantBuffers\DebugBuffer.h">
+    <ClInclude Include="GraphicsCommands\Render\RenderDebugLines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCommands\ConstantBuffer\UpdateDebugBuffer.h">
+    <ClInclude Include="Objects\DynamicVertexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\DebugLineVertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -215,7 +218,13 @@
     <ClCompile Include="GraphicsCommands\Render\RenderSprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCommands\ConstantBuffer\UpdateDebugBuffer.cpp">
+    <ClCompile Include="GraphicsCommands\Render\RenderDebugLines.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\DynamicVertexBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\DebugLineVertex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

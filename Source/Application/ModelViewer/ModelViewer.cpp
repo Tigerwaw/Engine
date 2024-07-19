@@ -122,6 +122,7 @@ void ModelViewer::InitModelViewer()
 {
 	AssetManager::Get().Initialize(EngineSettings::GetContentRootPath());
 
+	Engine::GetInstance().GetDebugDrawer().InitializeDebugDrawer();
 	Engine::GetInstance().GetSceneHandler().CreateEmptyScene();
 	InitCamera();
 	InitLights();

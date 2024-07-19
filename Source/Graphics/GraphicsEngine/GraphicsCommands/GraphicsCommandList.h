@@ -11,6 +11,7 @@
 #include "Render/RenderAnimatedMesh.h"
 #include "Render/RenderDebugMesh.h"
 #include "Render/RenderSprite.h"
+#include "Render/RenderDebugLines.h"
 #include "Resource/SetTextureResource.h"
 #include "Resource/ClearTextureResource.h"
 #include "ChangePipelineState.h"
@@ -19,7 +20,6 @@
 #include "ConstantBuffer/UpdateFrameBuffer.h"
 #include "ConstantBuffer/UpdateLightBuffer.h"
 #include "ConstantBuffer/UpdateShadowBuffer.h"
-#include "ConstantBuffer/UpdateDebugBuffer.h"
 
 namespace CU = CommonUtilities;
 

@@ -179,15 +179,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DDSTextureLoader\DDSTextureLoader11.h" />
-    <ClInclude Include="GraphicsCommands\ConstantBuffer\UpdateDebugBuffer.h" />
+    <ClInclude Include="GraphicsCommands\Render\RenderDebugLines.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="GraphicsEngine.pch.h" />
     <ClInclude Include="Objects\ConstantBuffers\ConstantBuffer.h" />
-    <ClInclude Include="Objects\ConstantBuffers\DebugBuffer.h" />
     <ClInclude Include="Objects\ConstantBuffers\LightBuffer.h" />
     <ClInclude Include="Objects\ConstantBuffers\MaterialBuffer.h" />
     <ClInclude Include="Objects\ConstantBuffers\ShadowBuffer.h" />
     <ClInclude Include="Objects\ConstantBuffers\SpriteBuffer.h" />
+    <ClInclude Include="Objects\DebugLineVertex.h" />
+    <ClInclude Include="Objects\DynamicVertexBuffer.h" />
     <ClInclude Include="Objects\Material.h" />
     <ClInclude Include="PipelineStateType.h" />
     <ClInclude Include="Objects\Animation.h" />
@@ -227,7 +228,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="GraphicsCommands\ConstantBuffer\UpdateDebugBuffer.cpp" />
+    <ClCompile Include="GraphicsCommands\Render\RenderDebugLines.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="GraphicsEngine.pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -236,6 +237,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Objects\ConstantBuffers\ConstantBuffer.cpp" />
+    <ClCompile Include="Objects\DebugLineVertex.cpp" />
+    <ClCompile Include="Objects\DynamicVertexBuffer.cpp" />
     <ClCompile Include="Objects\Material.cpp" />
     <ClCompile Include="GraphicsCommands\ChangePipelineState.cpp" />
     <ClCompile Include="GraphicsCommands\Render\RenderDebugMesh.cpp" />
