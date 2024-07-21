@@ -1,4 +1,5 @@
 #include "AudioEngine.h"
+#include "GameEngine/EngineSettings.h"
 
 #include "Logger/Logger.h"
 
@@ -27,6 +28,7 @@ void AudioEngine::Initialize()
         return;
     }
 
+    myContentRoot = EngineSettings::GetContentRootPath().string() + "AudioBanks/";
     AUDIOLOG(Log, "Successfully initialized fmod system");
 }
 
@@ -52,54 +54,98 @@ void AudioEngine::Update()
     mySystem->update();
 }
 
-bool AudioEngine::LoadBank(std::string aPath)
+bool AudioEngine::LoadBank(std::string aBankName)
 {
+    auto bankIterator = myBanks.find(aBankName);
+    if (bankIterator != myBanks.end())
+    {
+        AUDIOLOG(Warning, "Audio bank {} is already loaded", aBankName);
+        return true;
+    }
+
     FMOD::Studio::Bank* newBank = nullptr;
-    FMOD_RESULT result = mySystem->loadBankFile(aPath.c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &newBank);
+    FMOD_RESULT result = mySystem->loadBankFile((myContentRoot + aBankName + ".bank").c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &newBank);
     if (result != FMOD_OK)
     {
-        AUDIOLOG(Error, "Failed to load audio bank at {}", aPath);
+        AUDIOLOG(Error, "Failed to load audio bank {}", aBankName);
         return false;
     }
 
-    myBanks.emplace(aPath, newBank);
-
-    AUDIOLOG(Log, "Successfully loaded audio bank {}", aPath);
+    myBanks.emplace(aBankName, newBank);
+    AUDIOLOG(Log, "Successfully loaded audio bank {}", aBankName);
+    LoadBankEvents(aBankName);
     return true;
 }
 
-bool AudioEngine::LoadEvent(std::string aPath)
+bool AudioEngine::UnloadBank(std::string aBankFileName)
 {
-    FMOD::Studio::EventDescription* eventDesc = nullptr;
-    FMOD_RESULT result = mySystem->getEvent(aPath.c_str(), &eventDesc);
+    FMOD_RESULT result = myBanks[aBankFileName]->unload();
     if (result != FMOD_OK)
     {
-        AUDIOLOG(Error, "Failed to load event description {}", aPath);
+        AUDIOLOG(Error, "Failed to unload audio bank {}", aBankFileName);
         return false;
+    }
+
+    return true;
+}
+
+FMOD::Studio::EventInstance* AudioEngine::CreateEventInstance(std::string aEventName)
+{
+    auto eventIterator = myEvents.find(aEventName);
+    if (eventIterator == myEvents.end())
+    {
+        AUDIOLOG(Warning, "Can't find event description {}", aEventName);
+        return nullptr;
     }
 
     FMOD::Studio::EventInstance* eventInstance = nullptr;
-    result = eventDesc->createInstance(&eventInstance);
+    FMOD_RESULT result = myEvents[aEventName]->createInstance(&eventInstance);
     if (result != FMOD_OK)
     {
-        AUDIOLOG(Error, "Failed to load event instance {}", aPath);
-        return false;
+        AUDIOLOG(Error, "Failed to create event instance of {}", aEventName);
+        return nullptr;
     }
 
-    myEvents.emplace(aPath, eventInstance);
-
-    AUDIOLOG(Log, "Successfully loaded audio event {}", aPath);
-    return true;
+    AUDIOLOG(Log, "Create event instance of {}", aEventName);
+    return eventInstance;
 }
 
-bool AudioEngine::PlayEvent(std::string aPath)
+bool AudioEngine::LoadBankEvents(std::string aBankName)
 {
-    FMOD_RESULT result = myEvents[aPath]->start();
-    if (result != FMOD_OK)
+    int eventCount = 0;
+    myBanks[aBankName]->getEventCount(&eventCount);
+    std::vector<FMOD::Studio::EventDescription*> eventDescs;
+    eventDescs.resize(eventCount);
+    myBanks[aBankName]->getEventList(eventDescs.data(), eventCount, nullptr);
+
+    if (eventCount == 0)
     {
-        AUDIOLOG(Error, "Failed to play event {}", aPath);
         return false;
     }
 
+    for (auto& eventDesc : eventDescs)
+    {
+        std::string eventPath;
+        char* charPath = eventPath.data();
+        FMOD_RESULT result = eventDesc->getPath(charPath, 256, nullptr);
+        if (result != FMOD_OK)
+        {
+            AUDIOLOG(Error, "Failed to load event path with code {}", static_cast<int>(result));
+            return false;
+        }
+
+        eventPath = charPath;
+        if (eventPath == "")
+        {
+            AUDIOLOG(Error, "Event path is empty and has been discarded");
+            return false;
+        }
+
+        std::string cleanedPath = eventPath.substr(strlen("event:/"));
+        AUDIOLOG(Log, "Loaded Event Description {}", cleanedPath);
+        myEvents.emplace(cleanedPath, eventDesc);
+    }
+
+    AUDIOLOG(Log, "Successfully loaded all {} events in audio bank {}", eventCount, aBankName);
     return true;
 }

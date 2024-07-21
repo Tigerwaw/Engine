@@ -131,10 +131,10 @@ void ModelViewer::InitModelViewer()
 	AssetManager::Get().Initialize(EngineSettings::GetContentRootPath());
 
 	Engine::GetInstance().GetAudioEngine().Initialize();
-	Engine::GetInstance().GetAudioEngine().LoadBank("../../Assets/AudioBanks/Master.bank");
-	Engine::GetInstance().GetAudioEngine().LoadBank("../../Assets/AudioBanks/Master.strings.bank");
-	Engine::GetInstance().GetAudioEngine().LoadBank("../../Assets/AudioBanks/SFX.bank");
-	Engine::GetInstance().GetAudioEngine().LoadEvent("event:/TestEvent");
+	Engine::GetInstance().GetAudioEngine().LoadBank("Master");
+	Engine::GetInstance().GetAudioEngine().LoadBank("Master.strings");
+	Engine::GetInstance().GetAudioEngine().LoadBank("Test");
+	myTestAudio = Engine::GetInstance().GetAudioEngine().CreateEventInstance("TestEvent");
 
 	Engine::GetInstance().GetDebugDrawer().InitializeDebugDrawer();
 	Engine::GetInstance().GetSceneHandler().CreateEmptyScene();
@@ -388,7 +388,7 @@ void ModelViewer::UpdateImgui()
 		{
 			if (ImGui::Button("Test Audio"))
 			{
-				Engine::GetInstance().GetAudioEngine().PlayEvent("event:/TestEvent");
+				myTestAudio->start();
 			}
 		}
 

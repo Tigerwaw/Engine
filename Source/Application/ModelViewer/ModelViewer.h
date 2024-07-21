@@ -63,6 +63,14 @@ struct Animation;
 class GameObject;
 class Scene;
 
+namespace FMOD
+{
+	namespace Studio
+	{
+		class EventInstance;
+	}
+}
+
 namespace CommonUtilities
 {
 	class Timer;
@@ -91,4 +99,6 @@ private:
 	std::vector<std::shared_ptr<Animation>> myAnimations;
 	std::vector<std::string> myAnimationNames;
 	unsigned myCurrentAnimIndex = 0;
+
+	FMOD::Studio::EventInstance* myTestAudio;
 };
