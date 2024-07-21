@@ -14,9 +14,11 @@ DEFINE_LOG_CATEGORY(LogModelViewer);
 
 #include <d3d11.h>
 
+#if _DEBUG
 #include "imgui.h"
 #include "backends/imgui_impl_win32.h"
 #include "backends/imgui_impl_dx11.h"
+#endif 
 
 #include "GraphicsEngine/Objects/Mesh.h"
 #include "GraphicsEngine/Objects/Animation.h"
@@ -43,6 +45,7 @@ DEFINE_LOG_CATEGORY(LogModelViewer);
 #include "GameEngine/Input/InputHandler.h"
 #include "GameEngine/SceneHandler/SceneHandler.h"
 #include "GameEngine/DebugDrawer/DebugDrawer.h"
+#include "GameEngine/Audio/AudioEngine.h"
 
 namespace CU = CommonUtilities;
 
@@ -50,9 +53,12 @@ ModelViewer::ModelViewer() = default;
 
 void ModelViewer::Shutdown()
 {
+	Engine::GetInstance().GetAudioEngine().Destroy();
+#if _DEBUG
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+#endif
 }
 
 bool ModelViewer::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR aWindowTitle)
@@ -90,6 +96,7 @@ bool ModelViewer::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR a
 
 	// Setup Dear ImGui context
 	{
+#if _DEBUG
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
@@ -98,6 +105,7 @@ bool ModelViewer::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR a
 
 		// Setup Platform/Renderer backends
 		ImGui_ImplWin32_Init(myMainWindowHandle);
+#endif
 	}
 
 	{   // Graphics Init
@@ -122,6 +130,12 @@ void ModelViewer::InitModelViewer()
 {
 	AssetManager::Get().Initialize(EngineSettings::GetContentRootPath());
 
+	Engine::GetInstance().GetAudioEngine().Initialize();
+	Engine::GetInstance().GetAudioEngine().LoadBank("../../Assets/AudioBanks/Master.bank");
+	Engine::GetInstance().GetAudioEngine().LoadBank("../../Assets/AudioBanks/Master.strings.bank");
+	Engine::GetInstance().GetAudioEngine().LoadBank("../../Assets/AudioBanks/SFX.bank");
+	Engine::GetInstance().GetAudioEngine().LoadEvent("event:/TestEvent");
+
 	Engine::GetInstance().GetDebugDrawer().InitializeDebugDrawer();
 	Engine::GetInstance().GetSceneHandler().CreateEmptyScene();
 	InitCamera();
@@ -143,8 +157,10 @@ int ModelViewer::Run()
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 
+#if _DEBUG
 			extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 			if (ImGui_ImplWin32_WndProcHandler(msg.hwnd, msg.message, msg.wParam, msg.lParam)) return true;
+#endif
 
 			if (msg.message == WM_QUIT)
 			{
@@ -154,11 +170,13 @@ int ModelViewer::Run()
 			Engine::GetInstance().GetInputHandler().UpdateEvents(msg.message, msg.wParam, msg.lParam);
 		}
 
+#if _DEBUG
 		// Start the Dear ImGui frame
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 		UpdateImgui();
+#endif
 
 		// TODO: Frame Update and Rendering goes here
 		GraphicsEngine::Get().BeginFrame();
@@ -167,14 +185,17 @@ int ModelViewer::Run()
 		Engine::GetInstance().GetTimer().Update();
 		Engine::GetInstance().GetSceneHandler().UpdateActiveScene();
 		Engine::GetInstance().GetInputHandler().UpdateInput();
+		Engine::GetInstance().GetAudioEngine().Update();
 
 		Engine::GetInstance().GetSceneHandler().RenderActiveScene();
 
 		Engine::GetInstance().GetDebugDrawer().DrawObjects();
 		GraphicsEngine::Get().RenderFrame();
 
+#if _DEBUG
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+#endif
 		GraphicsEngine::Get().EndFrame();
 	}
 
@@ -320,6 +341,7 @@ void ModelViewer::ChangeAnimation(int aIndex)
 
 void ModelViewer::UpdateImgui()
 {
+#if _DEBUG
 	// Various
 	{
 		ImGui::SetNextWindowPos({ 20.0f, 20.0f });
@@ -359,6 +381,14 @@ void ModelViewer::UpdateImgui()
 				if (ImGui::Selectable("Run")) ChangeAnimation(2);
 				if (ImGui::Selectable("Wave")) ChangeAnimation(3);
 				ImGui::EndCombo();
+			}
+		}
+
+		// Test Audio
+		{
+			if (ImGui::Button("Test Audio"))
+			{
+				Engine::GetInstance().GetAudioEngine().PlayEvent("event:/TestEvent");
 			}
 		}
 
@@ -588,4 +618,5 @@ void ModelViewer::UpdateImgui()
 		ImGui::EndTable();
 		ImGui::End();
 	}
+#endif
 }

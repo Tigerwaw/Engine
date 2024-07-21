@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
-#include "Graphics\GraphicsEngine\GraphicsEngine.h"
+#include "GraphicsEngine/GraphicsEngine.h"
 
 #include "Logger/Logger.h"
 

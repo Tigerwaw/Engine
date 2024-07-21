@@ -42,9 +42,9 @@
 #include "../Intermediate/Shaders/CompiledShaderHeaders/Gizmo_PS.h"
 
 #ifdef _DEBUG
-DECLARE_LOG_CATEGORY_WITH_NAME(GraphicsLog, "GraphicsEngine", Verbose);
+DECLARE_LOG_CATEGORY_WITH_NAME(GraphicsLog, GraphicsEngine, Verbose);
 #else
-DECLARE_LOG_CATEGORY_WITH_NAME(GraphicsLog, "GraphicsEngine", Error);
+DECLARE_LOG_CATEGORY_WITH_NAME(GraphicsLog, GraphicsEngine, Error);
 #endif
 
 DEFINE_LOG_CATEGORY(GraphicsLog);

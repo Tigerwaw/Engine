@@ -19,3 +19,4 @@
 ### Miscellaneous
 
 * ImGui integration
+* FMOD integration

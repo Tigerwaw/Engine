@@ -18,9 +18,9 @@
 namespace nl = nlohmann;
 
 #ifdef _DEBUG
-DECLARE_LOG_CATEGORY_WITH_NAME(AssetManagerLog, "AssetManager", Verbose);
+DECLARE_LOG_CATEGORY_WITH_NAME(AssetManagerLog, AssetManager, Verbose);
 #else
-DECLARE_LOG_CATEGORY_WITH_NAME(AssetManagerLog, "AssetManager", Error);
+DECLARE_LOG_CATEGORY_WITH_NAME(AssetManagerLog, AssetManager, Error);
 #endif
 
 DEFINE_LOG_CATEGORY(AssetManagerLog);

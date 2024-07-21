@@ -8,9 +8,11 @@
 #include "Logger\Logger.h"
 #include "StringHelpers.h"
 
+#if _DEBUG
 #include "imgui.h"
 #include "backends/imgui_impl_win32.h"
 #include "backends/imgui_impl_dx11.h"
+#endif
 
 #include "GraphicsEngine/Objects/Texture.h"
 #include "GraphicsEngine/Objects/Shader.h"
@@ -19,9 +21,9 @@
 #include "GraphicsEngine/Objects/DynamicVertexBuffer.h"
 
 #ifdef _DEBUG
-DECLARE_LOG_CATEGORY_WITH_NAME(RhiLog, "RHI", Verbose);
+DECLARE_LOG_CATEGORY_WITH_NAME(RhiLog, RHI, Verbose);
 #else
-DECLARE_LOG_CATEGORY_WITH_NAME(RhiLog, "RHI", Error);
+DECLARE_LOG_CATEGORY_WITH_NAME(RhiLog, RHI, Error);
 #endif
 
 DEFINE_LOG_CATEGORY(RhiLog);
@@ -203,10 +205,12 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 
 	CreateDefaultSamplerStates();
 
+#if _DEBUG
 	// Initialize imgui dx11
 	{
 		ImGui_ImplDX11_Init(myDevice.Get(), myContext.Get());
 	}
+#endif
 
 	LOG(RhiLog, Log, "RHI Initialized!");
 

@@ -14,6 +14,7 @@ namespace CU = CommonUtilities;
 class GlobalEventHandler;
 class SceneHandler;
 class DebugDrawer;
+class AudioEngine;
 
 class Engine
 {
@@ -29,6 +30,7 @@ public:
     GlobalEventHandler& GetGlobalEventHandler() { return *myGlobalEventHandler; }
     SceneHandler& GetSceneHandler() { return *mySceneHandler; }
     DebugDrawer& GetDebugDrawer() { return *myDebugDrawer; }
+    AudioEngine& GetAudioEngine() { return *myAudioEngine; }
 
     const CU::Vector2f& GetResolution() const { return myResolution; }
 
@@ -49,6 +51,7 @@ private:
     std::unique_ptr<GlobalEventHandler> myGlobalEventHandler;
     std::unique_ptr<SceneHandler> mySceneHandler;
     std::unique_ptr<DebugDrawer> myDebugDrawer;
+    std::unique_ptr<AudioEngine> myAudioEngine;
 
     CU::Vector2f myResolution;
 };

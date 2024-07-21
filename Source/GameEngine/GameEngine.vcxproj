@@ -113,7 +113,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Source\GameEngine;$(SolutionDir)Source\Graphics;$(SolutionDir)Source\Utilities;$(ProjectDir);$(SolutionDir)Intermediate\Shaders\;$(SolutionDir)Source\;$(SolutionDir)Source\Graphics\GraphicsEngine;$(SolutionDir)Source\AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\Utilities\fmod;$(SolutionDir)Source\GameEngine;$(SolutionDir)Source\Graphics;$(SolutionDir)Source\Utilities;$(ProjectDir);$(SolutionDir)Intermediate\Shaders\;$(SolutionDir)Source\;$(SolutionDir)Source\Graphics\GraphicsEngine;$(SolutionDir)Source\AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -140,7 +140,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Source\GameEngine;$(SolutionDir)Source\Graphics;$(SolutionDir)Source\Utilities;$(ProjectDir);$(SolutionDir)Intermediate\Shaders\;$(SolutionDir)Source\;$(SolutionDir)Source\Graphics\GraphicsEngine;$(SolutionDir)Source\AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\Utilities\fmod;$(SolutionDir)Source\GameEngine;$(SolutionDir)Source\Graphics;$(SolutionDir)Source\Utilities;$(ProjectDir);$(SolutionDir)Intermediate\Shaders\;$(SolutionDir)Source\;$(SolutionDir)Source\Graphics\GraphicsEngine;$(SolutionDir)Source\AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
@@ -161,6 +161,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Audio\AudioEngine.cpp" />
     <ClCompile Include="ComponentSystem\Component.cpp" />
     <ClCompile Include="ComponentSystem\Components\Graphics\AnimatedModel.cpp" />
     <ClCompile Include="ComponentSystem\Components\Graphics\Camera.cpp" />
@@ -183,6 +184,7 @@
     <ClCompile Include="Time\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Audio\AudioEngine.h" />
     <ClInclude Include="ComponentSystem\Components\Graphics\AnimatedModel.h" />
     <ClInclude Include="ComponentSystem\Component.h" />
     <ClInclude Include="ComponentSystem\Components\Graphics\Camera.h" />

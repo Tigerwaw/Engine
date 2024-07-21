@@ -4,6 +4,7 @@
 #include "GameEngine/GlobalEventHandler/GlobalEventHandler.h"
 #include "GameEngine/SceneHandler/SceneHandler.h"
 #include "GameEngine/DebugDrawer/DebugDrawer.h"
+#include "GameEngine/Audio/AudioEngine.h"
 
 Engine::Engine()
 {
@@ -12,6 +13,7 @@ Engine::Engine()
     myGlobalEventHandler = std::make_unique<GlobalEventHandler>();
     mySceneHandler = std::make_unique<SceneHandler>();
     myDebugDrawer = std::make_unique<DebugDrawer>();
+    myAudioEngine = std::make_unique<AudioEngine>();
 
     myResolution = { 1920.0f, 1080.0f };
 }
@@ -23,4 +25,5 @@ Engine::~Engine()
     myGlobalEventHandler = nullptr;
     mySceneHandler = nullptr;
     myDebugDrawer = nullptr;
+    myAudioEngine = nullptr;
 }
