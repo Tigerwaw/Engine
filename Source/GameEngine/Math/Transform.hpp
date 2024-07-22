@@ -38,7 +38,7 @@ namespace CommonUtilities
 		void SetScale(const Vector3<T> aScale);
 		void SetUniformScale(T aScale);
 
-		Matrix4x4<T> GetMatrix(bool aNoScale = false);
+		Matrix4x4<T>& GetMatrix(bool aNoScale = false);
 
 	private:
 		Matrix4x4<T> myCachedMatrix;
@@ -88,19 +88,19 @@ namespace CommonUtilities
 	template<class T>
 	Vector3<T> Transform<T>::GetRightVector()
 	{
-		return Vector3<T>(GetMatrix()(1, 1), GetMatrix()(1, 2), GetMatrix()(1, 3));
+		return GetMatrix().GetRightVector();
 	}
 
 	template<class T>
 	Vector3<T> Transform<T>::GetUpVector()
 	{
-		return Vector3<T>(GetMatrix()(2, 1), GetMatrix()(2, 2), GetMatrix()(2, 3));
+		return GetMatrix().GetUpVector();
 	}
 
 	template<class T>
 	Vector3<T> Transform<T>::GetForwardVector()
 	{
-		return Vector3<T>(GetMatrix()(3, 1), GetMatrix()(3, 2), GetMatrix()(3, 3));
+		return GetMatrix().GetForwardVector();
 	}
 
 	template<class T>
@@ -171,7 +171,7 @@ namespace CommonUtilities
 	}
 
 	template<class T>
-	inline Matrix4x4<T> Transform<T>::GetMatrix(bool aNoScale)
+	inline Matrix4x4<T>& Transform<T>::GetMatrix(bool aNoScale)
 	{
 		if (myIsDirty)
 		{

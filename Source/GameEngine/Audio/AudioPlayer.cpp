@@ -18,10 +18,13 @@ DEFINE_LOG_CATEGORY(LogAudioPlayer);
 
 AudioPlayer::~AudioPlayer()
 {
-    FMOD_RESULT result = myEventInstance->release();
-    if (result != FMOD_OK)
+    if (myEventInstance->isValid())
     {
-        AUDIOLOG(Error, "Failed to delete audio player");
+        FMOD_RESULT result = myEventInstance->release();
+        if (result != FMOD_OK)
+        {
+            AUDIOLOG(Error, "Failed to delete audio player");
+        }
     }
 }
 

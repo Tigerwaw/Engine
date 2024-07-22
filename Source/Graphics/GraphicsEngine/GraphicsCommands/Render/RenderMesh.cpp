@@ -17,7 +17,7 @@ RenderMesh::RenderMesh(std::shared_ptr<Model> aModel)
     if (!aModel.get()) return;
 
     mesh = aModel->GetMesh();
-    transform = aModel->GetParent()->Transform.GetMatrix();
+    transform = aModel->gameObject->Transform.GetMatrix();
     materialList = aModel->GetMaterials();
 
     if (GraphicsEngine::Get().DrawBoundingBoxes)

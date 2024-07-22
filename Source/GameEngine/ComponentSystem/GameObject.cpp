@@ -28,7 +28,7 @@ void GameObject::Update()
 
 void GameObject::SetActive(bool aActive)
 {
-	myShouldUpdate = aActive;
+	myIsActive = aActive;
 
 	for (auto& comp : myComponents)
 	{

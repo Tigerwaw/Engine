@@ -10,7 +10,7 @@ Rotator::Rotator(CU::Vector3<float> aRotationVector)
 
 void Rotator::Start()
 {
-	myCurrentRot = CU::Quatf(myParent->Transform.GetRotation() * 3.14f / 180.0f);
+	myCurrentRot = CU::Quatf(gameObject->Transform.GetRotation() * 3.14f / 180.0f);
 	myGoalRot = myCurrentRot;
 }
 
@@ -26,7 +26,7 @@ void Rotator::Update()
 
 	float rotTimeDelta = myCurrentRotationTime / myMaxRotationTime;
 	CU::Quatf rot = CU::Quatf::Slerp(myCurrentRot, myGoalRot, rotTimeDelta);
-	myParent->Transform.SetRotation(rot.GetEulerAnglesDegrees());
+	gameObject->Transform.SetRotation(rot.GetEulerAnglesDegrees());
 }
 
 void Rotator::SetRotationPerSecond(CU::Vector3<float> aRotationVector)

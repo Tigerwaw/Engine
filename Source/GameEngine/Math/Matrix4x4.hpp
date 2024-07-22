@@ -14,45 +14,31 @@ namespace CommonUtilities
 	class Matrix4x4
 	{
 	public:
-		// Creates the identity matrix.
 		Matrix4x4<T>();
-
-		// Initializes the matrix with a list of elements.
 		Matrix4x4<T>(const T a11, const T a12, const T a13, const T a14, const T a21, const T a22, const T a23, const T a24, const T a31, const T a32, const T a33, const T a34, const T a41, const T a42, const T a43, const T a44);
-
-		//Initializes the matrix with a number of vectors.
 		Matrix4x4<T>(const Vector4<T> vectorA, const Vector4<T> vectorB, const Vector4<T> vectorC, const Vector4<T> vectorD);
-
-		// Copy Constructor.
 		Matrix4x4<T>(const Matrix4x4<T>& aMatrix);
 		Matrix4x4(const Matrix3x3<T>& aMatrix);
 
-		// () operator for accessing element (row, column) for read/write or read, respectively.
 		T& operator()(const int aRow, const int aColumn);
 		const T& operator()(const int aRow, const int aColumn) const;
-
-		// [] operator for accessing element for read/write or read, respectively.
 		T& operator[](const int aIndex);
 		const T& operator[](const int aIndex) const;
-
 		void operator=(const Matrix4x4<T>& aMatrix);
 
-		// Creates a transposed copy of the matrix.
 		void Transpose();
 		const Matrix4x4<T> GetTranspose() const;
-
-		// Assumes aTransform is made up of nothing but rotations and translations.
 		void FastInverse();
 		const Matrix4x4<T> GetFastInverse() const;
-
-		// Return rotation in radians.
 		const Vector3<T> GetRotationsInRadians() const;
 		const Vector3<T> GetRotationsInDegrees() const;
 
-		// Return row vector.
 		const Vector4<T> GetRowVector(int aIndex) const;
 
-		// Static functions for creating rotation matrices.
+		const Vector3<T> GetRightVector() const;
+		const Vector3<T> GetUpVector() const;
+		const Vector3<T> GetForwardVector() const;
+
 		static Matrix4x4<T> CreateRotationAroundX(const T aAngleInRadians);
 		static Matrix4x4<T> CreateRotationAroundY(const T aAngleInRadians);
 		static Matrix4x4<T> CreateRotationAroundZ(const T aAngleInRadians);
@@ -276,6 +262,24 @@ namespace CommonUtilities
 		assert(aIndex > 0 && aIndex <= 4);
 
 		return Vector4<T>(this->operator()(aIndex, 1), this->operator()(aIndex, 2), this->operator()(aIndex, 3), this->operator()(aIndex, 4));
+	}
+
+	template<class T>
+	inline const Vector3<T> Matrix4x4<T>::GetRightVector() const
+	{
+		return { this->operator()(1, 1), this->operator()(1, 2), this->operator()(1, 3) };
+	}
+
+	template<class T>
+	inline const Vector3<T> Matrix4x4<T>::GetUpVector() const
+	{
+		return { this->operator()(2, 1), this->operator()(2, 2), this->operator()(2, 3) };
+	}
+
+	template<class T>
+	inline const Vector3<T> Matrix4x4<T>::GetForwardVector() const
+	{
+		return { this->operator()(3, 1), this->operator()(3, 2), this->operator()(3, 3) };
 	}
 
 	template <class T>

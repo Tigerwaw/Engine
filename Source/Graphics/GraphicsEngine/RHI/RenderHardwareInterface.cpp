@@ -858,6 +858,7 @@ bool RenderHardwareInterface::CreateVertexBufferInternal(std::string_view aName,
 	D3D11_BUFFER_DESC vxBufferDesc = {};
 	vxBufferDesc.ByteWidth = static_cast<unsigned>(aNumVertices * aVertexSize);
 	vxBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vxBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 
 	if (aIsDynamic)
 	{
@@ -865,10 +866,6 @@ bool RenderHardwareInterface::CreateVertexBufferInternal(std::string_view aName,
 		vxBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		vxBufferDesc.MiscFlags = 0;
 		vxBufferDesc.StructureByteStride = 0;
-	}
-	else
-	{
-		vxBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 	}
 
 	D3D11_SUBRESOURCE_DATA vxResource = {};

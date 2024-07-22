@@ -86,8 +86,8 @@ void Camera::InitOrtographicProjection(float aLeft, float aRight, float aTop, fl
 CU::PlaneVolume<float> Camera::GetFrustumPlaneVolume(CU::Matrix4x4f aObjectSpace)
 {
 	std::vector<CU::Vector3f> corners;
-
-	CU::Matrix4x4f matrix = myParent->Transform.GetMatrix();
+	
+	CU::Matrix4x4f matrix = gameObject->Transform.GetMatrix();
 	if (aObjectSpace != CU::Matrix4x4f())
 	{
 		matrix = matrix * aObjectSpace.GetFastInverse();

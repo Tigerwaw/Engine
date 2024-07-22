@@ -17,7 +17,7 @@ RenderAnimatedMesh::RenderAnimatedMesh(std::shared_ptr<AnimatedModel> aModel)
     if (!aModel.get()) return;
 
     mesh = aModel->GetMesh();
-    transform = aModel->GetParent()->Transform.GetMatrix();
+    transform = aModel->gameObject->Transform.GetMatrix();
     materialList = aModel->GetMaterials();
     jointTransforms = aModel->GetCurrentPose();
     

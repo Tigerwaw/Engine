@@ -32,7 +32,7 @@ public:
     virtual ~GameObject();
     void Update();
     void SetActive(bool aActive);
-    bool GetActive() const { return myShouldUpdate; }
+    bool GetActive() const { return myIsActive; }
     void SetStatic(bool aStatic);
     bool GetStatic() const { return myIsStatic; }
     CU::Transform<float> Transform;
@@ -61,7 +61,7 @@ public:
 private:
 
     std::vector<std::shared_ptr<Component>> myComponents;
-    bool myShouldUpdate = true;
+    bool myIsActive = true;
     bool myIsStatic = false;
     float myTimeAlive = 0;
 
@@ -75,7 +75,7 @@ const std::shared_ptr<T> GameObject::AddComponent(Args&&... args)
 
     if (newComponent.get())
     {
-        newComponent->myParent = this;
+        newComponent->gameObject = this;
         newComponent->Start();
 
         return std::dynamic_pointer_cast<T>(newComponent);

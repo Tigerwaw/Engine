@@ -25,7 +25,7 @@ void LightSource::Update()
 void LightSource::EnableShadowCasting(unsigned aShadowMapWidth, unsigned aShadowMapHeight)
 {
     myShadowMap = std::make_shared<Texture>();
-    myCastsShadows = GraphicsEngine::Get().CreateShadowMap(myParent->GetName() + "_ShadowMap", aShadowMapWidth, aShadowMapHeight, *myShadowMap);
+    myCastsShadows = GraphicsEngine::Get().CreateShadowMap(gameObject->GetName() + "_ShadowMap", aShadowMapWidth, aShadowMapHeight, *myShadowMap);
 }
 
 void LightSource::SetColor(CU::Vector3f aColor)
@@ -40,12 +40,12 @@ void LightSource::SetIntensity(float aIntensity)
 
 CU::Vector3f LightSource::GetDirection() const
 {
-    return myParent->Transform.GetForwardVector();
+    return gameObject->Transform.GetForwardVector();
 }
 
 CU::Vector3f LightSource::GetPosition() const
 {
-    return myParent->Transform.GetTranslation();
+    return gameObject->Transform.GetTranslation();
 }
 
 void LightSource::SetShadowBias(float aMinShadowBias, float aMaxShadowBias)

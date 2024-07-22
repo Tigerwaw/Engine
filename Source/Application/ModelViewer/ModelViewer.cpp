@@ -477,7 +477,7 @@ void ModelViewer::UpdateImgui()
 
 				float pos[3] = { pLight->GetPosition().x, pLight->GetPosition().y, pLight->GetPosition().z };
 				ImGui::Text("Position");
-				if (ImGui::DragFloat3("##PLightPos", pos)) pLight->GetParent()->Transform.SetTranslation(pos[0], pos[1], pos[2]);
+				if (ImGui::DragFloat3("##PLightPos", pos)) pLight->gameObject->Transform.SetTranslation(pos[0], pos[1], pos[2]);
 			}
 		}
 
@@ -515,11 +515,11 @@ void ModelViewer::UpdateImgui()
 
 				float pos[3] = { sLight->GetPosition().x, sLight->GetPosition().y, sLight->GetPosition().z };
 				ImGui::Text("Position");
-				if (ImGui::DragFloat3("##SLightPos", pos)) sLight->GetParent()->Transform.SetTranslation(pos[0], pos[1], pos[2]);
-				CU::Vector3f rotation = sLight->GetParent()->Transform.GetRotation();
+				if (ImGui::DragFloat3("##SLightPos", pos)) sLight->gameObject->Transform.SetTranslation(pos[0], pos[1], pos[2]);
+				CU::Vector3f rotation = sLight->gameObject->Transform.GetRotation();
 				float rot[3] = { rotation.x, rotation.y, rotation.z};
 				ImGui::Text("Rotation");
-				if (ImGui::DragFloat3("##SLightRot", rot)) sLight->GetParent()->Transform.SetRotation(rot[0], rot[1], rot[2]);
+				if (ImGui::DragFloat3("##SLightRot", rot)) sLight->gameObject->Transform.SetRotation(rot[0], rot[1], rot[2]);
 			}
 		}
 		

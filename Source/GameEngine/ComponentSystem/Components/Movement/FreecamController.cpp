@@ -36,37 +36,37 @@ void FreecamController::Update()
 
 	if (inputHandler.GetKeyClicked(Keys::R))
 	{
-		myParent->Transform.SetRotation(0, 0, 0);
-		myParent->Transform.SetTranslation(0, 0, 0);
+		gameObject->Transform.SetRotation(0, 0, 0);
+		gameObject->Transform.SetTranslation(0, 0, 0);
 	}
 
 	CU::Vector3<float> inputDelta;
 
 	if (inputHandler.GetKeyDown(Keys::D) || inputHandler.GetKeyDown(Keys::RIGHT))
 	{
-		inputDelta += myParent->Transform.GetRightVector();
+		inputDelta += gameObject->Transform.GetRightVector();
 	}
 	else if (inputHandler.GetKeyDown(Keys::A) || inputHandler.GetKeyDown(Keys::LEFT))
 	{
-		inputDelta -= myParent->Transform.GetRightVector();
+		inputDelta -= gameObject->Transform.GetRightVector();
 	}
 
 	if (inputHandler.GetKeyDown(Keys::W) || inputHandler.GetKeyDown(Keys::UP))
 	{
-		inputDelta += myParent->Transform.GetForwardVector();
+		inputDelta += gameObject->Transform.GetForwardVector();
 	}
 	else if (inputHandler.GetKeyDown(Keys::S) || inputHandler.GetKeyDown(Keys::DOWN))
 	{
-		inputDelta -= myParent->Transform.GetForwardVector();
+		inputDelta -= gameObject->Transform.GetForwardVector();
 	}
 
 	if (inputHandler.GetKeyDown(Keys::SPACE))
 	{
-		inputDelta += myParent->Transform.GetUpVector();
+		inputDelta += gameObject->Transform.GetUpVector();
 	}
 	else if (inputHandler.GetKeyDown(Keys::CONTROL))
 	{
-		inputDelta -= myParent->Transform.GetUpVector();
+		inputDelta -= gameObject->Transform.GetUpVector();
 	}
 
 	if (inputDelta.LengthSqr() > 1.0f)
@@ -86,6 +86,6 @@ void FreecamController::Update()
 	rotationDelta.x *= myRotSpeed.y * deltaTime;
 	rotationDelta.y *= myRotSpeed.x * deltaTime;
 
-	myParent->Transform.AddRotation(rotationDelta);
-	myParent->Transform.SetTranslation(myParent->Transform.GetTranslation() + inputDelta * myMoveSpeed * myMoveSpeedMultiplier * deltaTime);
+	gameObject->Transform.AddRotation(rotationDelta);
+	gameObject->Transform.SetTranslation(gameObject->Transform.GetTranslation() + inputDelta * myMoveSpeed * myMoveSpeedMultiplier * deltaTime);
 }

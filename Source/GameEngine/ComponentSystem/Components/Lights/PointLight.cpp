@@ -10,5 +10,5 @@ PointLight::PointLight(float aIntensity, CU::Vector3f aColor) : LightSource(aInt
 void PointLight::EnableShadowCasting(unsigned aShadowMapWidth, unsigned aShadowMapHeight)
 {
 	myShadowMap = std::make_shared<Texture>();
-	myCastsShadows = GraphicsEngine::Get().CreateShadowCubemap(myParent->GetName() + "_ShadowCubemap", aShadowMapWidth, aShadowMapHeight, *myShadowMap);
+	myCastsShadows = GraphicsEngine::Get().CreateShadowCubemap(gameObject->GetName() + "_ShadowCubemap", aShadowMapWidth, aShadowMapHeight, *myShadowMap);
 }

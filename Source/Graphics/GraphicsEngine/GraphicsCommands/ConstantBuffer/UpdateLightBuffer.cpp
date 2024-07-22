@@ -31,8 +31,8 @@ void UpdateLightBuffer::Execute()
 		lightBufferData.DirLight.Color = myDirectionalLight->GetColor();
 		lightBufferData.DirLight.Intensity = myDirectionalLight->GetIntensity();
 		lightBufferData.DirLight.Direction = myDirectionalLight->GetDirection();
-		lightBufferData.DirLight.View = myDirectionalLight->GetParent()->Transform.GetMatrix().GetFastInverse();
-		lightBufferData.DirLight.Projection = myDirectionalLight->GetParent()->GetComponent<Camera>()->GetProjectionMatrix();
+		lightBufferData.DirLight.View = myDirectionalLight->gameObject->Transform.GetMatrix().GetFastInverse();
+		lightBufferData.DirLight.Projection = myDirectionalLight->gameObject->GetComponent<Camera>()->GetProjectionMatrix();
 		lightBufferData.DirLight.CastShadows = myDirectionalLight->CastsShadows();
 		lightBufferData.DirLight.MinBias = myDirectionalLight->GetMinShadowBias();
 		lightBufferData.DirLight.MaxBias = myDirectionalLight->GetMaxShadowBias();
@@ -52,7 +52,7 @@ void UpdateLightBuffer::Execute()
 		lightBufferData.PointLights[pIndex].MinBias = pointLight->GetMinShadowBias();
 		lightBufferData.PointLights[pIndex].MaxBias = pointLight->GetMaxShadowBias();
 		
-		lightBufferData.PointLights[pIndex].Projection = pointLight->GetParent()->GetComponent<Camera>()->GetProjectionMatrix();
+		lightBufferData.PointLights[pIndex].Projection = pointLight->gameObject->GetComponent<Camera>()->GetProjectionMatrix();
 	}
 	lightBufferData.NumPointLights = pIndex;
 
@@ -72,8 +72,8 @@ void UpdateLightBuffer::Execute()
 		lightBufferData.SpotLights[sIndex].MinBias = spotLight->GetMinShadowBias();
 		lightBufferData.SpotLights[sIndex].MaxBias = spotLight->GetMaxShadowBias();
 
-		lightBufferData.SpotLights[sIndex].View = spotLight->GetParent()->Transform.GetMatrix().GetFastInverse();
-		lightBufferData.SpotLights[sIndex].Projection = spotLight->GetParent()->GetComponent<Camera>()->GetProjectionMatrix();
+		lightBufferData.SpotLights[sIndex].View = spotLight->gameObject->Transform.GetMatrix().GetFastInverse();
+		lightBufferData.SpotLights[sIndex].Projection = spotLight->gameObject->GetComponent<Camera>()->GetProjectionMatrix();
 	}
 	lightBufferData.NumSpotLights = sIndex;
 

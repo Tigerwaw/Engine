@@ -15,14 +15,14 @@ public:
     virtual void Update() = 0;
 
 
-    void SetActive(bool aActive) { myShouldUpdate = aActive; }
-    bool GetActive() const { return myShouldUpdate; }
-    GameObject* GetParent() { return myParent; }
+    void SetActive(bool aActive) { myIsActive = aActive; }
+    bool GetActive() const { return myIsActive; }
+    
+    // Is automatically set on component creation.
+    GameObject* gameObject = nullptr;
 protected:
     virtual void ReceiveEvent(const GameObjectEvent& aEvent) { aEvent; }
 
-    // Is automatically set on component creation.
-    GameObject* myParent = nullptr;
-    bool myShouldUpdate = true;
+    bool myIsActive = true;
 };
 
