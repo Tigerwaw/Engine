@@ -1,10 +1,18 @@
 #pragma once
-#include "fmod/fmod.hpp"
-#include "fmod/fmod_studio.hpp"
-#include "fmod/fmod_common.h"
 #include <memory>
 #include <unordered_map>
 #include <string>
+
+namespace FMOD
+{
+    namespace Studio
+    {
+        class System;
+        class Bank;
+        class EventDescription;
+        class EventInstance;
+    }
+}
 
 class AudioEngine
 {

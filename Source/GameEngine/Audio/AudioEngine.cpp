@@ -1,6 +1,10 @@
 #include "AudioEngine.h"
 #include "GameEngine/EngineSettings.h"
 
+#include "fmod/fmod.hpp"
+#include "fmod/fmod_studio.hpp"
+#include "fmod/fmod_common.h"
+
 #include "Logger/Logger.h"
 
 #if _DEBUG

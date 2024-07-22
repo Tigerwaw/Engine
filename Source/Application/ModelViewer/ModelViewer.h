@@ -62,14 +62,7 @@ DECLARE_LOG_CATEGORY_WITH_NAME(LogModelViewer, ModelViewer, Warning);
 struct Animation;
 class GameObject;
 class Scene;
-
-namespace FMOD
-{
-	namespace Studio
-	{
-		class EventInstance;
-	}
-}
+class AudioPlayer;
 
 namespace CommonUtilities
 {
@@ -100,5 +93,5 @@ private:
 	std::vector<std::string> myAnimationNames;
 	unsigned myCurrentAnimIndex = 0;
 
-	FMOD::Studio::EventInstance* myTestAudio;
+	std::shared_ptr<AudioPlayer> myTestAudio;
 };

@@ -46,6 +46,7 @@ DEFINE_LOG_CATEGORY(LogModelViewer);
 #include "GameEngine/SceneHandler/SceneHandler.h"
 #include "GameEngine/DebugDrawer/DebugDrawer.h"
 #include "GameEngine/Audio/AudioEngine.h"
+#include "GameEngine/Audio/AudioPlayer.h"
 
 namespace CU = CommonUtilities;
 
@@ -134,7 +135,8 @@ void ModelViewer::InitModelViewer()
 	Engine::GetInstance().GetAudioEngine().LoadBank("Master");
 	Engine::GetInstance().GetAudioEngine().LoadBank("Master.strings");
 	Engine::GetInstance().GetAudioEngine().LoadBank("Test");
-	myTestAudio = Engine::GetInstance().GetAudioEngine().CreateEventInstance("TestEvent");
+	myTestAudio = std::make_shared<AudioPlayer>();
+	myTestAudio->Initialize("TestEvent");
 
 	Engine::GetInstance().GetDebugDrawer().InitializeDebugDrawer();
 	Engine::GetInstance().GetSceneHandler().CreateEmptyScene();
@@ -388,7 +390,7 @@ void ModelViewer::UpdateImgui()
 		{
 			if (ImGui::Button("Test Audio"))
 			{
-				myTestAudio->start();
+				myTestAudio->Play();
 			}
 		}
 
