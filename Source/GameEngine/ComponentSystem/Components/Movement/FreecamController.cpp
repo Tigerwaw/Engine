@@ -3,6 +3,7 @@
 #include "GameEngine/Time/Timer.h"
 #include "GameEngine/Input/InputHandler.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
+#include "GameEngine/ComponentSystem/Components/Transform.h"
 
 FreecamController::FreecamController(float aMoveSpeed, float aRotSpeed)
 {
@@ -36,37 +37,37 @@ void FreecamController::Update()
 
 	if (inputHandler.GetKeyClicked(Keys::R))
 	{
-		gameObject->Transform.SetRotation(0, 0, 0);
-		gameObject->Transform.SetTranslation(0, 0, 0);
+		gameObject->GetComponent<Transform>()->SetRotation(0, 0, 0);
+		gameObject->GetComponent<Transform>()->SetTranslation(0, 0, 0);
 	}
 
 	CU::Vector3<float> inputDelta;
 
 	if (inputHandler.GetKeyDown(Keys::D) || inputHandler.GetKeyDown(Keys::RIGHT))
 	{
-		inputDelta += gameObject->Transform.GetRightVector();
+		inputDelta += gameObject->GetComponent<Transform>()->GetRightVector();
 	}
 	else if (inputHandler.GetKeyDown(Keys::A) || inputHandler.GetKeyDown(Keys::LEFT))
 	{
-		inputDelta -= gameObject->Transform.GetRightVector();
+		inputDelta -= gameObject->GetComponent<Transform>()->GetRightVector();
 	}
 
 	if (inputHandler.GetKeyDown(Keys::W) || inputHandler.GetKeyDown(Keys::UP))
 	{
-		inputDelta += gameObject->Transform.GetForwardVector();
+		inputDelta += gameObject->GetComponent<Transform>()->GetForwardVector();
 	}
 	else if (inputHandler.GetKeyDown(Keys::S) || inputHandler.GetKeyDown(Keys::DOWN))
 	{
-		inputDelta -= gameObject->Transform.GetForwardVector();
+		inputDelta -= gameObject->GetComponent<Transform>()->GetForwardVector();
 	}
 
 	if (inputHandler.GetKeyDown(Keys::SPACE))
 	{
-		inputDelta += gameObject->Transform.GetUpVector();
+		inputDelta += gameObject->GetComponent<Transform>()->GetUpVector();
 	}
 	else if (inputHandler.GetKeyDown(Keys::CONTROL))
 	{
-		inputDelta -= gameObject->Transform.GetUpVector();
+		inputDelta -= gameObject->GetComponent<Transform>()->GetUpVector();
 	}
 
 	if (inputDelta.LengthSqr() > 1.0f)
@@ -86,6 +87,6 @@ void FreecamController::Update()
 	rotationDelta.x *= myRotSpeed.y * deltaTime;
 	rotationDelta.y *= myRotSpeed.x * deltaTime;
 
-	gameObject->Transform.AddRotation(rotationDelta);
-	gameObject->Transform.SetTranslation(gameObject->Transform.GetTranslation() + inputDelta * myMoveSpeed * myMoveSpeedMultiplier * deltaTime);
+	gameObject->GetComponent<Transform>()->AddRotation(rotationDelta);
+	gameObject->GetComponent<Transform>()->SetTranslation(gameObject->GetComponent<Transform>()->GetTranslation() + inputDelta * myMoveSpeed * myMoveSpeedMultiplier * deltaTime);
 }

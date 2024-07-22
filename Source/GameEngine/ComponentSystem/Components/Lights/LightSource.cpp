@@ -1,5 +1,6 @@
 #include "LightSource.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
+#include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "Graphics/GraphicsEngine/GraphicsEngine.h"
 #include "Graphics/GraphicsEngine/Objects/Texture.h"
 
@@ -40,12 +41,12 @@ void LightSource::SetIntensity(float aIntensity)
 
 CU::Vector3f LightSource::GetDirection() const
 {
-    return gameObject->Transform.GetForwardVector();
+    return gameObject->GetComponent<Transform>()->GetForwardVector();
 }
 
 CU::Vector3f LightSource::GetPosition() const
 {
-    return gameObject->Transform.GetTranslation();
+    return gameObject->GetComponent<Transform>()->GetTranslation();
 }
 
 void LightSource::SetShadowBias(float aMinShadowBias, float aMaxShadowBias)

@@ -27,6 +27,7 @@ DEFINE_LOG_CATEGORY(LogModelViewer);
 #include "Asset.h"
 
 #include "GameEngine/ComponentSystem/GameObject.h"
+#include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/DebugModel.h"
@@ -208,10 +209,11 @@ int ModelViewer::Run()
 void ModelViewer::InitCamera()
 {
 	std::shared_ptr<GameObject> camera = std::make_shared<GameObject>();
+	camera->AddComponent<Transform>();
 	camera->SetName("MainCamera");
 	camera->AddComponent<Camera>(90.0f, 1.0f, 10000.0f, CU::Vector2<float>(1920, 1080));
 	camera->AddComponent<FreecamController>(400.0f, 300.0f);
-	camera->Transform.SetTranslation(0, 100.0f, -300.0f);
+	camera->GetComponent<Transform>()->SetTranslation(0, 100.0f, -300.0f);
 	Engine::GetInstance().GetSceneHandler().Instantiate(camera);
 }
 
@@ -223,42 +225,45 @@ void ModelViewer::InitLights()
 	Engine::GetInstance().GetSceneHandler().Instantiate(ambientLight);
 
 	std::shared_ptr<GameObject> directionalLight = std::make_shared<GameObject>();
+	directionalLight->AddComponent<Transform>();
 	directionalLight->SetName("D_Light");
 	std::shared_ptr<DirectionalLight> dLight = directionalLight->AddComponent<DirectionalLight>();
 	dLight->EnableShadowCasting(2048, 2048);
 	dLight->SetShadowBias(0.0003f, 0.00175f);
 	directionalLight->AddComponent<Camera>(-1024.0f, 1024.0f, 1024.0f, -1024.0f, 1.0f, 6000.0f);
 	directionalLight->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/DirectionalLightGizmo.fbx")->mesh);
-	directionalLight->Transform.SetRotation(45.0f, 45.0f, 0);
-	directionalLight->Transform.SetTranslation(-500.0f, 500.0f, -500.0f);
+	directionalLight->GetComponent<Transform>()->SetRotation(45.0f, 45.0f, 0);
+	directionalLight->GetComponent<Transform>()->SetTranslation(-500.0f, 500.0f, -500.0f);
 	Engine::GetInstance().GetSceneHandler().Instantiate(directionalLight);
 
 	std::shared_ptr<GameObject> pointLight = std::make_shared<GameObject>();
+	pointLight->AddComponent<Transform>();
 	pointLight->SetName("P_Light");
 	std::shared_ptr<PointLight> pLight = pointLight->AddComponent<PointLight>(50000.0f);
 	pLight->EnableShadowCasting(512, 512);
 	pLight->SetShadowBias(0, 0.00006f);
 	pointLight->AddComponent<Camera>(90.0f, 1.0f, 3000.0f, CU::Vector2f(512.0f, 512.0f));
-	pointLight->Transform.SetTranslation(50, 200.0f, 100.0f);
+	pointLight->GetComponent<Transform>()->SetTranslation(50, 200.0f, 100.0f);
 	pointLight->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/PointLightGizmo.fbx")->mesh);
 	Engine::GetInstance().GetSceneHandler().Instantiate(pointLight);
 
 	std::shared_ptr<GameObject> spotLight = std::make_shared<GameObject>();
+	spotLight->AddComponent<Transform>();
 	spotLight->SetName("S_Light");
 	std::shared_ptr<SpotLight> sLight = spotLight->AddComponent<SpotLight>(600.0f, 100000.0f);
 	sLight->EnableShadowCasting(512, 512);
 	sLight->SetShadowBias(0, 0.0001f);
 	spotLight->AddComponent<Camera>(90.0f, 1.0f, 2000.0f, CU::Vector2f(512.0f, 512.0f));
 	spotLight->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/SpotLightGizmo.fbx")->mesh);
-	spotLight->Transform.SetRotation(45.0f, -90.0f, 0);
-	spotLight->Transform.SetTranslation(-150.0f, 150.0f, 0);
+	spotLight->GetComponent<Transform>()->SetRotation(45.0f, -90.0f, 0);
+	spotLight->GetComponent<Transform>()->SetTranslation(-150.0f, 150.0f, 0);
 	Engine::GetInstance().GetSceneHandler().Instantiate(spotLight);
 }
 
 void ModelViewer::InitGameObjects()
 {
 	std::shared_ptr<GameObject> plane = std::make_shared<GameObject>();
-	plane->Transform = CU::Transform<float>({ 0, 0, 0 }, { 0, 0, 0 }, { 800.0f, 800.0f, 800.0f });
+	plane->AddComponent<Transform>(CU::Vector3f(), CU::Vector3f(), CU::Vector3f(800.0f, 800.0f, 800.0f));
 	plane->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("PlanePrimitive")->mesh,
 							    AssetManager::Get().GetAsset<MaterialAsset>("DefaultMaterial")->material);
 	Engine::GetInstance().GetSceneHandler().Instantiate(plane);
@@ -266,21 +271,21 @@ void ModelViewer::InitGameObjects()
 	
 	std::shared_ptr<GameObject> cube = std::make_shared<GameObject>();
 	cube->SetName("Cube");
-	cube->Transform = CU::Transform<float>({ 200.0f, 50.0f, 200.0f }, { 0, 0, 0 }, { 50.0f, 50.0f, 50.0f });
+	cube->AddComponent<Transform>(CU::Vector3f(200.0f, 50.0f, 200.0f), CU::Vector3f(), CU::Vector3f(50.0f, 50.0f, 50.0f));
 	cube->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("CubePrimitive")->mesh,
 							   AssetManager::Get().GetAsset<MaterialAsset>("DefaultMaterial")->material);
 	Engine::GetInstance().GetSceneHandler().Instantiate(cube);
 
 	std::shared_ptr<GameObject> ramp = std::make_shared<GameObject>();
 	ramp->SetName("Ramp");
-	ramp->Transform = CU::Transform<float>({ 300.0f, 50.0f, 0 }, { 0, 45.0f, 0 }, { 50.0f, 50.0f, 50.0f });
+	ramp->AddComponent<Transform>(CU::Vector3f(300.0f, 50.0f, 0), CU::Vector3f(0, 45.0f, 0), CU::Vector3f(50.0f, 50.0f, 50.0f));
 	ramp->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("RampPrimitive")->mesh,
 							   AssetManager::Get().GetAsset<MaterialAsset>("DefaultMaterial")->material);
 	Engine::GetInstance().GetSceneHandler().Instantiate(ramp);
 
 	std::shared_ptr<GameObject> chest = std::make_shared<GameObject>();
 	chest->SetName("Chest");
-	chest->Transform = CU::Transform<float>({ -500.0f, 0, 0 }, { 0, 180.0f, 0 });
+	chest->AddComponent<Transform>(CU::Vector3f(-500.0f, 0, 0), CU::Vector3f(0, 180.0f, 0));
 	chest->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("Models/SM_Chest.fbx")->mesh,
 							    AssetManager::Get().GetAsset<MaterialAsset>("Materials/Chest.json")->material);
 	chest->AddComponent<Rotator>(CU::Vector3f(0, 30.0f, 0));
@@ -288,7 +293,7 @@ void ModelViewer::InitGameObjects()
 	Engine::GetInstance().GetSceneHandler().Instantiate(chest);
 
 	std::shared_ptr<GameObject> colorChecker = std::make_shared<GameObject>();
-	colorChecker->Transform = CU::Transform<float>({ 100.0f, 40.0f, 0 }, { -90.0f, 0, 0 });
+	colorChecker->AddComponent<Transform>(CU::Vector3f(100.0f, 40.0f, 0), CU::Vector3f(-90.0f, 0, 0));
 	colorChecker->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/SM_Color_Checker.fbx")->mesh,
 									AssetManager::Get().GetAsset<MaterialAsset>("EngineAssets/Materials/ColorChecker.json")->material);
 	colorChecker->AddComponent<Rotator>(CU::Vector3f(0, 30.0f, 0));
@@ -296,14 +301,14 @@ void ModelViewer::InitGameObjects()
 
 
 	std::shared_ptr<GameObject> matballOne = std::make_shared<GameObject>();
-	matballOne->Transform = CU::Transform<float>({ -100.0f, 0, 0 }, { 0, -45.0f, 0 });
+	matballOne->AddComponent<Transform>(CU::Vector3f(-100.0f, 0, 0), CU::Vector3f(0, -45.0f, 0));
 	std::shared_ptr<Model> matballOneModel = matballOne->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("Models/TMA_Matball.fbx")->mesh,
 									AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballOne.json")->material);
 	matballOneModel->SetMaterialOnSlot(1, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballTwo.json")->material);
 	Engine::GetInstance().GetSceneHandler().Instantiate(matballOne);
 
 	std::shared_ptr<GameObject> matballTwo = std::make_shared<GameObject>();
-	matballTwo->Transform = CU::Transform<float>({ -100.0f, 0, 200.0f }, { 0, -45.0f, 0 });
+	matballTwo->AddComponent<Transform>(CU::Vector3f(-100.0f, 0, 200.0f), CU::Vector3f(0, -45.0f, 0));
 	std::shared_ptr<Model> matballTwoModel = matballTwo->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("Models/TMA_Matball.fbx")->mesh,
 									AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballTwo.json")->material);
 	matballTwoModel->SetMaterialOnSlot(1, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballOne.json")->material);
@@ -311,7 +316,7 @@ void ModelViewer::InitGameObjects()
 
 	std::shared_ptr<GameObject> tgaBro = std::make_shared<GameObject>();
 	tgaBro->SetName("TgaBro");
-	tgaBro->Transform = CU::Transform<float>({ -250.0f, 0, 150.0f }, { 0, 180.0f, 0 });
+	tgaBro->AddComponent<Transform>(CU::Vector3f(-250.0f, 0, 150.0f), CU::Vector3f(0, 180.0f, 0));
 	tgaBro->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Models/SK_C_TGA_Bro.fbx")->mesh,
 										 AssetManager::Get().GetAsset<MaterialAsset>("Materials/TgaBro.json")->material);
 	Engine::GetInstance().GetSceneHandler().Instantiate(tgaBro);
@@ -477,7 +482,7 @@ void ModelViewer::UpdateImgui()
 
 				float pos[3] = { pLight->GetPosition().x, pLight->GetPosition().y, pLight->GetPosition().z };
 				ImGui::Text("Position");
-				if (ImGui::DragFloat3("##PLightPos", pos)) pLight->gameObject->Transform.SetTranslation(pos[0], pos[1], pos[2]);
+				if (ImGui::DragFloat3("##PLightPos", pos)) pLight->gameObject->GetComponent<Transform>()->SetTranslation(pos[0], pos[1], pos[2]);
 			}
 		}
 
@@ -515,11 +520,11 @@ void ModelViewer::UpdateImgui()
 
 				float pos[3] = { sLight->GetPosition().x, sLight->GetPosition().y, sLight->GetPosition().z };
 				ImGui::Text("Position");
-				if (ImGui::DragFloat3("##SLightPos", pos)) sLight->gameObject->Transform.SetTranslation(pos[0], pos[1], pos[2]);
-				CU::Vector3f rotation = sLight->gameObject->Transform.GetRotation();
+				if (ImGui::DragFloat3("##SLightPos", pos)) sLight->gameObject->GetComponent<Transform>()->SetTranslation(pos[0], pos[1], pos[2]);
+				CU::Vector3f rotation = sLight->gameObject->GetComponent<Transform>()->GetRotation();
 				float rot[3] = { rotation.x, rotation.y, rotation.z};
 				ImGui::Text("Rotation");
-				if (ImGui::DragFloat3("##SLightRot", rot)) sLight->gameObject->Transform.SetRotation(rot[0], rot[1], rot[2]);
+				if (ImGui::DragFloat3("##SLightRot", rot)) sLight->gameObject->GetComponent<Transform>()->SetRotation(rot[0], rot[1], rot[2]);
 			}
 		}
 		

@@ -2,6 +2,7 @@
 #include "UpdateLightBuffer.h"
 #include "Graphics/GraphicsEngine/Objects/ConstantBuffers/LightBuffer.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
+#include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/Camera.h"
 #include "GameEngine/ComponentSystem/Components/Lights/AmbientLight.h"
 #include "GameEngine/ComponentSystem/Components/Lights/DirectionalLight.h"
@@ -31,7 +32,7 @@ void UpdateLightBuffer::Execute()
 		lightBufferData.DirLight.Color = myDirectionalLight->GetColor();
 		lightBufferData.DirLight.Intensity = myDirectionalLight->GetIntensity();
 		lightBufferData.DirLight.Direction = myDirectionalLight->GetDirection();
-		lightBufferData.DirLight.View = myDirectionalLight->gameObject->Transform.GetMatrix().GetFastInverse();
+		lightBufferData.DirLight.View = myDirectionalLight->gameObject->GetComponent<Transform>()->GetMatrix().GetFastInverse();
 		lightBufferData.DirLight.Projection = myDirectionalLight->gameObject->GetComponent<Camera>()->GetProjectionMatrix();
 		lightBufferData.DirLight.CastShadows = myDirectionalLight->CastsShadows();
 		lightBufferData.DirLight.MinBias = myDirectionalLight->GetMinShadowBias();
@@ -72,7 +73,7 @@ void UpdateLightBuffer::Execute()
 		lightBufferData.SpotLights[sIndex].MinBias = spotLight->GetMinShadowBias();
 		lightBufferData.SpotLights[sIndex].MaxBias = spotLight->GetMaxShadowBias();
 
-		lightBufferData.SpotLights[sIndex].View = spotLight->gameObject->Transform.GetMatrix().GetFastInverse();
+		lightBufferData.SpotLights[sIndex].View = spotLight->gameObject->GetComponent<Transform>()->GetMatrix().GetFastInverse();
 		lightBufferData.SpotLights[sIndex].Projection = spotLight->gameObject->GetComponent<Camera>()->GetProjectionMatrix();
 	}
 	lightBufferData.NumSpotLights = sIndex;

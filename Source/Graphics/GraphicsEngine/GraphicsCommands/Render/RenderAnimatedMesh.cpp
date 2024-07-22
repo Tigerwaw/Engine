@@ -7,6 +7,7 @@
 #include "GraphicsEngine/Objects/ConstantBuffers/ObjectBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/AnimationBuffer.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
+#include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
 
 #include "GameEngine/Engine.h"
@@ -17,7 +18,7 @@ RenderAnimatedMesh::RenderAnimatedMesh(std::shared_ptr<AnimatedModel> aModel)
     if (!aModel.get()) return;
 
     mesh = aModel->GetMesh();
-    transform = aModel->gameObject->Transform.GetMatrix();
+    transform = aModel->gameObject->GetComponent<Transform>()->GetWorldMatrix();
     materialList = aModel->GetMaterials();
     jointTransforms = aModel->GetCurrentPose();
     

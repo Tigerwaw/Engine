@@ -1,5 +1,6 @@
 #include "Rotator.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
+#include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "GameEngine/Engine.h"
 #include "GameEngine/Time/Timer.h"
 
@@ -10,7 +11,7 @@ Rotator::Rotator(CU::Vector3<float> aRotationVector)
 
 void Rotator::Start()
 {
-	myCurrentRot = CU::Quatf(gameObject->Transform.GetRotation() * 3.14f / 180.0f);
+	myCurrentRot = CU::Quatf(gameObject->GetComponent<Transform>()->GetRotation() * 3.14f / 180.0f);
 	myGoalRot = myCurrentRot;
 }
 
@@ -26,7 +27,7 @@ void Rotator::Update()
 
 	float rotTimeDelta = myCurrentRotationTime / myMaxRotationTime;
 	CU::Quatf rot = CU::Quatf::Slerp(myCurrentRot, myGoalRot, rotTimeDelta);
-	gameObject->Transform.SetRotation(rot.GetEulerAnglesDegrees());
+	gameObject->GetComponent<Transform>()->SetRotation(rot.GetEulerAnglesDegrees());
 }
 
 void Rotator::SetRotationPerSecond(CU::Vector3<float> aRotationVector)

@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
+#include "GameEngine/ComponentSystem/Components/Transform.h"
 
 #define PI 3.14159265358979323846
 
@@ -87,7 +88,7 @@ CU::PlaneVolume<float> Camera::GetFrustumPlaneVolume(CU::Matrix4x4f aObjectSpace
 {
 	std::vector<CU::Vector3f> corners;
 	
-	CU::Matrix4x4f matrix = gameObject->Transform.GetMatrix();
+	CU::Matrix4x4f matrix = gameObject->GetComponent<Transform>()->GetMatrix();
 	if (aObjectSpace != CU::Matrix4x4f())
 	{
 		matrix = matrix * aObjectSpace.GetFastInverse();

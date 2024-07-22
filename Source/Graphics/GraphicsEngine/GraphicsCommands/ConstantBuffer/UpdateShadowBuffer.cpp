@@ -1,6 +1,7 @@
 #include "GraphicsEngine.pch.h"
 #include "UpdateShadowBuffer.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
+#include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "Graphics/GraphicsEngine/Objects/ConstantBuffers/ShadowBuffer.h"
 #include "GameEngine/ComponentSystem/Components/Lights/PointLight.h"
 #include "GameEngine/Math/Quaternion.hpp"
@@ -16,7 +17,7 @@ void UpdateShadowBuffer::Execute()
 
 	ShadowBuffer shadowBufferData;
 
-	CU::Matrix4x4f cameraTransform = myPointLight->gameObject->Transform.GetMatrix();
+	CU::Matrix4x4f cameraTransform = myPointLight->gameObject->GetComponent<Transform>()->GetMatrix();
 	cameraTransform = CU::Matrix4x4f::CreateRollPitchYawMatrix({ 0, 90.0f, 0 }) * cameraTransform;
 	shadowBufferData.CameraTransforms[0] = cameraTransform.GetFastInverse();
 	

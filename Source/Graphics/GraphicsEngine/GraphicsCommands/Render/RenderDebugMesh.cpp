@@ -7,6 +7,7 @@
 #include "GraphicsEngine/Objects/ConstantBuffers/ObjectBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/MaterialBuffer.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
+#include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/DebugModel.h"
 
 #include "GameEngine/Engine.h"
@@ -17,7 +18,7 @@ RenderDebugMesh::RenderDebugMesh(std::shared_ptr<DebugModel> aModel)
     if (!aModel.get()) return;
 
     mesh = aModel->GetMesh();
-    transform = aModel->gameObject->Transform.GetMatrix();
+    transform = aModel->gameObject->GetComponent<Transform>()->GetMatrix();
     materialList = aModel->GetMaterials();
 
     if (GraphicsEngine::Get().DrawBoundingBoxes)

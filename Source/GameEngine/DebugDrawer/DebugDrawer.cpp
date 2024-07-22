@@ -7,8 +7,8 @@
 #include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/DebugModel.h"
-#include "GameEngine/Math/Transform.hpp"
 #include "GameEngine/ComponentSystem/GameObject.h"
+#include "GameEngine/ComponentSystem/Components/Transform.h"
 
 #include <array>
 
@@ -70,7 +70,7 @@ void DebugDrawer::DrawLine(CU::Vector3f aFromPosition, CU::Vector3f aToPosition,
 
 void DebugDrawer::DrawCameraFrustum(std::shared_ptr<Camera> aCamera, CU::Vector4f aColor)
 {
-    CU::Matrix4x4f camMatrix = aCamera->gameObject->Transform.GetMatrix();
+    CU::Matrix4x4f camMatrix = aCamera->gameObject->GetComponent<Transform>()->GetMatrix();
     std::array<CU::Vector3f, 8> frustumVolume = aCamera->GetFrustumCorners();
 
     for (auto& pos : frustumVolume)
@@ -96,21 +96,21 @@ void DebugDrawer::DrawCameraFrustum(std::shared_ptr<Camera> aCamera, CU::Vector4
 
 void DebugDrawer::DrawBoundingBox(std::shared_ptr<Model> aModel, CU::Vector4f aColor)
 {
-    CU::Matrix4x4f objectMatrix = aModel->gameObject->Transform.GetMatrix();
+    CU::Matrix4x4f objectMatrix = aModel->gameObject->GetComponent<Transform>()->GetMatrix();
     CU::AABB3D<float> boundingBox = aModel->GetBoundingBox();
     DrawBoundingBoxInternal(boundingBox, objectMatrix, aColor);
 }
 
 void DebugDrawer::DrawBoundingBox(std::shared_ptr<AnimatedModel> aModel, CU::Vector4f aColor)
 {
-    CU::Matrix4x4f objectMatrix = aModel->gameObject->Transform.GetMatrix();
+    CU::Matrix4x4f objectMatrix = aModel->gameObject->GetComponent<Transform>()->GetMatrix();
     CU::AABB3D<float> boundingBox = aModel->GetBoundingBox();
     DrawBoundingBoxInternal(boundingBox, objectMatrix, aColor);
 }
 
 void DebugDrawer::DrawBoundingBox(std::shared_ptr<DebugModel> aModel, CU::Vector4f aColor)
 {
-    CU::Matrix4x4f objectMatrix = aModel->gameObject->Transform.GetMatrix();
+    CU::Matrix4x4f objectMatrix = aModel->gameObject->GetComponent<Transform>()->GetMatrix();
     CU::AABB3D<float> boundingBox = aModel->GetBoundingBox();
     DrawBoundingBoxInternal(boundingBox, objectMatrix, aColor);
 }

@@ -4,14 +4,10 @@
 #include <string>
 #include <chrono>
 #include <any>
-
-#include "GameEngine/Math/Transform.hpp"
 #include "GameEngine/EngineDefines.h"
 
 #include "Component.h"
 #include "GameObjectEventType.h"
-
-namespace CU = CommonUtilities;
 
 struct GameObjectEvent
 {
@@ -35,7 +31,6 @@ public:
     bool GetActive() const { return myIsActive; }
     void SetStatic(bool aStatic);
     bool GetStatic() const { return myIsStatic; }
-    CU::Transform<float> Transform;
 
     void SetName(std::string aName) { myName = aName; }
     const std::string GetName() const { return myName; }

@@ -1,6 +1,7 @@
 #pragma once
 #include "GameEngine/ComponentSystem/Component.h"
 #include "GameEngine/Intersections/AABB3D.hpp"
+#include "GameEngine/Math/Matrix4x4.hpp"
 namespace CU = CommonUtilities;
 
 #include <memory>

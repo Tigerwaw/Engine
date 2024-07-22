@@ -143,9 +143,6 @@
     <ClInclude Include="Math\Quaternion.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Math\Transform.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Math\Vector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
