@@ -1,5 +1,4 @@
 #include "Transform.h"
-#include <iostream>
 
 Transform::Transform(CU::Vector3f aPosition, CU::Vector3f aRotation, CU::Vector3f aScale)
 {
@@ -107,7 +106,6 @@ void Transform::SetParent(Transform* aTransform)
 		}
 
 		myParent = aTransform;
-		std::cout << "Replaced parent" << std::endl;
 	}
 	else
 	{
@@ -117,7 +115,6 @@ void Transform::SetParent(Transform* aTransform)
 		}
 
 		myParent = aTransform;
-		std::cout << "Set new parent" << std::endl;
 	}
 
 	if (myParent)
@@ -168,7 +165,6 @@ void Transform::AddChild(Transform* aTransform)
 
 	aTransform->SetParentInternal(this);
 	myChildren.emplace_back(aTransform);
-	std::cout << "Added child" << std::endl;
 	UpdateChildrenToWorldMatrix();
 }
 
@@ -181,7 +177,6 @@ void Transform::RemoveChild(Transform* aTransform)
 	{
 		if (myChildren[i] == aTransform)
 		{
-			std::cout << "Removed child" << std::endl;
 			aTransform->myParent = nullptr;
 			myChildren.erase(myChildren.begin() + i);
 			break;
@@ -216,6 +211,18 @@ void Transform::SetTranslation(const float aX, const float aY, const float aZ)
 	SetIsDirty();
 }
 
+void Transform::AddTranslation(const CU::Vector3f aTranslation)
+{
+	myPosition += aTranslation;
+	SetIsDirty();
+}
+
+void Transform::AddTranslation(const float aX, const float aY, const float aZ)
+{
+	myPosition += { aX, aY, aZ };
+	SetIsDirty();
+}
+
 void Transform::SetRotation(const CU::Vector3f aRotationInDegrees)
 {
 	myRotation = aRotationInDegrees;
@@ -244,20 +251,38 @@ void Transform::AddRotation(const float aPitch, const float aYaw, const float aR
 	SetIsDirty();
 }
 
-void Transform::SetScale(const float aX, const float aY, const float aZ)
-{
-	myScale = { aX, aY, aZ };
-	SetIsDirty();
-}
-
 void Transform::SetScale(const CU::Vector3f aScale)
 {
 	myScale = aScale;
 	SetIsDirty();
 }
 
+void Transform::SetScale(const float aX, const float aY, const float aZ)
+{
+	myScale = { aX, aY, aZ };
+	SetIsDirty();
+}
+
 void Transform::SetUniformScale(float aScale)
 {
 	myScale = { aScale, aScale, aScale };
+	SetIsDirty();
+}
+
+void Transform::AddScale(const CU::Vector3f aScale)
+{
+	myScale += aScale;
+	SetIsDirty();
+}
+
+void Transform::AddScale(const float aX, const float aY, const float aZ)
+{
+	myScale += { aX, aY, aZ };
+	SetIsDirty();
+}
+
+void Transform::AddUniformScale(float aScale)
+{
+	myScale += { aScale, aScale, aScale };
 	SetIsDirty();
 }

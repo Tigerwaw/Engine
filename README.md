@@ -11,6 +11,7 @@
 ### Game Engine
 * Quaternions!
 * Simple Component System (Scenes -> Game objects -> Components).
+* Gameobject hierarchies with childing and parenting.
 * Game objects have an internal event system that lets components communicate with eachother without being coupled.
 * Worldspace and screenspace sprites.
 * Animation blending & layers

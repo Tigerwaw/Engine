@@ -84,14 +84,14 @@ void Camera::InitOrtographicProjection(float aLeft, float aRight, float aTop, fl
 }
 
 // Does not work with scale yet.
-CU::PlaneVolume<float> Camera::GetFrustumPlaneVolume(CU::Matrix4x4f aObjectSpace)
+CU::PlaneVolume<float> Camera::GetFrustumPlaneVolume(CU::Matrix4x4f aToObjectSpace)
 {
 	std::vector<CU::Vector3f> corners;
 	
-	CU::Matrix4x4f matrix = gameObject->GetComponent<Transform>()->GetMatrix();
-	if (aObjectSpace != CU::Matrix4x4f())
+	CU::Matrix4x4f matrix = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+	if (aToObjectSpace != CU::Matrix4x4f())
 	{
-		matrix = matrix * aObjectSpace.GetFastInverse();
+		matrix = matrix * aToObjectSpace;
 	}
 
 	for (auto& corner : myFrustumCorners)

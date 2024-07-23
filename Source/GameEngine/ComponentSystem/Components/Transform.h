@@ -32,15 +32,20 @@ public:
 
 	void SetTranslation(const CU::Vector3f aTranslation);
 	void SetTranslation(const float aX, const float aY, const float aZ);
+	void AddTranslation(const CU::Vector3f aTranslation);
+	void AddTranslation(const float aX, const float aY, const float aZ);
 
 	void SetRotation(const CU::Vector3f aRotationInDegrees);
 	void SetRotation(const float aPitch, const float aYaw, const float aRoll);
 	void AddRotation(const CU::Vector3f aRotationInDegrees);
 	void AddRotation(const float aPitch, const float aYaw, const float aRoll);
 
-	void SetScale(const float aX, const float aY, const float aZ);
 	void SetScale(const CU::Vector3f aScale);
+	void SetScale(const float aX, const float aY, const float aZ);
 	void SetUniformScale(float aScale);
+	void AddScale(const CU::Vector3f aScale);
+	void AddScale(const float aX, const float aY, const float aZ);
+	void AddUniformScale(float aScale);
 private:
 	void UpdateToWorldMatrix(CU::Matrix4x4f aToWorldMatrix, CU::Matrix4x4f aToWorldMatrixNoScale);
 	void UpdateChildrenToWorldMatrix();

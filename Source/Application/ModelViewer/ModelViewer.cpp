@@ -213,7 +213,7 @@ void ModelViewer::InitCamera()
 	camera->AddComponent<Transform>(CU::Vector3f(0, 600.0f, -600.0f), CU::Vector3f(45.0f, 0, 0));
 	camera->SetName("MainCamera");
 	camera->AddComponent<Camera>(90.0f, 1.0f, 10000.0f, CU::Vector2<float>(1920, 1080));
-	//camera->AddComponent<FreecamController>(400.0f, 300.0f);
+	camera->AddComponent<FreecamController>(400.0f, 300.0f);
 	Engine::GetInstance().GetSceneHandler().Instantiate(camera);
 }
 
