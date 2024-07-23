@@ -43,7 +43,9 @@ public:
 	void SetUniformScale(float aScale);
 private:
 	void UpdateToWorldMatrix(CU::Matrix4x4f aToWorldMatrix, CU::Matrix4x4f aToWorldMatrixNoScale);
+	void UpdateChildrenToWorldMatrix();
 	void SetIsDirty();
+	void SetParentInternal(Transform* aTransform);
 	CU::Matrix4x4f myCachedMatrix;
 	CU::Matrix4x4f myCachedMatrixNoScale;
 	bool myIsDirty = true;

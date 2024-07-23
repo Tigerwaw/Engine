@@ -172,6 +172,7 @@
     <ClCompile Include="ComponentSystem\Components\Lights\PointLight.cpp" />
     <ClCompile Include="ComponentSystem\Components\Lights\SpotLight.cpp" />
     <ClCompile Include="ComponentSystem\Components\Movement\FreecamController.cpp" />
+    <ClCompile Include="ComponentSystem\Components\Movement\ObjectController.cpp" />
     <ClCompile Include="ComponentSystem\Components\Movement\Rotator.cpp" />
     <ClCompile Include="ComponentSystem\Components\Transform.cpp" />
     <ClCompile Include="ComponentSystem\GameObject.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="ComponentSystem\Components\Lights\PointLight.h" />
     <ClInclude Include="ComponentSystem\Components\Lights\SpotLight.h" />
     <ClInclude Include="ComponentSystem\Components\Movement\FreecamController.h" />
+    <ClInclude Include="ComponentSystem\Components\Movement\ObjectController.h" />
     <ClInclude Include="ComponentSystem\Components\Movement\Rotator.h" />
     <ClInclude Include="ComponentSystem\Components\Transform.h" />
     <ClInclude Include="ComponentSystem\GameObject.h" />

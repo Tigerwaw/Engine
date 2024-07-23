@@ -39,6 +39,7 @@ DEFINE_LOG_CATEGORY(LogModelViewer);
 
 #include "GameEngine/ComponentSystem/Components/Movement/Rotator.h"
 #include "GameEngine/ComponentSystem/Components/Movement/FreecamController.h"
+#include "GameEngine/ComponentSystem/Components/Movement/ObjectController.h"
 
 #include "GameEngine/Engine.h"
 #include "GameEngine/EngineSettings.h"
@@ -209,11 +210,10 @@ int ModelViewer::Run()
 void ModelViewer::InitCamera()
 {
 	std::shared_ptr<GameObject> camera = std::make_shared<GameObject>();
-	camera->AddComponent<Transform>();
+	camera->AddComponent<Transform>(CU::Vector3f(0, 600.0f, -600.0f), CU::Vector3f(45.0f, 0, 0));
 	camera->SetName("MainCamera");
 	camera->AddComponent<Camera>(90.0f, 1.0f, 10000.0f, CU::Vector2<float>(1920, 1080));
-	camera->AddComponent<FreecamController>(400.0f, 300.0f);
-	camera->GetComponent<Transform>()->SetTranslation(0, 100.0f, -300.0f);
+	//camera->AddComponent<FreecamController>(400.0f, 300.0f);
 	Engine::GetInstance().GetSceneHandler().Instantiate(camera);
 }
 
@@ -293,6 +293,7 @@ void ModelViewer::InitGameObjects()
 	Engine::GetInstance().GetSceneHandler().Instantiate(chest);
 
 	std::shared_ptr<GameObject> colorChecker = std::make_shared<GameObject>();
+	colorChecker->SetName("ColorChecker");
 	colorChecker->AddComponent<Transform>(CU::Vector3f(100.0f, 40.0f, 0), CU::Vector3f(-90.0f, 0, 0));
 	colorChecker->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/SM_Color_Checker.fbx")->mesh,
 									AssetManager::Get().GetAsset<MaterialAsset>("EngineAssets/Materials/ColorChecker.json")->material);
@@ -301,18 +302,23 @@ void ModelViewer::InitGameObjects()
 
 
 	std::shared_ptr<GameObject> matballOne = std::make_shared<GameObject>();
+	matballOne->SetName("MatballOne");
 	matballOne->AddComponent<Transform>(CU::Vector3f(-100.0f, 0, 0), CU::Vector3f(0, -45.0f, 0));
+	matballOne->AddComponent<Rotator>(CU::Vector3f(0, 30.0f, 0));
 	std::shared_ptr<Model> matballOneModel = matballOne->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("Models/TMA_Matball.fbx")->mesh,
 									AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballOne.json")->material);
 	matballOneModel->SetMaterialOnSlot(1, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballTwo.json")->material);
 	Engine::GetInstance().GetSceneHandler().Instantiate(matballOne);
 
 	std::shared_ptr<GameObject> matballTwo = std::make_shared<GameObject>();
+	matballTwo->SetName("MatballTwo");
 	matballTwo->AddComponent<Transform>(CU::Vector3f(-100.0f, 0, 200.0f), CU::Vector3f(0, -45.0f, 0));
 	std::shared_ptr<Model> matballTwoModel = matballTwo->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("Models/TMA_Matball.fbx")->mesh,
 									AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballTwo.json")->material);
 	matballTwoModel->SetMaterialOnSlot(1, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballOne.json")->material);
 	Engine::GetInstance().GetSceneHandler().Instantiate(matballTwo);
+
+	matballOne->GetComponent<Transform>()->AddChild(matballTwo->GetComponent<Transform>().get());
 
 	std::shared_ptr<GameObject> tgaBro = std::make_shared<GameObject>();
 	tgaBro->SetName("TgaBro");
