@@ -78,13 +78,16 @@
     <ClCompile Include="Audio\AudioEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Audio\AudioPlayer.cpp">
+    <ClCompile Include="Audio\AudioInstance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ComponentSystem\Components\Transform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ComponentSystem\Components\Movement\ObjectController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentSystem\Components\AudioSource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -233,13 +236,16 @@
     <ClInclude Include="Audio\AudioEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Audio\AudioPlayer.h">
+    <ClInclude Include="Audio\AudioInstance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ComponentSystem\Components\Transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ComponentSystem\Components\Movement\ObjectController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentSystem\Components\AudioSource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

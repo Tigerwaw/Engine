@@ -43,9 +43,8 @@ void AnimatedModel::Start()
 
 void AnimatedModel::Update()
 {
-    if (!myMesh) return;
-    if (myAnimationLayers.size() <= 0) return;
-    if (!myIsPlaying) return;
+    if (!ValidateMesh()) return;
+    if (myAnimationLayers.empty()) return;
 
     for (auto& animationLayer : myAnimationLayers)
     {
@@ -67,7 +66,7 @@ void AnimatedModel::SetMaterialOnSlot(unsigned aSlot, std::shared_ptr<Material> 
 
 const CU::AABB3D<float> AnimatedModel::GetBoundingBox() const
 {
-    if (!myMesh)
+    if (!ValidateMesh())
     {
         return CU::AABB3D<float>();
     }
@@ -77,17 +76,8 @@ const CU::AABB3D<float> AnimatedModel::GetBoundingBox() const
 
 void AnimatedModel::AddAnimationLayer(unsigned aJointID)
 {
-    if (!myMesh.get())
-    {
-        LOG(ComponentSystem, Error, "Could not find mesh!");
-        return;
-    }
-
-    if (aJointID >= myMesh->GetSkeleton().myJoints.size())
-    {
-        LOG(ComponentSystem, Error, "Joint index {} out of range!", aJointID);
-        return;
-    }
+    if (!ValidateMesh()) return;
+    if (!ValidateJointIndex(aJointID)) return;
 
     AnimationLayer& newAnimLayer = myAnimationLayers.emplace_back(AnimationLayer());
     myJointNameToLayerIndex.emplace(myMesh->GetSkeleton().myJoints[aJointID].Name, static_cast<unsigned>(myAnimationLayers.size() - 1));
@@ -96,81 +86,192 @@ void AnimatedModel::AddAnimationLayer(unsigned aJointID)
 
 void AnimatedModel::AddAnimationLayer(std::string aStartJoint)
 {
-    if (!myMesh.get())
-    {
-        LOG(ComponentSystem, Error, "Could not find mesh!");
-        return;
-    }
+    if (!ValidateMesh()) return;
+    if (!ValidateJointName(aStartJoint)) return;
 
-    if (myMesh->GetSkeleton().JointNameToIndex.find(aStartJoint) == myMesh->GetSkeleton().JointNameToIndex.end())
-    {
-        LOG(ComponentSystem, Error, "Could not find joint with name {}!", aStartJoint);
-        return;
-    }
-
-    AnimationLayer& newAnimLayer = myAnimationLayers.emplace_back(AnimationLayer());
-    myJointNameToLayerIndex.emplace(aStartJoint, static_cast<unsigned>(myAnimationLayers.size() - 1));
-    newAnimLayer.startJointID = static_cast<unsigned>(myMesh->GetSkeleton().JointNameToIndex.at(aStartJoint));
+    unsigned index = static_cast<unsigned>(myMesh->GetSkeleton().JointNameToIndex.at(aStartJoint));
+    AddAnimationLayer(index);
 }
 
-void AnimatedModel::SetAnimation(std::shared_ptr<Animation> aNewAnimation, unsigned aStartingFrame, unsigned aLayerIndex, float aBlendTime, bool aShouldLoop)
+void AnimatedModel::AddAnimationToLayer(std::string aAnimationName, std::shared_ptr<Animation> aNewAnimation, unsigned aLayerIndex, bool aShouldLoop)
 {
+    if (!ValidateLayerIndex(aLayerIndex)) return;
+
+    std::shared_ptr<AnimationState> newState = std::make_shared<AnimationState>();
+    newState->animation = aNewAnimation;
+    newState->name = aAnimationName;
+    newState->isLooping = aShouldLoop;
+    newState->currentFrame = 0;
+    newState->currentTime = 0;
+    newState->frameTime = 1.0f / aNewAnimation->FramesPerSecond;
+    myAnimationLayers[aLayerIndex].myAnimationStates.emplace(aAnimationName, newState);
+
+    if (!myAnimationLayers[aLayerIndex].currentState)
+    {
+        myAnimationLayers[aLayerIndex].currentState = newState;
+    }
+}
+
+void AnimatedModel::AddAnimationToLayer(std::string aAnimationName, std::shared_ptr<Animation> aNewAnimation, std::string aStartJoint, bool aShouldLoop)
+{
+    if (aStartJoint == "")
+    {
+        AddAnimationToLayer(aAnimationName, aNewAnimation, 0, aShouldLoop);
+        return;
+    }
+
+    if (!ValidateLayerJointName(aStartJoint)) return;
+
+    AddAnimationToLayer(aAnimationName, aNewAnimation, myJointNameToLayerIndex.at(aStartJoint), aShouldLoop);
+}
+
+void AnimatedModel::SetCurrentAnimationOnLayer(std::string aAnimationName, unsigned aLayerIndex, float aBlendTime, unsigned aStartingFrame)
+{
+    if (!ValidateLayerIndex(aLayerIndex)) return;
+    if (!ValidateAnimationName(aLayerIndex, aAnimationName)) return;
+ 
     if (aBlendTime > 0)
     {
         myAnimationLayers[aLayerIndex].isBlending = true;
         myAnimationLayers[aLayerIndex].maxBlendTime = aBlendTime;
         myAnimationLayers[aLayerIndex].currentBlendTime = 0;
 
-        myAnimationLayers[aLayerIndex].nextState.animation = aNewAnimation;
-        myAnimationLayers[aLayerIndex].nextState.currentFrame = aStartingFrame;
-        myAnimationLayers[aLayerIndex].nextState.currentTime = 0;
-        myAnimationLayers[aLayerIndex].nextState.frameTime = 1.0f / myAnimationLayers[aLayerIndex].nextState.animation->FramesPerSecond;
-        myAnimationLayers[aLayerIndex].nextState.isLooping = aShouldLoop;
+        myAnimationLayers[aLayerIndex].nextState = myAnimationLayers[aLayerIndex].myAnimationStates.at(aAnimationName);
+        myAnimationLayers[aLayerIndex].nextState->currentFrame = aStartingFrame;
     }
     else
     {
-        myAnimationLayers[aLayerIndex].currentState.animation = aNewAnimation;
-        myAnimationLayers[aLayerIndex].currentState.currentFrame = aStartingFrame;
-        myAnimationLayers[aLayerIndex].currentState.currentTime = 0;
-        myAnimationLayers[aLayerIndex].currentState.frameTime = 1.0f / myAnimationLayers[aLayerIndex].currentState.animation->FramesPerSecond;
-        myAnimationLayers[aLayerIndex].currentState.isLooping = aShouldLoop;
+        myAnimationLayers[aLayerIndex].currentState = myAnimationLayers[aLayerIndex].myAnimationStates.at(aAnimationName);
+        myAnimationLayers[aLayerIndex].currentState->currentFrame = aStartingFrame;
     }
 }
 
-void AnimatedModel::SetAnimation(std::shared_ptr<Animation> aNewAnimation, unsigned aStartingFrame, std::string aStartJoint, float aBlendTime, bool aShouldLoop)
+void AnimatedModel::SetCurrentAnimationOnLayer(std::string aAnimationName, std::string aStartJoint, float aBlendTime, unsigned aStartingFrame)
 {
     if (aStartJoint == "")
     {
-        SetAnimation(aNewAnimation, aStartingFrame, 0, aBlendTime, aShouldLoop);
+        SetCurrentAnimationOnLayer(aAnimationName, 0, aBlendTime, aStartingFrame);
         return;
     }
 
-    if (myJointNameToLayerIndex.find(aStartJoint) == myJointNameToLayerIndex.end())
+    if (!ValidateLayerJointName(aStartJoint)) return;
+
+    SetCurrentAnimationOnLayer(aAnimationName, myJointNameToLayerIndex.at(aStartJoint), aBlendTime, aStartingFrame);
+}
+
+void AnimatedModel::AddAnimationEvent(std::string aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, unsigned aLayerIndex)
+{
+    if (!ValidateLayerIndex(aLayerIndex)) return;
+    if (!ValidateAnimationName(aLayerIndex, aAnimationName)) return;
+
+    if (aEventFrame < 0 || aEventFrame >= myAnimationLayers[aLayerIndex].myAnimationStates.at(aAnimationName)->animation->Frames.size())
     {
-        LOG(ComponentSystem, Error, "Could not find a layer by the name of {}!", aStartJoint);
+        LOG(ComponentSystem, Warning, "Frame {} is out of the range of Animation {}! Event will not be added!", aEventFrame, aAnimationName);
         return;
     }
 
-    SetAnimation(aNewAnimation, aStartingFrame, myJointNameToLayerIndex.at(aStartJoint), aBlendTime, aShouldLoop);
+    AnimationEvent newEvent;
+    newEvent.eventTypeToSend = aEventTypeToSend;
+    newEvent.frame = aEventFrame;
+    myAnimationLayers[aLayerIndex].myAnimationStates.at(aAnimationName)->events.emplace_back(newEvent);
+}
+
+void AnimatedModel::AddAnimationEvent(std::string aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, std::string aStartJoint)
+{
+    if (aStartJoint == "")
+    {
+        AddAnimationEvent(aAnimationName, aEventFrame, aEventTypeToSend, 0);
+        return;
+    }
+
+    AddAnimationEvent(aAnimationName, aEventFrame, aEventTypeToSend, myJointNameToLayerIndex.at(aStartJoint));
+}
+
+std::string AnimatedModel::GetCurrentAnimationNameOnLayer(unsigned aLayerIndex)
+{
+    if (!ValidateLayerIndex(aLayerIndex)) return "";
+    if (!myAnimationLayers[aLayerIndex].currentState) return "";
+
+    return myAnimationLayers[aLayerIndex].currentState->name;
+}
+
+std::string AnimatedModel::GetCurrentAnimationNameOnLayer(std::string aStartJoint)
+{
+    if (aStartJoint == "")
+    {
+        return GetCurrentAnimationNameOnLayer(0);
+    }
+
+    if (!ValidateLayerJointName(aStartJoint)) return "";
+
+    return GetCurrentAnimationNameOnLayer(myJointNameToLayerIndex.at(aStartJoint));
 }
 
 void AnimatedModel::PlayAnimation()
 {
-    myIsPlaying = true;
+    for (auto& layer : myAnimationLayers)
+    {
+        layer.isPlaying = true;
+    }
 }
 
 void AnimatedModel::StopAnimation()
 {
-    myIsPlaying = false;
+    for (auto& layer : myAnimationLayers)
+    {
+        layer.isPlaying = false;
+    }
+}
+
+void AnimatedModel::PlayAnimationOnLayer(unsigned aLayerIndex)
+{
+    if (!ValidateLayerIndex(aLayerIndex)) return;
+
+    myAnimationLayers[aLayerIndex].isPlaying = true;
+}
+
+void AnimatedModel::PlayAnimationOnLayer(std::string aStartJoint)
+{
+    if (aStartJoint == "")
+    {
+        PlayAnimationOnLayer(0);
+        return;
+    }
+
+    if (!ValidateLayerJointName(aStartJoint)) return;
+
+    PlayAnimationOnLayer(myJointNameToLayerIndex.at(aStartJoint));
+}
+
+void AnimatedModel::StopAnimationOnLayer(unsigned aLayerIndex)
+{
+    if (!ValidateLayerIndex(aLayerIndex)) return;
+
+    myAnimationLayers[aLayerIndex].isPlaying = true;
+}
+
+void AnimatedModel::StopAnimationOnLayer(std::string aStartJoint)
+{
+    if (aStartJoint == "")
+    {
+        StopAnimationOnLayer(0);
+        return;
+    }
+
+    if (!ValidateLayerJointName(aStartJoint)) return;
+
+    StopAnimationOnLayer(myJointNameToLayerIndex.at(aStartJoint));
 }
 
 void AnimatedModel::UpdateAnimationLayer(AnimationLayer& aAnimationLayer)
 {
-    UpdateAnimationState(aAnimationLayer.currentState);
+    if (!aAnimationLayer.isPlaying) return;
+
+    UpdateAnimationState(*aAnimationLayer.currentState);
 
     if (aAnimationLayer.isBlending)
     {
-        UpdateAnimationState(aAnimationLayer.nextState);
+        UpdateAnimationState(*aAnimationLayer.nextState);
 
         aAnimationLayer.currentBlendTime += Engine::GetInstance().GetTimer().GetDeltaTime();
         float blendFactor = aAnimationLayer.currentBlendTime / aAnimationLayer.maxBlendTime;
@@ -203,11 +304,26 @@ void AnimatedModel::UpdateAnimationState(AnimationState& aAnimationState)
 
     aAnimationState.currentTime = 0;
     aAnimationState.currentFrame++;
+
+    for (auto& event : aAnimationState.events)
+    {
+        if (event.frame == aAnimationState.currentFrame)
+        {
+            gameObject->SendEvent(event.eventTypeToSend);
+            event.hasBeenCalledThisLoop = true;
+        }
+    }
+
     if (aAnimationState.animation->Frames.size() <= aAnimationState.currentFrame)
     {
         if (aAnimationState.isLooping)
         {
             aAnimationState.currentFrame = 0;
+
+            for (auto& event : aAnimationState.events)
+            {
+                event.hasBeenCalledThisLoop = false;
+            }
         }
         else
         {
@@ -239,7 +355,7 @@ void AnimatedModel::UpdatePose(AnimationLayer& aAnimLayer)
     for (size_t i = aAnimLayer.startJointID; i < skeleton.myJoints.size(); i++)
     {
         Mesh::Skeleton::Joint currentJoint = myMesh->GetSkeleton().myJoints[i];
-        aAnimLayer.currentPose[i] = aAnimLayer.currentState.animation->Frames[aAnimLayer.currentState.currentFrame].BoneTransforms[currentJoint.Name];
+        aAnimLayer.currentPose[i] = aAnimLayer.currentState->animation->Frames[aAnimLayer.currentState->currentFrame].BoneTransforms[currentJoint.Name];
     }
 }
 
@@ -249,8 +365,8 @@ void AnimatedModel::BlendPoses(AnimationLayer& aAnimLayer, float aBlendFactor)
     for (size_t i = aAnimLayer.startJointID; i < skeleton.myJoints.size(); i++)
     {
         Mesh::Skeleton::Joint currentJoint = myMesh->GetSkeleton().myJoints[i];
-        CU::Matrix4x4f currentStateJointTransform = aAnimLayer.currentState.animation->Frames[aAnimLayer.currentState.currentFrame].BoneTransforms[currentJoint.Name];
-        CU::Matrix4x4f nextStateJointTransform = aAnimLayer.nextState.animation->Frames[aAnimLayer.nextState.currentFrame].BoneTransforms[currentJoint.Name];
+        CU::Matrix4x4f currentStateJointTransform = aAnimLayer.currentState->animation->Frames[aAnimLayer.currentState->currentFrame].BoneTransforms[currentJoint.Name];
+        CU::Matrix4x4f nextStateJointTransform = aAnimLayer.nextState->animation->Frames[aAnimLayer.nextState->currentFrame].BoneTransforms[currentJoint.Name];
          
         const CU::Vector3f T = CU::Vector3f::Lerp(CU::Matrix4x4f::CreateTranslationVector(currentStateJointTransform), CU::Matrix4x4f::CreateTranslationVector(nextStateJointTransform), aBlendFactor);
         const CU::Quatf R = CU::Quatf::Slerp(CU::Quatf(currentStateJointTransform), CU::Quatf(nextStateJointTransform), aBlendFactor);
@@ -262,4 +378,70 @@ void AnimatedModel::BlendPoses(AnimationLayer& aAnimLayer, float aBlendFactor)
 
         aAnimLayer.currentPose[i] = CU::Matrix4x4f::CreateScaleMatrix(S) * R.GetRotationMatrix4x4f() * CU::Matrix4x4f::CreateTranslationMatrix(T);
     }
+}
+
+const bool AnimatedModel::ValidateMesh() const
+{
+    if (!myMesh.get())
+    {
+        LOG(ComponentSystem, Error, "Could not find mesh!");
+        return false;
+    }
+
+    return true;
+}
+
+const bool AnimatedModel::ValidateJointIndex(unsigned aStartJoint) const
+{
+    if (aStartJoint >= myMesh->GetSkeleton().myJoints.size())
+    {
+        LOG(ComponentSystem, Error, "Joint index {} out of range!", aStartJoint);
+        return false;
+    }
+
+    return true;
+}
+
+const bool AnimatedModel::ValidateJointName(std::string aStartJoint) const
+{
+    if (myMesh->GetSkeleton().JointNameToIndex.find(aStartJoint) == myMesh->GetSkeleton().JointNameToIndex.end())
+    {
+        LOG(ComponentSystem, Error, "Could not find joint with name {}!", aStartJoint);
+        return false;
+    }
+
+    return true;
+}
+
+const bool AnimatedModel::ValidateLayerIndex(unsigned aLayerIndex) const
+{
+    if (aLayerIndex < 0 || aLayerIndex >= myAnimationLayers.size())
+    {
+        LOG(ComponentSystem, Error, "Layer index {} out of range!", aLayerIndex);
+        return false;
+    }
+
+    return true;
+}
+
+const bool AnimatedModel::ValidateLayerJointName(std::string aStartJoint) const
+{
+    if (myJointNameToLayerIndex.find(aStartJoint) == myJointNameToLayerIndex.end())
+    {
+        LOG(ComponentSystem, Error, "Could not find a layer by the name of {}!", aStartJoint);
+        return false;
+    }
+
+    return true;
+}
+
+const bool AnimatedModel::ValidateAnimationName(unsigned aLayerIndex, std::string aAnimationName) const
+{
+    if (myAnimationLayers[aLayerIndex].myAnimationStates.find(aAnimationName) == myAnimationLayers[aLayerIndex].myAnimationStates.end())
+    {
+        LOG(ComponentSystem, Error, "Could not find an animation by the name of {} in layer {}!", aAnimationName, aLayerIndex);
+        return false;
+    }
+
+    return true;
 }

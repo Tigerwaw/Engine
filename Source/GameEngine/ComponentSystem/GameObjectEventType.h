@@ -2,6 +2,6 @@
 
 enum class GameObjectEventType
 {
-    ChangedPosition,
+    Footstep,
     Count
 };

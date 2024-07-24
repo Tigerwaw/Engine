@@ -4,6 +4,8 @@
 #include "GameEngine/Math/Matrix4x4.hpp"
 namespace CU = CommonUtilities;
 
+#include "GameEngine/ComponentSystem/GameObjectEventType.h"
+
 #include <memory>
 #include <vector>
 #include <array>
@@ -19,24 +21,36 @@ struct Animation;
 class AnimatedModel : public Component
 {
 public:
+    struct AnimationEvent
+    {
+        unsigned frame = 0;
+        GameObjectEventType eventTypeToSend = GameObjectEventType::Count;
+        bool hasBeenCalledThisLoop = false;
+    };
+
     struct AnimationState
     {
         std::shared_ptr<Animation> animation;
+        std::string name;
         unsigned currentFrame = 0;
         float frameTime = 0;
         float currentTime = 0;
         bool isLooping = false;
+
+        std::vector<AnimationEvent> events;
     };
 
     struct AnimationLayer
     {
-        AnimationState currentState;
-        AnimationState nextState;
+        std::shared_ptr<AnimationState> currentState;
+        std::shared_ptr<AnimationState> nextState;
+        std::unordered_map<std::string, std::shared_ptr<AnimationState>> myAnimationStates;
         std::array<CU::Matrix4x4f, 128> currentPose;
         unsigned startJointID = 0;
         bool isBlending = false;
         float currentBlendTime = 0;
         float maxBlendTime = 0;
+        bool isPlaying = true;
     };
 
     ~AnimatedModel() override;
@@ -55,12 +69,24 @@ public:
     std::vector<std::shared_ptr<Material>> GetMaterials() { return myMaterials; }
     const CU::AABB3D<float> GetBoundingBox() const;
 
-    void AddAnimationLayer(unsigned aJointID = 0);
-    void AddAnimationLayer(std::string aStartJoint = "");
-    void SetAnimation(std::shared_ptr<Animation> aNewAnimation, unsigned aStartingFrame = 0, unsigned aLayerIndex = 0, float aBlendTime = 0, bool aShouldLoop = false);
-    void SetAnimation(std::shared_ptr<Animation> aNewAnimation, unsigned aStartingFrame = 0, std::string aStartJoint = "", float aBlendTime = 0, bool aShouldLoop = false);
     void PlayAnimation();
     void StopAnimation();
+    void PlayAnimationOnLayer(unsigned aLayerIndex = 0);
+    void PlayAnimationOnLayer(std::string aStartJoint = "");
+    void StopAnimationOnLayer(unsigned aLayerIndex = 0);
+    void StopAnimationOnLayer(std::string aStartJoint = "");
+
+    void AddAnimationLayer(unsigned aJointID = 0);
+    void AddAnimationLayer(std::string aStartJoint = "");
+    void AddAnimationToLayer(std::string aAnimationName, std::shared_ptr<Animation> aNewAnimation, unsigned aLayerIndex = 0, bool aShouldLoop = false);
+    void AddAnimationToLayer(std::string aAnimationName, std::shared_ptr<Animation> aNewAnimation, std::string aStartJoint = "", bool aShouldLoop = false);
+    void SetCurrentAnimationOnLayer(std::string aAnimationName, unsigned aLayerIndex = 0, float aBlendTime = 0, unsigned aStartingFrame = 0);
+    void SetCurrentAnimationOnLayer(std::string aAnimationName, std::string aStartJoint = "", float aBlendTime = 0, unsigned aStartingFrame = 0);
+    void AddAnimationEvent(std::string aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, unsigned aLayerIndex = 0);
+    void AddAnimationEvent(std::string aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, std::string aStartJoint = "");
+
+    std::string GetCurrentAnimationNameOnLayer(unsigned aLayerIndex = 0);
+    std::string GetCurrentAnimationNameOnLayer(std::string aStartJoint = "");
 
     std::array<CU::Matrix4x4f, 128> GetCurrentPose() { return myJointTransforms; }
 private:
@@ -70,6 +96,13 @@ private:
     void UpdatePose(AnimationLayer& aAnimLayer);
     void BlendPoses(AnimationLayer& aAnimLayer, float aBlendFactor);
 
+    const bool ValidateMesh() const;
+    const bool ValidateJointIndex(unsigned aStartJoint) const;
+    const bool ValidateJointName(std::string aStartJoint) const;
+    const bool ValidateLayerIndex(unsigned aLayerIndex) const;
+    const bool ValidateLayerJointName(std::string aStartJoint) const;
+    const bool ValidateAnimationName(unsigned aLayerIndex, std::string aAnimationName) const;
+
     std::shared_ptr<Mesh> myMesh = nullptr;
     std::vector<std::shared_ptr<Material>> myMaterials;
     std::unordered_map<unsigned, unsigned> mySlotToIndex;
@@ -78,6 +111,5 @@ private:
     std::unordered_map<std::string, unsigned> myJointNameToLayerIndex;
 
     std::array<CU::Matrix4x4f, 128> myJointTransforms;
-    bool myIsPlaying = false;
 };
 

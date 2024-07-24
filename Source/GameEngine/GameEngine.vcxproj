@@ -162,8 +162,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio\AudioEngine.cpp" />
-    <ClCompile Include="Audio\AudioPlayer.cpp" />
+    <ClCompile Include="Audio\AudioInstance.cpp" />
     <ClCompile Include="ComponentSystem\Component.cpp" />
+    <ClCompile Include="ComponentSystem\Components\AudioSource.cpp" />
     <ClCompile Include="ComponentSystem\Components\Graphics\AnimatedModel.cpp" />
     <ClCompile Include="ComponentSystem\Components\Graphics\Camera.cpp" />
     <ClCompile Include="ComponentSystem\Components\Graphics\DebugModel.cpp" />
@@ -188,7 +189,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio\AudioEngine.h" />
-    <ClInclude Include="Audio\AudioPlayer.h" />
+    <ClInclude Include="Audio\AudioInstance.h" />
+    <ClInclude Include="ComponentSystem\Components\AudioSource.h" />
     <ClInclude Include="ComponentSystem\Components\Graphics\AnimatedModel.h" />
     <ClInclude Include="ComponentSystem\Component.h" />
     <ClInclude Include="ComponentSystem\Components\Graphics\Camera.h" />

@@ -62,7 +62,6 @@ DECLARE_LOG_CATEGORY_WITH_NAME(LogModelViewer, ModelViewer, Warning);
 struct Animation;
 class GameObject;
 class Scene;
-class AudioPlayer;
 
 namespace CommonUtilities
 {
@@ -83,15 +82,8 @@ private:
 	void InitCamera();
 	void InitLights();
 	void InitGameObjects();
-	void ChangeAnimation(int aIndex);
 	void UpdateImgui();
 
 	bool myIsRunning = false;
 	HWND myMainWindowHandle = nullptr;
-
-	std::vector<std::shared_ptr<Animation>> myAnimations;
-	std::vector<std::string> myAnimationNames;
-	unsigned myCurrentAnimIndex = 0;
-
-	std::shared_ptr<AudioPlayer> myTestAudio;
 };

@@ -26,8 +26,17 @@ DEFINE_LOG_CATEGORY(LogModelViewer);
 #include "AssetManager.h"
 #include "Asset.h"
 
+#include "GameEngine/Engine.h"
+#include "GameEngine/EngineSettings.h"
+#include "GameEngine/Time/Timer.h"
+#include "GameEngine/Input/InputHandler.h"
+#include "GameEngine/SceneHandler/SceneHandler.h"
+#include "GameEngine/DebugDrawer/DebugDrawer.h"
+#include "GameEngine/Audio/AudioEngine.h"
+
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
+#include "GameEngine/ComponentSystem/Components/AudioSource.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/DebugModel.h"
@@ -40,15 +49,6 @@ DEFINE_LOG_CATEGORY(LogModelViewer);
 #include "GameEngine/ComponentSystem/Components/Movement/Rotator.h"
 #include "GameEngine/ComponentSystem/Components/Movement/FreecamController.h"
 #include "GameEngine/ComponentSystem/Components/Movement/ObjectController.h"
-
-#include "GameEngine/Engine.h"
-#include "GameEngine/EngineSettings.h"
-#include "GameEngine/Time/Timer.h"
-#include "GameEngine/Input/InputHandler.h"
-#include "GameEngine/SceneHandler/SceneHandler.h"
-#include "GameEngine/DebugDrawer/DebugDrawer.h"
-#include "GameEngine/Audio/AudioEngine.h"
-#include "GameEngine/Audio/AudioPlayer.h"
 
 namespace CU = CommonUtilities;
 
@@ -137,8 +137,6 @@ void ModelViewer::InitModelViewer()
 	Engine::GetInstance().GetAudioEngine().LoadBank("Master");
 	Engine::GetInstance().GetAudioEngine().LoadBank("Master.strings");
 	Engine::GetInstance().GetAudioEngine().LoadBank("Test");
-	myTestAudio = std::make_shared<AudioPlayer>();
-	myTestAudio->Initialize("TestEvent");
 
 	Engine::GetInstance().GetDebugDrawer().InitializeDebugDrawer();
 	Engine::GetInstance().GetSceneHandler().CreateEmptyScene();
@@ -326,30 +324,22 @@ void ModelViewer::InitGameObjects()
 	tgaBro->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Models/SK_C_TGA_Bro.fbx")->mesh,
 										 AssetManager::Get().GetAsset<MaterialAsset>("Materials/TgaBro.json")->material);
 	Engine::GetInstance().GetSceneHandler().Instantiate(tgaBro);
+	std::shared_ptr<AudioSource> tgaBroAudio = tgaBro->AddComponent<AudioSource>();
+	tgaBroAudio->AddAudioInstance("TgaBroFootsteps");
+	tgaBroAudio->AddAudioPlayOnEvent("TgaBroFootsteps", GameObjectEventType::Footstep);
 
-	myAnimations.emplace_back(AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Brething.fbx")->animation);
-	myAnimationNames.emplace_back("Idle");
-	myAnimations.emplace_back(AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Locomotion/A_C_TGA_Bro_Walk.fbx")->animation);
-	myAnimationNames.emplace_back("Walk");
-	myAnimations.emplace_back(AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx")->animation);
-	myAnimationNames.emplace_back("Run");
-	myAnimations.emplace_back(AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Wave.fbx")->animation);
-	myAnimationNames.emplace_back("Wave");
-
-	std::shared_ptr<AnimatedModel> tgaBroModel = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("TgaBro")->GetComponent<AnimatedModel>();
-	tgaBroModel->SetAnimation(myAnimations[0], 0, "", 0, true);
-	tgaBroModel->PlayAnimation();
+	std::shared_ptr<AnimatedModel> tgaBroModel = tgaBro->GetComponent<AnimatedModel>();
+	tgaBroModel->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Brething.fbx")->animation, "", true);
+	tgaBroModel->AddAnimationToLayer("Walk", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Locomotion/A_C_TGA_Bro_Walk.fbx")->animation, "", true);
+	tgaBroModel->AddAnimationToLayer("Run", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx")->animation, "", true);
+	tgaBroModel->AddAnimationToLayer("Wave", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Wave.fbx")->animation, "", true);
 	tgaBroModel->AddAnimationLayer("RightShoulder");
-	tgaBroModel->SetAnimation(myAnimations[3], 0, "RightShoulder", 0, true);
+	tgaBroModel->AddAnimationToLayer("Wave", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Wave.fbx")->animation, "RightShoulder", true);
 	tgaBroModel->PlayAnimation();
-}
-
-void ModelViewer::ChangeAnimation(int aIndex)
-{
-	if (aIndex >= myAnimations.size() || aIndex < 0) return;
-
-	myCurrentAnimIndex = aIndex;
-	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("TgaBro")->GetComponent<AnimatedModel>()->SetAnimation(myAnimations[aIndex], 0, "", 1.0f, true);
+	tgaBroModel->AddAnimationEvent("Walk", 1, GameObjectEventType::Footstep, "");
+	tgaBroModel->AddAnimationEvent("Walk", 17, GameObjectEventType::Footstep, "");
+	tgaBroModel->AddAnimationEvent("Run", 4, GameObjectEventType::Footstep, "");
+	tgaBroModel->AddAnimationEvent("Run", 13, GameObjectEventType::Footstep, "");
 }
 
 void ModelViewer::UpdateImgui()
@@ -387,12 +377,13 @@ void ModelViewer::UpdateImgui()
 		// Animation
 		{
 			ImGui::Text("Animations");
-			if (ImGui::BeginCombo("##AnimationDropdown", myAnimationNames[myCurrentAnimIndex].c_str()))
+			std::shared_ptr<AnimatedModel> tgaBroModel = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("TgaBro")->GetComponent<AnimatedModel>();
+			if (ImGui::BeginCombo("##AnimationDropdown", tgaBroModel->GetCurrentAnimationNameOnLayer(0).c_str()))
 			{
-				if (ImGui::Selectable("Idle")) ChangeAnimation(0);
-				if (ImGui::Selectable("Walk")) ChangeAnimation(1);
-				if (ImGui::Selectable("Run")) ChangeAnimation(2);
-				if (ImGui::Selectable("Wave")) ChangeAnimation(3);
+				if (ImGui::Selectable("Idle")) tgaBroModel->SetCurrentAnimationOnLayer("Idle", "", 0.5f);
+				if (ImGui::Selectable("Walk")) tgaBroModel->SetCurrentAnimationOnLayer("Walk", "", 0.5f);;
+				if (ImGui::Selectable("Run")) tgaBroModel->SetCurrentAnimationOnLayer("Run", "", 0.5f);;
+				if (ImGui::Selectable("Wave")) tgaBroModel->SetCurrentAnimationOnLayer("Wave", "", 0.5f);;
 				ImGui::EndCombo();
 			}
 		}
@@ -401,7 +392,7 @@ void ModelViewer::UpdateImgui()
 		{
 			if (ImGui::Button("Test Audio"))
 			{
-				myTestAudio->Play();
+				//Engine::GetInstance().GetSceneHandler().FindGameObjectByName("TgaBro")->GetComponent<AudioSource>()->
 			}
 		}
 

@@ -110,7 +110,7 @@ FMOD::Studio::EventInstance* AudioEngine::CreateEventInstance(std::string aEvent
         return nullptr;
     }
 
-    AUDIOLOG(Log, "Create event instance of {}", aEventName);
+    AUDIOLOG(Log, "Created event instance of {}", aEventName);
     return eventInstance;
 }
 
@@ -130,6 +130,7 @@ bool AudioEngine::LoadBankEvents(std::string aBankName)
     for (auto& eventDesc : eventDescs)
     {
         std::string eventPath;
+        eventPath.reserve(256);
         char* charPath = eventPath.data();
         FMOD_RESULT result = eventDesc->getPath(charPath, 256, nullptr);
         if (result != FMOD_OK)
@@ -138,7 +139,7 @@ bool AudioEngine::LoadBankEvents(std::string aBankName)
             return false;
         }
 
-        eventPath = charPath;
+        eventPath.assign(charPath);
         if (eventPath == "")
         {
             AUDIOLOG(Error, "Event path is empty and has been discarded");
