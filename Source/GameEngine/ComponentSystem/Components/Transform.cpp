@@ -94,6 +94,18 @@ const CU::Matrix4x4f Transform::GetWorldMatrix(bool aNoScale)
 	}
 }
 
+const CU::Matrix4x4f Transform::GetToWorldMatrix(bool aNoScale)
+{
+	if (aNoScale)
+	{
+		return myToWorldMatrixNoScale;
+	}
+	else
+	{
+		return myToWorldMatrix;
+	}
+}
+
 void Transform::SetParent(Transform* aTransform)
 {
 	if (myParent)
@@ -184,19 +196,76 @@ void Transform::RemoveChild(Transform* aTransform)
 	}
 }
 
-const CU::Vector3f Transform::GetRightVector()
+const CU::Vector3f Transform::GetRightVector(bool aInWorldSpace)
 {
-	return GetMatrix().GetRightVector();
+	if (aInWorldSpace)
+	{
+		return GetWorldMatrix().GetRightVector();
+	}
+	else
+	{
+		return GetMatrix().GetRightVector();
+	}
 }
 
-const CU::Vector3f Transform::GetUpVector()
+const CU::Vector3f Transform::GetUpVector(bool aInWorldSpace)
 {
-	return GetMatrix().GetUpVector();
+	if (aInWorldSpace)
+	{
+		return GetWorldMatrix().GetUpVector();
+	}
+	else
+	{
+		return GetMatrix().GetUpVector();
+	}
 }
 
-const CU::Vector3f Transform::GetForwardVector()
+const CU::Vector3f Transform::GetForwardVector(bool aInWorldSpace)
 {
-	return GetMatrix().GetForwardVector();
+	if (aInWorldSpace)
+	{
+		return GetWorldMatrix().GetForwardVector();
+	}
+	else
+	{
+		return GetMatrix().GetForwardVector();
+	}
+}
+
+const CU::Vector3f Transform::GetTranslation(bool aInWorldSpace)
+{
+	if (aInWorldSpace)
+	{
+		return CU::ToVector3(CU::ToVector4(myPosition) * myToWorldMatrix);
+	}
+	else
+	{
+		return myPosition;
+	}
+}
+
+const CU::Vector3f Transform::GetRotation(bool aInWorldSpace)
+{
+	if (aInWorldSpace)
+	{
+		return CU::ToVector3(CU::ToVector4(myRotation) * myToWorldMatrix);
+	}
+	else
+	{
+		return myRotation;
+	}
+}
+
+const CU::Vector3f Transform::GetScale(bool aInWorldSpace)
+{
+	if (aInWorldSpace)
+	{
+		return CU::ToVector3(CU::ToVector4(myScale) * myToWorldMatrix);
+	}
+	else
+	{
+		return myScale;
+	}
 }
 
 void Transform::SetTranslation(const CU::Vector3f aTranslation)

@@ -62,6 +62,7 @@ DECLARE_LOG_CATEGORY_WITH_NAME(LogModelViewer, ModelViewer, Warning);
 struct Animation;
 class GameObject;
 class Scene;
+class AudioInstance;
 
 namespace CommonUtilities
 {

@@ -1,5 +1,7 @@
 #include "AudioEngine.h"
 #include "GameEngine/EngineSettings.h"
+#include "GameEngine/ComponentSystem/GameObject.h"
+#include "GameEngine/ComponentSystem/Components/Transform.h"
 
 #include "fmod/fmod.hpp"
 #include "fmod/fmod_studio.hpp"
@@ -55,7 +57,55 @@ void AudioEngine::Update()
         return;
     }
 
+    UpdateListener();
+
     mySystem->update();
+}
+
+void AudioEngine::SetListener(std::shared_ptr<GameObject> aGameObject)
+{
+    myListener = aGameObject;
+
+}
+
+void AudioEngine::UpdateListener()
+{
+    if (!myListener)
+    {
+        if (!myHasWarnedAboutListenerError)
+        {
+            AUDIOLOG(Warning, "No listener has been set!");
+            myHasWarnedAboutListenerError = true;
+        }
+        
+        return;
+    }
+
+    std::shared_ptr<Transform> transform = myListener->GetComponent<Transform>();
+    if (!transform)
+    {
+        if (!myHasWarnedAboutListenerError)
+        {
+            AUDIOLOG(Error, "Listener does not contain a transform component!");
+            myHasWarnedAboutListenerError = true;
+        }
+
+        return;
+    }
+
+    const FMOD_3D_ATTRIBUTES attributes = { static_cast<FMOD_VECTOR>(transform->GetTranslation()), {0, 0, 0}, static_cast<FMOD_VECTOR>(transform->GetForwardVector()), static_cast<FMOD_VECTOR>(transform->GetUpVector())};
+
+    FMOD_RESULT result = mySystem->setListenerAttributes(0, &attributes);
+    if (result != FMOD_OK)
+    {
+        if (!myHasWarnedAboutListenerError)
+        {
+            AUDIOLOG(Error, "Failed to set listener attributes!");
+            myHasWarnedAboutListenerError = true;
+        }
+
+        return;
+    }
 }
 
 bool AudioEngine::LoadBank(std::string aBankName)
@@ -91,6 +141,76 @@ bool AudioEngine::UnloadBank(std::string aBankFileName)
     }
 
     return true;
+}
+
+bool AudioEngine::AddBus(BusType aBusType, std::string aBusName)
+{
+    std::string path = "bus:/" + aBusName;
+    FMOD::Studio::Bus* newBus = nullptr;
+    FMOD_RESULT result = mySystem->getBus(path.c_str(), &newBus);
+    if (result != FMOD_OK)
+    {
+        AUDIOLOG(Error, "Failed to add audio bus {}", aBusName);
+        return false;
+    }
+
+    myBuses.emplace(aBusType, newBus);
+    AUDIOLOG(Log, "Successfully added audio bus {}", aBusName);
+    return true;
+}
+
+void AudioEngine::SetVolumeOfBus(BusType aBusType, float aVolume)
+{
+    auto busIterator = myBuses.find(aBusType);
+    if (busIterator == myBuses.end())
+    {
+        AUDIOLOG(Warning, "Can't find audio bus type ", static_cast<unsigned>(aBusType));
+        return;
+    }
+
+    myBuses.at(aBusType)->setVolume(aVolume);
+}
+
+const float AudioEngine::GetVolumeOfBus(BusType aBusType) const
+{
+    auto busIterator = myBuses.find(aBusType);
+    if (busIterator == myBuses.end())
+    {
+        AUDIOLOG(Warning, "Can't find audio bus type ", static_cast<unsigned>(aBusType));
+        return 0;
+    }
+
+    float aVolume = 0;
+    myBuses.at(aBusType)->getVolume(&aVolume);
+    return aVolume;
+}
+
+void AudioEngine::IncreaseVolumeOfBus(BusType aBusType, float aVolumeIncrease)
+{
+    auto busIterator = myBuses.find(aBusType);
+    if (busIterator == myBuses.end())
+    {
+        AUDIOLOG(Warning, "Can't find audio bus type ", static_cast<unsigned>(aBusType));
+        return;
+    }
+
+    float volume = 0;
+    myBuses.at(aBusType)->getVolume(&volume);
+    myBuses.at(aBusType)->setVolume(volume + aVolumeIncrease);
+}
+
+void AudioEngine::DecreaseVolumeOfBus(BusType aBusType, float aVolumeDecrease)
+{
+    auto busIterator = myBuses.find(aBusType);
+    if (busIterator == myBuses.end())
+    {
+        AUDIOLOG(Warning, "Can't find audio bus type ", static_cast<unsigned>(aBusType));
+        return;
+    }
+
+    float volume = 0;
+    myBuses.at(aBusType)->getVolume(&volume);
+    myBuses.at(aBusType)->setVolume(volume - aVolumeDecrease);
 }
 
 FMOD::Studio::EventInstance* AudioEngine::CreateEventInstance(std::string aEventName)

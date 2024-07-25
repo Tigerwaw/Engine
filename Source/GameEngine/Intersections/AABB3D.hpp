@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "GameEngine/Math/Vector.hpp"
+#include "GameEngine/Math/Matrix.hpp"
 
 namespace CommonUtilities
 {
@@ -70,6 +71,14 @@ namespace CommonUtilities
 	}
 
 	template<class T>
+	const AABB3D<T> operator*(const AABB3D<T>& aAABB3D, const Matrix4x4<T>& aMatrix)
+	{
+		Vector3f newMinPoint = ToVector3(ToVector4(aAABB3D.GetMin(), 1.0f) * aMatrix);
+		Vector3f newMaxPoint = ToVector3(ToVector4(aAABB3D.GetMax(), 1.0f) * aMatrix);
+		return AABB3D<T>(newMinPoint, newMaxPoint);
+	}
+
+	template<class T>
 	const Vector3<T> AABB3D<T>::GetMin() const
 	{
 		return minPoint;
@@ -80,6 +89,7 @@ namespace CommonUtilities
 	{
 		return maxPoint;
 	}
+
 	template<class T>
 	inline const std::vector<Vector3<T>> AABB3D<T>::GetCorners() const
 	{

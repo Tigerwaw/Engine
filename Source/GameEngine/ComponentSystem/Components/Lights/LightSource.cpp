@@ -41,12 +41,12 @@ void LightSource::SetIntensity(float aIntensity)
 
 CU::Vector3f LightSource::GetDirection() const
 {
-    return gameObject->GetComponent<Transform>()->GetForwardVector();
+    return gameObject->GetComponent<Transform>()->GetForwardVector(true);
 }
 
 CU::Vector3f LightSource::GetPosition() const
 {
-    return gameObject->GetComponent<Transform>()->GetTranslation();
+    return gameObject->GetComponent<Transform>()->GetTranslation(true);
 }
 
 void LightSource::SetShadowBias(float aMinShadowBias, float aMaxShadowBias)

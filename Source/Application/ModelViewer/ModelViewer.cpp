@@ -33,6 +33,7 @@ DEFINE_LOG_CATEGORY(LogModelViewer);
 #include "GameEngine/SceneHandler/SceneHandler.h"
 #include "GameEngine/DebugDrawer/DebugDrawer.h"
 #include "GameEngine/Audio/AudioEngine.h"
+#include "GameEngine/Audio/AudioInstance.h"
 
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
@@ -138,6 +139,10 @@ void ModelViewer::InitModelViewer()
 	Engine::GetInstance().GetAudioEngine().LoadBank("Master.strings");
 	Engine::GetInstance().GetAudioEngine().LoadBank("Test");
 
+	Engine::GetInstance().GetAudioEngine().AddBus(BusType::Music, "Music");
+	Engine::GetInstance().GetAudioEngine().AddBus(BusType::Ambience, "Ambience");
+	Engine::GetInstance().GetAudioEngine().AddBus(BusType::SFX, "SFX");
+
 	Engine::GetInstance().GetDebugDrawer().InitializeDebugDrawer();
 	Engine::GetInstance().GetSceneHandler().CreateEmptyScene();
 	InitCamera();
@@ -213,6 +218,8 @@ void ModelViewer::InitCamera()
 	camera->AddComponent<Camera>(90.0f, 1.0f, 10000.0f, CU::Vector2<float>(1920, 1080));
 	camera->AddComponent<FreecamController>(400.0f, 300.0f);
 	Engine::GetInstance().GetSceneHandler().Instantiate(camera);
+
+	Engine::GetInstance().GetAudioEngine().SetListener(camera);
 }
 
 void ModelViewer::InitLights()
@@ -315,6 +322,9 @@ void ModelViewer::InitGameObjects()
 									AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballTwo.json")->material);
 	matballTwoModel->SetMaterialOnSlot(1, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MatballOne.json")->material);
 	Engine::GetInstance().GetSceneHandler().Instantiate(matballTwo);
+	std::shared_ptr<AudioSource> matballTwoAudio = matballTwo->AddComponent<AudioSource>();
+	matballTwoAudio->AddAudioInstance("TestMusic", false, AudioSource::SourceType::Following);
+	matballTwoAudio->Play("TestMusic");
 
 	matballOne->GetComponent<Transform>()->AddChild(matballTwo->GetComponent<Transform>().get());
 
@@ -325,7 +335,7 @@ void ModelViewer::InitGameObjects()
 										 AssetManager::Get().GetAsset<MaterialAsset>("Materials/TgaBro.json")->material);
 	Engine::GetInstance().GetSceneHandler().Instantiate(tgaBro);
 	std::shared_ptr<AudioSource> tgaBroAudio = tgaBro->AddComponent<AudioSource>();
-	tgaBroAudio->AddAudioInstance("TgaBroFootsteps");
+	tgaBroAudio->AddAudioInstance("TgaBroFootsteps", true, AudioSource::SourceType::AtLocation);
 	tgaBroAudio->AddAudioPlayOnEvent("TgaBroFootsteps", GameObjectEventType::Footstep);
 
 	std::shared_ptr<AnimatedModel> tgaBroModel = tgaBro->GetComponent<AnimatedModel>();
@@ -348,7 +358,7 @@ void ModelViewer::UpdateImgui()
 	// Various
 	{
 		ImGui::SetNextWindowPos({ 20.0f, 20.0f });
-		ImGui::SetNextWindowContentSize({ 300.0f, 200.0f });
+		ImGui::SetNextWindowContentSize({ 300.0f, 300.0f });
 		ImGui::Begin("Modelviewer");
 
 		ImGui::Checkbox("Use Viewculling", &GraphicsEngine::Get().UseViewCulling);
@@ -390,10 +400,11 @@ void ModelViewer::UpdateImgui()
 
 		// Test Audio
 		{
-			if (ImGui::Button("Test Audio"))
-			{
-				//Engine::GetInstance().GetSceneHandler().FindGameObjectByName("TgaBro")->GetComponent<AudioSource>()->
-			}
+			float sfxVolume = Engine::GetInstance().GetAudioEngine().GetVolumeOfBus(BusType::SFX);
+			if (ImGui::SliderFloat("SFX Volume", &sfxVolume, 0, 1.0f)) Engine::GetInstance().GetAudioEngine().SetVolumeOfBus(BusType::SFX, sfxVolume);
+			
+			float musicVolume = Engine::GetInstance().GetAudioEngine().GetVolumeOfBus(BusType::Music);
+			if (ImGui::SliderFloat("Music Volume", &musicVolume, 0, 1.0f)) Engine::GetInstance().GetAudioEngine().SetVolumeOfBus(BusType::Music, musicVolume);
 		}
 
 		ImGui::End();

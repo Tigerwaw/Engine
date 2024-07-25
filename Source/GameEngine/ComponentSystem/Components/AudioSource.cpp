@@ -1,6 +1,7 @@
 #include "AudioSource.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/Audio/AudioInstance.h"
+#include "GameEngine/ComponentSystem/Components/Transform.h"
 
 void AudioSource::Start()
 {
@@ -8,6 +9,13 @@ void AudioSource::Start()
 
 void AudioSource::Update()
 {
+    for (auto& audioInstance : myAudioInstances)
+    {
+        if (audioInstance.second.sourceType == SourceType::Following)
+        {
+            Update3DLocation(audioInstance.second.instance);
+        }
+    }
 }
 
 void AudioSource::ReceiveEvent(const GameObjectEvent& aEvent)
@@ -16,16 +24,40 @@ void AudioSource::ReceiveEvent(const GameObjectEvent& aEvent)
 
     for (auto& audioString : myPlayOnEvents.at(aEvent.type))
     {
-        myAudioInstances[audioString]->Play();
+        Play(audioString);
     }
 }
 
-void AudioSource::AddAudioInstance(std::string aEventName)
+void AudioSource::Play(std::string aAudioName)
+{
+    if (myAudioInstances.find(aAudioName) == myAudioInstances.end()) return;
+    
+    switch (myAudioInstances[aAudioName].sourceType)
+    {
+    case SourceType::Non3D:
+        myAudioInstances[aAudioName].instance->Play();
+        break;
+    case SourceType::AtLocation:
+        Update3DLocation(myAudioInstances[aAudioName].instance);
+        myAudioInstances[aAudioName].instance->Play();
+        break;
+    case SourceType::Following:
+        Update3DLocation(myAudioInstances[aAudioName].instance);
+        myAudioInstances[aAudioName].instance->Play();
+        break;
+    }
+}
+
+void AudioSource::AddAudioInstance(std::string aEventName, bool aIsOneShot, SourceType aSourceType)
 {
     std::shared_ptr<AudioInstance> newAudioInstance = std::make_shared<AudioInstance>();
-    if (!newAudioInstance->Initialize(aEventName)) return;
+    if (!newAudioInstance->Initialize(aEventName, aIsOneShot)) return;
 
-    myAudioInstances.emplace(aEventName, newAudioInstance);
+    AudioInstanceData newAudioData;
+    newAudioData.instance = newAudioInstance;
+    newAudioData.isOneShot = aIsOneShot;
+    newAudioData.sourceType = aSourceType;
+    myAudioInstances.emplace(aEventName, newAudioData);
 }
 
 void AudioSource::AddAudioPlayOnEvent(std::string aAudioName, GameObjectEventType aEventType)
@@ -43,4 +75,13 @@ void AudioSource::AddAudioPlayOnEvent(std::string aAudioName, GameObjectEventTyp
     }
 
     myPlayOnEvents.at(aEventType).emplace_back(aAudioName);
+}
+
+void AudioSource::Update3DLocation(std::shared_ptr<AudioInstance> aInstance)
+{
+    std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
+    if (transform)
+    {
+        aInstance->Set3dPosition(transform->GetTranslation(true), { 0, 0, 0 }, transform->GetForwardVector(true), transform->GetUpVector(true));
+    }
 }

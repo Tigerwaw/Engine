@@ -22,13 +22,14 @@ public:
 
 	const CU::Matrix4x4f& GetMatrix(bool aNoScale = false);
 	const CU::Matrix4x4f GetWorldMatrix(bool aNoScale = false);
+	const CU::Matrix4x4f GetToWorldMatrix(bool aNoScale = false);
 
-	const CU::Vector3f GetRightVector();
-	const CU::Vector3f GetUpVector();
-	const CU::Vector3f GetForwardVector();
-	const CU::Vector3f& GetTranslation() const { return myPosition; }
-	const CU::Vector3f& GetRotation() const { return myRotation; }
-	const CU::Vector3f& GetScale() const { return myScale; }
+	const CU::Vector3f GetRightVector(bool aInWorldSpace = false);
+	const CU::Vector3f GetUpVector(bool aInWorldSpace = false);
+	const CU::Vector3f GetForwardVector(bool aInWorldSpace = false);
+	const CU::Vector3f GetTranslation(bool aInWorldSpace = false);
+	const CU::Vector3f GetRotation(bool aInWorldSpace = false);
+	const CU::Vector3f GetScale(bool aInWorldSpace = false);
 
 	void SetTranslation(const CU::Vector3f aTranslation);
 	void SetTranslation(const float aX, const float aY, const float aZ);
