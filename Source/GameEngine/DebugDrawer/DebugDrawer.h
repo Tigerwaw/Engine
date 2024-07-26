@@ -32,6 +32,6 @@ private:
     std::vector<DebugLineVertex> myLineVertices;
     std::shared_ptr<DynamicVertexBuffer> myLineBuffer;
 
-    bool myHasWarned;
+    bool myHasWarned = false;
 };
 

@@ -3,18 +3,14 @@
 #include <string>
 #include "Math/Vector.hpp"
 
-namespace CommonUtilities
-{
-    class Timer;
-    class InputHandler;
-}
-
 namespace CU = CommonUtilities;
 
 class GlobalEventHandler;
 class SceneHandler;
 class DebugDrawer;
 class AudioEngine;
+class InputHandler;
+class Timer;
 
 class Engine
 {
@@ -25,8 +21,10 @@ public:
         return instance;
     }
 
-    CU::Timer& GetTimer() { return *myTimer; }
-    CU::InputHandler& GetInputHandler() { return *myInputHandler; }
+    void Update();
+
+    Timer& GetTimer() { return *myTimer; }
+    InputHandler& GetInputHandler() { return *myInputHandler; }
     GlobalEventHandler& GetGlobalEventHandler() { return *myGlobalEventHandler; }
     SceneHandler& GetSceneHandler() { return *mySceneHandler; }
     DebugDrawer& GetDebugDrawer() { return *myDebugDrawer; }
@@ -46,8 +44,8 @@ private:
     void operator=(Engine const&) = delete;
     static Engine* myInstance;
 
-    std::unique_ptr<CU::Timer> myTimer;
-    std::unique_ptr<CU::InputHandler> myInputHandler;
+    std::unique_ptr<Timer> myTimer;
+    std::unique_ptr<InputHandler> myInputHandler;
     std::unique_ptr<GlobalEventHandler> myGlobalEventHandler;
     std::unique_ptr<SceneHandler> mySceneHandler;
     std::unique_ptr<DebugDrawer> myDebugDrawer;

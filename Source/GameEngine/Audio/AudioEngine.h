@@ -50,5 +50,5 @@ private:
     std::unordered_map<std::string, FMOD::Studio::EventDescription*> myEvents;
     std::shared_ptr<GameObject> myListener;
 
-    bool myHasWarnedAboutListenerError;
+    bool myHasWarnedAboutListenerError = false;
 };

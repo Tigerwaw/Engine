@@ -14,28 +14,45 @@ FreecamController::FreecamController(float aMoveSpeed, float aRotSpeed)
 
 void FreecamController::Start()
 {
+	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
+	inputHandler.RegisterBinaryAction("CameraActivate", Keys::MOUSERBUTTON, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("CameraActivate", ControllerButtons::LEFT_SHOULDER, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("CameraSpeedUp", Keys::SHIFT, GenericInput::ActionType::Clicked);
+	inputHandler.RegisterBinaryAction("CameraSpeedUp", ControllerButtons::RIGHT_SHOULDER, GenericInput::ActionType::Clicked);
+	inputHandler.RegisterBinaryAction("CameraSpeedDown", Keys::SHIFT, GenericInput::ActionType::Released);
+	inputHandler.RegisterBinaryAction("CameraSpeedDown", ControllerButtons::RIGHT_SHOULDER, GenericInput::ActionType::Released);
+	inputHandler.RegisterBinaryAction("CameraReset", Keys::R, GenericInput::ActionType::Clicked);
+	inputHandler.RegisterBinaryAction("CameraReset", ControllerButtons::BACK, GenericInput::ActionType::Clicked);
+	inputHandler.RegisterAnalogAction("CameraXMovement", Keys::A, Keys::D);
+	inputHandler.RegisterAnalogAction("CameraXMovement", AnalogInput::LEFT_STICK_X);
+	inputHandler.RegisterAnalogAction("CameraYMovement", Keys::CONTROL, Keys::SPACE);
+	inputHandler.RegisterAnalogAction("CameraYMovement", ControllerButtons::B, ControllerButtons::A);
+	inputHandler.RegisterAnalogAction("CameraZMovement", Keys::S, Keys::W);
+	inputHandler.RegisterAnalogAction("CameraZMovement", AnalogInput::LEFT_STICK_Y);
+	inputHandler.RegisterAnalog2DAction("CameraRotation", MouseMovement2D::MousePosDelta);
+	inputHandler.RegisterAnalog2DAction("CameraRotation", AnalogInput2D::RIGHT_STICK);
 }
 
 void FreecamController::Update()
 {
 	float deltaTime = Engine::GetInstance().GetTimer().GetDeltaTime();
-	CU::InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
+	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
 
-	if (!inputHandler.GetKeyDown(Keys::MOUSERBUTTON))
+	if (!inputHandler.GetBinaryAction("CameraActivate"))
 	{
 		return;
 	}
 
-	if (inputHandler.GetKeyClicked(Keys::SHIFT))
+	if (inputHandler.GetBinaryAction("CameraSpeedUp"))
 	{
 		myMoveSpeedMultiplier = 2.0f;
 	}
-	else if (inputHandler.GetKeyReleased(Keys::SHIFT))
+	else if (inputHandler.GetBinaryAction("CameraSpeedDown"))
 	{
 		myMoveSpeedMultiplier = 1.0f;
 	}
 
-	if (inputHandler.GetKeyClicked(Keys::R))
+	if (inputHandler.GetBinaryAction("CameraReset"))
 	{
 		gameObject->GetComponent<Transform>()->SetRotation(0, 0, 0);
 		gameObject->GetComponent<Transform>()->SetTranslation(0, 0, 0);
@@ -43,32 +60,9 @@ void FreecamController::Update()
 
 	CU::Vector3<float> inputDelta;
 
-	if (inputHandler.GetKeyDown(Keys::D) || inputHandler.GetKeyDown(Keys::RIGHT))
-	{
-		inputDelta += gameObject->GetComponent<Transform>()->GetRightVector();
-	}
-	else if (inputHandler.GetKeyDown(Keys::A) || inputHandler.GetKeyDown(Keys::LEFT))
-	{
-		inputDelta -= gameObject->GetComponent<Transform>()->GetRightVector();
-	}
-
-	if (inputHandler.GetKeyDown(Keys::W) || inputHandler.GetKeyDown(Keys::UP))
-	{
-		inputDelta += gameObject->GetComponent<Transform>()->GetForwardVector();
-	}
-	else if (inputHandler.GetKeyDown(Keys::S) || inputHandler.GetKeyDown(Keys::DOWN))
-	{
-		inputDelta -= gameObject->GetComponent<Transform>()->GetForwardVector();
-	}
-
-	if (inputHandler.GetKeyDown(Keys::SPACE))
-	{
-		inputDelta += gameObject->GetComponent<Transform>()->GetUpVector();
-	}
-	else if (inputHandler.GetKeyDown(Keys::CONTROL))
-	{
-		inputDelta -= gameObject->GetComponent<Transform>()->GetUpVector();
-	}
+	inputDelta += gameObject->GetComponent<Transform>()->GetRightVector() * inputHandler.GetAnalogAction("CameraXMovement");
+	inputDelta += gameObject->GetComponent<Transform>()->GetUpVector() * inputHandler.GetAnalogAction("CameraYMovement");
+	inputDelta += gameObject->GetComponent<Transform>()->GetForwardVector() * inputHandler.GetAnalogAction("CameraZMovement");
 
 	if (inputDelta.LengthSqr() > 1.0f)
 	{
@@ -76,16 +70,10 @@ void FreecamController::Update()
 	}
 
 
-	CU::Vector3<float> rotationDelta;
-	rotationDelta.x = static_cast<float>(inputHandler.GetMouseDelta().y);
-	rotationDelta.y = static_cast<float>(inputHandler.GetMouseDelta().x);
-	rotationDelta.z = 0;
-
-	rotationDelta.x = abs(rotationDelta.x) < 1 ? 0 : rotationDelta.x;
-	rotationDelta.y = abs(rotationDelta.y) < 1 ? 0 : rotationDelta.y;
-
-	rotationDelta.x *= myRotSpeed.y * deltaTime;
-	rotationDelta.y *= myRotSpeed.x * deltaTime;
+	CU::Vector2f rotInput = inputHandler.GetAnalogAction2D("CameraRotation");
+	CU::Vector3f rotationDelta;
+	rotationDelta.x = -rotInput.y * myRotSpeed.y * deltaTime;
+	rotationDelta.y = rotInput.x * myRotSpeed.x * deltaTime;
 
 	gameObject->GetComponent<Transform>()->AddRotation(rotationDelta);
 	gameObject->GetComponent<Transform>()->SetTranslation(gameObject->GetComponent<Transform>()->GetTranslation() + inputDelta * myMoveSpeed * myMoveSpeedMultiplier * deltaTime);

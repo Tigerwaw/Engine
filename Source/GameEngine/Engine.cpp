@@ -6,10 +6,21 @@
 #include "GameEngine/DebugDrawer/DebugDrawer.h"
 #include "GameEngine/Audio/AudioEngine.h"
 
+void Engine::Update()
+{
+    Engine::GetInstance().GetDebugDrawer().ClearObjects();
+    Engine::GetInstance().GetTimer().Update();
+    Engine::GetInstance().GetSceneHandler().UpdateActiveScene();
+    Engine::GetInstance().GetInputHandler().UpdateInput();
+    Engine::GetInstance().GetAudioEngine().Update();
+    Engine::GetInstance().GetSceneHandler().RenderActiveScene();
+    Engine::GetInstance().GetDebugDrawer().DrawObjects();
+}
+
 Engine::Engine()
 {
-    myTimer = std::make_unique<CU::Timer>();
-    myInputHandler = std::make_unique<CU::InputHandler>();
+    myTimer = std::make_unique<Timer>();
+    myInputHandler = std::make_unique<InputHandler>();
     myGlobalEventHandler = std::make_unique<GlobalEventHandler>();
     mySceneHandler = std::make_unique<SceneHandler>();
     myDebugDrawer = std::make_unique<DebugDrawer>();

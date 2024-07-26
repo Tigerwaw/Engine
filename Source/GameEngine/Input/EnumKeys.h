@@ -1,5 +1,24 @@
 #pragma once
 
+enum class MouseMovement : int
+{
+	MousePos_X,
+	MousePos_Y,
+	MousePosNDC_X,
+	MousePosNDC_Y,
+	MousePosDelta_X,
+	MousePosDelta_Y,
+	ScrollwheelDelta,
+	COUNT
+};
+enum class MouseMovement2D : int
+{
+	MousePos,
+	MousePosNDC,
+	MousePosDelta,
+	COUNT
+};
+
 enum class Keys : int
 {
 	MOUSELBUTTON = 0x01,
@@ -248,5 +267,6 @@ enum class Keys : int
 	ZOOM = 0xFB,
 	NONAME = 0xFC,
 	PA1 = 0xFD,
-	OEM_CLEAR = 0xFE
+	OEM_CLEAR = 0xFE,
+	COUNT
 };

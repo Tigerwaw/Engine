@@ -14,23 +14,31 @@ ObjectController::ObjectController(float aMoveSpeed, float aRotSpeed)
 
 void ObjectController::Start()
 {
+	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
+	inputHandler.RegisterBinaryAction("ObjectSpeedUp", Keys::SHIFT, GenericInput::ActionType::Clicked);
+	inputHandler.RegisterBinaryAction("ObjectSpeedDown", Keys::SHIFT, GenericInput::ActionType::Released);
+	inputHandler.RegisterBinaryAction("ObjectReset", Keys::R, GenericInput::ActionType::Clicked);
+	inputHandler.RegisterAnalogAction("ObjectXMovement", Keys::A, Keys::D);
+	inputHandler.RegisterAnalogAction("ObjectYMovement", Keys::CONTROL, Keys::SPACE);
+	inputHandler.RegisterAnalogAction("ObjectZMovement", Keys::S, Keys::W);
+	inputHandler.RegisterAnalogAction("ObjectYRotation", Keys::Q, Keys::E);
 }
 
 void ObjectController::Update()
 {
 	float deltaTime = Engine::GetInstance().GetTimer().GetDeltaTime();
-	CU::InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
+	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
 
-	if (inputHandler.GetKeyClicked(Keys::SHIFT))
+	if (inputHandler.GetBinaryAction("ObjectSpeedUp"))
 	{
 		myMoveSpeedMultiplier = 2.0f;
 	}
-	else if (inputHandler.GetKeyReleased(Keys::SHIFT))
+	else if (inputHandler.GetBinaryAction("ObjectSpeedDown"))
 	{
 		myMoveSpeedMultiplier = 1.0f;
 	}
 
-	if (inputHandler.GetKeyClicked(Keys::R))
+	if (inputHandler.GetBinaryAction("ObjectReset"))
 	{
 		gameObject->GetComponent<Transform>()->SetRotation(0, 0, 0);
 		gameObject->GetComponent<Transform>()->SetTranslation(0, 0, 0);
@@ -38,32 +46,9 @@ void ObjectController::Update()
 
 	CU::Vector3<float> inputDelta;
 
-	if (inputHandler.GetKeyDown(Keys::D) || inputHandler.GetKeyDown(Keys::RIGHT))
-	{
-		inputDelta += gameObject->GetComponent<Transform>()->GetRightVector();
-	}
-	else if (inputHandler.GetKeyDown(Keys::A) || inputHandler.GetKeyDown(Keys::LEFT))
-	{
-		inputDelta -= gameObject->GetComponent<Transform>()->GetRightVector();
-	}
-
-	if (inputHandler.GetKeyDown(Keys::W) || inputHandler.GetKeyDown(Keys::UP))
-	{
-		inputDelta += gameObject->GetComponent<Transform>()->GetForwardVector();
-	}
-	else if (inputHandler.GetKeyDown(Keys::S) || inputHandler.GetKeyDown(Keys::DOWN))
-	{
-		inputDelta -= gameObject->GetComponent<Transform>()->GetForwardVector();
-	}
-
-	if (inputHandler.GetKeyDown(Keys::SPACE))
-	{
-		inputDelta += gameObject->GetComponent<Transform>()->GetUpVector();
-	}
-	else if (inputHandler.GetKeyDown(Keys::CONTROL))
-	{
-		inputDelta -= gameObject->GetComponent<Transform>()->GetUpVector();
-	}
+	inputDelta += gameObject->GetComponent<Transform>()->GetRightVector() * inputHandler.GetAnalogAction("ObjectXMovement");
+	inputDelta += gameObject->GetComponent<Transform>()->GetUpVector() * inputHandler.GetAnalogAction("ObjectYMovement");
+	inputDelta += gameObject->GetComponent<Transform>()->GetForwardVector() * inputHandler.GetAnalogAction("ObjectZMovement");
 
 	if (inputDelta.LengthSqr() > 1.0f)
 	{
@@ -72,15 +57,7 @@ void ObjectController::Update()
 
 
 	CU::Vector3<float> rotationDelta;
-
-	if (inputHandler.GetKeyDown(Keys::Q))
-	{
-		rotationDelta.y -= 1.0f;
-	}
-	else if (inputHandler.GetKeyDown(Keys::E))
-	{
-		rotationDelta.y += 1.0f;
-	}
+	rotationDelta.y = inputHandler.GetAnalogAction("ObjectYRotation");
 
 	rotationDelta *= myRotSpeed * deltaTime;
 

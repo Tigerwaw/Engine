@@ -59,16 +59,6 @@ DECLARE_LOG_CATEGORY_WITH_NAME(LogModelViewer, ModelViewer, Warning);
 #include <Windows.h>
 #pragma endregion
 
-struct Animation;
-class GameObject;
-class Scene;
-class AudioInstance;
-
-namespace CommonUtilities
-{
-	class Timer;
-}
-
 class ModelViewer
 {
 public:

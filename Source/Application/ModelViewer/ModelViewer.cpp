@@ -30,6 +30,7 @@ DEFINE_LOG_CATEGORY(LogModelViewer);
 #include "GameEngine/EngineSettings.h"
 #include "GameEngine/Time/Timer.h"
 #include "GameEngine/Input/InputHandler.h"
+#include "GameEngine/Input/ControllerInput.h"
 #include "GameEngine/SceneHandler/SceneHandler.h"
 #include "GameEngine/DebugDrawer/DebugDrawer.h"
 #include "GameEngine/Audio/AudioEngine.h"
@@ -134,6 +135,7 @@ void ModelViewer::InitModelViewer()
 {
 	AssetManager::Get().Initialize(EngineSettings::GetContentRootPath());
 
+	Engine::GetInstance().GetInputHandler().SetControllerDeadZone(0.1f, 0.06f);
 	Engine::GetInstance().GetAudioEngine().Initialize();
 	Engine::GetInstance().GetAudioEngine().LoadBank("Master");
 	Engine::GetInstance().GetAudioEngine().LoadBank("Master.strings");
@@ -148,6 +150,39 @@ void ModelViewer::InitModelViewer()
 	InitCamera();
 	InitLights();
 	InitGameObjects();
+
+	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
+	inputHandler.RegisterBinaryAction("W", Keys::W, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("A", Keys::A, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("S", Keys::S, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("D", Keys::D, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("LMB", Keys::MOUSELBUTTON, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("RMB", Keys::MOUSERBUTTON, GenericInput::ActionType::Held);
+	inputHandler.RegisterAnalog2DAction("MousePos", MouseMovement2D::MousePos);
+	inputHandler.RegisterAnalog2DAction("MouseNDCPos", MouseMovement2D::MousePosNDC);
+	inputHandler.RegisterAnalog2DAction("MouseDelta", MouseMovement2D::MousePosDelta);
+	
+	inputHandler.RegisterBinaryAction("A_Gamepad", ControllerButtons::A, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("B", ControllerButtons::B, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("X", ControllerButtons::X, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("Y", ControllerButtons::Y, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("Down", ControllerButtons::DPAD_DOWN, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("Left", ControllerButtons::DPAD_LEFT, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("Up", ControllerButtons::DPAD_UP, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("Right", ControllerButtons::DPAD_RIGHT, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("LS", ControllerButtons::LEFT_STICK_DOWN, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("RS", ControllerButtons::RIGHT_STICK_DOWN, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("LB", ControllerButtons::LEFT_SHOULDER, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("RB", ControllerButtons::RIGHT_SHOULDER, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("Start", ControllerButtons::START, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("Back", ControllerButtons::BACK, GenericInput::ActionType::Held);
+	inputHandler.RegisterAnalog2DAction("LeftStick", AnalogInput2D::LEFT_STICK);
+	inputHandler.RegisterAnalog2DAction("RightStick", AnalogInput2D::RIGHT_STICK);
+	inputHandler.RegisterAnalogAction("LeftTrigger", AnalogInput::LEFT_TRIGGER);
+	inputHandler.RegisterAnalogAction("RightTrigger", AnalogInput::RIGHT_TRIGGER);
+
+	inputHandler.RegisterBinaryAction("SharedAction", Keys::W, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("SharedAction", ControllerButtons::A, GenericInput::ActionType::Held);
 }
 
 int ModelViewer::Run()
@@ -182,24 +217,15 @@ int ModelViewer::Run()
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
-		UpdateImgui();
 #endif
 
 		// TODO: Frame Update and Rendering goes here
 		GraphicsEngine::Get().BeginFrame();
-		Engine::GetInstance().GetDebugDrawer().ClearObjects();
-
-		Engine::GetInstance().GetTimer().Update();
-		Engine::GetInstance().GetSceneHandler().UpdateActiveScene();
-		Engine::GetInstance().GetInputHandler().UpdateInput();
-		Engine::GetInstance().GetAudioEngine().Update();
-
-		Engine::GetInstance().GetSceneHandler().RenderActiveScene();
-
-		Engine::GetInstance().GetDebugDrawer().DrawObjects();
+		Engine::GetInstance().Update();
 		GraphicsEngine::Get().RenderFrame();
 
 #if _DEBUG
+		UpdateImgui();
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 #endif
@@ -633,5 +659,143 @@ void ModelViewer::UpdateImgui()
 		ImGui::EndTable();
 		ImGui::End();
 	}
+
+	{
+		ImGui::SetNextWindowPos({ 1650.0f, 20.0f });
+		ImGui::SetNextWindowContentSize({ 200.0f, 200.0f });
+		ImGui::Begin("Controller Info");
+
+		InputHandler& cont = Engine::GetInstance().GetInputHandler();
+
+		ImGui::Text("Left Stick: ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("LeftStick").x);
+		ImGui::SameLine();
+		ImGui::Text(", ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("LeftStick").y);
+
+		ImGui::Text("Right Stick: ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("RightStick").x);
+		ImGui::SameLine();
+		ImGui::Text(", ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("RightStick").y);
+
+		ImGui::Text("Left Trigger: ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction("LeftTrigger"));
+
+		ImGui::Text("Right Trigger: ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction("RightTrigger"));
+
+
+		ImVec4 red = { 1.0f, 0, 0, 1.0f };
+		ImVec4 green = { 0, 1.0f, 0, 1.0f };
+		ImVec4 color = (cont.GetBinaryAction("A_Gamepad") ? green : red);
+		ImGui::TextColored(color, "A");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("B") ? green : red);
+		ImGui::TextColored(color, "B");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("X") ? green : red);
+		ImGui::TextColored(color, "X");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("Y") ? green : red);
+		ImGui::TextColored(color, "Y");
+
+		color = (cont.GetBinaryAction("LB") ? green : red);
+		ImGui::TextColored(color, "LB");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("RB") ? green : red);
+		ImGui::TextColored(color, "RB");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("LS") ? green : red);
+		ImGui::TextColored(color, "LS");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("RS") ? green : red);
+		ImGui::TextColored(color, "RS");
+
+		color = (cont.GetBinaryAction("Left") ? green : red);
+		ImGui::TextColored(color, "Left");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("Up") ? green : red);
+		ImGui::TextColored(color, "Up");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("Right") ? green : red);
+		ImGui::TextColored(color, "Right");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("Down") ? green : red);
+		ImGui::TextColored(color, "Down");
+
+		color = (cont.GetBinaryAction("Start") ? green : red);
+		ImGui::TextColored(color, "Start");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("Back") ? green : red);
+		ImGui::TextColored(color, "Back");
+		
+		ImGui::End();
+	}
+
+	{
+		ImGui::SetNextWindowPos({ 1650.0f, 300.0f });
+		ImGui::SetNextWindowContentSize({ 200.0f, 200.0f });
+		ImGui::Begin("MKB Info");
+
+		InputHandler& cont = Engine::GetInstance().GetInputHandler();
+
+		ImGui::Text("Mouse Pos: ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("MousePos").x);
+		ImGui::SameLine();
+		ImGui::Text(", ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("MousePos").y);
+
+		ImGui::Text("NDC Mouse Pos: ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("MouseNDCPos").x);
+		ImGui::SameLine();
+		ImGui::Text(", ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("MouseNDCPos").y);
+
+		ImGui::Text("Mouse Delta: ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("MouseDelta").x);
+		ImGui::SameLine();
+		ImGui::Text(", ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("MouseDelta").y);
+
+		ImVec4 red = { 1.0f, 0, 0, 1.0f };
+		ImVec4 green = { 0, 1.0f, 0, 1.0f };
+		ImVec4 color = (cont.GetBinaryAction("W") ? green : red);
+		ImGui::TextColored(color, "W");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("A") ? green : red);
+		ImGui::TextColored(color, "A");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("S") ? green : red);
+		ImGui::TextColored(color, "S");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("D") ? green : red);
+		ImGui::TextColored(color, "D");
+
+		color = (cont.GetBinaryAction("LMB") ? green : red);
+		ImGui::TextColored(color, "LMB");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("RMB") ? green : red);
+		ImGui::TextColored(color, "RMB");
+
+		color = (cont.GetBinaryAction("SharedAction") ? green : red);
+		ImGui::TextColored(color, "SharedAction");
+		
+		ImGui::End();
+	}
+
+
 #endif
 }

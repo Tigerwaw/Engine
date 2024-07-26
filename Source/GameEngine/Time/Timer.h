@@ -1,8 +1,6 @@
 #pragma once
 #include <chrono>
 
-namespace CommonUtilities
-{
 class Timer
 {
 public:
@@ -28,4 +26,3 @@ private:
 	int myAverageFPS = 0;
 	float myTimeScale = 1.0f;
 };
-}

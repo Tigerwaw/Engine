@@ -182,8 +182,10 @@
     <ClCompile Include="DebugDrawer\DebugDrawer.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GlobalEventHandler\GlobalEventHandler.cpp" />
+    <ClCompile Include="Input\ControllerInput.cpp" />
     <ClCompile Include="Input\InputHandler.cpp" />
     <ClCompile Include="ComponentSystem\Components\Lights\LightSource.cpp" />
+    <ClCompile Include="Input\MKBInput.cpp" />
     <ClCompile Include="SceneHandler\SceneHandler.cpp" />
     <ClCompile Include="Time\Timer.cpp" />
   </ItemGroup>
@@ -214,8 +216,13 @@
     <ClInclude Include="GlobalEventHandler\GlobalEventHandler.h" />
     <ClInclude Include="GlobalEventHandler\GlobalEventSubscriber.hpp" />
     <ClInclude Include="GlobalEventHandler\GlobalEventType.h" />
+    <ClInclude Include="Input\ControllerInput.h" />
+    <ClInclude Include="Input\EnumControllerButtons.h" />
     <ClInclude Include="Input\EnumKeys.h" />
+    <ClInclude Include="Input\GenericInput.h" />
+    <ClInclude Include="Input\InputAction.h" />
     <ClInclude Include="Input\InputHandler.h" />
+    <ClInclude Include="Input\MKBInput.h" />
     <ClInclude Include="Intersections\AABB2D.hpp" />
     <ClInclude Include="Intersections\AABB3D.hpp" />
     <ClInclude Include="Intersections\Circle.hpp" />

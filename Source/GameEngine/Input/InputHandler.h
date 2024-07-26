@@ -1,43 +1,56 @@
 #pragma once
-#include <array>
+#include <memory>
+#include <unordered_map>
+#include <vector>
+#include <string>
+
+#include "GenericInput.h"
+#include "MKBInput.h"
+#include "ControllerInput.h"
+#include "InputAction.h"
+
 #include "Math/Vector.hpp"
-#include "EnumKeys.h"
+namespace CU = CommonUtilities;
 
-typedef unsigned UINT;
-typedef unsigned __int64 WPARAM;
-typedef __int64 LPARAM;
-
-namespace CommonUtilities
+class InputHandler
 {
-	namespace CU = CommonUtilities;
-
-	class InputHandler
+public:
+	enum class InputMode : int
 	{
-	public:
-		InputHandler();
-		// Call this from windows message loop
-		bool UpdateEvents(UINT message, WPARAM wParam, LPARAM lParam);
-		// Call this after game update
-		void UpdateInput();
-
-		// Key was active this frame but not the frame before
-		bool GetKeyClicked(const Keys aKeyCode) const;
-		// Key was active this frame, last frame not taken into account
-		bool GetKeyDown(const Keys aKeyCode) const;
-		// Key was active last frame, but not this frame
-		bool GetKeyReleased(const Keys aKeyCode) const;
-		CU::Vector2<int> GetMousePosition() const;
-		CU::Vector2<int> GetMouseDelta() const;
-		float GetScrollwheelDelta() const;
-	private:
-		CU::Vector2<int> myCurrentMousePosition;
-		CU::Vector2<int> myLastMousePosition;
-		CU::Vector2<int> myMouseDelta;
-		float myCurrentScrollwheelValue;
-		float myLastScrollwheelValue;
-		float myScrollwheelDelta;
-		std::array<bool, 256> myCurrentState;
-		std::array<bool, 256> myPreviousState;
-		std::array<bool, 256> myInputState;
+		MKB,
+		Gamepad,
+		Count
 	};
-}
+
+	InputHandler();
+	// Call this from windows message loop
+	void UpdateEvents(UINT message, WPARAM wParam, LPARAM lParam);
+	// Call this after game update
+	void UpdateInput();
+	void SetCursorVisibility(bool aIsVisible);
+
+	void SetControllerDeadZone(float aDeadZoneX, float aDeadZoneY);
+	void SetLeftStickDeadZone(float aDeadZoneX, float aDeadZoneY);
+	void SetRightStickDeadZone(float aDeadZoneX, float aDeadZoneY);
+	const CU::Vector2f GetLeftStickDeadZone() const;
+	const CU::Vector2f GetRightStickDeadZone() const;
+
+	void RegisterBinaryAction(std::string aActionName, Keys aInput, GenericInput::ActionType aActionType);
+	void RegisterBinaryAction(std::string aActionName, ControllerButtons aInput, GenericInput::ActionType aActionType);
+	void RegisterAnalogAction(std::string aActionName, Keys aNegativeInput, Keys aPositiveInput);
+	void RegisterAnalogAction(std::string aActionName, ControllerButtons aNegativeInput, ControllerButtons aPositiveInput);
+	void RegisterAnalogAction(std::string aActionName, MouseMovement aInput);
+	void RegisterAnalogAction(std::string aActionName, AnalogInput aInput);
+	void RegisterAnalog2DAction(std::string aActionName, MouseMovement2D aInput);
+	void RegisterAnalog2DAction(std::string aActionName, AnalogInput2D aInput);
+
+	const bool GetBinaryAction(std::string aActionName) const;
+	const float GetAnalogAction(std::string aActionName) const;
+	const CU::Vector2f GetAnalogAction2D(std::string aActionName) const;
+private:
+	const bool ValidateActionName(std::string aActionName, bool aNoLog = false) const;
+
+	std::unordered_map<InputMode, std::shared_ptr<GenericInput>> myInputModes;
+
+	std::unordered_map<std::string, std::vector<std::shared_ptr<InputAction>>> myActions;
+};
