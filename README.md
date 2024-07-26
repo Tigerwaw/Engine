@@ -21,3 +21,4 @@
 
 * ImGui integration
 * FMOD integration
+* Input mapping that supports mouse & keyboard, as well as gamepads
