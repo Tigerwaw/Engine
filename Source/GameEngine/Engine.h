@@ -11,6 +11,7 @@ class DebugDrawer;
 class AudioEngine;
 class InputHandler;
 class Timer;
+class ImGuiHandler;
 
 class Engine
 {
@@ -21,6 +22,7 @@ public:
         return instance;
     }
 
+    void Destroy();
     void Update();
 
     Timer& GetTimer() { return *myTimer; }
@@ -29,6 +31,7 @@ public:
     SceneHandler& GetSceneHandler() { return *mySceneHandler; }
     DebugDrawer& GetDebugDrawer() { return *myDebugDrawer; }
     AudioEngine& GetAudioEngine() { return *myAudioEngine; }
+    ImGuiHandler& GetImGuiHandler() { return *myImGuiHandler; }
 
     const CU::Vector2f& GetResolution() const { return myResolution; }
 
@@ -50,6 +53,7 @@ private:
     std::unique_ptr<SceneHandler> mySceneHandler;
     std::unique_ptr<DebugDrawer> myDebugDrawer;
     std::unique_ptr<AudioEngine> myAudioEngine;
+    std::unique_ptr<ImGuiHandler> myImGuiHandler;
 
     CU::Vector2f myResolution;
 };

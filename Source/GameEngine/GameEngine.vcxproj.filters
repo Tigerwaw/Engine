@@ -96,6 +96,9 @@
     <ClCompile Include="Input\MKBInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ImGui\ImGuiHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComponentSystem\Component.h">
@@ -267,6 +270,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Input\GenericInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\ImGuiHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

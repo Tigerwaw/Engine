@@ -113,7 +113,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Source\Utilities\fmod;$(SolutionDir)Source\GameEngine;$(SolutionDir)Source\Graphics;$(SolutionDir)Source\Utilities;$(ProjectDir);$(SolutionDir)Intermediate\Shaders\;$(SolutionDir)Source\;$(SolutionDir)Source\Graphics\GraphicsEngine;$(SolutionDir)Source\AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\Utilities\Imgui;$(SolutionDir)Source\Utilities\fmod;$(SolutionDir)Source\GameEngine;$(SolutionDir)Source\Graphics;$(SolutionDir)Source\Utilities;$(ProjectDir);$(SolutionDir)Intermediate\Shaders\;$(SolutionDir)Source\;$(SolutionDir)Source\Graphics\GraphicsEngine;$(SolutionDir)Source\AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -140,7 +140,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Source\Utilities\fmod;$(SolutionDir)Source\GameEngine;$(SolutionDir)Source\Graphics;$(SolutionDir)Source\Utilities;$(ProjectDir);$(SolutionDir)Intermediate\Shaders\;$(SolutionDir)Source\;$(SolutionDir)Source\Graphics\GraphicsEngine;$(SolutionDir)Source\AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\Utilities\Imgui;$(SolutionDir)Source\Utilities\fmod;$(SolutionDir)Source\GameEngine;$(SolutionDir)Source\Graphics;$(SolutionDir)Source\Utilities;$(ProjectDir);$(SolutionDir)Intermediate\Shaders\;$(SolutionDir)Source\;$(SolutionDir)Source\Graphics\GraphicsEngine;$(SolutionDir)Source\AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
@@ -182,6 +182,7 @@
     <ClCompile Include="DebugDrawer\DebugDrawer.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GlobalEventHandler\GlobalEventHandler.cpp" />
+    <ClCompile Include="ImGui\ImGuiHandler.cpp" />
     <ClCompile Include="Input\ControllerInput.cpp" />
     <ClCompile Include="Input\InputHandler.cpp" />
     <ClCompile Include="ComponentSystem\Components\Lights\LightSource.cpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="GlobalEventHandler\GlobalEventHandler.h" />
     <ClInclude Include="GlobalEventHandler\GlobalEventSubscriber.hpp" />
     <ClInclude Include="GlobalEventHandler\GlobalEventType.h" />
+    <ClInclude Include="ImGui\ImGuiHandler.h" />
     <ClInclude Include="Input\ControllerInput.h" />
     <ClInclude Include="Input\EnumControllerButtons.h" />
     <ClInclude Include="Input\EnumKeys.h" />

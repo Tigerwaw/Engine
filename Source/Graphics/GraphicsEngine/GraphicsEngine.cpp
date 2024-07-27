@@ -224,6 +224,13 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	return true;
 }
 
+#ifdef _DEBUG
+bool GraphicsEngine::InitializeImGui()
+{
+	return myRHI->InitializeImGui();
+}
+#endif
+
 void GraphicsEngine::BeginFrame()
 {
 	myDrawcallAmount = 0;

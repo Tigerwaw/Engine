@@ -205,17 +205,17 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 
 	CreateDefaultSamplerStates();
 
-#if _DEBUG
-	// Initialize imgui dx11
-	{
-		ImGui_ImplDX11_Init(myDevice.Get(), myContext.Get());
-	}
-#endif
-
 	LOG(RhiLog, Log, "RHI Initialized!");
 
 	return true;
 }
+
+#ifdef _DEBUG
+bool RenderHardwareInterface::InitializeImGui()
+{
+	return ImGui_ImplDX11_Init(myDevice.Get(), myContext.Get());
+}
+#endif
 
 void RenderHardwareInterface::Present() const
 {
@@ -859,6 +859,7 @@ bool RenderHardwareInterface::CreateVertexBufferInternal(std::string_view aName,
 	vxBufferDesc.ByteWidth = static_cast<unsigned>(aNumVertices * aVertexSize);
 	vxBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vxBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	vxBufferDesc.CPUAccessFlags = 0;
 
 	if (aIsDynamic)
 	{
@@ -871,11 +872,23 @@ bool RenderHardwareInterface::CreateVertexBufferInternal(std::string_view aName,
 	D3D11_SUBRESOURCE_DATA vxResource = {};
 	vxResource.pSysMem = aVertexDataPointer;
 	
-	const HRESULT result = myDevice->CreateBuffer(&vxBufferDesc, &vxResource, outVxBuffer.GetAddressOf());
-	if (FAILED(result))
+	if (aIsDynamic)
 	{
-		LOG(RhiLog, Error, "Failed to create Vertex Buffer!");
-		return false;
+		const HRESULT result = myDevice->CreateBuffer(&vxBufferDesc, nullptr, outVxBuffer.GetAddressOf());
+		if (FAILED(result))
+		{
+			LOG(RhiLog, Error, "Failed to create Dynamic Vertex Buffer!");
+			return false;
+		}
+	}
+	else
+	{
+		const HRESULT result = myDevice->CreateBuffer(&vxBufferDesc, &vxResource, outVxBuffer.GetAddressOf());
+		if (FAILED(result))
+		{
+			LOG(RhiLog, Error, "Failed to create Static Vertex Buffer!");
+			return false;
+		}
 	}
 
 	SetObjectName(outVxBuffer, aName);

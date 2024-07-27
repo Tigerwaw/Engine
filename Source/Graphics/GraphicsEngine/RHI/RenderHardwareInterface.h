@@ -27,6 +27,9 @@ public:
 	RenderHardwareInterface();
 	~RenderHardwareInterface();
 	bool Initialize(HWND aWindowHandle, bool aEnableDebug);
+#ifdef _DEBUG
+	bool InitializeImGui();
+#endif
 	void Present() const;
 
 	template <typename VertexType>

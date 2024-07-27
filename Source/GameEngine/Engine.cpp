@@ -5,16 +5,26 @@
 #include "GameEngine/SceneHandler/SceneHandler.h"
 #include "GameEngine/DebugDrawer/DebugDrawer.h"
 #include "GameEngine/Audio/AudioEngine.h"
+#include "GameEngine/ImGui/ImGuiHandler.h"
 
 void Engine::Update()
 {
-    Engine::GetInstance().GetDebugDrawer().ClearObjects();
-    Engine::GetInstance().GetTimer().Update();
-    Engine::GetInstance().GetSceneHandler().UpdateActiveScene();
-    Engine::GetInstance().GetInputHandler().UpdateInput();
-    Engine::GetInstance().GetAudioEngine().Update();
-    Engine::GetInstance().GetSceneHandler().RenderActiveScene();
-    Engine::GetInstance().GetDebugDrawer().DrawObjects();
+    myDebugDrawer->ClearObjects();
+    myTimer->Update();
+
+    mySceneHandler->UpdateActiveScene();
+    myImGuiHandler->Update();
+
+    myInputHandler->UpdateInput();
+    myAudioEngine->Update();
+    mySceneHandler->RenderActiveScene();
+    myDebugDrawer->DrawObjects();
+}
+
+void Engine::Destroy()
+{
+    myAudioEngine->Destroy();
+    myImGuiHandler->Destroy();
 }
 
 Engine::Engine()
@@ -25,6 +35,7 @@ Engine::Engine()
     mySceneHandler = std::make_unique<SceneHandler>();
     myDebugDrawer = std::make_unique<DebugDrawer>();
     myAudioEngine = std::make_unique<AudioEngine>();
+    myImGuiHandler = std::make_unique<ImGuiHandler>();
 
     myResolution = { 1920.0f, 1080.0f };
 }
@@ -37,4 +48,5 @@ Engine::~Engine()
     mySceneHandler = nullptr;
     myDebugDrawer = nullptr;
     myAudioEngine = nullptr;
+    myImGuiHandler = nullptr;
 }

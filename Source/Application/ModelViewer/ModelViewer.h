@@ -73,7 +73,6 @@ private:
 	void InitCamera();
 	void InitLights();
 	void InitGameObjects();
-	void UpdateImgui();
 
 	bool myIsRunning = false;
 	HWND myMainWindowHandle = nullptr;

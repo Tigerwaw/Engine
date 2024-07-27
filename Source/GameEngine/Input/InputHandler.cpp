@@ -176,7 +176,7 @@ const float InputHandler::GetAnalogAction(std::string aActionName) const
 		if (!castedAction) continue;
 		result = castedAction->GetAction();
 
-		if (abs(result) > 0.05f)
+		if (abs(result) > 0)
 		{
 			break;
 		}
@@ -194,7 +194,7 @@ const CU::Vector2f InputHandler::GetAnalogAction2D(std::string aActionName) cons
 		if (!castedAction) continue;
 		result = castedAction->GetAction();
 
-		if (result.LengthSqr() > 0.05f)
+		if (result.LengthSqr() > 0)
 		{
 			break;
 		}

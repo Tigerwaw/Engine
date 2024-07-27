@@ -54,6 +54,7 @@ int GuardedMain()
 #endif
 #endif
 
+#ifdef _DEBUG
     // Redirect stdout and stderr to the console.
     FILE* consoleOut;
 	FILE* consoleErr;
@@ -93,6 +94,7 @@ int GuardedMain()
     RECT consoleSize;
     GetWindowRect(consoleWindow, &consoleSize);
     MoveWindow(consoleWindow, consoleSize.left, consoleSize.top, 1280, 720, true);
+#endif
 
     SIZE windowSize = { static_cast<long>(Engine::GetInstance().GetResolution().x), static_cast<long>(Engine::GetInstance().GetResolution().y) };
     LPCWSTR windowTitle = L"TGP Modelviewer";
