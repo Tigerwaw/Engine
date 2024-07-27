@@ -20,26 +20,8 @@
 
 #include "GraphicsEngine/Objects/DynamicVertexBuffer.h"
 
-#include "../Intermediate/Shaders/CompiledShaderHeaders/Default_VS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/Default_PS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/ShadowCube_VS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/ShadowCube_GS.h"
-
-#include "../Intermediate/Shaders/CompiledShaderHeaders/Sprite_VS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/Sprite_GS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/Sprite_PS.h"
-
-#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugLine_VS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugLine_GS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugObject_PS.h"
-
-#include "../Intermediate/Shaders/CompiledShaderHeaders/Unlit_PS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/Wireframe_PS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugVertexNormals_PS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugPixelNormals_PS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugTextureNormals_PS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/DebugUVs_PS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/Gizmo_PS.h"
+// TEMP
+#include "AssetManager/AssetManager.h"
 
 #ifdef _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(GraphicsLog, GraphicsEngine, Verbose);
@@ -68,156 +50,42 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 		return false;
 	}
 
-	PipelineStateObject defaultPSO;
-	defaultPSO.VertexShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("Default_VS", *defaultPSO.VertexShader, BuiltIn_Default_VS_ByteCode, sizeof(BuiltIn_Default_VS_ByteCode));
-
-	defaultPSO.PixelShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("Default_PS", *defaultPSO.PixelShader, BuiltIn_Default_PS_ByteCode, sizeof(BuiltIn_Default_PS_ByteCode));
-
-	myRHI->CreateInputLayout(defaultPSO.InputLayout, Vertex::InputLayoutDefinition, BuiltIn_Default_VS_ByteCode, sizeof(BuiltIn_Default_VS_ByteCode));
-	
-	defaultPSO.SamplerStates[0] = myRHI->GetSamplerState("DefaultSS");
-	defaultPSO.SamplerStates[14] = myRHI->GetSamplerState("LutSS");
-	defaultPSO.SamplerStates[15] = myRHI->GetSamplerState("ShadowSS");
-
-	defaultPSO.VertexStride = sizeof(Vertex);
-	myPSOmap.emplace(PipelineStateType::Default, std::make_shared<PipelineStateObject>(defaultPSO));
-
-
-	PipelineStateObject spritePSO;
-	spritePSO.VertexShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("Sprite_VS", *spritePSO.VertexShader, BuiltIn_Sprite_VS_ByteCode, sizeof(BuiltIn_Sprite_VS_ByteCode));
-
-	spritePSO.GeometryShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("Sprite_GS", *spritePSO.GeometryShader, BuiltIn_Sprite_GS_ByteCode, sizeof(BuiltIn_Sprite_GS_ByteCode));
-
-	spritePSO.PixelShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("Sprite_PS", *spritePSO.PixelShader, BuiltIn_Sprite_PS_ByteCode, sizeof(BuiltIn_Sprite_PS_ByteCode));
-
-	spritePSO.SamplerStates[0] = myRHI->GetSamplerState("DefaultSS");
-	myPSOmap.emplace(PipelineStateType::Sprite, std::make_shared<PipelineStateObject>(spritePSO));
-
-
-	PipelineStateObject debugPSO;
-	myRHI->CreateInputLayout(debugPSO.InputLayout, DebugLineVertex::InputLayoutDefinition, BuiltIn_DebugLine_VS_ByteCode, sizeof(BuiltIn_DebugLine_VS_ByteCode));
-	debugPSO.VertexStride = sizeof(DebugLineVertex);
-
-	debugPSO.VertexShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("DebugLine_VS", *debugPSO.VertexShader, BuiltIn_DebugLine_VS_ByteCode, sizeof(BuiltIn_DebugLine_VS_ByteCode));
-
-	debugPSO.GeometryShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("DebugLine_GS", *debugPSO.GeometryShader, BuiltIn_DebugLine_GS_ByteCode, sizeof(BuiltIn_DebugLine_GS_ByteCode));
-
-	debugPSO.PixelShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("DebugObject_PS", *debugPSO.PixelShader, BuiltIn_DebugObject_PS_ByteCode, sizeof(BuiltIn_DebugObject_PS_ByteCode));
-
-	D3D11_RASTERIZER_DESC debugRastDesc = {};
-	debugRastDesc.FillMode = D3D11_FILL_SOLID;
-	debugRastDesc.CullMode = D3D11_CULL_NONE;
-	debugRastDesc.FrontCounterClockwise = false;
-	debugRastDesc.DepthBias = 0;
-	debugRastDesc.SlopeScaledDepthBias = 0;
-	debugRastDesc.DepthBiasClamp = 0;
-	debugRastDesc.DepthClipEnable = true;
-	debugRastDesc.ScissorEnable = false;
-	debugRastDesc.AntialiasedLineEnable = true;
-	debugRastDesc.MultisampleEnable = false;
-
-	myRHI->CreateRasterizerState("DebugPSO_Rasterizer", debugRastDesc, debugPSO);
-
-	debugPSO.SamplerStates[0] = myRHI->GetSamplerState("DefaultSS");
-	myPSOmap.emplace(PipelineStateType::DebugLine, std::make_shared<PipelineStateObject>(debugPSO));
-
-	
-	PipelineStateObject unlitPSO;
-	unlitPSO.SamplerStates[0] = myRHI->GetSamplerState("DefaultSS");
-	unlitPSO.VertexShader = defaultPSO.VertexShader;
-	unlitPSO.InputLayout = defaultPSO.InputLayout;
-	unlitPSO.VertexStride = sizeof(Vertex);
-
-	unlitPSO.PixelShader = std::make_shared<Shader>();
-	if (!myRHI->LoadShaderFromMemory("Unlit_PS", *unlitPSO.PixelShader, BuiltIn_Unlit_PS_ByteCode, sizeof(BuiltIn_Unlit_PS_ByteCode)))
 	{
-		LOG(GraphicsLog, Error, "Failed to load pixel shader!");
-		return false;
+		PipelineStateObject defaultPSO;
+		defaultPSO.SamplerStates[0] = myRHI->GetSamplerState("DefaultSS");
+
+		defaultPSO.VertexStride = sizeof(Vertex);
+
+		if (!myRHI->CreateInputLayout(defaultPSO.InputLayout, Vertex::InputLayoutDefinition, L"../../Assets/Shaders/Mesh_VS.cso"))
+		{
+			LOG(GraphicsLog, Error, "Failed to load default input layout!");
+			return false;
+		}
+
+		defaultPSO.VertexShader = std::make_shared<Shader>();
+		if (!myRHI->LoadShaderFromFilePath("Default_VS", *defaultPSO.VertexShader, L"../../Assets/Shaders/Mesh_VS.cso"))
+		{
+			LOG(GraphicsLog, Error, "Failed to load default vertex shader!");
+			return false;
+		}
+
+		defaultPSO.PixelShader = std::make_shared<Shader>();
+		if (!myRHI->LoadShaderFromFilePath("Default_PS", *defaultPSO.PixelShader, L"../../Assets/Shaders/Unlit_PS.cso"))
+		{
+			LOG(GraphicsLog, Error, "Failed to load default pixel shader!");
+			return false;
+		}
+
+		myPSOmap.emplace(PipelineStateType::Default, std::make_shared<PipelineStateObject>(defaultPSO));
+
+		myCurrentPSO = myPSOmap[PipelineStateType::Default];
 	}
-	myPSOmap.emplace(PipelineStateType::Unlit, std::make_shared<PipelineStateObject>(unlitPSO));
-
-	
-	PipelineStateObject wireframePSO;
-	wireframePSO = unlitPSO;
-	D3D11_RASTERIZER_DESC wireframeRastDesc = {};
-	wireframeRastDesc.FillMode = D3D11_FILL_WIREFRAME;
-	wireframeRastDesc.CullMode = D3D11_CULL_NONE;
-	myRHI->CreateRasterizerState("WireframePSO_Rasterizer", wireframeRastDesc, wireframePSO);
-
-	wireframePSO.PixelShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("Wireframe_PS", *wireframePSO.PixelShader, BuiltIn_Wireframe_PS_ByteCode, sizeof(BuiltIn_Wireframe_PS_ByteCode));
-	myPSOmap.emplace(PipelineStateType::Wireframe, std::make_shared<PipelineStateObject>(wireframePSO));
-
-
-
-	PipelineStateObject gizmoPSO;
-	gizmoPSO.VertexShader = defaultPSO.VertexShader;
-
-	gizmoPSO.PixelShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("Gizmo_PS", *gizmoPSO.PixelShader, BuiltIn_Gizmo_PS_ByteCode, sizeof(BuiltIn_Gizmo_PS_ByteCode));
-
-	gizmoPSO.InputLayout = defaultPSO.InputLayout;
-	gizmoPSO.VertexStride = sizeof(Vertex);
-
-	myPSOmap.emplace(PipelineStateType::Gizmo, std::make_shared<PipelineStateObject>(gizmoPSO));
-	
-
-	PipelineStateObject shadowPSO;
-	shadowPSO.VertexShader = defaultPSO.VertexShader;
-	shadowPSO.InputLayout = defaultPSO.InputLayout;
-	shadowPSO.VertexStride = sizeof(Vertex);
-	myPSOmap.emplace(PipelineStateType::Shadow, std::make_shared<PipelineStateObject>(shadowPSO));
-	
-	PipelineStateObject shadowCubePSO;
-	shadowCubePSO.VertexShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("ShadowCube_VS", *shadowCubePSO.VertexShader, BuiltIn_ShadowCube_VS_ByteCode, sizeof(BuiltIn_ShadowCube_VS_ByteCode));
-
-	shadowCubePSO.GeometryShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("ShadowCube_GS", *shadowCubePSO.GeometryShader, BuiltIn_ShadowCube_GS_ByteCode, sizeof(BuiltIn_ShadowCube_GS_ByteCode));
-
-	shadowCubePSO.InputLayout = defaultPSO.InputLayout;
-	shadowCubePSO.VertexStride = sizeof(Vertex);
-	myPSOmap.emplace(PipelineStateType::ShadowCube, std::make_shared<PipelineStateObject>(shadowCubePSO));
-
-	PipelineStateObject debugVertexNormalsPSO;
-	debugVertexNormalsPSO = unlitPSO;
-	debugVertexNormalsPSO.PixelShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("DebugVertexNormals_PS", *debugVertexNormalsPSO.PixelShader, BuiltIn_DebugVertexNormals_PS_ByteCode, sizeof(BuiltIn_DebugVertexNormals_PS_ByteCode));
-	myPSOmap.emplace(PipelineStateType::DebugVertexNormals, std::make_shared<PipelineStateObject>(debugVertexNormalsPSO));
-
-	PipelineStateObject debugPixelNormalsPSO;
-	debugPixelNormalsPSO = unlitPSO;
-	debugPixelNormalsPSO.PixelShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("DebugPixelNormals_PS", *debugPixelNormalsPSO.PixelShader, BuiltIn_DebugPixelNormals_PS_ByteCode, sizeof(BuiltIn_DebugPixelNormals_PS_ByteCode));
-	myPSOmap.emplace(PipelineStateType::DebugPixelNormals, std::make_shared<PipelineStateObject>(debugPixelNormalsPSO));
-
-	PipelineStateObject debugTextureNormalsPSO;
-	debugTextureNormalsPSO = unlitPSO;
-	debugTextureNormalsPSO.PixelShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("DebugPixelNormals_PS", *debugTextureNormalsPSO.PixelShader, BuiltIn_DebugTextureNormals_PS_ByteCode, sizeof(BuiltIn_DebugTextureNormals_PS_ByteCode));
-	myPSOmap.emplace(PipelineStateType::DebugTextureNormals, std::make_shared<PipelineStateObject>(debugTextureNormalsPSO));
-
-	PipelineStateObject debugUVsPSO;
-	debugUVsPSO = unlitPSO;
-	debugUVsPSO.PixelShader = std::make_shared<Shader>();
-	myRHI->LoadShaderFromMemory("DebugUVs_PS", *debugUVsPSO.PixelShader, BuiltIn_DebugUVs_PS_ByteCode, sizeof(BuiltIn_DebugUVs_PS_ByteCode));
-	myPSOmap.emplace(PipelineStateType::DebugUVs, std::make_shared<PipelineStateObject>(debugUVsPSO));
-
 
 	myLUTtexture = std::make_shared<Texture>();
 	myRHI->CreateLUT("LUT", 512, 512, myLUTtexture);
 
 	CreateConstantBuffers();
 	
-	myCurrentPSO = myPSOmap[PipelineStateType::Default];
 	myCommandList = std::make_unique<GraphicsCommandList>();
 
 	LOG(GraphicsLog, Log, "Initialized Graphics Engine!");
@@ -230,6 +98,110 @@ bool GraphicsEngine::InitializeImGui()
 	return myRHI->InitializeImGui();
 }
 #endif
+
+bool GraphicsEngine::InitializePSOs()
+{
+	std::unordered_map<unsigned, std::string> samplers;
+	samplers.emplace(0, "DefaultSS");
+	samplers.emplace(14, "LutSS");
+	samplers.emplace(15, "ShadowSS");
+	CreatePSO("PBR", PipelineStateType::PBR, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader, 
+		nullptr, 
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/PBRMesh_PS.cso")->shader,
+		nullptr, &samplers);
+
+	samplers.clear();
+	samplers.emplace(0, "DefaultSS");
+	CreatePSO("Sprite", PipelineStateType::Sprite, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Sprite_VS.cso",
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Sprite_VS.cso")->shader,
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Sprite_GS.cso")->shader,
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Sprite_PS.cso")->shader,
+		nullptr, &samplers);
+
+	D3D11_RASTERIZER_DESC debugRastDesc = {};
+	debugRastDesc.FillMode = D3D11_FILL_SOLID;
+	debugRastDesc.CullMode = D3D11_CULL_NONE;
+	debugRastDesc.FrontCounterClockwise = false;
+	debugRastDesc.DepthBias = 0;
+	debugRastDesc.SlopeScaledDepthBias = 0;
+	debugRastDesc.DepthBiasClamp = 0;
+	debugRastDesc.DepthClipEnable = true;
+	debugRastDesc.ScissorEnable = false;
+	debugRastDesc.AntialiasedLineEnable = true;
+	debugRastDesc.MultisampleEnable = false;
+	CreatePSO("DebugLine", PipelineStateType::DebugLine, DebugLineVertex::InputLayoutDefinition, sizeof(DebugLineVertex), L"../../Assets/Shaders/DebugLine_VS.cso",
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/DebugLine_VS.cso")->shader,
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/DebugLine_GS.cso")->shader,
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/DebugObject_PS.cso")->shader,
+		&debugRastDesc, nullptr);
+
+
+	samplers.clear();
+	samplers.emplace(0, "DefaultSS");
+	CreatePSO("Unlit", PipelineStateType::Unlit, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader,
+		nullptr,
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Unlit_PS.cso")->shader,
+		nullptr, &samplers);
+
+	D3D11_RASTERIZER_DESC wireframeRastDesc = {};
+	wireframeRastDesc.FillMode = D3D11_FILL_WIREFRAME;
+	wireframeRastDesc.CullMode = D3D11_CULL_NONE;
+	CreatePSO("Wireframe", PipelineStateType::Wireframe, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader,
+		nullptr,
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Wireframe_PS.cso")->shader,
+		&wireframeRastDesc, nullptr);
+
+	CreatePSO("Gizmo", PipelineStateType::Gizmo, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader,
+		nullptr,
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Gizmo_PS.cso")->shader,
+		nullptr, nullptr);
+
+	CreatePSO("Shadow", PipelineStateType::Shadow, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader,
+		nullptr,
+		nullptr,
+		nullptr, nullptr);
+
+	CreatePSO("ShadowCube", PipelineStateType::ShadowCube, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/ShadowCube_VS.cso",
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/ShadowCube_VS.cso")->shader,
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/ShadowCube_GS.cso")->shader,
+		nullptr,
+		nullptr, nullptr);
+
+	CreatePSO("DebugVertexNormals", PipelineStateType::DebugVertexNormals, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader,
+		nullptr,
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/DebugVertexNormals_PS.cso")->shader,
+		nullptr, nullptr);
+
+	samplers.clear();
+	samplers.emplace(0, "DefaultSS");
+	CreatePSO("DebugPixelNormals", PipelineStateType::DebugPixelNormals, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader,
+		nullptr,
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/DebugPixelNormals_PS.cso")->shader,
+		nullptr, &samplers);
+
+	samplers.clear();
+	samplers.emplace(0, "DefaultSS");
+	CreatePSO("DebugTextureNormals", PipelineStateType::DebugTextureNormals, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader,
+		nullptr,
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/DebugTextureNormals_PS.cso")->shader,
+		nullptr, &samplers);
+
+	CreatePSO("DebugUVs", PipelineStateType::DebugUVs, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader,
+		nullptr,
+		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/DebugUVs_PS.cso")->shader,
+		nullptr, nullptr);
+
+	return true;
+}
 
 void GraphicsEngine::BeginFrame()
 {
@@ -253,6 +225,12 @@ void GraphicsEngine::EndFrame()
 
 void GraphicsEngine::ChangePipelineState(PipelineStateType aPipelineState)
 {
+	if (!myPSOmap[aPipelineState])
+	{
+		LOG(GraphicsLog, Error, "PSO {} does not exist!", static_cast<int>(aPipelineState));
+		return;
+	}
+
 	ChangePipelineState(myPSOmap[aPipelineState]);
 }
 
@@ -305,6 +283,54 @@ bool GraphicsEngine::ClearTextureResource_PS(unsigned aSlot)
 bool GraphicsEngine::ClearTextureResource_VS(unsigned aSlot)
 {
 	return myRHI->ClearTextureResourceSlot(PIPELINE_STAGE_VERTEX_SHADER, aSlot);
+}
+
+bool GraphicsEngine::LoadShader(std::filesystem::path aFilePath, Shader& outShader)
+{
+	return myRHI->LoadShaderFromFilePath(aFilePath.stem().string(), outShader, aFilePath.generic_wstring());
+}
+
+bool GraphicsEngine::CreatePSO(std::string aName, PipelineStateType aType,
+							   std::vector<VertexElementDesc> aInputLayoutDefinition, unsigned aVertexStride, std::wstring aVSpath,
+							   std::shared_ptr<Shader> aVSshader, std::shared_ptr<Shader> aGSshader, std::shared_ptr<Shader> aPSshader,
+							   D3D11_RASTERIZER_DESC* aRasterizerDesc, std::unordered_map<unsigned, std::string>* aSamplerList)
+{
+	std::shared_ptr<PipelineStateObject> newPSO = std::make_shared<PipelineStateObject>();
+	newPSO->VertexStride = aVertexStride;
+
+	if (aVSpath != L"")
+	{
+		if (!myRHI->CreateInputLayout(newPSO->InputLayout, aInputLayoutDefinition, aVSpath))
+		{
+			LOG(GraphicsLog, Error, "Failed to create PSO!");
+			return false;
+		}
+	}
+
+	newPSO->VertexShader = aVSshader;
+	newPSO->GeometryShader = aGSshader;
+	newPSO->PixelShader = aPSshader;
+
+	if (aRasterizerDesc)
+	{
+		if (!myRHI->CreateRasterizerState(aName + "_Rasterizer", *aRasterizerDesc, *newPSO))
+		{
+			LOG(GraphicsLog, Error, "Failed to create PSO!");
+			return false;
+		}
+	}
+
+	if (aSamplerList)
+	{
+		for (auto& sampler : *aSamplerList)
+		{
+			newPSO->SamplerStates[sampler.first] = myRHI->GetSamplerState(sampler.second);
+		}
+	}
+
+	myPSOmap.emplace(aType, newPSO);
+	LOG(GraphicsLog, Log, "Created PSO {}!", aName);
+	return true;
 }
 
 bool GraphicsEngine::CreateShadowMap(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture)

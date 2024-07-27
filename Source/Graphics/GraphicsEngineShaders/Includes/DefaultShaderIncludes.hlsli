@@ -10,7 +10,7 @@ Texture2D MaterialTexture : register(t2);
 SamplerState DefaultSampler : register(s0);
 SamplerComparisonState ShadowCmpSampler : register(s15);
 
-struct DefaultVertex
+struct MeshVertex
 {
     float4 Position     : POSITION;
     float4 VertexColor0 : VERTEXCOLOR0;
@@ -27,7 +27,7 @@ struct DefaultVertex
     float4 Skinweights  : SKINWEIGHTS;
 };
 
-struct DefaultVStoPS
+struct MeshVStoPS
 {
     float4 Position     : SV_POSITION;
     float4 WorldPos     : WORLDPOSITION;
@@ -103,6 +103,18 @@ float RemapRange(float aValue, float aStartingLowerBound, float aStartingUpperBo
     float endDiff = aEndingUpperBound - aEndingLowerBound;
     float remappedValue = aEndingLowerBound + (aValue - aStartingLowerBound) * endDiff / startDiff;
     return remappedValue;
+}
+
+float2 Flipbook(float2 uv, float2 size, float progress)
+{
+    progress = floor(fmod(progress, (size.x * size.y)));
+    float2 frameSize = float2(1.0, 1.0) / size;
+    float2 frame = frac(uv / size) + frameSize;
+    
+    frame.x += ((progress / size.x) - frameSize.x * floor(progress / size.x) * size.x) - frameSize.x;
+    frame.y += (frameSize.y * floor(progress / size.x)) - frameSize.y;
+
+    return frame;
 }
 
 #endif // _DEFAULT_INCLUDES_

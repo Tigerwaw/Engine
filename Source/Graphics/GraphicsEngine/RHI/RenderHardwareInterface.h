@@ -52,9 +52,11 @@ public:
 	void SetPrimitiveTopology(Topology aTopology) const;
 
 	bool CreateInputLayout(Microsoft::WRL::ComPtr<ID3D11InputLayout>& outInputLayout, const std::vector<VertexElementDesc>& aInputLayoutDefinition, const uint8_t* aShaderDataPtr, size_t aShaderDataSize);
+	bool CreateInputLayout(Microsoft::WRL::ComPtr<ID3D11InputLayout>& outInputLayout, const std::vector<VertexElementDesc>& aInputLayoutDefinition, std::wstring aFilePath);
 	void SetInputLayout(const Microsoft::WRL::ComPtr<ID3D11InputLayout>& aInputLayout);
 
 	bool LoadShaderFromMemory(std::string_view aName, Shader& outShader, const uint8_t* aShaderDataPtr, size_t aShaderDataSize);
+	bool LoadShaderFromFilePath(std::string_view aName, Shader& outShader, std::wstring aFilePath);
 
 	void Draw(unsigned aVertexCount);
 	void DrawIndexed(unsigned aStartIndex, unsigned aIndexCount) const;

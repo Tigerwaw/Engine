@@ -3,6 +3,7 @@
 enum class PipelineStateType
 {
 	Default,
+	PBR,
 	Unlit,
 	Shadow,
 	ShadowCube,

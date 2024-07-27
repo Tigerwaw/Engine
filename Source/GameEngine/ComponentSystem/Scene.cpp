@@ -64,7 +64,7 @@ void Scene::Render()
 	QueueUpdateLightBuffer();
 
 	// Final Render
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(PipelineStateType::Default);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(PipelineStateType::PBR);
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetDefaultRenderTarget>();
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(myCamera->GetComponent<Camera>());
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(126, myAmbientLight->GetComponent<AmbientLight>()->GetEnvironmentTexture());

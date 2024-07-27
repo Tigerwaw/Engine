@@ -7,6 +7,7 @@
 #include "Graphics/GraphicsEngine/Objects/Animation.h"
 #include "Graphics/GraphicsEngine/Objects/Texture.h"
 #include "Graphics/GraphicsEngine/Objects/Material.h"
+#include "Graphics/GraphicsEngine/Objects/Shader.h"
 
 struct Asset
 {
@@ -33,4 +34,9 @@ struct TextureAsset : public Asset
 struct MaterialAsset : public Asset
 {
 	std::shared_ptr<Material> material;
+};
+
+struct ShaderAsset : public Asset
+{
+	std::shared_ptr<Shader> shader;
 };

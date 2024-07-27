@@ -11,7 +11,7 @@ Texture2D ShadowMapDir : register(t100);
 TextureCube ShadowMapPoint[4] : register(t101);
 Texture2D ShadowMapSpot[4] : register(t105);
 
-float4 main(DefaultVStoPS input) : SV_TARGET
+float4 main(MeshVStoPS input) : SV_TARGET
 {
     const float4 albedoMap = AlbedoTexture.Sample(DefaultSampler, input.TexCoord0.xy);
     const float2 normalMap = NormalTexture.Sample(DefaultSampler, input.TexCoord0.xy).rg;

@@ -101,6 +101,10 @@ bool ModelViewer::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR a
 
 	MVLOG(Log, "Initializing Game Engine...");
 	Engine::GetInstance();
+	AssetManager::Get().Initialize(EngineSettings::GetContentRootPath());
+
+	GraphicsEngine::Get().InitializePSOs();
+
 #ifdef _DEBUG
 	Engine::GetInstance().GetImGuiHandler().Initialize(myMainWindowHandle);
 	GraphicsEngine::Get().InitializeImGui();
@@ -116,8 +120,6 @@ bool ModelViewer::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR a
 
 void ModelViewer::InitModelViewer()
 {
-	AssetManager::Get().Initialize(EngineSettings::GetContentRootPath());
-
 	Engine::GetInstance().GetInputHandler().SetControllerDeadZone(0.1f, 0.06f);
 	Engine::GetInstance().GetAudioEngine().Initialize();
 	Engine::GetInstance().GetAudioEngine().LoadBank("Master");

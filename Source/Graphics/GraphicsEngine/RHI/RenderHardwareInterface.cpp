@@ -351,6 +351,27 @@ bool RenderHardwareInterface::CreateInputLayout(Microsoft::WRL::ComPtr<ID3D11Inp
 	return true;
 }
 
+bool RenderHardwareInterface::CreateInputLayout(Microsoft::WRL::ComPtr<ID3D11InputLayout>& outInputLayout, const std::vector<VertexElementDesc>& aInputLayoutDefinition, std::wstring aFilePath)
+{
+	ComPtr<ID3D10Blob> shaderBuffer;
+	HRESULT result = D3DReadFileToBlob(aFilePath.c_str(), shaderBuffer.GetAddressOf());
+
+	if (FAILED(result))
+	{
+		LOG(RhiLog, Error, "Failed to read input layout shader from filepath!");
+		return false;
+	}
+
+	if (!CreateInputLayout(outInputLayout, aInputLayoutDefinition, reinterpret_cast<const uint8_t*>(shaderBuffer->GetBufferPointer()), shaderBuffer->GetBufferSize()))
+	{
+		shaderBuffer->Release();
+		return false;
+	}
+
+	shaderBuffer->Release();
+	return true;
+}
+
 void RenderHardwareInterface::SetInputLayout(const Microsoft::WRL::ComPtr<ID3D11InputLayout>& aInputLayout)
 {
 	myContext->IASetInputLayout(aInputLayout.Get());
@@ -368,7 +389,7 @@ bool RenderHardwareInterface::LoadShaderFromMemory(std::string_view aName, Shade
 
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to load shader!");
+		LOG(RhiLog, Error, "Failed to load shader from memory!");
 		return false;
 	}
 
@@ -407,6 +428,27 @@ bool RenderHardwareInterface::LoadShaderFromMemory(std::string_view aName, Shade
 
 	SetObjectName(outShader.myShader, aName);
 
+	return true;
+}
+
+bool RenderHardwareInterface::LoadShaderFromFilePath(std::string_view aName, Shader& outShader, std::wstring aFilePath)
+{
+	ComPtr<ID3D10Blob> shaderBuffer;
+	HRESULT result = D3DReadFileToBlob(aFilePath.c_str(), shaderBuffer.GetAddressOf());
+
+	if (FAILED(result))
+	{
+		LOG(RhiLog, Error, "Failed to read shader from filepath!");
+		return false;
+	}
+
+	if (!LoadShaderFromMemory(aName, outShader, reinterpret_cast<const uint8_t*>(shaderBuffer->GetBufferPointer()), shaderBuffer->GetBufferSize()))
+	{
+		shaderBuffer->Release();
+		return false;
+	}
+	
+	shaderBuffer->Release();
 	return true;
 }
 

@@ -132,6 +132,14 @@ void AssetManager::RegisterAllAssetsInDirectory()
             RegisterMaterialAsset(file.path());
         }
     }
+
+    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "Shaders/"))
+    {
+        if (file.path().has_filename() && file.path().has_extension())
+        {
+            RegisterShaderAsset(file.path());
+        }
+    }
 }
 
 bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
@@ -294,7 +302,7 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
     {
         if (data["Type"].get<std::string>() == "PBR")
         {
-            asset->material->SetPSO(GraphicsEngine::Get().GetPSO(PipelineStateType::Default));
+            asset->material->SetPSO(GraphicsEngine::Get().GetPSO(PipelineStateType::PBR));
         }
         else if (data["Type"].get<std::string>() == "Unlit")
         {
@@ -364,6 +372,30 @@ bool AssetManager::RegisterTextureAsset(const std::filesystem::path& aPath)
     myAssets.emplace(assetPath, asset);
 
     LOG(AssetManagerLog, Log, "Registered texture asset {}", asset->path.filename().string());
+    return true;
+}
+
+bool AssetManager::RegisterShaderAsset(const std::filesystem::path& aPath)
+{
+    if (!ValidateAsset(aPath)) return false;
+    std::filesystem::path assetPath = MakeRelative(aPath);
+    const std::string ext = assetPath.extension().string();
+    if (!ext.ends_with("cso")) return false;
+
+    std::shared_ptr<ShaderAsset> asset = std::make_shared<ShaderAsset>();
+    asset->shader = std::make_shared<Shader>();
+    std::filesystem::path absolutePath = aPath;
+    if (!GraphicsEngine::Get().LoadShader(absolutePath, *asset->shader))
+    {
+        LOG(AssetManagerLog, Error, "Failed to register shader asset {}", assetPath.string());
+        return false;
+    }
+
+    asset->path = assetPath;
+    asset->name = assetPath.stem();
+    myAssets.emplace(assetPath, asset);
+
+    LOG(AssetManagerLog, Log, "Registered shader asset {}", asset->path.filename().string());
     return true;
 }
 

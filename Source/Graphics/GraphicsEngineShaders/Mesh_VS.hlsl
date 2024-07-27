@@ -3,9 +3,9 @@
 #include "Includes/ConstantBuffers/ObjectBuffer.hlsli"
 #include "Includes/ConstantBuffers/FrameBuffer.hlsli"
 
-DefaultVStoPS main(DefaultVertex vertex)
+MeshVStoPS main(MeshVertex vertex)
 {
-    DefaultVStoPS result;
+    MeshVStoPS result;
     
     result.Normal = mul((float3x3) OB_WorldInvT, normalize(vertex.Normal));
     result.Tangent = mul((float3x3) OB_WorldInvT, normalize(vertex.Tangent));

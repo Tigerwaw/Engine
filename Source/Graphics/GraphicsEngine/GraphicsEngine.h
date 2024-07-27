@@ -53,6 +53,7 @@ public:
 #ifdef _DEBUG
 	bool InitializeImGui();
 #endif
+	bool InitializePSOs();
 	void BeginFrame();
 	void RenderFrame();
 	void EndFrame();
@@ -70,6 +71,12 @@ public:
 	bool SetTextureResource_VS(unsigned aSlot, Texture& aTexture);
 	bool ClearTextureResource_PS(unsigned aSlot);
 	bool ClearTextureResource_VS(unsigned aSlot);
+
+	bool LoadShader(std::filesystem::path aFilePath, Shader& outShader);
+	bool CreatePSO(std::string aName, PipelineStateType aType, 
+				   std::vector<VertexElementDesc> aInputLayoutDefinition, unsigned aVertexStride, std::wstring aVSpath,
+				   std::shared_ptr<Shader> aVSshader, std::shared_ptr<Shader> aGSshader, std::shared_ptr<Shader> aPSshader,
+				   D3D11_RASTERIZER_DESC* aRasterizerDesc, std::unordered_map<unsigned, std::string>* aSamplerList);
 
 	bool CreateShadowMap(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture);
 	bool CreateShadowCubemap(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture);
