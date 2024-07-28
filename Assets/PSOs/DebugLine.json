@@ -1,0 +1,13 @@
+{
+  "VertexType": "DebugLine",
+  "VertexShader": "DebugLine_VS.cso",
+  "GeometryShader": "DebugLine_GS.cso",
+  "PixelShader": "DebugObject_PS.cso",
+  "RasterizerDesc": {
+    "FillMode": 3,
+    "CullMode": 1,
+    "AntialiasedLine": true
+  },
+  "Samplers": {
+  }
+}

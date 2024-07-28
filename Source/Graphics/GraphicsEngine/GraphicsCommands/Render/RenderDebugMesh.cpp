@@ -9,6 +9,7 @@
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/DebugModel.h"
+#include "AssetManager/AssetManager.h"
 
 #include "GameEngine/Engine.h"
 #include "GameEngine/DebugDrawer/DebugDrawer.h"
@@ -35,7 +36,8 @@ void RenderDebugMesh::Execute()
     objBufferData.hasSkinning = false;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
-    GraphicsEngine::Get().RenderMesh(*mesh, materialList);
+    GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("PSOs/Gizmo.json")->pso);
+    GraphicsEngine::Get().RenderMesh(*mesh, materialList, true);
 }
 
 void RenderDebugMesh::Destroy()

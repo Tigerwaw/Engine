@@ -1,0 +1,13 @@
+{
+  "VertexType": "Default",
+  "VertexShader": "Mesh_VS.cso",
+  "GeometryShader": "",
+  "PixelShader": "",
+  "RasterizerDesc": {
+    "FillMode": 3,
+    "CullMode": 3,
+    "AntialiasedLine": false
+  },
+  "Samplers": {
+  }
+}

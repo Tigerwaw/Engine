@@ -93,9 +93,6 @@
     <ClInclude Include="GraphicsCommands\ChangePipelineState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PipelineStateType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GraphicsCommands\ConstantBuffer\UpdateFrameBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>

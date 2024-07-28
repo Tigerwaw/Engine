@@ -103,8 +103,6 @@ bool ModelViewer::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR a
 	Engine::GetInstance();
 	AssetManager::Get().Initialize(EngineSettings::GetContentRootPath());
 
-	GraphicsEngine::Get().InitializePSOs();
-
 #ifdef _DEBUG
 	Engine::GetInstance().GetImGuiHandler().Initialize(myMainWindowHandle);
 	GraphicsEngine::Get().InitializeImGui();

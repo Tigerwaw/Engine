@@ -9,7 +9,6 @@
 #include "Objects/PipelineStateObject.h"
 #include "GraphicsCommands/GraphicsCommandList.h"
 #include "Objects/ConstantBuffers/ConstantBuffer.h"
-#include "Graphics/GraphicsEngine/PipelineStateType.h"
 
 class Shader;
 class Mesh;
@@ -53,7 +52,6 @@ public:
 #ifdef _DEBUG
 	bool InitializeImGui();
 #endif
-	bool InitializePSOs();
 	void BeginFrame();
 	void RenderFrame();
 	void EndFrame();
@@ -61,9 +59,7 @@ public:
 	template<typename BufferData>
 	bool UpdateAndSetConstantBuffer(ConstantBufferType aBufferType, const BufferData& aDataBlock);
 
-	void ChangePipelineState(PipelineStateType aPipelineState);
 	void ChangePipelineState(const std::shared_ptr<PipelineStateObject> aNewPSO);
-	std::shared_ptr<PipelineStateObject> GetPSO(PipelineStateType aPipelineState);
 
 	bool LoadTexture(std::string_view aName, const uint8_t* aTextureDataPtr, size_t aTextureDataSize, Texture& outTexture) const;
 	bool LoadTexture(std::filesystem::path& aFilePath, Texture& outTexture) const;
@@ -73,17 +69,19 @@ public:
 	bool ClearTextureResource_VS(unsigned aSlot);
 
 	bool LoadShader(std::filesystem::path aFilePath, Shader& outShader);
-	bool CreatePSO(std::string aName, PipelineStateType aType, 
+	bool CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, std::string aName, 
 				   std::vector<VertexElementDesc> aInputLayoutDefinition, unsigned aVertexStride, std::wstring aVSpath,
 				   std::shared_ptr<Shader> aVSshader, std::shared_ptr<Shader> aGSshader, std::shared_ptr<Shader> aPSshader,
-				   D3D11_RASTERIZER_DESC* aRasterizerDesc, std::unordered_map<unsigned, std::string>* aSamplerList);
+				   std::unordered_map<unsigned, std::string>* aSamplerList, 
+				   unsigned aFillMode = 3, unsigned aCullMode = 3, bool aAntiAliasedLine = false);
+	std::shared_ptr<PipelineStateObject> GetDefaultPSO() { return myDefaultPSO; }
 
 	bool CreateShadowMap(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture);
 	bool CreateShadowCubemap(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture);
 
 	void SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
 
-	void RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<Material>> aMaterialList);
+	void RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<Material>> aMaterialList, bool aOverrideMaterialPSO = false);
 	void RenderSprite();
 	void RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsigned aLineAmount);
 
@@ -129,7 +127,7 @@ private:
 	std::unordered_map<ConstantBufferType, ConstantBuffer> myConstantBuffers;
 	
 	std::shared_ptr<PipelineStateObject> myCurrentPSO;
-	std::unordered_map<PipelineStateType, std::shared_ptr<PipelineStateObject>> myPSOmap;
+	std::shared_ptr<PipelineStateObject> myDefaultPSO;
 
 	std::shared_ptr<Texture> myLUTtexture;
 	

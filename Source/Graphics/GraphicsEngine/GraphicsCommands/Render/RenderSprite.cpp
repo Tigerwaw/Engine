@@ -5,6 +5,7 @@
 #include "GraphicsEngine/Objects/ConstantBuffers/SpriteBuffer.h"
 #include "GraphicsEngine/Objects/Sprite.h"
 #include "GraphicsEngine/Objects/Texture.h"
+#include "AssetManager/AssetManager.h"
 
 RenderSprite::RenderSprite(std::shared_ptr<Sprite> aSprite)
 {
@@ -23,6 +24,7 @@ void RenderSprite::Execute()
     spriteBufferData.IsScreenSpace = true;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::SpriteBuffer, spriteBufferData);
 
+    GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("PSOs/Sprite.json")->pso);
     GraphicsEngine::Get().SetTextureResource_PS(0, *texture);
     GraphicsEngine::Get().RenderSprite();
     GraphicsEngine::Get().ClearTextureResource_PS(0);

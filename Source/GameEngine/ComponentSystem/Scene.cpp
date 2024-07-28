@@ -15,6 +15,7 @@
 #include "GameEngine/Engine.h"
 #include "GameEngine/Intersections/Intersection3D.hpp"
 #include "GameEngine/DebugDrawer/DebugDrawer.h"
+#include "AssetManager/AssetManager.h"
 
 #include "Logger/Logger.h"
 #include "GameEngine/Math/Vector.hpp"
@@ -64,7 +65,7 @@ void Scene::Render()
 	QueueUpdateLightBuffer();
 
 	// Final Render
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(PipelineStateType::PBR);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSOs/PBR.json")->pso);
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetDefaultRenderTarget>();
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(myCamera->GetComponent<Camera>());
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(126, myAmbientLight->GetComponent<AmbientLight>()->GetEnvironmentTexture());
@@ -221,10 +222,10 @@ void Scene::QueueSpotLightShadows()
 		if (!spotLight->GetActive()) continue;
 		if (!spotLight->CastsShadows()) continue;
 
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(PipelineStateType::Shadow);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSOs/Shadow.json")->pso);
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, spotLight->GetShadowMap(), false, true);
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(mySpotLights[i]->GetComponent<Camera>());
-		QueueGameObjects(mySpotLights[i]->GetComponent<Camera>());
+		QueueGameObjects(mySpotLights[i]->GetComponent<Camera>(), false, AssetManager::Get().GetAsset<PSOAsset>("PSOs/Shadow.json")->pso);
 	}
 }
 
@@ -237,10 +238,10 @@ void Scene::QueuePointLightShadows()
 		if (!pointLight->CastsShadows()) continue;
 		
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, pointLight->GetShadowMap(), false, true);
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(PipelineStateType::ShadowCube);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSOs/ShadowCube.json")->pso);
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(myPointLights[i]->GetComponent<Camera>());
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateShadowBuffer>(pointLight);
-		QueueGameObjects(myPointLights[i]->GetComponent<Camera>(), true);
+		QueueGameObjects(myPointLights[i]->GetComponent<Camera>(), true, AssetManager::Get().GetAsset<PSOAsset>("PSOs/ShadowCube.json")->pso);
 	}
 }
 
@@ -251,14 +252,14 @@ void Scene::QueueDirectionalLightShadows()
 	if (!dLight->CastsShadows()) return;
 	
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, dLight->GetShadowMap(), false, true);
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(PipelineStateType::Shadow);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSOs/Shadow.json")->pso);
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(myDirectionalLight->GetComponent<Camera>());
-	QueueGameObjects(myDirectionalLight->GetComponent<Camera>());
+	QueueGameObjects(myDirectionalLight->GetComponent<Camera>(), false, AssetManager::Get().GetAsset<PSOAsset>("PSOs/Shadow.json")->pso);
 }
 
 void Scene::QueueDebugGizmos(std::shared_ptr<Camera> aRenderCamera)
 {
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(PipelineStateType::Gizmo);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSOs/Gizmo.json")->pso);
 	CU::PlaneVolume<float> frustumVolume = aRenderCamera->GetFrustumPlaneVolume();
 
 	for (auto& gameObject : myGameObjects)
@@ -274,7 +275,7 @@ void Scene::QueueDebugGizmos(std::shared_ptr<Camera> aRenderCamera)
 	}
 }
 
-void Scene::QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disableViewCulling)
+void Scene::QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disableViewCulling, std::shared_ptr<PipelineStateObject> aPSOoverride)
 {
 	for (auto& gameObject : myGameObjects)
 	{
@@ -283,7 +284,7 @@ void Scene::QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disable
 		{
 			if (disableViewCulling || !GraphicsEngine::Get().UseViewCulling || CU::IntersectionBetweenPlaneVolumeAABB(aRenderCamera->GetFrustumPlaneVolume(gameObject->GetComponent<Transform>()->GetWorldMatrix().GetFastInverse()), model->GetBoundingBox()))
 			{
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model);
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model, aPSOoverride);
 			}
 		}
 
@@ -292,7 +293,7 @@ void Scene::QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disable
 		{
 			if (disableViewCulling || !GraphicsEngine::Get().UseViewCulling || CU::IntersectionBetweenPlaneVolumeAABB(aRenderCamera->GetFrustumPlaneVolume(gameObject->GetComponent<Transform>()->GetWorldMatrix().GetFastInverse()), animModel->GetBoundingBox()))
 			{
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel);
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel, aPSOoverride);
 			}
 		}
 

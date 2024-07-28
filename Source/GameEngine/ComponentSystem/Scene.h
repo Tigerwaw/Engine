@@ -8,6 +8,7 @@
 class GameObject;
 class SceneHandler;
 class Camera;
+struct PipelineStateObject;
 
 class Scene final
 {
@@ -34,7 +35,7 @@ private:
 	void QueuePointLightShadows();
 	void QueueDirectionalLightShadows();
 	void QueueDebugGizmos(std::shared_ptr<Camera> aRenderCamera);
-	void QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disableViewCulling = false);
+	void QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disableViewCulling = false, std::shared_ptr<PipelineStateObject> aPSOoverride = nullptr);
 
 	std::vector<std::shared_ptr<GameObject>> myGameObjects;
 	unsigned myActiveGameObjectAmount = 0;

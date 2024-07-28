@@ -8,6 +8,7 @@
 #include "Graphics/GraphicsEngine/Objects/Texture.h"
 #include "Graphics/GraphicsEngine/Objects/Material.h"
 #include "Graphics/GraphicsEngine/Objects/Shader.h"
+#include "Graphics/GraphicsEngine/Objects/PipelineStateObject.h"
 
 struct Asset
 {
@@ -39,4 +40,9 @@ struct MaterialAsset : public Asset
 struct ShaderAsset : public Asset
 {
 	std::shared_ptr<Shader> shader;
+};
+
+struct PSOAsset : public Asset
+{
+	std::shared_ptr<PipelineStateObject> pso;
 };

@@ -27,6 +27,11 @@ RenderMesh::RenderMesh(std::shared_ptr<Model> aModel)
     }
 }
 
+RenderMesh::RenderMesh(std::shared_ptr<Model> aModel, std::shared_ptr<PipelineStateObject> aPSOoverride) : RenderMesh(aModel)
+{
+    psoOverride = aPSOoverride;
+}
+
 void RenderMesh::Execute()
 {
     ObjectBuffer objBufferData;
@@ -35,11 +40,20 @@ void RenderMesh::Execute()
     objBufferData.hasSkinning = false;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
-    GraphicsEngine::Get().RenderMesh(*mesh, materialList);
+    if (psoOverride)
+    {
+        GraphicsEngine::Get().ChangePipelineState(psoOverride);
+        GraphicsEngine::Get().RenderMesh(*mesh, materialList, true);
+    }
+    else
+    {
+        GraphicsEngine::Get().RenderMesh(*mesh, materialList);
+    }
 }
 
 void RenderMesh::Destroy()
 {
     mesh = nullptr;
     materialList.clear();
+    psoOverride = nullptr;
 }

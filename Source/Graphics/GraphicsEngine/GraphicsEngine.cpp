@@ -76,9 +76,8 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 			return false;
 		}
 
-		myPSOmap.emplace(PipelineStateType::Default, std::make_shared<PipelineStateObject>(defaultPSO));
-
-		myCurrentPSO = myPSOmap[PipelineStateType::Default];
+		myDefaultPSO = std::make_shared<PipelineStateObject>(defaultPSO);
+		myCurrentPSO = myDefaultPSO;
 	}
 
 	myLUTtexture = std::make_shared<Texture>();
@@ -98,110 +97,6 @@ bool GraphicsEngine::InitializeImGui()
 	return myRHI->InitializeImGui();
 }
 #endif
-
-bool GraphicsEngine::InitializePSOs()
-{
-	std::unordered_map<unsigned, std::string> samplers;
-	samplers.emplace(0, "DefaultSS");
-	samplers.emplace(14, "LutSS");
-	samplers.emplace(15, "ShadowSS");
-	CreatePSO("PBR", PipelineStateType::PBR, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader, 
-		nullptr, 
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/PBRMesh_PS.cso")->shader,
-		nullptr, &samplers);
-
-	samplers.clear();
-	samplers.emplace(0, "DefaultSS");
-	CreatePSO("Sprite", PipelineStateType::Sprite, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Sprite_VS.cso",
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Sprite_VS.cso")->shader,
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Sprite_GS.cso")->shader,
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Sprite_PS.cso")->shader,
-		nullptr, &samplers);
-
-	D3D11_RASTERIZER_DESC debugRastDesc = {};
-	debugRastDesc.FillMode = D3D11_FILL_SOLID;
-	debugRastDesc.CullMode = D3D11_CULL_NONE;
-	debugRastDesc.FrontCounterClockwise = false;
-	debugRastDesc.DepthBias = 0;
-	debugRastDesc.SlopeScaledDepthBias = 0;
-	debugRastDesc.DepthBiasClamp = 0;
-	debugRastDesc.DepthClipEnable = true;
-	debugRastDesc.ScissorEnable = false;
-	debugRastDesc.AntialiasedLineEnable = true;
-	debugRastDesc.MultisampleEnable = false;
-	CreatePSO("DebugLine", PipelineStateType::DebugLine, DebugLineVertex::InputLayoutDefinition, sizeof(DebugLineVertex), L"../../Assets/Shaders/DebugLine_VS.cso",
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/DebugLine_VS.cso")->shader,
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/DebugLine_GS.cso")->shader,
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/DebugObject_PS.cso")->shader,
-		&debugRastDesc, nullptr);
-
-
-	samplers.clear();
-	samplers.emplace(0, "DefaultSS");
-	CreatePSO("Unlit", PipelineStateType::Unlit, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader,
-		nullptr,
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Unlit_PS.cso")->shader,
-		nullptr, &samplers);
-
-	D3D11_RASTERIZER_DESC wireframeRastDesc = {};
-	wireframeRastDesc.FillMode = D3D11_FILL_WIREFRAME;
-	wireframeRastDesc.CullMode = D3D11_CULL_NONE;
-	CreatePSO("Wireframe", PipelineStateType::Wireframe, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader,
-		nullptr,
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Wireframe_PS.cso")->shader,
-		&wireframeRastDesc, nullptr);
-
-	CreatePSO("Gizmo", PipelineStateType::Gizmo, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader,
-		nullptr,
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Gizmo_PS.cso")->shader,
-		nullptr, nullptr);
-
-	CreatePSO("Shadow", PipelineStateType::Shadow, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader,
-		nullptr,
-		nullptr,
-		nullptr, nullptr);
-
-	CreatePSO("ShadowCube", PipelineStateType::ShadowCube, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/ShadowCube_VS.cso",
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/ShadowCube_VS.cso")->shader,
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/ShadowCube_GS.cso")->shader,
-		nullptr,
-		nullptr, nullptr);
-
-	CreatePSO("DebugVertexNormals", PipelineStateType::DebugVertexNormals, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader,
-		nullptr,
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/DebugVertexNormals_PS.cso")->shader,
-		nullptr, nullptr);
-
-	samplers.clear();
-	samplers.emplace(0, "DefaultSS");
-	CreatePSO("DebugPixelNormals", PipelineStateType::DebugPixelNormals, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader,
-		nullptr,
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/DebugPixelNormals_PS.cso")->shader,
-		nullptr, &samplers);
-
-	samplers.clear();
-	samplers.emplace(0, "DefaultSS");
-	CreatePSO("DebugTextureNormals", PipelineStateType::DebugTextureNormals, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader,
-		nullptr,
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/DebugTextureNormals_PS.cso")->shader,
-		nullptr, &samplers);
-
-	CreatePSO("DebugUVs", PipelineStateType::DebugUVs, Vertex::InputLayoutDefinition, sizeof(Vertex), L"../../Assets/Shaders/Mesh_VS.cso",
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/Mesh_VS.cso")->shader,
-		nullptr,
-		AssetManager::Get().GetAsset<ShaderAsset>("Shaders/DebugUVs_PS.cso")->shader,
-		nullptr, nullptr);
-
-	return true;
-}
 
 void GraphicsEngine::BeginFrame()
 {
@@ -223,26 +118,10 @@ void GraphicsEngine::EndFrame()
 	myRHI->Present();
 }
 
-void GraphicsEngine::ChangePipelineState(PipelineStateType aPipelineState)
-{
-	if (!myPSOmap[aPipelineState])
-	{
-		LOG(GraphicsLog, Error, "PSO {} does not exist!", static_cast<int>(aPipelineState));
-		return;
-	}
-
-	ChangePipelineState(myPSOmap[aPipelineState]);
-}
-
 void GraphicsEngine::ChangePipelineState(const std::shared_ptr<PipelineStateObject> aNewPSO)
 {
 	myRHI->ChangePipelineState(*aNewPSO);
 	myCurrentPSO = aNewPSO;
-}
-
-std::shared_ptr<PipelineStateObject> GraphicsEngine::GetPSO(PipelineStateType aPipelineState)
-{
-	return myPSOmap[aPipelineState];
 }
 
 bool GraphicsEngine::LoadTexture(std::string_view aName, const uint8_t* aTextureDataPtr, size_t aTextureDataSize, Texture& outTexture) const
@@ -290,30 +169,35 @@ bool GraphicsEngine::LoadShader(std::filesystem::path aFilePath, Shader& outShad
 	return myRHI->LoadShaderFromFilePath(aFilePath.stem().string(), outShader, aFilePath.generic_wstring());
 }
 
-bool GraphicsEngine::CreatePSO(std::string aName, PipelineStateType aType,
+bool GraphicsEngine::CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, std::string aName, 
 							   std::vector<VertexElementDesc> aInputLayoutDefinition, unsigned aVertexStride, std::wstring aVSpath,
 							   std::shared_ptr<Shader> aVSshader, std::shared_ptr<Shader> aGSshader, std::shared_ptr<Shader> aPSshader,
-							   D3D11_RASTERIZER_DESC* aRasterizerDesc, std::unordered_map<unsigned, std::string>* aSamplerList)
+							   std::unordered_map<unsigned, std::string>* aSamplerList, 
+							   unsigned aFillMode, unsigned aCullMode, bool aAntiAliasedLine)
 {
-	std::shared_ptr<PipelineStateObject> newPSO = std::make_shared<PipelineStateObject>();
-	newPSO->VertexStride = aVertexStride;
+	aPSO->VertexStride = aVertexStride;
 
 	if (aVSpath != L"")
 	{
-		if (!myRHI->CreateInputLayout(newPSO->InputLayout, aInputLayoutDefinition, aVSpath))
+		if (!myRHI->CreateInputLayout(aPSO->InputLayout, aInputLayoutDefinition, aVSpath))
 		{
 			LOG(GraphicsLog, Error, "Failed to create PSO!");
 			return false;
 		}
 	}
 
-	newPSO->VertexShader = aVSshader;
-	newPSO->GeometryShader = aGSshader;
-	newPSO->PixelShader = aPSshader;
+	aPSO->VertexShader = aVSshader;
+	aPSO->GeometryShader = aGSshader;
+	aPSO->PixelShader = aPSshader;
 
-	if (aRasterizerDesc)
+	if (aFillMode == 3 && aCullMode && aAntiAliasedLine == false)
 	{
-		if (!myRHI->CreateRasterizerState(aName + "_Rasterizer", *aRasterizerDesc, *newPSO))
+		D3D11_RASTERIZER_DESC rastDesc = {};
+		rastDesc.FillMode = static_cast<D3D11_FILL_MODE>(aFillMode);
+		rastDesc.CullMode = static_cast<D3D11_CULL_MODE>(aFillMode);
+		rastDesc.AntialiasedLineEnable = aAntiAliasedLine;
+
+		if (!myRHI->CreateRasterizerState(aName + "_Rasterizer", rastDesc, *aPSO))
 		{
 			LOG(GraphicsLog, Error, "Failed to create PSO!");
 			return false;
@@ -324,11 +208,10 @@ bool GraphicsEngine::CreatePSO(std::string aName, PipelineStateType aType,
 	{
 		for (auto& sampler : *aSamplerList)
 		{
-			newPSO->SamplerStates[sampler.first] = myRHI->GetSamplerState(sampler.second);
+			aPSO->SamplerStates[sampler.first] = myRHI->GetSamplerState(sampler.second);
 		}
 	}
 
-	myPSOmap.emplace(aType, newPSO);
 	LOG(GraphicsLog, Log, "Created PSO {}!", aName);
 	return true;
 }
@@ -348,7 +231,7 @@ void GraphicsEngine::SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std
 	myRHI->SetRenderTarget(aRenderTarget, aDepthStencil, aClearRenderTarget, aClearDepthStencil);
 }
 
-void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<Material>> aMaterialList)
+void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<Material>> aMaterialList, bool aOverrideMaterialPSO)
 {
 	myRHI->SetVertexBuffer(aMesh.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
 	myRHI->SetIndexBuffer(aMesh.GetIndexBuffer());
@@ -360,48 +243,20 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<M
 	{
 		if (aMaterialList.size() > element.MaterialIndex)
 		{
-			// Surely there is a better way
-			if (myCurrentPSO != GetPSO(PipelineStateType::Shadow) && myCurrentPSO != GetPSO(PipelineStateType::ShadowCube))
+			MaterialBuffer matBufferData = aMaterialList[element.MaterialIndex]->MaterialSettings();
+			GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, matBufferData);
+
+			if (!aOverrideMaterialPSO)
 			{
-				MaterialBuffer matBufferData = aMaterialList[element.MaterialIndex]->MaterialSettings();
-				GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, matBufferData);
-
-				switch (myCurrentDebugMode)
+				if (aMaterialList[element.MaterialIndex]->GetPSO())
 				{
-				case DebugMode::None:
-				{
-					if (aMaterialList[element.MaterialIndex]->GetPSO())
-					{
-						ChangePipelineState(aMaterialList[element.MaterialIndex]->GetPSO());
-					}
-					break;
+					ChangePipelineState(aMaterialList[element.MaterialIndex]->GetPSO());
 				}
-				case DebugMode::Unlit:
-					ChangePipelineState(PipelineStateType::Unlit);
-					break;
-				case DebugMode::Wireframe:
-					ChangePipelineState(PipelineStateType::Wireframe);
-					break;
-				case DebugMode::DebugVertexNormals:
-					ChangePipelineState(PipelineStateType::DebugVertexNormals);
-					break;
-				case DebugMode::DebugPixelNormals:
-					ChangePipelineState(PipelineStateType::DebugPixelNormals);
-					break;
-				case DebugMode::DebugTextureNormals:
-					ChangePipelineState(PipelineStateType::DebugTextureNormals);
-					break;
-				case DebugMode::DebugUVs:
-					ChangePipelineState(PipelineStateType::DebugUVs);
-					break;
-				default:
-					break;
-				}
-
-				SetTextureResource_PS(0, aMaterialList[element.MaterialIndex]->GetAlbedoTexture());
-				SetTextureResource_PS(1, aMaterialList[element.MaterialIndex]->GetNormalTexture());
-				SetTextureResource_PS(2, aMaterialList[element.MaterialIndex]->GetMaterialTexture());
 			}
+
+			SetTextureResource_PS(0, aMaterialList[element.MaterialIndex]->GetAlbedoTexture());
+			SetTextureResource_PS(1, aMaterialList[element.MaterialIndex]->GetNormalTexture());
+			SetTextureResource_PS(2, aMaterialList[element.MaterialIndex]->GetMaterialTexture());
 		}
 
 		myRHI->DrawIndexed(element.IndexOffset, element.NumIndices);
@@ -416,14 +271,12 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<M
 
 void GraphicsEngine::RenderSprite()
 {
-	ChangePipelineState(PipelineStateType::Sprite);
 	myRHI->SetPrimitiveTopology(Topology::POINTLIST);
 	myRHI->Draw(1);
 }
 
 void GraphicsEngine::RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsigned aLineAmount)
 {
-	ChangePipelineState(PipelineStateType::DebugLine);
 	myRHI->SetVertexBuffer(aDynamicBuffer.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
 	myRHI->SetPrimitiveTopology(Topology::POINTLIST);
 	myRHI->Draw(aLineAmount);

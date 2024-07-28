@@ -1,13 +1,14 @@
 #pragma once
 #include "GraphicsCommandBase.h"
-#include "Graphics/GraphicsEngine/PipelineStateType.h"
+
+struct PipelineStateObject;
 
 struct ChangePipelineState : public GraphicsCommandBase
 {
 public:
-    ChangePipelineState(PipelineStateType aPipelineStateType);
+    ChangePipelineState(std::shared_ptr<PipelineStateObject> aPipelineStateObject);
     void Execute() override;
     void Destroy() override;
 private:
-    PipelineStateType myPipelineStateType;
+    std::shared_ptr<PipelineStateObject> myPipelineStateObject;
 };

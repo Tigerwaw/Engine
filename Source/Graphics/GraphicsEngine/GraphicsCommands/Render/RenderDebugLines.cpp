@@ -2,6 +2,7 @@
 #include "RenderDebugLines.h"
 #include "GraphicsEngine/Objects/DynamicVertexBuffer.h"
 #include "GraphicsEngine/Objects/DebugLineVertex.h"
+#include "AssetManager/AssetManager.h"
 
 RenderDebugLines::RenderDebugLines(std::vector<DebugLineVertex> aLineVertices, std::shared_ptr<DynamicVertexBuffer> aLineBuffer)
 {
@@ -11,6 +12,7 @@ RenderDebugLines::RenderDebugLines(std::vector<DebugLineVertex> aLineVertices, s
 
 void RenderDebugLines::Execute()
 {	
+	GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("PSOs/DebugLine.json")->pso);
 	GraphicsEngine::Get().UpdateDynamicVertexBuffer(myLineVertices, *myLineBuffer);
 	GraphicsEngine::Get().RenderDebugLines(*myLineBuffer, static_cast<unsigned>(myLineVertices.size()));
 }

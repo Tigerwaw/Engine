@@ -28,6 +28,11 @@ RenderAnimatedMesh::RenderAnimatedMesh(std::shared_ptr<AnimatedModel> aModel)
     }
 }
 
+RenderAnimatedMesh::RenderAnimatedMesh(std::shared_ptr<AnimatedModel> aModel, std::shared_ptr<PipelineStateObject> aPSOoverride) : RenderAnimatedMesh(aModel)
+{
+    psoOverride = aPSOoverride;
+}
+
 void RenderAnimatedMesh::Execute()
 {
     ObjectBuffer objBufferData;
@@ -40,7 +45,15 @@ void RenderAnimatedMesh::Execute()
     memcpy_s(animBufferData.JointTransforms, sizeof(CU::Matrix4x4<float>) * 128, jointTransforms.data(), sizeof(CU::Matrix4x4<float>) * 128);
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::AnimationBuffer, animBufferData);
 
-    GraphicsEngine::Get().RenderMesh(*mesh, materialList);
+    if (psoOverride)
+    {
+        GraphicsEngine::Get().ChangePipelineState(psoOverride);
+        GraphicsEngine::Get().RenderMesh(*mesh, materialList, true);
+    }
+    else
+    {
+        GraphicsEngine::Get().RenderMesh(*mesh, materialList);
+    }
 }
 
 void RenderAnimatedMesh::Destroy()

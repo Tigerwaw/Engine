@@ -190,7 +190,6 @@
     <ClInclude Include="Objects\DebugLineVertex.h" />
     <ClInclude Include="Objects\DynamicVertexBuffer.h" />
     <ClInclude Include="Objects\Material.h" />
-    <ClInclude Include="PipelineStateType.h" />
     <ClInclude Include="Objects\Animation.h" />
     <ClInclude Include="Objects\ConstantBuffers\AnimationBuffer.h" />
     <ClInclude Include="Objects\ConstantBuffers\FrameBuffer.h" />

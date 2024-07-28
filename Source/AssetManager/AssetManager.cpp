@@ -4,6 +4,7 @@
 #include "Asset.h"
 #include "GraphicsEngine.h"
 #include "Graphics/GraphicsEngine/Objects/Vertex.h"
+#include "Graphics/GraphicsEngine/Objects/DebugLineVertex.h"
 
 #include <iostream>
 #include <fstream>
@@ -125,19 +126,27 @@ void AssetManager::RegisterAllAssetsInDirectory()
         }
     }
 
-    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "Materials/"))
-    {
-        if (file.path().has_filename() && file.path().has_extension())
-        {
-            RegisterMaterialAsset(file.path());
-        }
-    }
-
     for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "Shaders/"))
     {
         if (file.path().has_filename() && file.path().has_extension())
         {
             RegisterShaderAsset(file.path());
+        }
+    }
+
+    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "PSOs/"))
+    {
+        if (file.path().has_filename() && file.path().has_extension())
+        {
+            RegisterPSOAsset(file.path());
+        }
+    }
+
+    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "Materials/"))
+    {
+        if (file.path().has_filename() && file.path().has_extension())
+        {
+            RegisterMaterialAsset(file.path());
         }
     }
 }
@@ -282,7 +291,7 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
     asset->material->SetAlbedoTexture(GetAsset<TextureAsset>("Default_C")->texture);
     asset->material->SetNormalTexture(GetAsset<TextureAsset>("Default_N")->texture);
     asset->material->SetMaterialTexture(GetAsset<TextureAsset>("Default_M")->texture);
-    asset->material->SetPSO(GraphicsEngine::Get().GetPSO(PipelineStateType::Default));
+    asset->material->SetPSO(GraphicsEngine::Get().GetDefaultPSO());
 
     std::ifstream path(aPath);
     nl::json data = nl::json();
@@ -300,22 +309,7 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
 
     if (data.contains("Type"))
     {
-        if (data["Type"].get<std::string>() == "PBR")
-        {
-            asset->material->SetPSO(GraphicsEngine::Get().GetPSO(PipelineStateType::PBR));
-        }
-        else if (data["Type"].get<std::string>() == "Unlit")
-        {
-            asset->material->SetPSO(GraphicsEngine::Get().GetPSO(PipelineStateType::Unlit));
-        }
-        else if (data["Type"].get<std::string>() == "Gizmo")
-        {
-            asset->material->SetPSO(GraphicsEngine::Get().GetPSO(PipelineStateType::Gizmo));
-        }
-        else if (data["Type"].get<std::string>() == "Wireframe")
-        {
-            asset->material->SetPSO(GraphicsEngine::Get().GetPSO(PipelineStateType::Wireframe));
-        }
+        asset->material->SetPSO(GetAsset<PSOAsset>("PSOs/" + data["Type"].get<std::string>() + ".json")->pso);
     }
 
     if (data.contains("AlbedoTint"))
@@ -396,6 +390,116 @@ bool AssetManager::RegisterShaderAsset(const std::filesystem::path& aPath)
     myAssets.emplace(assetPath, asset);
 
     LOG(AssetManagerLog, Log, "Registered shader asset {}", asset->path.filename().string());
+    return true;
+}
+
+bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
+{
+    if (!ValidateAsset(aPath)) return false;
+
+    std::filesystem::path assetPath = MakeRelative(aPath);
+    const std::string ext = assetPath.extension().string();
+    if (!ext.ends_with("json")) return false;
+
+    std::shared_ptr<PSOAsset> asset = std::make_shared<PSOAsset>();
+
+    std::ifstream path(aPath);
+    nl::json data = nl::json();
+
+    try
+    {
+        data = nl::json::parse(path);
+    }
+    catch (nl::json::parse_error e)
+    {
+        LOG(AssetManagerLog, Error, "Failed to read pso asset {}, {}", asset->path.filename().string(), e.what());
+        return false;
+    }
+    path.close();
+
+    std::string name;
+    std::vector<VertexElementDesc> inputLayoutDefinition;
+    unsigned vertexStride = 0;
+    std::wstring vsPath;
+    std::shared_ptr<Shader> vsShader;
+    std::shared_ptr<Shader> gsShader;
+    std::shared_ptr<Shader> psShader;
+    std::unordered_map<unsigned, std::string> samplers;
+    unsigned fillMode = 3;
+    unsigned cullMode = 3;
+    bool antiAliasedLine = false;
+    
+    name = assetPath.stem().string();
+
+    if (data.contains("VertexType"))
+    {
+        if (data["VertexType"].get<std::string>() == "Default")
+        {
+            inputLayoutDefinition = Vertex::InputLayoutDefinition;
+            vertexStride = sizeof(Vertex);
+        }
+        else if (data["VertexType"].get<std::string>() == "DebugLine")
+        {
+            inputLayoutDefinition = DebugLineVertex::InputLayoutDefinition;
+            vertexStride = sizeof(DebugLineVertex);
+        }
+    }
+
+    if (data.contains("VertexShader") && data["VertexShader"] != "")
+    {
+        vsPath = ("../../Assets/" / GetAsset<ShaderAsset>("Shaders/" + data["VertexShader"].get<std::string>())->path).wstring();
+        vsShader = GetAsset<ShaderAsset>("Shaders/" + data["VertexShader"].get<std::string>())->shader;
+    }
+
+    if (data.contains("GeometryShader") && data["GeometryShader"] != "")
+    {
+        gsShader = GetAsset<ShaderAsset>("Shaders/" + data["GeometryShader"].get<std::string>())->shader;
+    }
+
+    if (data.contains("PixelShader") && data["PixelShader"] != "")
+    {
+        psShader = GetAsset<ShaderAsset>("Shaders/" + data["PixelShader"].get<std::string>())->shader;
+    }
+
+    if (data.contains("RasterizerDesc"))
+    {
+        if (data["RasterizerDesc"].contains("FillMode"))
+        {
+            fillMode = data["RasterizerDesc"]["FillMode"].get<unsigned>();
+        }
+
+        if (data["RasterizerDesc"].contains("CullMode"))
+        {
+            cullMode = data["RasterizerDesc"]["CullMode"].get<unsigned>();
+        }
+
+        if (data["RasterizerDesc"].contains("AntialiasedLine"))
+        {
+            antiAliasedLine = data["RasterizerDesc"]["AntialiasedLine"].get<bool>();
+        }
+    }
+
+    if (data.contains("Samplers"))
+    {
+        for (auto& sampler : data["Samplers"].items())
+        {
+            samplers.emplace(sampler.value().get<unsigned>(), sampler.key());
+        }
+    }
+    
+    asset->pso = std::make_shared<PipelineStateObject>();
+    if (!GraphicsEngine::Get().CreatePSO(asset->pso, name, inputLayoutDefinition, vertexStride, vsPath,
+                                         vsShader, gsShader, psShader, &samplers, fillMode, cullMode, antiAliasedLine))
+    {
+        LOG(AssetManagerLog, Error, "Failed to create pso asset {}", asset->path.filename().string());
+        return false;
+    }
+
+    asset->path = assetPath;
+    asset->name = assetPath.stem();
+    myAssets.emplace(assetPath, asset);
+
+    LOG(AssetManagerLog, Log, "Registered PSO asset {}", asset->path.filename().string());
     return true;
 }
 
