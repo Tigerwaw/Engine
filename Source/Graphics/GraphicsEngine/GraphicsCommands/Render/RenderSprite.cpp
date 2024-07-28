@@ -24,7 +24,7 @@ void RenderSprite::Execute()
     spriteBufferData.IsScreenSpace = true;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::SpriteBuffer, spriteBufferData);
 
-    GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("PSOs/Sprite.json")->pso);
+    GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("Sprite")->pso);
     GraphicsEngine::Get().SetTextureResource_PS(0, *texture);
     GraphicsEngine::Get().RenderSprite();
     GraphicsEngine::Get().ClearTextureResource_PS(0);

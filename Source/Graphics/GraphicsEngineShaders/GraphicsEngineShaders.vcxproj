@@ -263,7 +263,7 @@
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
       <VariableName>BuiltIn_%(Filename)_ByteCode</VariableName>
-      <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput>$(SolutionDir)Assets\EngineAssets\Shaders\%(Filename).cso</ObjectFileOutput>
       <HeaderFileOutput>$(SolutionDir)Intermediate\Shaders\CompiledShaderHeaders\%(Filename).h</HeaderFileOutput>
     </FxCompile>
   </ItemDefinitionGroup>
@@ -289,7 +289,7 @@
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
       <VariableName>BuiltIn_%(Filename)_ByteCode</VariableName>
-      <ObjectFileOutput>$(SolutionDir)Assets\Shaders\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput>$(SolutionDir)Assets\EngineAssets\Shaders\%(Filename).cso</ObjectFileOutput>
       <HeaderFileOutput>$(SolutionDir)Intermediate\Shaders\CompiledShaderHeaders\%(Filename).h</HeaderFileOutput>
     </FxCompile>
   </ItemDefinitionGroup>

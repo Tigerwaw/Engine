@@ -91,6 +91,22 @@ void AssetManager::RegisterEngineAssets()
         }
     }
 
+    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "EngineAssets/Shaders/"))
+    {
+        if (file.path().has_filename() && file.path().has_extension())
+        {
+            RegisterShaderAsset(file.path());
+        }
+    }
+
+    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "EngineAssets/PSOs/"))
+    {
+        if (file.path().has_filename() && file.path().has_extension())
+        {
+            RegisterPSOAsset(file.path());
+        }
+    }
+
     for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "EngineAssets/Materials/"))
     {
         if (file.path().has_filename() && file.path().has_extension())
@@ -123,22 +139,6 @@ void AssetManager::RegisterAllAssetsInDirectory()
         if (file.path().has_filename() && file.path().has_extension())
         {
             RegisterTextureAsset(file.path());
-        }
-    }
-
-    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "Shaders/"))
-    {
-        if (file.path().has_filename() && file.path().has_extension())
-        {
-            RegisterShaderAsset(file.path());
-        }
-    }
-
-    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "PSOs/"))
-    {
-        if (file.path().has_filename() && file.path().has_extension())
-        {
-            RegisterPSOAsset(file.path());
         }
     }
 
@@ -309,7 +309,7 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
 
     if (data.contains("Type"))
     {
-        asset->material->SetPSO(GetAsset<PSOAsset>("PSOs/" + data["Type"].get<std::string>() + ".json")->pso);
+        asset->material->SetPSO(GetAsset<PSOAsset>(data["Type"].get<std::string>())->pso);
     }
 
     if (data.contains("AlbedoTint"))
@@ -387,7 +387,7 @@ bool AssetManager::RegisterShaderAsset(const std::filesystem::path& aPath)
 
     asset->path = assetPath;
     asset->name = assetPath.stem();
-    myAssets.emplace(assetPath, asset);
+    myAssets.emplace(assetPath.filename(), asset);
 
     LOG(AssetManagerLog, Log, "Registered shader asset {}", asset->path.filename().string());
     return true;
@@ -447,18 +447,18 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
 
     if (data.contains("VertexShader") && data["VertexShader"] != "")
     {
-        vsPath = ("../../Assets/" / GetAsset<ShaderAsset>("Shaders/" + data["VertexShader"].get<std::string>())->path).wstring();
-        vsShader = GetAsset<ShaderAsset>("Shaders/" + data["VertexShader"].get<std::string>())->shader;
+        vsPath = (GetContentRoot() / GetAsset<ShaderAsset>(data["VertexShader"].get<std::string>())->path).wstring();
+        vsShader = GetAsset<ShaderAsset>(data["VertexShader"].get<std::string>())->shader;
     }
 
     if (data.contains("GeometryShader") && data["GeometryShader"] != "")
     {
-        gsShader = GetAsset<ShaderAsset>("Shaders/" + data["GeometryShader"].get<std::string>())->shader;
+        gsShader = GetAsset<ShaderAsset>(data["GeometryShader"].get<std::string>())->shader;
     }
 
     if (data.contains("PixelShader") && data["PixelShader"] != "")
     {
-        psShader = GetAsset<ShaderAsset>("Shaders/" + data["PixelShader"].get<std::string>())->shader;
+        psShader = GetAsset<ShaderAsset>(data["PixelShader"].get<std::string>())->shader;
     }
 
     if (data.contains("RasterizerDesc"))
@@ -497,9 +497,9 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
 
     asset->path = assetPath;
     asset->name = assetPath.stem();
-    myAssets.emplace(assetPath, asset);
+    myAssets.emplace(asset->name, asset);
 
-    LOG(AssetManagerLog, Log, "Registered PSO asset {}", asset->path.filename().string());
+    LOG(AssetManagerLog, Log, "Registered PSO asset {}", asset->name.string());
     return true;
 }
 

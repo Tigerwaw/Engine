@@ -36,7 +36,7 @@ void RenderDebugMesh::Execute()
     objBufferData.hasSkinning = false;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
-    GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("PSOs/Gizmo.json")->pso);
+    GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("Gizmo")->pso);
     GraphicsEngine::Get().RenderMesh(*mesh, materialList, true);
 }
 
