@@ -113,7 +113,7 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 	swapChainDesc.SampleDesc.Count = 1;
 	swapChainDesc.BufferCount = 2;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING | DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 	swapChainDesc.Windowed = true;
 
 	ComPtr<IDXGISwapChain> swapChain;
@@ -139,6 +139,8 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 		LOG(RhiLog, Error, "Failed to create Render Target View!");
 		return false;
 	}
+
+	SetObjectName(myBackBuffer->myRTV, "BackBuffer RTV");
 
 	RECT clientRect = {};
 	GetClientRect(aWindowHandle, &clientRect);
@@ -201,7 +203,6 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 	mySwapChain = swapChain;
 
 	SetObjectName(myContext, "Device Context");
-	SetObjectName(myBackBuffer->myRTV, "BackBuffer RTV");
 
 	CreateDefaultSamplerStates();
 
@@ -220,6 +221,97 @@ bool RenderHardwareInterface::InitializeImGui()
 void RenderHardwareInterface::Present() const
 {
 	mySwapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING);
+}
+
+void RenderHardwareInterface::SetResolution(float aNewWidth, float aNewHeight)
+{
+	myContext->OMSetRenderTargets(0, 0, 0);
+	myBackBuffer->myRTV->Release();
+	myDepthBuffer->myDSV->Release();
+	HRESULT result = mySwapChain->ResizeBuffers(0, static_cast<UINT>(aNewWidth), static_cast<UINT>(aNewHeight), DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING);
+	if (FAILED(result))
+	{
+		LOG(RhiLog, Error, "Failed to resize swapchain buffers!");
+		return;
+	}
+
+	ComPtr<ID3D11Texture2D> backBufferTexture;
+	result = mySwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), &backBufferTexture);
+	if (FAILED(result))
+	{
+		LOG(RhiLog, Error, "Failed to retrieve back buffer!");
+		return;
+	}
+
+
+	result = myDevice->CreateRenderTargetView(backBufferTexture.Get(), nullptr, myBackBuffer->myRTV.GetAddressOf());
+	if (FAILED(result))
+	{
+		LOG(RhiLog, Error, "Failed to create Render Target View!");
+		return;
+	}
+
+	SetObjectName(myBackBuffer->myRTV, "BackBuffer RTV");
+
+	myBackBuffer->myViewport = { 0, 0, aNewWidth, aNewHeight, 0, 1 };
+
+	D3D11_VIEWPORT viewport = {};
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = myBackBuffer->myViewport[2];
+	viewport.Height = myBackBuffer->myViewport[3];
+	viewport.MinDepth = myBackBuffer->myViewport[4];
+	viewport.MaxDepth = myBackBuffer->myViewport[5];
+	myContext->RSSetViewports(1, &viewport);
+
+
+	D3D11_TEXTURE2D_DESC depthDesc = {};
+	depthDesc.Width = static_cast<unsigned>(aNewWidth);
+	depthDesc.Height = static_cast<unsigned>(aNewHeight);
+	depthDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+	depthDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthDesc.CPUAccessFlags = 0;
+	depthDesc.MiscFlags = 0;
+	depthDesc.MipLevels = 1;
+	depthDesc.ArraySize = 1;
+	depthDesc.SampleDesc.Count = 1;
+	depthDesc.SampleDesc.Quality = 0;
+
+	ComPtr<ID3D11Texture2D> depthTexture;
+	result = myDevice->CreateTexture2D(&depthDesc, nullptr, depthTexture.GetAddressOf());
+	if (FAILED(result))
+	{
+		LOG(RhiLog, Error, "Failed to create depth buffer!");
+		return;
+	}
+
+	SetObjectName(depthTexture, "DepthBuffer_T2D");
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+
+	result = myDevice->CreateDepthStencilView(depthTexture.Get(), &dsvDesc, myDepthBuffer->myDSV.GetAddressOf());
+	if (FAILED(result))
+	{
+		LOG(RhiLog, Error, "Failed to create depth stencil view!");
+		return;
+	}
+
+	SetObjectName(myDepthBuffer->myDSV, "DepthBuffer_DSV");
+
+	LOG(RhiLog, Log, "Updated resolution to {}, {}", aNewWidth, aNewHeight);
+}
+
+void RenderHardwareInterface::SetWindowSize(float aNewWidth, float aNewHeight)
+{
+	DXGI_MODE_DESC modeDesc = {};
+	modeDesc.Width = static_cast<UINT>(aNewWidth);
+	modeDesc.Height = static_cast<UINT>(aNewHeight);
+	mySwapChain->ResizeTarget(&modeDesc);
+
+	LOG(RhiLog, Log, "Updated window size to {}, {}", aNewWidth, aNewHeight);
 }
 
 bool RenderHardwareInterface::CreateIndexBuffer(std::string_view aName, const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer)

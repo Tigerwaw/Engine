@@ -1,9 +1,9 @@
 #include "GraphicsEngine.pch.h"
 #include "GraphicsEngine.h"
 
-#include "GameEngine/EngineSettings.h"
 #include "Logger\Logger.h"
 
+#include "GameEngine/Engine.h"
 #include "GraphicsEngine/Objects/Shader.h"
 #include "GraphicsEngine/Objects/Vertex.h"
 #include "GraphicsEngine/Objects/DebugLineVertex.h"
@@ -54,7 +54,7 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 
 		defaultPSO.VertexStride = sizeof(Vertex);
 
-		std::wstring root = EngineSettings::GetContentRootPath().wstring();
+		std::wstring root = Engine::GetInstance().GetContentRootPath().wstring();
 		if (!myRHI->CreateInputLayout(defaultPSO.InputLayout, Vertex::InputLayoutDefinition, root + L"EngineAssets/Shaders/Mesh_VS.cso"))
 		{
 			LOG(GraphicsLog, Error, "Failed to load default input layout!");
@@ -115,6 +115,16 @@ void GraphicsEngine::RenderFrame()
 void GraphicsEngine::EndFrame()
 {
 	myRHI->Present();
+}
+
+void GraphicsEngine::SetResolution(float aNewWidth, float aNewHeight)
+{
+	myRHI->SetResolution(aNewWidth, aNewHeight);
+}
+
+void GraphicsEngine::SetWindowSize(float aNewWidth, float aNewHeight)
+{
+	myRHI->SetWindowSize(aNewWidth, aNewHeight);
 }
 
 void GraphicsEngine::ChangePipelineState(const std::shared_ptr<PipelineStateObject> aNewPSO)
@@ -189,7 +199,7 @@ bool GraphicsEngine::CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, std::s
 	aPSO->GeometryShader = aGSshader;
 	aPSO->PixelShader = aPSshader;
 
-	if (aFillMode == 3 && aCullMode && aAntiAliasedLine == false)
+	if (!(aFillMode == 3 && aCullMode && aAntiAliasedLine == false))
 	{
 		D3D11_RASTERIZER_DESC rastDesc = {};
 		rastDesc.FillMode = static_cast<D3D11_FILL_MODE>(aFillMode);

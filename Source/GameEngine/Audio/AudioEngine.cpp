@@ -1,5 +1,5 @@
 #include "AudioEngine.h"
-#include "GameEngine/EngineSettings.h"
+#include "GameEngine/Engine.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
 
@@ -34,7 +34,7 @@ void AudioEngine::Initialize()
         return;
     }
 
-    myContentRoot = EngineSettings::GetContentRootPath().string() + "AudioBanks/";
+    myContentRoot = Engine::GetInstance().GetContentRootPath().string() + "AudioBanks/";
     AUDIOLOG(Log, "Successfully initialized fmod system");
 }
 

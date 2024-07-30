@@ -116,9 +116,6 @@
     <ClInclude Include="ComponentSystem\Components\Graphics\AnimatedModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EngineSettings.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ComponentSystem\Components\Graphics\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>

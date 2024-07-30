@@ -96,11 +96,8 @@ int GuardedMain()
     MoveWindow(consoleWindow, consoleSize.left, consoleSize.top, 1280, 720, true);
 #endif
 
-    SIZE windowSize = { static_cast<long>(Engine::GetInstance().GetResolution().x), static_cast<long>(Engine::GetInstance().GetResolution().y) };
-    LPCWSTR windowTitle = L"TGP Modelviewer";
-
     ModelViewer MV;
-    MV.Initialize(windowSize, WinProc, windowTitle);
+    MV.Initialize(WinProc);
     return MV.Run();
 }
 

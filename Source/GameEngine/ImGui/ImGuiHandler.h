@@ -10,5 +10,10 @@ public:
     void Render();
     void Update();
 private:
+    void Settings();
+    void Lighting();
+    void Performance();
+    void Controls();
+    void WindowSize();
 };
 

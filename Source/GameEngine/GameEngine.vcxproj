@@ -213,7 +213,6 @@
     <ClInclude Include="DebugDrawer\DebugDrawer.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="EngineDefines.h" />
-    <ClInclude Include="EngineSettings.h" />
     <ClInclude Include="GlobalEventHandler\GlobalEventHandler.h" />
     <ClInclude Include="GlobalEventHandler\GlobalEventSubscriber.hpp" />
     <ClInclude Include="GlobalEventHandler\GlobalEventType.h" />

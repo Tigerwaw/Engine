@@ -56,6 +56,9 @@ public:
 	void RenderFrame();
 	void EndFrame();
 
+	void SetResolution(float aNewWidth, float aNewHeight);
+	void SetWindowSize(float aNewWidth, float aNewHeight);
+
 	template<typename BufferData>
 	bool UpdateAndSetConstantBuffer(ConstantBufferType aBufferType, const BufferData& aDataBlock);
 

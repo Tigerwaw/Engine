@@ -24,7 +24,6 @@ DEFINE_LOG_CATEGORY(LogModelViewer);
 #include "Asset.h"
 
 #include "GameEngine/Engine.h"
-#include "GameEngine/EngineSettings.h"
 #include "GameEngine/Time/Timer.h"
 #include "GameEngine/Input/InputHandler.h"
 #include "GameEngine/SceneHandler/SceneHandler.h"
@@ -58,8 +57,12 @@ void ModelViewer::Shutdown()
 	Engine::GetInstance().Destroy();
 }
 
-bool ModelViewer::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR aWindowTitle)
+bool ModelViewer::Initialize(WNDPROC aWindowProcess)
 {
+	Engine::GetInstance();
+
+	SIZE windowSize = { static_cast<long>(Engine::GetInstance().GetWindowSize().x), static_cast<long>(Engine::GetInstance().GetWindowSize().y) };
+	LPCWSTR windowTitle = L"ModelViewer";
 	constexpr LPCWSTR windowClassName = L"ModelViewerMainWindow";
 
 	// First we create our Window Class
@@ -70,23 +73,34 @@ bool ModelViewer::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR a
 	windowClass.lpszClassName = windowClassName;
 	RegisterClass(&windowClass);
 
-	LONG posX = (GetSystemMetrics(SM_CXSCREEN) - aWindowSize.cx) / 2;
+	LONG posX = (GetSystemMetrics(SM_CXSCREEN) - windowSize.cx) / 2;
 	if (posX < 0)
 		posX = 0;
 
-	LONG posY = (GetSystemMetrics(SM_CYSCREEN) - aWindowSize.cy) / 2;
+	LONG posY = (GetSystemMetrics(SM_CYSCREEN) - windowSize.cy) / 2;
 	if (posY < 0)
 		posY = 0;
 
+	long flags;
+
+	if (Engine::GetInstance().GetIsBorderless())
+	{
+		flags = WS_POPUP;
+	}
+	else
+	{
+		flags = WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME | WS_POPUP;
+	}
+
 	// Then we use the class to create our window
 	myMainWindowHandle = CreateWindow(
-		windowClassName,                                // Classname
-		aWindowTitle,                                   // Window Title
-		WS_OVERLAPPEDWINDOW | WS_POPUP,                 // Flags
+		windowClassName,		// Classname
+		windowTitle,			// Window Title
+		flags,					// Flags
 		posX,
 		posY,
-		aWindowSize.cx,
-		aWindowSize.cy,
+		windowSize.cx,
+		windowSize.cy,
 		nullptr, nullptr, nullptr,
 		nullptr
 	);
@@ -99,9 +113,7 @@ bool ModelViewer::Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR a
 		return false;
 	}
 
-	MVLOG(Log, "Initializing Game Engine...");
-	Engine::GetInstance();
-	AssetManager::Get().Initialize(EngineSettings::GetContentRootPath());
+	AssetManager::Get().Initialize(Engine::GetInstance().GetContentRootPath());
 
 #ifdef _DEBUG
 	Engine::GetInstance().GetImGuiHandler().Initialize(myMainWindowHandle);
@@ -173,9 +185,11 @@ int ModelViewer::Run()
 	MSG msg;
 	ZeroMemory(&msg, sizeof(MSG));
 
-	myIsRunning = true;
+	bool isRunning = true;
+	bool isPaused = false;
+	bool isResizing = false;
 
-	while (myIsRunning)
+	while (isRunning)
 	{
 		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
@@ -189,11 +203,45 @@ int ModelViewer::Run()
 
 			if (msg.message == WM_QUIT)
 			{
-				myIsRunning = false;
+				isRunning = false;
+			}
+
+			if (msg.message == WM_ACTIVATE)
+			{
+				if (LOWORD(msg.wParam) == WA_INACTIVE)
+				{
+					isPaused = true;
+				}
+				else
+				{
+					isPaused = false;
+				}
+			}
+
+			if (msg.message == WM_ENTERSIZEMOVE)
+			{
+				isPaused = true;
+				isResizing = true;
+			}
+
+			if (msg.message == WM_EXITSIZEMOVE)
+			{
+				isPaused = false;
+				isResizing = false;
+
+				RECT clientRect = {};
+				GetClientRect(myMainWindowHandle, &clientRect);
+				const float clientWidth = static_cast<float>(clientRect.right - clientRect.left);
+				const float clientHeight = static_cast<float>(clientRect.bottom - clientRect.top);
+
+				GraphicsEngine::Get().SetResolution(clientWidth, clientHeight);
+				GraphicsEngine::Get().SetWindowSize(clientWidth, clientHeight);
 			}
 
 			Engine::GetInstance().GetInputHandler().UpdateEvents(msg.message, msg.wParam, msg.lParam);
 		}
+
+		if (isPaused) continue;
 
 		Engine::GetInstance().GetImGuiHandler().BeginFrame();
 		GraphicsEngine::Get().BeginFrame();

@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
+#include <filesystem>
 #include "Math/Vector.hpp"
 
 namespace CU = CommonUtilities;
@@ -33,7 +34,15 @@ public:
     AudioEngine& GetAudioEngine() { return *myAudioEngine; }
     ImGuiHandler& GetImGuiHandler() { return *myImGuiHandler; }
 
+    const std::filesystem::path GetContentRootPath();
+
+    void SetResolution(float aWidth, float aHeight);
+    void SetWindowSize(float aWidth, float aHeight);
+    void ToggleFullscreen(bool aIsFullscreen);
     const CU::Vector2f& GetResolution() const { return myResolution; }
+    const CU::Vector2f& GetWindowSize() const { return myWindowSize; }
+    const bool& GetIsFullscreen() const { return myIsFullscreen; }
+    const bool& GetIsBorderless() const { return myIsBorderless; }
 
     // Temp kinda
     int RamUsage = 0;
@@ -55,5 +64,10 @@ private:
     std::unique_ptr<AudioEngine> myAudioEngine;
     std::unique_ptr<ImGuiHandler> myImGuiHandler;
 
+    std::filesystem::path myContentRoot;
+
     CU::Vector2f myResolution;
+    CU::Vector2f myWindowSize;
+    bool myIsFullscreen;
+    bool myIsBorderless;
 };

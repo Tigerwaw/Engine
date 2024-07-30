@@ -65,7 +65,7 @@ public:
 	ModelViewer();
 	void Shutdown();
 
-	bool Initialize(SIZE aWindowSize, WNDPROC aWindowProcess, LPCWSTR aWindowTitle);
+	bool Initialize(WNDPROC aWindowProcess);
 	void InitModelViewer();
 	int Run();
 
@@ -74,6 +74,5 @@ private:
 	void InitLights();
 	void InitGameObjects();
 
-	bool myIsRunning = false;
 	HWND myMainWindowHandle = nullptr;
 };
