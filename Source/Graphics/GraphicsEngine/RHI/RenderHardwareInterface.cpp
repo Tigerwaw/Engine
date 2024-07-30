@@ -314,6 +314,13 @@ void RenderHardwareInterface::SetWindowSize(float aNewWidth, float aNewHeight)
 	LOG(RhiLog, Log, "Updated window size to {}, {}", aNewWidth, aNewHeight);
 }
 
+void RenderHardwareInterface::MaximizeWindowSize()
+{
+	LONG posX = GetSystemMetrics(SM_CXSCREEN);
+	LONG posY = GetSystemMetrics(SM_CYSCREEN);
+	SetWindowSize(static_cast<float>(posX), static_cast<float>(posY));
+}
+
 bool RenderHardwareInterface::CreateIndexBuffer(std::string_view aName, const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer)
 {
 	D3D11_BUFFER_DESC indexBufferDesc = {};

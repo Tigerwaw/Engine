@@ -34,6 +34,7 @@ public:
 
 	void SetResolution(float aNewWidth, float aNewHeight);
 	void SetWindowSize(float aNewWidth, float aNewHeight);
+	void MaximizeWindowSize();
 
 	template <typename VertexType>
 	bool CreateVertexBuffer(std::string_view aName, const std::vector<VertexType>& aVertexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer) const;

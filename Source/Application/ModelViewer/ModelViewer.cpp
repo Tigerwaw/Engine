@@ -65,6 +65,11 @@ bool ModelViewer::Initialize(WNDPROC aWindowProcess)
 	LPCWSTR windowTitle = L"ModelViewer";
 	constexpr LPCWSTR windowClassName = L"ModelViewerMainWindow";
 
+	if (Engine::GetInstance().GetIsFullscreen())
+	{
+		windowSize = { GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };
+	}
+
 	// First we create our Window Class
 	WNDCLASS windowClass = {};
 	windowClass.style = CS_VREDRAW | CS_HREDRAW | CS_OWNDC;
@@ -112,6 +117,9 @@ bool ModelViewer::Initialize(WNDPROC aWindowProcess)
 		MVLOG(Log, "Failed to Initialize Graphics Engine...");
 		return false;
 	}
+
+	CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+	GraphicsEngine::Get().SetResolution(resolution.x, resolution.y);
 
 	AssetManager::Get().Initialize(Engine::GetInstance().GetContentRootPath());
 
@@ -261,7 +269,8 @@ void ModelViewer::InitCamera()
 	std::shared_ptr<GameObject> camera = std::make_shared<GameObject>();
 	camera->AddComponent<Transform>(CU::Vector3f(0, 600.0f, -600.0f), CU::Vector3f(45.0f, 0, 0));
 	camera->SetName("MainCamera");
-	camera->AddComponent<Camera>(90.0f, 1.0f, 10000.0f, CU::Vector2<float>(1920, 1080));
+	CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+	camera->AddComponent<Camera>(90.0f, 1.0f, 10000.0f, CU::Vector2<float>(resolution.x, resolution.y));
 	camera->AddComponent<FreecamController>(400.0f, 300.0f);
 	Engine::GetInstance().GetSceneHandler().Instantiate(camera);
 
@@ -313,6 +322,8 @@ void ModelViewer::InitLights()
 
 void ModelViewer::InitGameObjects()
 {
+	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/TestScene.json");
+
 	std::shared_ptr<GameObject> plane = std::make_shared<GameObject>();
 	plane->AddComponent<Transform>(CU::Vector3f(), CU::Vector3f(), CU::Vector3f(800.0f, 800.0f, 800.0f));
 	plane->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("PlanePrimitive")->mesh,

@@ -44,6 +44,8 @@ void ImGuiHandler::Destroy()
 #endif
 }
 
+
+#include <iostream>
 void ImGuiHandler::BeginFrame()
 {
 #ifdef _DEBUG
@@ -75,8 +77,9 @@ void ImGuiHandler::Settings()
 #ifdef _DEBUG
 	CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
 	ImGui::SetNextWindowPos({ 0.01f * windowSize.x, 0.02f * windowSize.y });
-	ImGui::SetNextWindowContentSize({ 0.16f * windowSize.x, 0.3f * windowSize.y });
-	ImGui::Begin("Modelviewer");
+	ImGui::SetNextWindowContentSize({ 0.16f * windowSize.x, 0.2f * windowSize.y });
+	bool open = true;
+	ImGui::Begin("Modelviewer", &open, ImGuiWindowFlags_NoSavedSettings);
 
 	ImGui::Checkbox("Use Viewculling", &GraphicsEngine::Get().UseViewCulling);
 	ImGui::Checkbox("Draw Gizmos", &GraphicsEngine::Get().DrawGizmos);
@@ -132,9 +135,10 @@ void ImGuiHandler::Lighting()
 {
 #ifdef _DEBUG
 	CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
-	ImGui::SetNextWindowPos({ 0.01f * windowSize.x, 0.16f * windowSize.y });
-	ImGui::SetNextWindowContentSize({ 0.16f * windowSize.x, 0.55f * windowSize.y });
-	ImGui::Begin("Lighting Settings");
+	ImGui::SetNextWindowPos({ 0.01f * windowSize.x, 0.26f * windowSize.y });
+	ImGui::SetNextWindowContentSize({ 0.16f * windowSize.x, 0.6f * windowSize.y });
+	bool open = true;
+	ImGui::Begin("Lighting Settings", &open, ImGuiWindowFlags_NoSavedSettings);
 	{
 		std::shared_ptr<GameObject> ambientLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("A_Light");
 		bool active = ambientLight->GetActive();
@@ -265,11 +269,12 @@ void ImGuiHandler::Performance()
 #ifdef _DEBUG
 	CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
 	ImGui::SetNextWindowPos({ 0.18f * windowSize.x, 0.02f * windowSize.y });
-	ImGui::SetNextWindowContentSize({ 0.16f * windowSize.x, 0.24f * windowSize.y });
-	ImGui::Begin("Performance Info");
-	ImGui::BeginTable("PerformanceTable", 2, 0, { 350.0f, 0 });
+	ImGui::SetNextWindowContentSize({ 0.16f * windowSize.x, 0.2f * windowSize.y });
+	bool open = true;
+	ImGui::Begin("Performance Info", &open, ImGuiWindowFlags_NoSavedSettings);
+	ImGui::BeginTable("PerformanceTable", 2, 0, { 0.18f * windowSize.x, 0 });
 	ImGuiStyle& style = ImGui::GetStyle();
-	style.CellPadding = { 20.0f, 4.0f };
+	style.CellPadding = { 0.001f * windowSize.x, 0.004f * windowSize.y };
 
 	// FPS
 	{
@@ -363,8 +368,9 @@ void ImGuiHandler::Controls()
 #ifdef _DEBUG
 	CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
 	ImGui::SetNextWindowPos({ 0.85f * windowSize.x, 0.02f * windowSize.y });
-	ImGui::SetNextWindowContentSize({ 0.24f * windowSize.x, 0.6f * windowSize.y });
-	ImGui::Begin("Controller Info");
+	ImGui::SetNextWindowContentSize({ 0.24f * windowSize.x, 0.24f * windowSize.y });
+	bool open = true;
+	ImGui::Begin("Controller Info", &open, ImGuiWindowFlags_NoSavedSettings);
 
 	InputHandler& cont = Engine::GetInstance().GetInputHandler();
 
@@ -493,8 +499,14 @@ void ImGuiHandler::WindowSize()
 #ifdef _DEBUG
 	CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
 	ImGui::SetNextWindowPos({ 0.85f * windowSize.x, 0.3f * windowSize.y });
-	ImGui::SetNextWindowContentSize({ 0.24f * windowSize.x, 0.48f * windowSize.y });
-	ImGui::Begin("Resolution");
+	ImGui::SetNextWindowContentSize({ 0.24f * windowSize.x, 0.24f * windowSize.y });
+	bool open = true;
+	ImGui::Begin("Resolution", &open, ImGuiWindowFlags_NoSavedSettings);
+
+	if (ImGui::Button("Set Maximized"))
+	{
+		GraphicsEngine::Get().MaximizeWindowSize();
+	}
 
 	if (ImGui::Button("1280 x 720"))
 	{

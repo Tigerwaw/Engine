@@ -6,7 +6,7 @@
   "RasterizerDesc": {
     "FillMode": 2,
     "CullMode": 1,
-    "AntialiasedLine": true
+    "AntialiasedLine": false
   },
   "Samplers": {
   }

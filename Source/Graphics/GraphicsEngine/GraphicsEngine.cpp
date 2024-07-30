@@ -20,6 +20,7 @@
 #include "GraphicsEngine/Objects/ConstantBuffers/SpriteBuffer.h"
 
 #include "GraphicsEngine/Objects/DynamicVertexBuffer.h"
+#include "AssetManager/AssetManager.h"
 
 #ifdef _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(GraphicsLog, GraphicsEngine, Verbose);
@@ -99,6 +100,7 @@ bool GraphicsEngine::InitializeImGui()
 
 void GraphicsEngine::BeginFrame()
 {
+	myLastFrameDrawcallAmount = myDrawcallAmount;
 	myDrawcallAmount = 0;
 	ChangePipelineState(myCurrentPSO);
 }
@@ -125,6 +127,11 @@ void GraphicsEngine::SetResolution(float aNewWidth, float aNewHeight)
 void GraphicsEngine::SetWindowSize(float aNewWidth, float aNewHeight)
 {
 	myRHI->SetWindowSize(aNewWidth, aNewHeight);
+}
+
+void GraphicsEngine::MaximizeWindowSize()
+{
+	myRHI->MaximizeWindowSize();
 }
 
 void GraphicsEngine::ChangePipelineState(const std::shared_ptr<PipelineStateObject> aNewPSO)
@@ -247,6 +254,17 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<M
 	myRHI->SetPrimitiveTopology(Topology::TRIANGLELIST);
 
 	SetTextureResource_PS(127, *myLUTtexture);
+
+	if (myCurrentDebugMode != DebugMode::None)
+	{
+		aOverrideMaterialPSO = true;
+
+		std::shared_ptr<PipelineStateObject> pso = AssetManager::Get().GetAsset<PSOAsset>(DebugModeNames[static_cast<int>(myCurrentDebugMode)])->pso;
+		if (myCurrentPSO != pso)
+		{
+			ChangePipelineState(pso);
+		}
+	}
 
 	for (const auto& element : aMesh.GetElements())
 	{

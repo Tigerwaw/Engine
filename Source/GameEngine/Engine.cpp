@@ -89,8 +89,7 @@ Engine::Engine()
     }
     catch (nl::json::parse_error e)
     {
-        std::cout << e.what();
-        ENGINELOG(Error, "Couldn't read application settings file!");
+        ENGINELOG(Error, "Couldn't read application settings file, {}!", e.what());
         return;
     }
     path.close();

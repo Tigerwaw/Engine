@@ -1,6 +1,9 @@
 #include "SceneHandler.h"
+#include "SceneLoader.h"
 #include "GameEngine/ComponentSystem/Scene.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
+
+#include "Engine.h"
 
 #include "Logger/Logger.h"
 
@@ -12,6 +15,11 @@ DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneHandler, SceneHandler, Warning);
 
 #define SCENEHANDLERLOG(Verbosity, Message, ...) LOG(LogSceneHandler, Verbosity, Message, ##__VA_ARGS__)
 DEFINE_LOG_CATEGORY(LogSceneHandler);
+
+SceneHandler::SceneHandler()
+{
+    mySceneLoader = std::make_shared<SceneLoader>();
+}
 
 void SceneHandler::UpdateActiveScene()
 {
@@ -45,9 +53,16 @@ void SceneHandler::CreateEmptyScene()
     }
 }
 
-void SceneHandler::LoadScene()
+void SceneHandler::LoadScene(std::string aSceneFilePath)
 {
+    std::shared_ptr<Scene> newScene = myLoadedScenes.emplace_back(std::make_shared<Scene>());
 
+    if (!myActiveScene)
+    {
+        myActiveScene = newScene;
+    }
+
+    mySceneLoader->LoadScene(newScene, Engine::GetInstance().GetContentRootPath() / aSceneFilePath);
 }
 
 void SceneHandler::UnloadScene(unsigned aSceneIndex)

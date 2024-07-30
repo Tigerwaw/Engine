@@ -58,6 +58,7 @@ public:
 
 	void SetResolution(float aNewWidth, float aNewHeight);
 	void SetWindowSize(float aNewWidth, float aNewHeight);
+	void MaximizeWindowSize();
 
 	template<typename BufferData>
 	bool UpdateAndSetConstantBuffer(ConstantBufferType aBufferType, const BufferData& aDataBlock);
@@ -102,7 +103,7 @@ public:
 
 	GraphicsCommandList& GetGraphicsCommandList() const { return *myCommandList; }
 
-	const unsigned GetDrawcallAmount() const { return myDrawcallAmount; }
+	const unsigned GetDrawcallAmount() const { return myLastFrameDrawcallAmount; }
 	const DebugMode GetCurrentDebugMode() const { return myCurrentDebugMode; }
 	void SetDebugMode(DebugMode aDebugMode) { myCurrentDebugMode = aDebugMode; }
 
@@ -137,6 +138,7 @@ private:
 	std::unique_ptr<GraphicsCommandList> myCommandList;
 
 	unsigned myDrawcallAmount = 0;
+	unsigned myLastFrameDrawcallAmount = 0;
 	DebugMode myCurrentDebugMode = DebugMode::None;
 };
 

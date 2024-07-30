@@ -1,0 +1,59 @@
+{
+  "GameObjects": [
+    {
+      "Name": "TestObject",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Arguments": [
+            [
+              250.0,
+              50.0,
+              20.0
+            ],
+            [
+              0.0,
+              90.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              1.0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "TestObject2",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Arguments": [
+            [
+              250.0,
+              50.0,
+              20.0
+            ],
+            [
+              0.0,
+              90.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              1.0
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+
+}

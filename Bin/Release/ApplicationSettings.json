@@ -1,13 +1,13 @@
 {
   "assetsDir": "../../Assets/",
   "resolution": {
-    "width": 1920,
-    "height": 1080
+    "width": 1600,
+    "height": 900
   },
   "windowSize": {
-    "width": 1920,
-    "height": 1080
+    "width": 1600,
+    "height": 900
   },
   "fullscreen": false,
-  "borderless": true
+  "borderless": false
 }

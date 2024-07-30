@@ -5,14 +5,16 @@
 
 class Scene;
 class GameObject;
+class SceneLoader;
 
 class SceneHandler
 {
 public:
+    SceneHandler();
     void UpdateActiveScene();
     void RenderActiveScene();
     void CreateEmptyScene();
-    void LoadScene();
+    void LoadScene(std::string aSceneFilePath);
     void UnloadScene(unsigned aLoadedSceneIndex);
     void ChangeActiveScene(unsigned aLoadedSceneIndex);
 
@@ -25,5 +27,6 @@ public:
 private:
     std::shared_ptr<Scene> myActiveScene;
     std::vector<std::shared_ptr<Scene>> myLoadedScenes;
+    std::shared_ptr<SceneLoader> mySceneLoader;
 };
 
