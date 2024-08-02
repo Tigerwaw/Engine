@@ -70,9 +70,5 @@ public:
 	int Run();
 
 private:
-	void InitCamera();
-	void InitLights();
-	void InitGameObjects();
-
 	HWND myMainWindowHandle = nullptr;
 };

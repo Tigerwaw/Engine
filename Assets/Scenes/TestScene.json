@@ -1,7 +1,91 @@
 {
   "GameObjects": [
     {
-      "Name": "TestObject",
+      "Name": "Plane",
+      "Active": true,
+      "Static": true,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 0.0, 0.0, 0.0 ],
+          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Scale": [ 800.0, 800.0, 800.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "PlanePrimitive",
+          "Materials": [
+            "DefaultMaterial"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Cube",
+      "Active": true,
+      "Static": true,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 200.0, 50.0, 0.0 ],
+          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Scale": [ 50.0, 50.0, 50.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "CubePrimitive",
+          "Materials": [
+            "DefaultMaterial"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Ramp",
+      "Active": true,
+      "Static": true,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 300.0, 50.0, 0.0 ],
+          "Rotation": [ 0.0, 45.0, 0.0 ],
+          "Scale": [ 50.0, 50.0, 50.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "RampPrimitive",
+          "Materials": [
+            "DefaultMaterial"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Chest",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -500.0, 0.0, 0.0 ],
+          "Rotation": [ 0.0, 180.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "Models/SM_Chest.fbx",
+          "Materials": [
+            "Materials/Chest.json"
+          ]
+        },
+        {
+          "Type": "Rotator",
+          "RotationPerSecond": [ 0.0, 35.0, 0.0 ]
+        }
+      ]
+    },
+    {
+      "Name": "ColorChecker",
       "Active": true,
       "Static": false,
       "Components": [
@@ -9,51 +93,330 @@
           "Type": "Transform",
           "Arguments": [
             [
-              250.0,
-              50.0,
-              20.0
+              100.0,
+              40.0,
+              0.0
             ],
             [
+              -90.0,
               0.0,
-              90.0,
               0.0
             ],
             [
               1.0,
               1.0,
               1.0
+            ]
+          ]
+        },
+        {
+          "Type": "Model",
+          "Arguments": [
+            "EngineAssets/Models/SM_Color_Checker.fbx",
+            "EngineAssets/Materials/ColorChecker.json"
+          ]
+        },
+        {
+          "Type": "Rotator",
+          "Arguments": [
+            [
+              0.0,
+              30.0,
+              0.0
             ]
           ]
         }
       ]
     },
     {
-      "Name": "TestObject2",
+      "Name": "MatballOne",
       "Active": true,
       "Static": false,
       "Components": [
         {
           "Type": "Transform",
-          "Arguments": [
-            [
-              250.0,
-              50.0,
-              20.0
-            ],
-            [
-              0.0,
-              90.0,
-              0.0
-            ],
-            [
-              1.0,
-              1.0,
-              1.0
-            ]
+          "Position": [ -100.0, 0.0, 0.0 ],
+          "Rotation": [ 0.0, -45.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "Models/TMA_Matball.fbx",
+          "Materials": [
+            "Materials/MatballOne.json",
+            "Materials/MatballTwo.json"
           ]
+        },
+        {
+          "Type": "Rotator",
+          "RotationPerSecond": [ 0.0, 35.0, 0.0 ]
+        }
+      ],
+      "Children": [
+        {
+          "Name": "MatballTwo",
+          "Active": true,
+          "Static": false,
+          "Components": [
+            {
+              "Type": "Transform",
+              "Position": [ -100.0, 0.0, 200.0 ],
+              "Rotation": [ 0.0, -45.0, 0.0 ],
+              "Scale": [ 1.0, 1.0, 1.0 ]
+            },
+            {
+              "Type": "Model",
+              "Model": "Models/TMA_Matball.fbx",
+              "Materials": [
+                "Materials/MatballTwo.json",
+                "Materials/MatballOne.json"
+              ]
+            },
+            {
+              "Type": "Rotator",
+              "RotationPerSecond": [ 0.0, -45.0, 0.0 ]
+            },
+            {
+              "Type": "AudioSource",
+              "AudioName": "TestMusic",
+              "IsOneShot": false,
+              "SourceType": 2,
+              "PlayOnStart": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "TgaBro",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -250.0, 0.0, 150.0 ],
+          "Rotation": [ 0.0, 180.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "AnimatedModel",
+          "Model": "Models/SK_C_TGA_Bro.fbx",
+          "Materials": [
+            "Materials/TgaBro.json"
+          ],
+          "AnimationLayers": [
+            {
+              "StartBone": "",
+              "Animations": [
+                {
+                  "Name": "Idle",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Brething.fbx",
+                  "Loop": true
+                },
+                {
+                  "Name": "Walk",
+                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Walk.fbx",
+                  "Loop": true,
+                  "Events": [
+                    {
+                      "EventType": 0,
+                      "Frame": 1
+                    },
+                    {
+                      "EventType": 0,
+                      "Frame": 17
+                    }
+                  ]
+                },
+                {
+                  "Name": "Run",
+                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx",
+                  "Loop": true,
+                  "Events": [
+                    {
+                      "EventType": 0,
+                      "Frame": 4
+                    },
+                    {
+                      "EventType": 0,
+                      "Frame": 13
+                    }
+                  ]
+                },
+                {
+                  "Name": "Wave",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Wave.fbx",
+                  "Loop": true
+                }
+              ]
+            },
+            {
+              "StartBone": "RightShoulder",
+              "Animations": [
+                {
+                  "Name": "Wave",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Wave.fbx",
+                  "Loop": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Type": "AudioSource",
+          "AudioName": "TgaBroFootsteps",
+          "IsOneShot": true,
+          "SourceType": 2,
+          "PlayOnEvent": 0
+        }
+      ]
+    },
+    {
+      "Name": "MainCamera",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 0.0, 600.0, -600.0 ],
+          "Rotation": [ 45.0, 0.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Camera",
+          "Perspective": true,
+          "FOV": 90.0,
+          "NearPlane": 1.0,
+          "FarPlane": 10000.0
+        },
+        {
+          "Type": "FreecamController",
+          "MoveSpeed": 400.0,
+          "RotationSpeed": 300.0
+        }
+      ]
+    },
+    {
+      "Name": "A_Light",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 0.0, 0.0, 0.0 ],
+          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "AmbientLight",
+          "Cubemap": "Textures/Cubemaps/Skansen_Cube.dds"
+        }
+      ]
+    },
+    {
+      "Name": "D_Light",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -500.0, 500.0, -500.0 ],
+          "Rotation": [ 45.0, 45.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "DirectionalLight",
+          "Intensity": 1.0,
+          "Color": [ 1.0, 1.0, 1.0 ],
+          "CastShadows": true,
+          "ShadowTextureSize": 2048,
+          "MinShadowBias": 0.0003,
+          "MaxShadowBias": 0.00175
+        },
+        {
+          "Type": "Camera",
+          "Perspective": false,
+          "LeftPlane": -1024.0,
+          "RightPlane": 1024.0,
+          "TopPlane": 1024.0,
+          "BottomPlane": -1024.0,
+          "NearPlane": 1.0,
+          "FarPlane": 6000.0
+        },
+        {
+          "Type": "DebugModel",
+          "Model": "EngineAssets/Models/DirectionalLightGizmo.fbx"
+        }
+      ]
+    },
+    {
+      "Name": "P_Light",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 50.0, 200.0, 100.0 ],
+          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "PointLight",
+          "Intensity": 50000.0,
+          "Color": [ 1.0, 1.0, 1.0 ],
+          "CastShadows": true,
+          "ShadowTextureSize": 512,
+          "MinShadowBias": 0.0,
+          "MaxShadowBias": 0.00006
+        },
+        {
+          "Type": "Camera",
+          "Perspective": true,
+          "FOV": 90.0,
+          "NearPlane": 1.0,
+          "FarPlane": 3000.0,
+          "Resolution": [ 512.0, 512.0 ]
+        },
+        {
+          "Type": "DebugModel",
+          "Model": "EngineAssets/Models/PointLightGizmo.fbx"
+        }
+      ]
+    },
+    {
+      "Name": "S_Light",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -150.0, 150.0, 0.0 ],
+          "Rotation": [ 45.0, -90.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "SpotLight",
+          "Intensity": 100000.0,
+          "Color": [ 1.0, 1.0, 1.0 ],
+          "ConeAngle": 600.0,
+          "CastShadows": true,
+          "ShadowTextureSize": 512,
+          "MinShadowBias": 0,
+          "MaxShadowBias": 0.0001
+        },
+        {
+          "Type": "Camera",
+          "Perspective": true,
+          "FOV": 90.0,
+          "NearPlane": 1.0,
+          "FarPlane": 2000.0,
+          "Resolution": [ 512.0, 512.0 ]
+        },
+        {
+          "Type": "DebugModel",
+          "Model": "EngineAssets/Models/SpotLightGizmo.fbx"
         }
       ]
     }
   ]
-
 }

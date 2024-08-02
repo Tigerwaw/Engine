@@ -368,7 +368,7 @@ void ImGuiHandler::Controls()
 #ifdef _DEBUG
 	CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
 	ImGui::SetNextWindowPos({ 0.85f * windowSize.x, 0.02f * windowSize.y });
-	ImGui::SetNextWindowContentSize({ 0.24f * windowSize.x, 0.24f * windowSize.y });
+	ImGui::SetNextWindowContentSize({ 0.24f * windowSize.x, 0.26f * windowSize.y });
 	bool open = true;
 	ImGui::Begin("Controller Info", &open, ImGuiWindowFlags_NoSavedSettings);
 
@@ -469,7 +469,7 @@ void ImGuiHandler::Controls()
 	ImGui::SameLine();
 	ImGui::Text("%.2f", cont.GetAnalogAction2D("MouseDelta").y);
 
-	(cont.GetBinaryAction("W") ? green : red);
+	color = (cont.GetBinaryAction("W") ? green : red);
 	ImGui::TextColored(color, "W");
 	ImGui::SameLine();
 	color = (cont.GetBinaryAction("A") ? green : red);
@@ -498,7 +498,7 @@ void ImGuiHandler::WindowSize()
 {
 #ifdef _DEBUG
 	CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
-	ImGui::SetNextWindowPos({ 0.85f * windowSize.x, 0.3f * windowSize.y });
+	ImGui::SetNextWindowPos({ 0.85f * windowSize.x, 0.32f * windowSize.y });
 	ImGui::SetNextWindowContentSize({ 0.24f * windowSize.x, 0.24f * windowSize.y });
 	bool open = true;
 	ImGui::Begin("Resolution", &open, ImGuiWindowFlags_NoSavedSettings);

@@ -124,7 +124,10 @@ void Scene::Instantiate(std::shared_ptr<GameObject> aGameObject)
 	}
 	else if (aGameObject->GetComponent<Camera>())
 	{
-		myCamera = aGameObject;
+		if (aGameObject->GetName() == "MainCamera")
+		{
+			myCamera = aGameObject;
+		}
 	}
 }
 
@@ -279,6 +282,8 @@ void Scene::QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disable
 {
 	for (auto& gameObject : myGameObjects)
 	{
+		if (!gameObject->GetActive()) continue;
+
 		std::shared_ptr<Model> model = gameObject->GetComponent<Model>();
 		if (model && model->GetActive())
 		{

@@ -22,3 +22,13 @@
 * ImGui integration
 * FMOD integration
 * Input mapping that supports mouse & keyboard, as well as gamepads
+
+
+#### Known issues and shortcomings
+
+* Memory leaks (suspected to come from the graphics command list or the runtime-updating of buffers).
+* Scale of models are not taken into account in regards to viewculling.
+* Soft shadows create artifacts and need to be improved.
+* The scene-loading from JSON is naively implemented and will most likely need to be improved for a more pleasant working experience.
+
+* JSON file imports need to be stress tested and have more error-handling implemented.

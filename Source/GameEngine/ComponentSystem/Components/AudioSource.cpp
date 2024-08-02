@@ -48,19 +48,24 @@ void AudioSource::Play(std::string aAudioName)
     }
 }
 
-void AudioSource::AddAudioInstance(std::string aEventName, bool aIsOneShot, SourceType aSourceType)
+void AudioSource::AddAudioInstance(std::string aFMODEventName, bool aIsOneShot, SourceType aSourceType, bool aPlayOnStart)
 {
     std::shared_ptr<AudioInstance> newAudioInstance = std::make_shared<AudioInstance>();
-    if (!newAudioInstance->Initialize(aEventName, aIsOneShot)) return;
+    if (!newAudioInstance->Initialize(aFMODEventName, aIsOneShot)) return;
 
     AudioInstanceData newAudioData;
     newAudioData.instance = newAudioInstance;
     newAudioData.isOneShot = aIsOneShot;
     newAudioData.sourceType = aSourceType;
-    myAudioInstances.emplace(aEventName, newAudioData);
+    myAudioInstances.emplace(aFMODEventName, newAudioData);
+
+    if (aPlayOnStart)
+    {
+        Play(aFMODEventName);
+    }
 }
 
-void AudioSource::AddAudioPlayOnEvent(std::string aAudioName, GameObjectEventType aEventType)
+void AudioSource::SetAudioPlayOnEvent(std::string aAudioName, GameObjectEventType aEventType)
 {
     if (myAudioInstances.find(aAudioName) == myAudioInstances.end()) return;
 

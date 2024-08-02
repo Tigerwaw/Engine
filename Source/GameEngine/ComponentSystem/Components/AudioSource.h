@@ -32,8 +32,8 @@ public:
     void ReceiveEvent(const GameObjectEvent& aEvent) override;
 
     void Play(std::string aAudioName);
-    void AddAudioInstance(std::string aEventName, bool aIsOneShot, SourceType aSourceType = SourceType::Non3D);
-    void AddAudioPlayOnEvent(std::string aAudioName, GameObjectEventType aEventType);
+    void AddAudioInstance(std::string aFMODEventName, bool aIsOneShot, SourceType aSourceType = SourceType::Non3D, bool aPlayOnStart = false);
+    void SetAudioPlayOnEvent(std::string aAudioName, GameObjectEventType aEventType);
 private:
     void Update3DLocation(std::shared_ptr<AudioInstance> aInstance);
     std::unordered_map<std::string, AudioInstanceData> myAudioInstances;
