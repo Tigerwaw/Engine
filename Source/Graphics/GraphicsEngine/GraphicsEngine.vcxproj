@@ -180,6 +180,7 @@
   <ItemGroup>
     <ClInclude Include="DDSTextureLoader\DDSTextureLoader11.h" />
     <ClInclude Include="GraphicsCommands\Render\RenderDebugLines.h" />
+    <ClInclude Include="GraphicsCommands\Render\RenderSpritesheet.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="GraphicsEngine.pch.h" />
     <ClInclude Include="Objects\ConstantBuffers\ConstantBuffer.h" />
@@ -211,6 +212,7 @@
     <ClInclude Include="Objects\Mesh.h" />
     <ClInclude Include="Objects\ConstantBuffers\ObjectBuffer.h" />
     <ClInclude Include="Objects\PipelineStateObject.h" />
+    <ClInclude Include="Objects\Spritesheet.h" />
     <ClInclude Include="RHI\RenderHardwareInterface.h" />
     <ClInclude Include="RHI\RHIStructs.h" />
     <ClInclude Include="Objects\Shader.h" />
@@ -228,6 +230,7 @@
       </PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="GraphicsCommands\Render\RenderDebugLines.cpp" />
+    <ClCompile Include="GraphicsCommands\Render\RenderSpritesheet.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="GraphicsEngine.pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -256,6 +259,7 @@
     <ClCompile Include="GraphicsCommands\ConstantBuffer\UpdateShadowBuffer.cpp" />
     <ClCompile Include="Objects\Mesh.cpp" />
     <ClCompile Include="Objects\PipelineStateObject.cpp" />
+    <ClCompile Include="Objects\Spritesheet.cpp" />
     <ClCompile Include="RHI\RenderHardwareInterface.cpp" />
     <ClCompile Include="Objects\Shader.cpp" />
     <ClCompile Include="Objects\Sprite.cpp" />

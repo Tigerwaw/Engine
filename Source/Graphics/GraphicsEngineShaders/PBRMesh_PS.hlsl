@@ -46,20 +46,20 @@ float4 main(MeshVStoPS input) : SV_TARGET
     const float3 diffuseColor = lerp((float3) 0.00f, albedoMap.rgb, 1 - metalness);
     
     float3 ambientLight = BRDF_AmbientLighting(FB_ViewPosition.xyz, diffuseColor, specularColor, pixelNormal, input.WorldPos.xyz, roughness, ambientOcclusion, EnvCubeMap, LB_AmbientLight.Color, LB_AmbientLight.Intensity);
-    float3 directionalLightRadiance = BRDF_DirectionalLight(LB_DirLight, FB_ViewPosition.xyz, input.WorldPos, pixelNormal, diffuseColor, specularColor, roughness, ShadowMapDir, 8);
+    float3 directionalLightRadiance = BRDF_DirectionalLight(LB_DirLight, FB_ViewPosition.xyz, input.WorldPos, pixelNormal, diffuseColor, specularColor, roughness, ShadowMapDir);
     
     float3 pointLightRadiance = 0;
     [unroll(4)]
     for (int pIndex = 0; pIndex < LB_NumPointLights; pIndex++)
     {
-        pointLightRadiance += BRDF_PointLight(LB_PointLights[pIndex], FB_ViewPosition.xyz, input.WorldPos, pixelNormal, diffuseColor, specularColor, roughness, ShadowMapPoint[pIndex], 8);
+        pointLightRadiance += BRDF_PointLight(LB_PointLights[pIndex], FB_ViewPosition.xyz, input.WorldPos, pixelNormal, diffuseColor, specularColor, roughness, ShadowMapPoint[pIndex]);
     }
     
     float3 spotLightRadiance = 0;
     [unroll(4)]
     for (int sIndex = 0; sIndex < LB_NumSpotLights; sIndex++)
     {
-        spotLightRadiance += BRDF_SpotLight(LB_SpotLights[sIndex], FB_ViewPosition.xyz, input.WorldPos, pixelNormal, diffuseColor, specularColor, roughness, ShadowMapSpot[sIndex], 8);
+        spotLightRadiance += BRDF_SpotLight(LB_SpotLights[sIndex], FB_ViewPosition.xyz, input.WorldPos, pixelNormal, diffuseColor, specularColor, roughness, ShadowMapSpot[sIndex]);
     }
     
     float3 radiance = ambientLight + saturate(directionalLightRadiance + pointLightRadiance + spotLightRadiance);

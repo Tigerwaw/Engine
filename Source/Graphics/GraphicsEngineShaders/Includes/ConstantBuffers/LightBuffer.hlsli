@@ -17,7 +17,8 @@ cbuffer LightBuffer : register(b4)
         int CastShadows;        // 4 bytes
         float MinBias;          // 4 bytes
         float MaxBias;          // 4 bytes
-        float2 Padding;         // 8 bytes
+        int ShadowSamples;      // 4 bytes
+        float Padding;         // 4 bytes
 
         float4x4 View;          // 64 bytes
         float4x4 Projection;    // 64 bytes
@@ -31,7 +32,8 @@ cbuffer LightBuffer : register(b4)
         int CastShadows;        // 4 bytes
         float MinBias;          // 4 bytes
         float MaxBias;          // 4 bytes
-        float2 Padding;         // 8 bytes
+        int ShadowSamples;      // 4 bytes
+        float Padding;         // 4 bytes
         
         float4x4 Projection;    // 64 bytes
     } LB_PointLights[4];        // 112 * 4 = 448
@@ -46,7 +48,8 @@ cbuffer LightBuffer : register(b4)
         float ConeAngle;        // 4 bytes
         float MinBias;          // 4 bytes
         float MaxBias;          // 4 bytes
-        float2 Padding;         // 8 bytes
+        int ShadowSamples;      // 4 bytes
+        float Padding;         // 4 bytes
 
         float4x4 View;          // 64 bytes
         float4x4 Projection;    // 64 bytes

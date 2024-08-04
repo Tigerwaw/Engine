@@ -1,10 +1,12 @@
 #pragma once
 #include "GameEngine/Math/Matrix.hpp"
+namespace CU = CommonUtilities;
 
 struct ObjectBuffer
 {
-	CommonUtilities::Matrix4x4f World;
-	CommonUtilities::Matrix4x4f WorldInvT;
+	CU::Matrix4x4f World;
+	CU::Matrix4x4f WorldInvT;
 	unsigned hasSkinning;
-	CommonUtilities::Vector3f Padding;
+	CU::Vector3f customData_1;
+	CU::Vector4f customData_2;
 };

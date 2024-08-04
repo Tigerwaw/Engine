@@ -37,6 +37,7 @@ void UpdateLightBuffer::Execute()
 		lightBufferData.DirLight.CastShadows = myDirectionalLight->CastsShadows();
 		lightBufferData.DirLight.MinBias = myDirectionalLight->GetMinShadowBias();
 		lightBufferData.DirLight.MaxBias = myDirectionalLight->GetMaxShadowBias();
+		lightBufferData.DirLight.ShadowSamples = myDirectionalLight->GetShadowSamples();
 	}
 
 	int pIndex = 0;
@@ -52,6 +53,7 @@ void UpdateLightBuffer::Execute()
 		lightBufferData.PointLights[pIndex].CastShadows = pointLight->CastsShadows();
 		lightBufferData.PointLights[pIndex].MinBias = pointLight->GetMinShadowBias();
 		lightBufferData.PointLights[pIndex].MaxBias = pointLight->GetMaxShadowBias();
+		lightBufferData.PointLights[pIndex].ShadowSamples = pointLight->GetShadowSamples();
 		
 		lightBufferData.PointLights[pIndex].Projection = pointLight->gameObject->GetComponent<Camera>()->GetProjectionMatrix();
 	}
@@ -72,6 +74,7 @@ void UpdateLightBuffer::Execute()
 		lightBufferData.SpotLights[sIndex].CastShadows = spotLight->CastsShadows();
 		lightBufferData.SpotLights[sIndex].MinBias = spotLight->GetMinShadowBias();
 		lightBufferData.SpotLights[sIndex].MaxBias = spotLight->GetMaxShadowBias();
+		lightBufferData.SpotLights[sIndex].ShadowSamples = spotLight->GetShadowSamples();
 
 		lightBufferData.SpotLights[sIndex].View = spotLight->gameObject->GetComponent<Transform>()->GetMatrix().GetFastInverse();
 		lightBufferData.SpotLights[sIndex].Projection = spotLight->gameObject->GetComponent<Camera>()->GetProjectionMatrix();

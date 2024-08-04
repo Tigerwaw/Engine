@@ -59,6 +59,9 @@ DECLARE_LOG_CATEGORY_WITH_NAME(LogModelViewer, ModelViewer, Warning);
 #include <Windows.h>
 #pragma endregion
 
+
+class Spritesheet;
+
 class ModelViewer
 {
 public:
@@ -71,4 +74,5 @@ public:
 
 private:
 	HWND myMainWindowHandle = nullptr;
+	std::shared_ptr<Spritesheet> aTestSprite;
 };

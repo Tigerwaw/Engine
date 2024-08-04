@@ -7,8 +7,8 @@ namespace CU = CommonUtilities;
 
 struct SpriteBuffer
 {
-	CU::Vector4f Position;	// 4
-	CU::Vector2f Size;		// 2
-	unsigned IsScreenSpace;	// 1
-	float Padding;			// 1
+	CU::Matrix4x4f Matrix;				// 64
+	unsigned IsScreenSpace;				// 4
+	float CurrentFrame;					// 4
+	CU::Vector2f SpriteSheetDimensions;	// 8
 };

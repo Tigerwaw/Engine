@@ -1,0 +1,14 @@
+{
+  "VertexType": "Default",
+  "VertexShader": "Sprite_VS.cso",
+  "GeometryShader": "Sprite_GS.cso",
+  "PixelShader": "Spritesheet_PS.cso",
+  "RasterizerDesc": {
+    "FillMode": 3,
+    "CullMode": 3,
+    "AntialiasedLine": false
+  },
+  "Samplers": {
+    "DefaultSS": 0
+  }
+}

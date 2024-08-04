@@ -3,8 +3,8 @@
 
 struct Sprite_VSout
 {
-    float4 Position     : POSITION;
-    float2 Size         : SIZE;
+    float4x4 LocalSpaceMatrix   : POSITION;
+    bool IsScreenSpace          : ISSCREENSPACE;
 };
 
 struct Sprite_GSout

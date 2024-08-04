@@ -172,10 +172,13 @@ void ImGuiHandler::Lighting()
 			ImGui::Spacing();
 			float minBias = dLight->GetMinShadowBias();
 			float maxBias = dLight->GetMaxShadowBias();
+			int shadowSamples = dLight->GetShadowSamples();
 			ImGui::Text("Shadow Min Bias");
 			if (ImGui::SliderFloat("##DirectionalMinBias", &minBias, 0, 0.001f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
 			ImGui::Text("Shadow Max Bias");
 			if (ImGui::SliderFloat("##DirectionalMaxBias", &maxBias, 0, 0.003f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
+			ImGui::Text("Shadow Samples");
+			if (ImGui::SliderInt("##DirectionalSamples", &shadowSamples, 1, 64)) dLight->SetShadowSamples(shadowSamples);
 			ImGui::Spacing();
 			float color[3] = { dLight->GetColor().x, dLight->GetColor().y, dLight->GetColor().z };
 			ImGui::Text("Color");
@@ -200,10 +203,13 @@ void ImGuiHandler::Lighting()
 
 			float minBias = pLight->GetMinShadowBias();
 			float maxBias = pLight->GetMaxShadowBias();
+			int shadowSamples = pLight->GetShadowSamples();
 			ImGui::Text("Shadow Min Bias");
 			if (ImGui::SliderFloat("##PointMinBias", &minBias, 0, 0.001f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
 			ImGui::Text("Shadow Max Bias");
 			if (ImGui::SliderFloat("##PointMaxBias", &maxBias, 0, 0.001f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
+			ImGui::Text("Shadow Samples");
+			if (ImGui::SliderInt("##PointSamples", &shadowSamples, 1, 64)) pLight->SetShadowSamples(shadowSamples);
 			ImGui::Spacing();
 
 			float color[3] = { pLight->GetColor().x, pLight->GetColor().y, pLight->GetColor().z };
@@ -238,12 +244,15 @@ void ImGuiHandler::Lighting()
 
 			float minBias = sLight->GetMinShadowBias();
 			float maxBias = sLight->GetMaxShadowBias();
+			int shadowSamples = sLight->GetShadowSamples();
 			ImGui::Text("Shadow Min Bias");
 			if (ImGui::SliderFloat("##SpotMinBias", &minBias, 0, 0.001f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
 			ImGui::Text("Shadow Max Bias");
 			if (ImGui::SliderFloat("##SpotMaxBias", &maxBias, 0, 0.001f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
-
+			ImGui::Text("Shadow Samples");
+			if (ImGui::SliderInt("##SpotSamples", &shadowSamples, 1, 64)) sLight->SetShadowSamples(shadowSamples);
 			ImGui::Spacing();
+
 			float color[3] = { sLight->GetColor().x, sLight->GetColor().y, sLight->GetColor().z };
 			ImGui::Text("Color");
 			if (ImGui::ColorPicker3("##SpotColor", color)) sLight->SetColor({ color[0], color[1], color[2] });
@@ -272,93 +281,95 @@ void ImGuiHandler::Performance()
 	ImGui::SetNextWindowContentSize({ 0.16f * windowSize.x, 0.2f * windowSize.y });
 	bool open = true;
 	ImGui::Begin("Performance Info", &open, ImGuiWindowFlags_NoSavedSettings);
-	ImGui::BeginTable("PerformanceTable", 2, 0, { 0.18f * windowSize.x, 0 });
-	ImGuiStyle& style = ImGui::GetStyle();
-	style.CellPadding = { 0.001f * windowSize.x, 0.004f * windowSize.y };
-
-	// FPS
+	if (ImGui::BeginTable("PerformanceTable", 2, 0, { 0.18f * windowSize.x, 0 }))
 	{
-		CU::Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
-		int fps = Engine::GetInstance().GetTimer().GetFPS();
-		if (fps < 60) color = { 1.0f, 1.0f, 0.0f, 1.0f };
-		if (fps < 30) color = { 1.0f, 0.0f, 0.0f, 1.0f };
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.CellPadding = { 0.001f * windowSize.x, 0.004f * windowSize.y };
 
-		ImGui::TableNextColumn();
-		ImGui::Text("FPS:");
-		ImGui::TableNextColumn();
-		ImGui::TextColored({ color.x, color.y, color.z, color.w }, std::to_string(fps).c_str());
-		ImGui::TableNextColumn();
-
-		ImGui::Text("Frametime (ms):");
-		ImGui::TableNextColumn();
-		ImGui::Text("%.2f", Engine::GetInstance().GetTimer().GetFrameTimeMS());
-		ImGui::TableNextColumn();
-	}
-
-	// Draw calls
-	{
-		ImGui::Text("Drawcalls:");
-		ImGui::TableNextColumn();
-		ImGui::Text(std::to_string(GraphicsEngine::Get().GetDrawcallAmount()).c_str());
-		ImGui::TableNextColumn();
-	}
-
-	// Scene objects
-	{
-		ImGui::Text("Scene Objects:");
-		ImGui::TableNextColumn();
-		ImGui::Text(std::string(std::to_string(Engine::GetInstance().GetSceneHandler().GetObjectAmount())).c_str());
-
-		ImGui::TableNextColumn();
-
-		ImGui::Text("Active Scene Objects:");
-		ImGui::TableNextColumn();
-		ImGui::Text(std::to_string(Engine::GetInstance().GetSceneHandler().GetActiveObjectAmount()).c_str());
-		ImGui::TableNextColumn();
-	}
-
-	ImGui::Spacing();
-
-	// Memory Usage
-	{
-		Engine::GetInstance().TimeSinceLastMemoryCheck += Engine::GetInstance().GetTimer().GetDeltaTime();
-		if (Engine::GetInstance().TimeSinceLastMemoryCheck > Engine::GetInstance().MemoryCheckTimeInterval)
+		// FPS
 		{
-			Engine::GetInstance().TimeSinceLastMemoryCheck = 0;
+			CU::Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
+			int fps = Engine::GetInstance().GetTimer().GetFPS();
+			if (fps < 60) color = { 1.0f, 1.0f, 0.0f, 1.0f };
+			if (fps < 30) color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
-			HANDLE hProcess = {};
-			PROCESS_MEMORY_COUNTERS pmc;
-			hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
+			ImGui::TableNextColumn();
+			ImGui::Text("FPS:");
+			ImGui::TableNextColumn();
+			ImGui::TextColored({ color.x, color.y, color.z, color.w }, std::to_string(fps).c_str());
+			ImGui::TableNextColumn();
 
-			if (hProcess != NULL)
-			{
-				if (GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc)))
-				{
-					int newRamUsage = static_cast<int>(pmc.WorkingSetSize / (1024.0 * 1024.0));
-					Engine::GetInstance().RamUsageChange = newRamUsage - Engine::GetInstance().RamUsage;
-					Engine::GetInstance().RamUsage = newRamUsage;
-				}
-
-				CloseHandle(hProcess);
-			}
+			ImGui::Text("Frametime (ms):");
+			ImGui::TableNextColumn();
+			ImGui::Text("%.2f", Engine::GetInstance().GetTimer().GetFrameTimeMS());
+			ImGui::TableNextColumn();
 		}
 
-		CU::Vector4f color = { 1.0f, 0.0f, 0.0f, 1.0f };
-		if (Engine::GetInstance().RamUsageChange <= 0) color = { 0.0f, 1.0f, 0.0f, 1.0f };
+		// Draw calls
+		{
+			ImGui::Text("Drawcalls:");
+			ImGui::TableNextColumn();
+			ImGui::Text(std::to_string(GraphicsEngine::Get().GetDrawcallAmount()).c_str());
+			ImGui::TableNextColumn();
+		}
 
-		ImGui::Text("RAM used:");
-		ImGui::TableNextColumn();
-		ImGui::Text(std::string(std::to_string(Engine::GetInstance().RamUsage) + " Mb").c_str());
+		// Scene objects
+		{
+			ImGui::Text("Scene Objects:");
+			ImGui::TableNextColumn();
+			ImGui::Text(std::string(std::to_string(Engine::GetInstance().GetSceneHandler().GetObjectAmount())).c_str());
 
-		ImGui::TableNextColumn();
+			ImGui::TableNextColumn();
 
-		ImGui::Text("RAM usage fluctuation:");
-		ImGui::TableNextColumn();
-		ImGui::TextColored({ color.x, color.y, color.z, color.w }, std::string(std::to_string(Engine::GetInstance().RamUsageChange) + " Mb").c_str());
-		ImGui::TableNextColumn();
+			ImGui::Text("Active Scene Objects:");
+			ImGui::TableNextColumn();
+			ImGui::Text(std::to_string(Engine::GetInstance().GetSceneHandler().GetActiveObjectAmount()).c_str());
+			ImGui::TableNextColumn();
+		}
+
+		ImGui::Spacing();
+
+		// Memory Usage
+		{
+			Engine::GetInstance().TimeSinceLastMemoryCheck += Engine::GetInstance().GetTimer().GetDeltaTime();
+			if (Engine::GetInstance().TimeSinceLastMemoryCheck > Engine::GetInstance().MemoryCheckTimeInterval)
+			{
+				Engine::GetInstance().TimeSinceLastMemoryCheck = 0;
+
+				HANDLE hProcess = {};
+				PROCESS_MEMORY_COUNTERS pmc;
+				hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
+
+				if (hProcess != NULL)
+				{
+					if (GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc)))
+					{
+						int newRamUsage = static_cast<int>(pmc.WorkingSetSize / (1024.0 * 1024.0));
+						Engine::GetInstance().RamUsageChange = newRamUsage - Engine::GetInstance().RamUsage;
+						Engine::GetInstance().RamUsage = newRamUsage;
+					}
+
+					CloseHandle(hProcess);
+				}
+			}
+
+			CU::Vector4f color = { 1.0f, 0.0f, 0.0f, 1.0f };
+			if (Engine::GetInstance().RamUsageChange <= 0) color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+			ImGui::Text("RAM used:");
+			ImGui::TableNextColumn();
+			ImGui::Text(std::string(std::to_string(Engine::GetInstance().RamUsage) + " Mb").c_str());
+
+			ImGui::TableNextColumn();
+
+			ImGui::Text("RAM usage fluctuation:");
+			ImGui::TableNextColumn();
+			ImGui::TextColored({ color.x, color.y, color.z, color.w }, std::string(std::to_string(Engine::GetInstance().RamUsageChange) + " Mb").c_str());
+			ImGui::TableNextColumn();
+		}
+
+		ImGui::EndTable();
 	}
-
-	ImGui::EndTable();
 	ImGui::End();
 #endif
 }

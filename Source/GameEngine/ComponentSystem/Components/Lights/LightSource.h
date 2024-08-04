@@ -25,6 +25,8 @@ public:
 	void SetShadowBias(float aMinShadowBias, float aMaxShadowBias);
 	const float GetMinShadowBias() const { return myMinShadowBias; }
 	const float GetMaxShadowBias() const { return myMaxShadowBias; }
+	void SetShadowSamples(unsigned aNumSamples);
+	const int GetShadowSamples() const { return myShadowSamples; }
 	std::shared_ptr<Texture> GetShadowMap();
 protected:
 	CU::Vector3f myColor = { 1.0f, 1.0f, 1.0f };
@@ -33,5 +35,6 @@ protected:
 	std::shared_ptr<Texture> myShadowMap = nullptr;
 	float myMinShadowBias = 0.001f;
 	float myMaxShadowBias = 0.005f;
+	int myShadowSamples = 1;
 };
 

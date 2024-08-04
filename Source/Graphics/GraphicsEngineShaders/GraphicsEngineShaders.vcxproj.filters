@@ -34,6 +34,7 @@
     <FxCompile Include="Debug\Objects\DebugLine_VS.hlsl" />
     <FxCompile Include="Mesh_VS.hlsl" />
     <FxCompile Include="PBRMesh_PS.hlsl" />
+    <FxCompile Include="Spritesheet_PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Includes\DefaultShaderIncludes.hlsli" />

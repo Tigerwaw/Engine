@@ -523,6 +523,7 @@ void SceneLoader::CreateDirectionalLightComponent(std::shared_ptr<GameObject> aG
         unsigned shadowTextureSize = 512;
         float minShadowBias = 0.001f;
         float maxShadowBias = 0.005f;
+        unsigned shadowSamples = 1;
 
         if (aComp.contains("ShadowTextureSize"))
         {
@@ -539,8 +540,14 @@ void SceneLoader::CreateDirectionalLightComponent(std::shared_ptr<GameObject> aG
             maxShadowBias = aComp["MaxShadowBias"].get<float>();
         }
 
+        if (aComp.contains("ShadowSamples"))
+        {
+            shadowSamples = aComp["ShadowSamples"].get<unsigned>();
+        }
+
         dLight->EnableShadowCasting(shadowTextureSize, shadowTextureSize);
         dLight->SetShadowBias(minShadowBias, maxShadowBias);
+        dLight->SetShadowSamples(shadowSamples);
     }
 }
 
@@ -563,6 +570,7 @@ void SceneLoader::CreatePointLightComponent(std::shared_ptr<GameObject> aGO, nl:
         unsigned shadowTextureSize = 512;
         float minShadowBias = 0.001f;
         float maxShadowBias = 0.005f;
+        unsigned shadowSamples = 1;
 
         if (aComp.contains("ShadowTextureSize"))
         {
@@ -579,8 +587,14 @@ void SceneLoader::CreatePointLightComponent(std::shared_ptr<GameObject> aGO, nl:
             maxShadowBias = aComp["MaxShadowBias"].get<float>();
         }
 
+        if (aComp.contains("ShadowSamples"))
+        {
+            shadowSamples = aComp["ShadowSamples"].get<unsigned>();
+        }
+
         pLight->EnableShadowCasting(shadowTextureSize, shadowTextureSize);
         pLight->SetShadowBias(minShadowBias, maxShadowBias);
+        pLight->SetShadowSamples(shadowSamples);
     }
 }
 
@@ -608,6 +622,7 @@ void SceneLoader::CreateSpotLightComponent(std::shared_ptr<GameObject> aGO, nl::
         unsigned shadowTextureSize = 512;
         float minShadowBias = 0.001f;
         float maxShadowBias = 0.005f;
+        unsigned shadowSamples = 1;
 
         if (aComp.contains("ShadowTextureSize"))
         {
@@ -624,8 +639,14 @@ void SceneLoader::CreateSpotLightComponent(std::shared_ptr<GameObject> aGO, nl::
             maxShadowBias = aComp["MaxShadowBias"].get<float>();
         }
 
+        if (aComp.contains("ShadowSamples"))
+        {
+            shadowSamples = aComp["ShadowSamples"].get<unsigned>();
+        }
+
         sLight->EnableShadowCasting(shadowTextureSize, shadowTextureSize);
         sLight->SetShadowBias(minShadowBias, maxShadowBias);
+        sLight->SetShadowSamples(shadowSamples);
     }
 }
 

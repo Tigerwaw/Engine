@@ -11,6 +11,7 @@
 #include "Render/RenderAnimatedMesh.h"
 #include "Render/RenderDebugMesh.h"
 #include "Render/RenderSprite.h"
+#include "Render/RenderSpritesheet.h"
 #include "Render/RenderDebugLines.h"
 #include "Resource/SetTextureResource.h"
 #include "Resource/ClearTextureResource.h"

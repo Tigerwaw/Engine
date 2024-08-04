@@ -21,7 +21,8 @@ struct LightBuffer
 		int CastShadows = false;	// 4 bytes
 		float MinBias = 0.0001f;	// 4 bytes
 		float MaxBias = 0.0005f;	// 4 bytes
-		CU::Vector2f Padding;		// 8 bytes
+		int ShadowSamples = 1;		// 4 bytes
+		float Padding;				// 4 bytes
 
 		CU::Matrix4x4f View;		// 64 bytes
 		CU::Matrix4x4f Projection;	// 64 bytes
@@ -35,7 +36,8 @@ struct LightBuffer
 		int CastShadows = false;	// 4 bytes
 		float MinBias = 0.0001f;	// 4 bytes
 		float MaxBias = 0.0003f;	// 4 bytes
-		CU::Vector2f Padding;		// 8 bytes
+		int ShadowSamples = 1;		// 4 bytes
+		float Padding;				// 4 bytes
 
 		CU::Matrix4x4f Projection;	// 64 bytes
 	} PointLights[MAX_POINTLIGHTS];	// 112 * 4 = 448
@@ -50,7 +52,8 @@ struct LightBuffer
 		float ConeAngle = 0.707f;	// 4 bytes
 		float MinBias = 0.0001f;	// 4 bytes
 		float MaxBias = 0.0005f;	// 4 bytes
-		CU::Vector2f Padding;		// 8 bytes
+		int ShadowSamples = 1;		// 4 bytes
+		float Padding;				// 4 bytes
 
 		CU::Matrix4x4f View;		// 64 bytes
 		CU::Matrix4x4f Projection;	// 64 bytes

@@ -6,7 +6,8 @@ cbuffer ObjectBuffer : register(b1)
     float4x4 OB_World;
     float4x4 OB_WorldInvT;
     bool OB_HasSkinning;
-    float3 OB_Padding;
+    float3 OB_CustomData_1;
+    float4 OB_CustomData_2;
 }
 
 #endif // _OBJECT_BUFFER_

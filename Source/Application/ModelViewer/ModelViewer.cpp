@@ -27,6 +27,8 @@ DEFINE_LOG_CATEGORY(LogModelViewer);
 #include "GameEngine/Audio/AudioEngine.h"
 #include "GameEngine/ImGui/ImGuiHandler.h"
 
+#include "Graphics/GraphicsEngine/Objects/Spritesheet.h"
+
 namespace CU = CommonUtilities;
 
 ModelViewer::ModelViewer() = default;
@@ -162,6 +164,13 @@ void ModelViewer::InitModelViewer()
 
 	inputHandler.RegisterBinaryAction("SharedAction", Keys::W, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("SharedAction", ControllerButtons::A, GenericInput::ActionType::Held);
+
+	aTestSprite = std::make_shared<Spritesheet>();
+	aTestSprite->SetMaterial(AssetManager::Get().GetAsset<MaterialAsset>("Materials/ExplosionMaterial.json")->material);
+	aTestSprite->SetScreenspacePosition({ 0.0f, 0.0f });
+	aTestSprite->SetScreenspaceSize({ 600.0f, 600.0f });
+	aTestSprite->SetSheetDimensions(5, 3);
+	aTestSprite->SetIsScreenspace(false);
 }
 
 int ModelViewer::Run()
@@ -171,7 +180,7 @@ int ModelViewer::Run()
 
 	bool isRunning = true;
 	bool isPaused = false;
-	bool isResizing = false;
+	//bool isResizing = false;
 
 	while (isRunning)
 	{
@@ -230,6 +239,9 @@ int ModelViewer::Run()
 		Engine::GetInstance().GetImGuiHandler().BeginFrame();
 		GraphicsEngine::Get().BeginFrame();
 		Engine::GetInstance().Update();
+
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderSpritesheet>(aTestSprite);
+
 		GraphicsEngine::Get().RenderFrame();
 
 		Engine::GetInstance().GetImGuiHandler().Render();
