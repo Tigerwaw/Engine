@@ -30,6 +30,7 @@ namespace CommonUtilities
 		const Matrix4x4<T> GetTranspose() const;
 		void FastInverse();
 		const Matrix4x4<T> GetFastInverse() const;
+		const Matrix4x4<T> GetInverse() const;
 		const Vector3<T> GetRotationsInRadians() const;
 		const Vector3<T> GetRotationsInDegrees() const;
 
@@ -235,6 +236,139 @@ namespace CommonUtilities
 		Matrix4x4 inverseMatrix(*this);
 		inverseMatrix.FastInverse();
 		return inverseMatrix;
+	}
+
+	template <class T>
+	const Matrix4x4<T> Matrix4x4<T>::GetInverse() const
+	{
+		T inv[16];
+
+		Matrix4x4<T> aMatrixToInverse = *this;
+
+		inv[0] =
+			aMatrixToInverse[5] * aMatrixToInverse[10] * aMatrixToInverse[15] -
+			aMatrixToInverse[5] * aMatrixToInverse[11] * aMatrixToInverse[14] -
+			aMatrixToInverse[9] * aMatrixToInverse[6] * aMatrixToInverse[15] +
+			aMatrixToInverse[9] * aMatrixToInverse[7] * aMatrixToInverse[14] +
+			aMatrixToInverse[13] * aMatrixToInverse[6] * aMatrixToInverse[11] -
+			aMatrixToInverse[13] * aMatrixToInverse[7] * aMatrixToInverse[10];
+
+		inv[4] = -aMatrixToInverse[4] * aMatrixToInverse[10] * aMatrixToInverse[15] +
+			aMatrixToInverse[4] * aMatrixToInverse[11] * aMatrixToInverse[14] +
+			aMatrixToInverse[8] * aMatrixToInverse[6] * aMatrixToInverse[15] -
+			aMatrixToInverse[8] * aMatrixToInverse[7] * aMatrixToInverse[14] -
+			aMatrixToInverse[12] * aMatrixToInverse[6] * aMatrixToInverse[11] +
+			aMatrixToInverse[12] * aMatrixToInverse[7] * aMatrixToInverse[10];
+
+		inv[8] = aMatrixToInverse[4] * aMatrixToInverse[9] * aMatrixToInverse[15] -
+			aMatrixToInverse[4] * aMatrixToInverse[11] * aMatrixToInverse[13] -
+			aMatrixToInverse[8] * aMatrixToInverse[5] * aMatrixToInverse[15] +
+			aMatrixToInverse[8] * aMatrixToInverse[7] * aMatrixToInverse[13] +
+			aMatrixToInverse[12] * aMatrixToInverse[5] * aMatrixToInverse[11] -
+			aMatrixToInverse[12] * aMatrixToInverse[7] * aMatrixToInverse[9];
+
+		inv[12] = -aMatrixToInverse[4] * aMatrixToInverse[9] * aMatrixToInverse[14] +
+			aMatrixToInverse[4] * aMatrixToInverse[10] * aMatrixToInverse[13] +
+			aMatrixToInverse[8] * aMatrixToInverse[5] * aMatrixToInverse[14] -
+			aMatrixToInverse[8] * aMatrixToInverse[6] * aMatrixToInverse[13] -
+			aMatrixToInverse[12] * aMatrixToInverse[5] * aMatrixToInverse[10] +
+			aMatrixToInverse[12] * aMatrixToInverse[6] * aMatrixToInverse[9];
+
+		inv[1] = -aMatrixToInverse[1] * aMatrixToInverse[10] * aMatrixToInverse[15] +
+			aMatrixToInverse[1] * aMatrixToInverse[11] * aMatrixToInverse[14] +
+			aMatrixToInverse[9] * aMatrixToInverse[2] * aMatrixToInverse[15] -
+			aMatrixToInverse[9] * aMatrixToInverse[3] * aMatrixToInverse[14] -
+			aMatrixToInverse[13] * aMatrixToInverse[2] * aMatrixToInverse[11] +
+			aMatrixToInverse[13] * aMatrixToInverse[3] * aMatrixToInverse[10];
+
+		inv[5] = aMatrixToInverse[0] * aMatrixToInverse[10] * aMatrixToInverse[15] -
+			aMatrixToInverse[0] * aMatrixToInverse[11] * aMatrixToInverse[14] -
+			aMatrixToInverse[8] * aMatrixToInverse[2] * aMatrixToInverse[15] +
+			aMatrixToInverse[8] * aMatrixToInverse[3] * aMatrixToInverse[14] +
+			aMatrixToInverse[12] * aMatrixToInverse[2] * aMatrixToInverse[11] -
+			aMatrixToInverse[12] * aMatrixToInverse[3] * aMatrixToInverse[10];
+
+		inv[9] = -aMatrixToInverse[0] * aMatrixToInverse[9] * aMatrixToInverse[15] +
+			aMatrixToInverse[0] * aMatrixToInverse[11] * aMatrixToInverse[13] +
+			aMatrixToInverse[8] * aMatrixToInverse[1] * aMatrixToInverse[15] -
+			aMatrixToInverse[8] * aMatrixToInverse[3] * aMatrixToInverse[13] -
+			aMatrixToInverse[12] * aMatrixToInverse[1] * aMatrixToInverse[11] +
+			aMatrixToInverse[12] * aMatrixToInverse[3] * aMatrixToInverse[9];
+
+		inv[13] = aMatrixToInverse[0] * aMatrixToInverse[9] * aMatrixToInverse[14] -
+			aMatrixToInverse[0] * aMatrixToInverse[10] * aMatrixToInverse[13] -
+			aMatrixToInverse[8] * aMatrixToInverse[1] * aMatrixToInverse[14] +
+			aMatrixToInverse[8] * aMatrixToInverse[2] * aMatrixToInverse[13] +
+			aMatrixToInverse[12] * aMatrixToInverse[1] * aMatrixToInverse[10] -
+			aMatrixToInverse[12] * aMatrixToInverse[2] * aMatrixToInverse[9];
+
+		inv[2] = aMatrixToInverse[1] * aMatrixToInverse[6] * aMatrixToInverse[15] -
+			aMatrixToInverse[1] * aMatrixToInverse[7] * aMatrixToInverse[14] -
+			aMatrixToInverse[5] * aMatrixToInverse[2] * aMatrixToInverse[15] +
+			aMatrixToInverse[5] * aMatrixToInverse[3] * aMatrixToInverse[14] +
+			aMatrixToInverse[13] * aMatrixToInverse[2] * aMatrixToInverse[7] -
+			aMatrixToInverse[13] * aMatrixToInverse[3] * aMatrixToInverse[6];
+
+		inv[6] = -aMatrixToInverse[0] * aMatrixToInverse[6] * aMatrixToInverse[15] +
+			aMatrixToInverse[0] * aMatrixToInverse[7] * aMatrixToInverse[14] +
+			aMatrixToInverse[4] * aMatrixToInverse[2] * aMatrixToInverse[15] -
+			aMatrixToInverse[4] * aMatrixToInverse[3] * aMatrixToInverse[14] -
+			aMatrixToInverse[12] * aMatrixToInverse[2] * aMatrixToInverse[7] +
+			aMatrixToInverse[12] * aMatrixToInverse[3] * aMatrixToInverse[6];
+
+		inv[10] = aMatrixToInverse[0] * aMatrixToInverse[5] * aMatrixToInverse[15] -
+			aMatrixToInverse[0] * aMatrixToInverse[7] * aMatrixToInverse[13] -
+			aMatrixToInverse[4] * aMatrixToInverse[1] * aMatrixToInverse[15] +
+			aMatrixToInverse[4] * aMatrixToInverse[3] * aMatrixToInverse[13] +
+			aMatrixToInverse[12] * aMatrixToInverse[1] * aMatrixToInverse[7] -
+			aMatrixToInverse[12] * aMatrixToInverse[3] * aMatrixToInverse[5];
+
+		inv[14] = -aMatrixToInverse[0] * aMatrixToInverse[5] * aMatrixToInverse[14] +
+			aMatrixToInverse[0] * aMatrixToInverse[6] * aMatrixToInverse[13] +
+			aMatrixToInverse[4] * aMatrixToInverse[1] * aMatrixToInverse[14] -
+			aMatrixToInverse[4] * aMatrixToInverse[2] * aMatrixToInverse[13] -
+			aMatrixToInverse[12] * aMatrixToInverse[1] * aMatrixToInverse[6] +
+			aMatrixToInverse[12] * aMatrixToInverse[2] * aMatrixToInverse[5];
+
+		inv[3] = -aMatrixToInverse[1] * aMatrixToInverse[6] * aMatrixToInverse[11] +
+			aMatrixToInverse[1] * aMatrixToInverse[7] * aMatrixToInverse[10] +
+			aMatrixToInverse[5] * aMatrixToInverse[2] * aMatrixToInverse[11] -
+			aMatrixToInverse[5] * aMatrixToInverse[3] * aMatrixToInverse[10] -
+			aMatrixToInverse[9] * aMatrixToInverse[2] * aMatrixToInverse[7] +
+			aMatrixToInverse[9] * aMatrixToInverse[3] * aMatrixToInverse[6];
+
+		inv[7] = aMatrixToInverse[0] * aMatrixToInverse[6] * aMatrixToInverse[11] -
+			aMatrixToInverse[0] * aMatrixToInverse[7] * aMatrixToInverse[10] -
+			aMatrixToInverse[4] * aMatrixToInverse[2] * aMatrixToInverse[11] +
+			aMatrixToInverse[4] * aMatrixToInverse[3] * aMatrixToInverse[10] +
+			aMatrixToInverse[8] * aMatrixToInverse[2] * aMatrixToInverse[7] -
+			aMatrixToInverse[8] * aMatrixToInverse[3] * aMatrixToInverse[6];
+
+		inv[11] = -aMatrixToInverse[0] * aMatrixToInverse[5] * aMatrixToInverse[11] +
+			aMatrixToInverse[0] * aMatrixToInverse[7] * aMatrixToInverse[9] +
+			aMatrixToInverse[4] * aMatrixToInverse[1] * aMatrixToInverse[11] -
+			aMatrixToInverse[4] * aMatrixToInverse[3] * aMatrixToInverse[9] -
+			aMatrixToInverse[8] * aMatrixToInverse[1] * aMatrixToInverse[7] +
+			aMatrixToInverse[8] * aMatrixToInverse[3] * aMatrixToInverse[5];
+
+		inv[15] = aMatrixToInverse[0] * aMatrixToInverse[5] * aMatrixToInverse[10] -
+			aMatrixToInverse[0] * aMatrixToInverse[6] * aMatrixToInverse[9] -
+			aMatrixToInverse[4] * aMatrixToInverse[1] * aMatrixToInverse[10] +
+			aMatrixToInverse[4] * aMatrixToInverse[2] * aMatrixToInverse[9] +
+			aMatrixToInverse[8] * aMatrixToInverse[1] * aMatrixToInverse[6] -
+			aMatrixToInverse[8] * aMatrixToInverse[2] * aMatrixToInverse[5];
+
+		T det = aMatrixToInverse[0] * inv[0] + aMatrixToInverse[1] * inv[4] + aMatrixToInverse[2] * inv[8] + aMatrixToInverse[3] * inv[12];
+
+		det = T(1.0) / det;
+
+		Matrix4x4<T> returnMatrix;
+		for (int i = 0; i < 16; i++)
+		{
+			returnMatrix[i] = inv[i] * det;
+		}
+
+		return returnMatrix;
 	}
 
 	template<class T>

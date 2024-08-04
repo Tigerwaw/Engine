@@ -13,7 +13,6 @@
 #include "GameEngine/ComponentSystem/Components/Lights/SpotLight.h"
 
 #include "GameEngine/Engine.h"
-#include "GameEngine/Intersections/Intersection3D.hpp"
 #include "GameEngine/DebugDrawer/DebugDrawer.h"
 #include "AssetManager/AssetManager.h"
 
@@ -270,7 +269,7 @@ void Scene::QueueDebugGizmos(std::shared_ptr<Camera> aRenderCamera)
 		std::shared_ptr<DebugModel> model = gameObject->GetComponent<DebugModel>();
 		if (model && model->GetActive())
 		{
-			if (CU::IntersectionBetweenPlaneVolumeAABB(frustumVolume, model->GetBoundingBox()))
+			if (aRenderCamera->GetViewcullingIntersection(gameObject->GetComponent<Transform>(), model->GetBoundingBox()))
 			{
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderDebugMesh>(model);
 			}
@@ -287,7 +286,7 @@ void Scene::QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disable
 		std::shared_ptr<Model> model = gameObject->GetComponent<Model>();
 		if (model && model->GetActive())
 		{
-			if (disableViewCulling || !GraphicsEngine::Get().UseViewCulling || CU::IntersectionBetweenPlaneVolumeAABB(aRenderCamera->GetFrustumPlaneVolume(gameObject->GetComponent<Transform>()->GetWorldMatrix().GetFastInverse()), model->GetBoundingBox()))
+			if (disableViewCulling || !GraphicsEngine::Get().UseViewCulling || aRenderCamera->GetViewcullingIntersection(gameObject->GetComponent<Transform>(), model->GetBoundingBox()))
 			{
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model, aPSOoverride);
 			}
@@ -296,7 +295,7 @@ void Scene::QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disable
 		std::shared_ptr<AnimatedModel> animModel = gameObject->GetComponent<AnimatedModel>();
 		if (animModel && animModel->GetActive())
 		{
-			if (disableViewCulling || !GraphicsEngine::Get().UseViewCulling || CU::IntersectionBetweenPlaneVolumeAABB(aRenderCamera->GetFrustumPlaneVolume(gameObject->GetComponent<Transform>()->GetWorldMatrix().GetFastInverse()), animModel->GetBoundingBox()))
+			if (disableViewCulling || !GraphicsEngine::Get().UseViewCulling || aRenderCamera->GetViewcullingIntersection(gameObject->GetComponent<Transform>(), animModel->GetBoundingBox()))
 			{
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel, aPSOoverride);
 			}

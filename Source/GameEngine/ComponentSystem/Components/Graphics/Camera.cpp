@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
+#include "GameEngine/Intersections/Intersection3D.hpp"
 
 #define PI 3.14159265358979323846
 
@@ -110,4 +111,21 @@ CU::PlaneVolume<float> Camera::GetFrustumPlaneVolume(CU::Matrix4x4f aToObjectSpa
 	volume.AddPlane(CU::Plane<float>(corners[1], corners[5], corners[6]));
 
 	return volume;
+}
+
+bool Camera::GetViewcullingIntersection(std::shared_ptr<Transform> aObjectTransform, CU::AABB3D<float> aObjectAABB)
+{
+	std::shared_ptr<Transform> goTransform = gameObject->GetComponent<Transform>();
+	CU::Matrix4x4f objectMatrix = aObjectTransform->GetWorldMatrix();
+
+	if (goTransform->IsScaled())
+	{
+		objectMatrix = objectMatrix.GetInverse();
+	}
+	else
+	{
+		objectMatrix = objectMatrix.GetFastInverse();
+	}
+
+	return CU::IntersectionBetweenPlaneVolumeAABB(GetFrustumPlaneVolume(objectMatrix), aObjectAABB);
 }

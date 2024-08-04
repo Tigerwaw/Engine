@@ -1,11 +1,15 @@
 #pragma once
 #include <array>
+#include <memory>
 #include "GameEngine/ComponentSystem/Component.h"
 #include "GameEngine/Math/Matrix.hpp"
 #include "GameEngine/Math/Vector.hpp"
 #include "GameEngine/Intersections/PlaneVolume.hpp"
+#include "GameEngine/Intersections/AABB3D.hpp"
 
 namespace CU = CommonUtilities;
+
+class Transform;
 
 class Camera : public Component
 {
@@ -26,6 +30,7 @@ public:
 	std::array<CU::Vector3f, 8>& GetFrustumCorners() { return myFrustumCorners; }
 	// Get Frustum Plane Volume in object space (Leave arguments empty to get in world space)
 	CU::PlaneVolume<float> GetFrustumPlaneVolume(CU::Matrix4x4f aObjectSpace = CU::Matrix4x4f());
+	bool GetViewcullingIntersection(std::shared_ptr<Transform> aObjectTransform, CU::AABB3D<float> aObjectAABB);
 protected:
 	CU::Matrix4x4<float> myProjectionMatrix;
 	std::array<CU::Vector3f, 8> myFrustumCorners;

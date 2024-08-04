@@ -355,3 +355,11 @@ void Transform::AddUniformScale(float aScale)
 	myScale += { aScale, aScale, aScale };
 	SetIsDirty();
 }
+
+const bool Transform::IsScaled() const
+{
+	float tolerance = 0.005f;
+	float scaleLength = myScale.LengthSqr();
+
+	return (scaleLength < 1.0f - tolerance || scaleLength > 1.0f + tolerance);
+}

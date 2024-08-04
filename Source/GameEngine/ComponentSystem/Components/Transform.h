@@ -47,6 +47,8 @@ public:
 	void AddScale(const CU::Vector3f aScale);
 	void AddScale(const float aX, const float aY, const float aZ);
 	void AddUniformScale(float aScale);
+
+	const bool IsScaled() const;
 private:
 	void UpdateToWorldMatrix(CU::Matrix4x4f aToWorldMatrix, CU::Matrix4x4f aToWorldMatrixNoScale);
 	void UpdateChildrenToWorldMatrix();
