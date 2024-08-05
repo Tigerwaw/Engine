@@ -31,9 +31,13 @@ public:
     std::vector<std::shared_ptr<Material>>& GetMaterials() { return myMaterials; }
     const CU::AABB3D<float> GetBoundingBox() const;
 
+    void SetViewcull(bool aShouldViewcull) { myShouldViewcull = aShouldViewcull; }
+    const bool GetShouldViewcull() const { return myShouldViewcull; }
+
 protected:
     std::shared_ptr<Mesh> myMesh = nullptr;
     std::vector<std::shared_ptr<Material>> myMaterials;
     std::unordered_map<unsigned, unsigned> mySlotToIndex;
+    bool myShouldViewcull = true;
 };
 

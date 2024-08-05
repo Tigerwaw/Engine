@@ -23,6 +23,5 @@ private:
 	CU::Matrix4x4f matrix;
 	CU::Vector2f sheetDimensions;
 	float currentFrame;
-	bool isScreenspace;
 };
 

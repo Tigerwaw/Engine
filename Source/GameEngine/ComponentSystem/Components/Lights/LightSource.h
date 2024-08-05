@@ -28,11 +28,13 @@ public:
 	void SetShadowSamples(unsigned aNumSamples);
 	const int GetShadowSamples() const { return myShadowSamples; }
 	std::shared_ptr<Texture> GetShadowMap();
+	const CU::Vector2f GetShadowMapSize() const { return myShadowMapSize; }
 protected:
 	CU::Vector3f myColor = { 1.0f, 1.0f, 1.0f };
 	float myIntensity = 1.0f;
 	bool myCastsShadows = false;
 	std::shared_ptr<Texture> myShadowMap = nullptr;
+	CU::Vector2f myShadowMapSize;
 	float myMinShadowBias = 0.001f;
 	float myMaxShadowBias = 0.005f;
 	int myShadowSamples = 1;

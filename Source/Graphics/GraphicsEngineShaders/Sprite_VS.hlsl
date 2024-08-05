@@ -6,6 +6,5 @@ Sprite_VSout main()
 {
     Sprite_VSout result;
     result.LocalSpaceMatrix = SPB_Matrix;
-    result.IsScreenSpace = SPB_IsScreenSpace;
 	return result;
 }

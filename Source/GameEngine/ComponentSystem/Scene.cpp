@@ -58,6 +58,8 @@ void Scene::Update()
 
 void Scene::Render()
 {
+	Engine::GetInstance().GetDebugDrawer().DrawBoundingBox(mySceneBoundingBox);
+	myDirectionalLight->GetComponent<DirectionalLight>()->RecalculateShadowFrustum(myCamera, mySceneBoundingBox);
 	QueueDirectionalLightShadows();
 	QueuePointLightShadows();
 	QueueSpotLightShadows();
@@ -103,6 +105,58 @@ void Scene::Instantiate(std::shared_ptr<GameObject> aGameObject)
 	}
 
 	myGameObjects.emplace_back(aGameObject);
+
+	if (aGameObject->GetComponent<Transform>())
+	{
+		CU::Vector3f bbMin = mySceneBoundingBox.GetMin();
+		CU::Vector3f bbMax = mySceneBoundingBox.GetMax();
+		std::shared_ptr<Transform> objectTransform = aGameObject->GetComponent<Transform>();
+
+		if (aGameObject->GetComponent<Model>())
+		{
+			auto& corners = aGameObject->GetComponent<Model>()->GetBoundingBox().GetCorners();
+
+			for (CU::Vector3f corner : corners)
+			{
+				corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * objectTransform->GetWorldMatrix());
+
+				bbMin.x = std::fminf(corner.x, bbMin.x);
+				bbMax.x = std::fmaxf(corner.x, bbMax.x);
+				bbMin.y = std::fminf(corner.y, bbMin.y);
+				bbMax.y = std::fmaxf(corner.y, bbMax.y);
+				bbMin.z = std::fminf(corner.z, bbMin.z);
+				bbMax.z = std::fmaxf(corner.z, bbMax.z);
+			}
+		}
+		else if (aGameObject->GetComponent<AnimatedModel>())
+		{
+			auto& corners = aGameObject->GetComponent<AnimatedModel>()->GetBoundingBox().GetCorners();
+			for (CU::Vector3f corner : corners)
+			{
+				corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * objectTransform->GetWorldMatrix());
+
+				bbMin.x = std::fminf(corner.x, bbMin.x);
+				bbMax.x = std::fmaxf(corner.x, bbMax.x);
+				bbMin.y = std::fminf(corner.y, bbMin.y);
+				bbMax.y = std::fmaxf(corner.y, bbMax.y);
+				bbMin.z = std::fminf(corner.z, bbMin.z);
+				bbMax.z = std::fmaxf(corner.z, bbMax.z);
+			}
+		}
+		else
+		{
+			CU::Vector3f point = objectTransform->GetTranslation(true);
+
+			bbMin.x = std::fminf(point.x, bbMin.x);
+			bbMax.x = std::fmaxf(point.x, bbMax.x);
+			bbMin.y = std::fminf(point.y, bbMin.y);
+			bbMax.y = std::fmaxf(point.y, bbMax.y);
+			bbMin.z = std::fminf(point.z, bbMin.z);
+			bbMax.z = std::fmaxf(point.z, bbMax.z);
+		}
+
+		mySceneBoundingBox.InitWithMinAndMax(bbMin, bbMax);
+	}
 
 	// Temp
 	if (aGameObject->GetComponent<AmbientLight>())
@@ -286,7 +340,7 @@ void Scene::QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disable
 		std::shared_ptr<Model> model = gameObject->GetComponent<Model>();
 		if (model && model->GetActive())
 		{
-			if (disableViewCulling || !GraphicsEngine::Get().UseViewCulling || aRenderCamera->GetViewcullingIntersection(gameObject->GetComponent<Transform>(), model->GetBoundingBox()))
+			if (disableViewCulling || !GraphicsEngine::Get().UseViewCulling || !model->GetShouldViewcull() || aRenderCamera->GetViewcullingIntersection(gameObject->GetComponent<Transform>(), model->GetBoundingBox()))
 			{
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model, aPSOoverride);
 			}
@@ -295,7 +349,7 @@ void Scene::QueueGameObjects(std::shared_ptr<Camera> aRenderCamera, bool disable
 		std::shared_ptr<AnimatedModel> animModel = gameObject->GetComponent<AnimatedModel>();
 		if (animModel && animModel->GetActive())
 		{
-			if (disableViewCulling || !GraphicsEngine::Get().UseViewCulling || aRenderCamera->GetViewcullingIntersection(gameObject->GetComponent<Transform>(), animModel->GetBoundingBox()))
+			if (disableViewCulling || !GraphicsEngine::Get().UseViewCulling || !animModel->GetShouldViewcull() || aRenderCamera->GetViewcullingIntersection(gameObject->GetComponent<Transform>(), animModel->GetBoundingBox()))
 			{
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel, aPSOoverride);
 			}

@@ -26,6 +26,7 @@ void LightSource::Update()
 void LightSource::EnableShadowCasting(unsigned aShadowMapWidth, unsigned aShadowMapHeight)
 {
     myShadowMap = std::make_shared<Texture>();
+    myShadowMapSize = { static_cast<float>(aShadowMapWidth), static_cast<float>(aShadowMapHeight) };
     myCastsShadows = GraphicsEngine::Get().CreateShadowMap(gameObject->GetName() + "_ShadowMap", aShadowMapWidth, aShadowMapHeight, *myShadowMap);
 }
 

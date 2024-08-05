@@ -12,8 +12,7 @@ RenderSpritesheet::RenderSpritesheet(std::shared_ptr<Spritesheet> aSpritesheet)
 {
     material = aSpritesheet->GetMaterial();
     texture = aSpritesheet->GetTexture();
-    matrix = aSpritesheet->GetScreenspaceMatrix();
-    isScreenspace = aSpritesheet->GetIsScreenspace();
+    matrix = aSpritesheet->GetMatrix();
     sheetDimensions = { static_cast<float>(aSpritesheet->GetSheetDimensions().x), static_cast<float>(aSpritesheet->GetSheetDimensions().y) };
     currentFrame = static_cast<float>(aSpritesheet->GetCurrentFrame());
 }
@@ -24,7 +23,6 @@ void RenderSpritesheet::Execute()
 
     SpriteBuffer spriteBufferData;
     spriteBufferData.Matrix = matrix;
-    spriteBufferData.IsScreenSpace = isScreenspace;
     spriteBufferData.CurrentFrame = currentFrame;
     spriteBufferData.SpriteSheetDimensions = sheetDimensions;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::SpriteBuffer, spriteBufferData);

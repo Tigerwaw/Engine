@@ -4,6 +4,7 @@
 #include <string>
 
 #include "GameEngine/Intersections/AABB3D.hpp"
+namespace CU = CommonUtilities;
 
 class GameObject;
 class SceneHandler;
@@ -40,6 +41,7 @@ private:
 	std::vector<std::shared_ptr<GameObject>> myGameObjects;
 	unsigned myActiveGameObjectAmount = 0;
 	bool myIsActive = false;
+	CU::AABB3D<float> mySceneBoundingBox;
 
 	// TEMP (?)
 	std::shared_ptr<GameObject> myCamera;

@@ -24,6 +24,7 @@ namespace CommonUtilities
 		const Vector3<T> GetMin() const;
 		const Vector3<T> GetMax() const;
 		const std::vector<Vector3<T>> GetCorners() const;
+		const Vector3<T> GetCenter() const;
 	private:
 		Vector3<T> minPoint;
 		Vector3<T> maxPoint;
@@ -104,5 +105,11 @@ namespace CommonUtilities
 		corners.emplace_back(maxPoint);
 		corners.emplace_back(Vector3<T>(minPoint.x, maxPoint.y, maxPoint.z));
 		return corners;
+	}
+
+	template<class T>
+	inline const Vector3<T> AABB3D<T>::GetCenter() const
+	{
+		return Vector3<T>::Abs(maxPoint) - Vector3<T>::Abs(minPoint);
 	}
 }

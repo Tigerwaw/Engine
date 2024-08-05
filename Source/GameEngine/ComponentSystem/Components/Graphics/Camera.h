@@ -27,7 +27,7 @@ public:
 	float GetFarPlane() const { return myFarPlane; }
 	float GetHorizontalFOV() const { return myHFOV; }
 
-	std::array<CU::Vector3f, 8>& GetFrustumCorners() { return myFrustumCorners; }
+	const std::array<CU::Vector3f, 8>& GetFrustumCorners() const { return myFrustumCorners; }
 	// Get Frustum Plane Volume in object space (Leave arguments empty to get in world space)
 	CU::PlaneVolume<float> GetFrustumPlaneVolume(CU::Matrix4x4f aObjectSpace = CU::Matrix4x4f());
 	bool GetViewcullingIntersection(std::shared_ptr<Transform> aObjectTransform, CU::AABB3D<float> aObjectAABB);

@@ -18,18 +18,15 @@ public:
 
     // Set just a texture and render like a regular sprite.
     void SetTexture(std::shared_ptr<Texture> aTexture);
-    void SetScreenspacePosition(CU::Vector2f aPosition);
-    void SetScreenspaceSize(CU::Vector2f aSize);
-    void SetIsScreenspace(bool aIsScreenspace);
+    void SetPosition(CU::Vector2f aPosition);
+    void SetSize(CU::Vector2f aSize);
 
     std::shared_ptr<Material> GetMaterial() const { return myMaterial; }
     std::shared_ptr<Texture> GetTexture() const { return myTexture; }
-    const CU::Matrix4x4f GetScreenspaceMatrix() const { return myScreenspaceMatrix; }
-    const bool GetIsScreenspace() const { return myIsScreenspace; }
+    const CU::Matrix4x4f GetMatrix() const { return myMatrix; }
 private:
     std::shared_ptr<Material> myMaterial;
     std::shared_ptr<Texture> myTexture;
 
-    CU::Matrix4x4f myScreenspaceMatrix;
-    bool myIsScreenspace;
+    CU::Matrix4x4f myMatrix;
 };

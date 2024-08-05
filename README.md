@@ -27,7 +27,6 @@
 #### Known issues and shortcomings
 
 * Memory leaks (suspected to come from the graphics command list or the runtime-updating of buffers).
-* Frustum against AABB intersection is not completely correct and only returns true if atleast one corner of the aabb is within the frustum.
 * Soft shadows create artifacts and need to be improved.
 * The scene-loading from JSON is naively implemented and will most likely need to be improved for a more pleasant working experience.
 

@@ -6,8 +6,8 @@
 
 Sprite::Sprite(CU::Vector2f aPosition, CU::Vector2f aSize)
 {
-    SetScreenspacePosition(aPosition);
-    SetScreenspaceSize(aSize);
+    SetPosition(aPosition);
+    SetSize(aSize);
 }
 
 Sprite::~Sprite()
@@ -25,19 +25,14 @@ void Sprite::SetTexture(std::shared_ptr<Texture> aTexture)
     myTexture = aTexture;
 }
 
-void Sprite::SetScreenspacePosition(CU::Vector2f aPosition)
+void Sprite::SetPosition(CU::Vector2f aPosition)
 {
-    myScreenspaceMatrix(4, 1) = aPosition.x;
-    myScreenspaceMatrix(4, 2) = aPosition.y;
+    myMatrix(4, 1) = aPosition.x;
+    myMatrix(4, 2) = aPosition.y;
 }
 
-void Sprite::SetScreenspaceSize(CU::Vector2f aSize)
+void Sprite::SetSize(CU::Vector2f aSize)
 {
-    myScreenspaceMatrix(1, 1) = aSize.x;
-    myScreenspaceMatrix(2, 2) = aSize.y;
-}
-
-void Sprite::SetIsScreenspace(bool aIsScreenspace)
-{
-    myIsScreenspace = aIsScreenspace;
+    myMatrix(1, 1) = aSize.x;
+    myMatrix(2, 2) = aSize.y;
 }

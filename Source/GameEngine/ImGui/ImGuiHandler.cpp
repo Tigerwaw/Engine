@@ -176,7 +176,7 @@ void ImGuiHandler::Lighting()
 			ImGui::Text("Shadow Min Bias");
 			if (ImGui::SliderFloat("##DirectionalMinBias", &minBias, 0, 0.001f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
 			ImGui::Text("Shadow Max Bias");
-			if (ImGui::SliderFloat("##DirectionalMaxBias", &maxBias, 0, 0.003f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
+			if (ImGui::SliderFloat("##DirectionalMaxBias", &maxBias, 0, 0.01f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
 			ImGui::Text("Shadow Samples");
 			if (ImGui::SliderInt("##DirectionalSamples", &shadowSamples, 1, 64)) dLight->SetShadowSamples(shadowSamples);
 			ImGui::Spacing();

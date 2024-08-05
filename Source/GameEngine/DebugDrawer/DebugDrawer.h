@@ -23,11 +23,11 @@ public:
     void ClearObjects();
     void DrawLine(CU::Vector3f aFromPosition, CU::Vector3f aToPosition, CU::Vector4f aColor = { 1.0f, 1.0f, 1.0f, 1.0f });
     void DrawCameraFrustum(std::shared_ptr<Camera> aCamera, CU::Vector4f aColor = { 1.0f, 1.0f, 1.0f, 1.0f });
+    void DrawBoundingBox(CU::AABB3D<float> aAABB, CU::Matrix4x4f aWorldMatrix = CU::Matrix4x4f(), CU::Vector4f aColor = { 1.0f, 1.0f, 1.0f, 1.0f });
     void DrawBoundingBox(std::shared_ptr<Model> aModel, CU::Vector4f aColor = { 1.0f, 1.0f, 1.0f, 1.0f });
     void DrawBoundingBox(std::shared_ptr<AnimatedModel> aModel, CU::Vector4f aColor = { 1.0f, 1.0f, 1.0f, 1.0f });
     void DrawBoundingBox(std::shared_ptr<DebugModel> aModel, CU::Vector4f aColor = { 1.0f, 1.0f, 1.0f, 1.0f });
 private:
-    void DrawBoundingBoxInternal(CU::AABB3D<float> aAABB, CU::Matrix4x4f aWorldMatrix, CU::Vector4f aColor);
 
     std::vector<DebugLineVertex> myLineVertices;
     std::shared_ptr<DynamicVertexBuffer> myLineBuffer;

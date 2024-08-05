@@ -12,8 +12,7 @@ RenderSprite::RenderSprite(std::shared_ptr<Sprite> aSprite)
 {
     material = aSprite->GetMaterial();
     texture = aSprite->GetTexture();
-    matrix = aSprite->GetScreenspaceMatrix();
-    isScreenspace = aSprite->GetIsScreenspace();
+    matrix = aSprite->GetMatrix();
 }
 
 void RenderSprite::Execute()
@@ -22,7 +21,6 @@ void RenderSprite::Execute()
 
     SpriteBuffer spriteBufferData;
     spriteBufferData.Matrix = matrix;
-    spriteBufferData.IsScreenSpace = isScreenspace;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::SpriteBuffer, spriteBufferData);
 
     if (material)

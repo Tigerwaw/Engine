@@ -17,6 +17,7 @@ namespace CommonUtilities
 		// Add a Plane to the PlaneVolume.
 		void AddPlane(const Plane<T>& aPlane);
 		Plane<T> GetPlane(unsigned aPlaneIndex);
+		const std::vector<Plane<T>>& GetPlanes() const { return myPlanes; }
 
 		// Returns whether a point is inside the PlaneVolume: it is inside when the point is on the
 		// plane or on the side the normal is pointing away from for all the planes in the PlaneVolume.

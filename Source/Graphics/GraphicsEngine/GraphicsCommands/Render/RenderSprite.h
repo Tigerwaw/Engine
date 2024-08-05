@@ -20,6 +20,5 @@ private:
 	std::shared_ptr<Material> material;
 	std::shared_ptr<Texture> texture;
 	CU::Matrix4x4f matrix;
-	bool isScreenspace;
 };
 

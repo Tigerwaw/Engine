@@ -84,7 +84,7 @@ void Camera::InitOrtographicProjection(float aLeft, float aRight, float aTop, fl
 	myFrustumCorners[7] = CU::Vector3f(aRight, aBottom, aFarPlane);
 }
 
-// Does not work with scale yet.
+
 CU::PlaneVolume<float> Camera::GetFrustumPlaneVolume(CU::Matrix4x4f aToObjectSpace)
 {
 	std::vector<CU::Vector3f> corners;

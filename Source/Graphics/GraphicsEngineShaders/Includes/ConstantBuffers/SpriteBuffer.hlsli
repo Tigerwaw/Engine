@@ -4,11 +4,9 @@
 cbuffer SpriteBuffer : register(b6)
 {
     float4x4 SPB_Matrix;
-    bool SPB_IsScreenSpace;
-    
-    // Spritesheet anim
     float SPB_CurrentFrame;
     float2 SPB_SpritesheetDimensions;
+    float SPB_Padding;
 }
 
 #endif // _SPRITE_BUFFER_

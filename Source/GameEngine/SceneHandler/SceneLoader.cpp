@@ -235,6 +235,11 @@ void SceneLoader::CreateModelComponent(std::shared_ptr<GameObject> aGO, nl::json
     {
         std::shared_ptr<Model> model = aGO->AddComponent<Model>();
 
+        if (aComp.contains("ShouldViewcull"))
+        {
+            model->SetViewcull(aComp["ShouldViewcull"].get<bool>());
+        }
+
         model->SetMesh(AssetManager::Get().GetAsset<MeshAsset>(aComp["Model"].get<std::string>())->mesh);
 
         if (aComp.contains("Materials"))
@@ -252,6 +257,11 @@ void SceneLoader::CreateAnimatedModelComponent(std::shared_ptr<GameObject> aGO, 
     if (aComp.contains("Model"))
     {
         std::shared_ptr<AnimatedModel> model = aGO->AddComponent<AnimatedModel>();
+
+        if (aComp.contains("ShouldViewcull"))
+        {
+            model->SetViewcull(aComp["ShouldViewcull"].get<bool>());
+        }
 
         model->SetMesh(AssetManager::Get().GetAsset<MeshAsset>(aComp["Model"].get<std::string>())->mesh);
 

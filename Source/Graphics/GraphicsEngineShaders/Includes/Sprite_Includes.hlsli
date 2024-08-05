@@ -4,13 +4,11 @@
 struct Sprite_VSout
 {
     float4x4 LocalSpaceMatrix   : POSITION;
-    bool IsScreenSpace          : ISSCREENSPACE;
 };
 
 struct Sprite_GSout
 {
     float4 Position     : SV_Position;
-    float4 WorldPos     : WORLDPOSITION;
     float2 TexCoord0    : TEXCOORD0;
     uint PrimID         : SV_PrimitiveID;
 };

@@ -89,6 +89,9 @@ public:
     std::string GetCurrentAnimationNameOnLayer(std::string aStartJoint = "");
 
     std::array<CU::Matrix4x4f, 128> GetCurrentPose() { return myJointTransforms; }
+
+    void SetViewcull(bool aShouldViewcull) { myShouldViewcull = aShouldViewcull; }
+    const bool GetShouldViewcull() const { return myShouldViewcull; }
 private:
     void UpdateAnimationLayer(AnimationLayer& aAnimationLayer);
     void UpdateAnimationState(AnimationState& aAnimationState);
@@ -106,6 +109,7 @@ private:
     std::shared_ptr<Mesh> myMesh = nullptr;
     std::vector<std::shared_ptr<Material>> myMaterials;
     std::unordered_map<unsigned, unsigned> mySlotToIndex;
+    bool myShouldViewcull = true;
 
     std::vector<AnimationLayer> myAnimationLayers;
     std::unordered_map<std::string, unsigned> myJointNameToLayerIndex;

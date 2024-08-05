@@ -70,7 +70,7 @@ void DebugDrawer::DrawLine(CU::Vector3f aFromPosition, CU::Vector3f aToPosition,
 
 void DebugDrawer::DrawCameraFrustum(std::shared_ptr<Camera> aCamera, CU::Vector4f aColor)
 {
-    CU::Matrix4x4f camMatrix = aCamera->gameObject->GetComponent<Transform>()->GetWorldMatrix();
+    CU::Matrix4x4f camMatrix = aCamera->gameObject->GetComponent<Transform>()->GetMatrix();
     std::array<CU::Vector3f, 8> frustumVolume = aCamera->GetFrustumCorners();
 
     for (auto& pos : frustumVolume)
@@ -98,24 +98,24 @@ void DebugDrawer::DrawBoundingBox(std::shared_ptr<Model> aModel, CU::Vector4f aC
 {
     CU::Matrix4x4f objectMatrix = aModel->gameObject->GetComponent<Transform>()->GetWorldMatrix();
     CU::AABB3D<float> boundingBox = aModel->GetBoundingBox();
-    DrawBoundingBoxInternal(boundingBox, objectMatrix, aColor);
+    DrawBoundingBox(boundingBox, objectMatrix, aColor);
 }
 
 void DebugDrawer::DrawBoundingBox(std::shared_ptr<AnimatedModel> aModel, CU::Vector4f aColor)
 {
     CU::Matrix4x4f objectMatrix = aModel->gameObject->GetComponent<Transform>()->GetWorldMatrix();
     CU::AABB3D<float> boundingBox = aModel->GetBoundingBox();
-    DrawBoundingBoxInternal(boundingBox, objectMatrix, aColor);
+    DrawBoundingBox(boundingBox, objectMatrix, aColor);
 }
 
 void DebugDrawer::DrawBoundingBox(std::shared_ptr<DebugModel> aModel, CU::Vector4f aColor)
 {
     CU::Matrix4x4f objectMatrix = aModel->gameObject->GetComponent<Transform>()->GetWorldMatrix();
     CU::AABB3D<float> boundingBox = aModel->GetBoundingBox();
-    DrawBoundingBoxInternal(boundingBox, objectMatrix, aColor);
+    DrawBoundingBox(boundingBox, objectMatrix, aColor);
 }
 
-void DebugDrawer::DrawBoundingBoxInternal(CU::AABB3D<float> aAABB, CU::Matrix4x4f aWorldMatrix, CU::Vector4f aColor)
+void DebugDrawer::DrawBoundingBox(CU::AABB3D<float> aAABB, CU::Matrix4x4f aWorldMatrix, CU::Vector4f aColor)
 {
     std::vector<CU::Vector3f> corners = aAABB.GetCorners();
 

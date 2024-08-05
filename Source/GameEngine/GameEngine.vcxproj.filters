@@ -102,9 +102,6 @@
     <ClCompile Include="SceneHandler\SceneLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentSystem\Components\Graphics\WorldSpaceSprite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComponentSystem\Component.h">
@@ -279,9 +276,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SceneHandler\SceneLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentSystem\Components\Graphics\WorldSpaceSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

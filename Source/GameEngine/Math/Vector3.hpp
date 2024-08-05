@@ -110,7 +110,7 @@ namespace CommonUtilities
 	template<class T>
 	inline Vector3<T> Vector3<T>::Abs(const Vector3<T>& aVector)
 	{
-		return { Abs(aVector.x), Abs(aVector.y), Abs(aVector.z) };
+		return { static_cast<T>(abs(aVector.x)), static_cast<T>(abs(aVector.y)), static_cast<T>(abs(aVector.z)) };
 	}
 
 	template<class T>
