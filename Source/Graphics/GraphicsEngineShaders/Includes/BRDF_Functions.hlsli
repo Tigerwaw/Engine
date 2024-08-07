@@ -128,7 +128,72 @@ float3 BRDF_AmbientLighting(float3 viewPos, float3 diffuseColor, float3 specular
     return kA * aAmbientColor * aAmbientIntensity;
 }
 
+float PenumbraSize(float zReceiver, float zBlocker)
+{
+    return (zReceiver - zBlocker) /  zBlocker;
+}
 
+void FindBlocker(Texture2D shadowMap, float lightSizeUV, float lightNearPlane, out float avgBlockerDepth, out float numBlockers, float2 uv, float zReceiver)
+{
+    float searchWidth = lightSizeUV * (zReceiver - lightNearPlane) / zReceiver;
+    
+    float blockerSum = 0;
+    numBlockers = 0;
+    
+    for (int i = 0; i < 16; ++i)
+    {
+        float shadowMapDepth = shadowMap.SampleLevel(DefaultSampler, uv + PoissonDisk[i] * searchWidth, 0).r;
+        
+        if (shadowMapDepth < zReceiver)
+        {
+            blockerSum += shadowMapDepth;
+            numBlockers++;
+        }
+    }
+    
+    avgBlockerDepth = blockerSum / numBlockers;
+}
+
+float PCF_Filter(Texture2D shadowMap, float2 uv, float zReceiver, float filterRadiusUV)
+{
+    float sum = 0.0f;
+    for (int i = 0; i < 16; ++i)
+    {
+        float2 offset = PoissonDisk[i] * filterRadiusUV;
+        sum += shadowMap.SampleCmpLevelZero(ShadowCmpSampler, uv + offset, zReceiver);
+    }
+
+    return sum / 16;
+}
+
+float PCSS(Texture2D shadowMap, float3 coords)
+{
+    float lightWorldSize = 4.0f;
+    float lightFrustumWidth = 2048.0f;
+    float lightSizeUV = lightWorldSize / lightFrustumWidth;
+    float lightNearPlane = 1.0f;
+
+    float2 uv = coords.xy;
+    float zReceiver = coords.z;
+    
+    float avgBlockerDepth = 0;
+    float numBlockers = 0;
+    FindBlocker(shadowMap, lightSizeUV, lightNearPlane, avgBlockerDepth, numBlockers, uv, zReceiver);
+    
+    if (numBlockers == 0)
+    {
+        return 1.0f;
+    }
+    else if (numBlockers == 16)
+    {
+        return 0.0f;
+    }
+    
+    float penumbraRatio = PenumbraSize(zReceiver, avgBlockerDepth);
+    float filterRadiusUV = penumbraRatio * lightSizeUV * lightNearPlane / zReceiver;
+    
+    return PCF_Filter(shadowMap, uv, zReceiver, filterRadiusUV);
+}
 
 
 // Calculating shadows from different types of light sources
@@ -138,11 +203,12 @@ float ShadowFactorDLightSpotLight(float4x4 lightView, float4x4 lightProj, float3
     float4 lightSpacePos = mul(lightView, worldPos);
     lightSpacePos = mul(lightProj, lightSpacePos);
     float3 lightSpaceUVD = lightSpacePos.xyz / lightSpacePos.w;
+    float2 shadowUV = lightSpaceUVD.xy * 0.5f + 0.5f;
+    shadowUV.y = 1 - shadowUV.y;
     float bias = max(maxBias * (1 - dot(pixelNormal, normalize(-lightDir))), minBias);
     float D = lightSpaceUVD.z - bias;
     
-    float2 shadowUV = lightSpaceUVD.xy * 0.5f + 0.5f;
-    shadowUV.y = 1 - shadowUV.y;
+    //return PCSS(shadowMap, float3(shadowUV, D));
     
     float2 shadowMapDim;
     shadowMap.GetDimensions(shadowMapDim.x, shadowMapDim.y);
@@ -151,7 +217,7 @@ float ShadowFactorDLightSpotLight(float4x4 lightView, float4x4 lightProj, float3
     [unroll(64)]
     for (int i = 0; i < samples; i++)
     {
-        float2 uv = shadowUV + PoissonDisk[i] * texelSize;
+        float2 uv = shadowUV + PoissonDisk[i] * texelSize * ((float) samples / 15.0);
         shadowFactor += shadowMap.SampleCmpLevelZero(ShadowCmpSampler, uv, D).r;
     }
     shadowFactor /= samples;
@@ -177,7 +243,7 @@ float ShadowFactorPointLight(PointLightData pointLight, float4 worldPos, float3 
     [unroll(64)]
     for (int i = 0; i < samples; i++)
     {
-        float2 directionOffset = pixelToLight.xy + PoissonDisk[i] * texelSize;
+        float2 directionOffset = pixelToLight.xy + PoissonDisk[i] * texelSize * (float)samples * 30.0;
         float3 offsetDirection = float3(directionOffset.xy, pixelToLight.z);
         shadowFactor += shadowCubemap.SampleCmpLevelZero(ShadowCmpSampler, offsetDirection, D).r;
     }
@@ -192,14 +258,14 @@ float ShadowFactorPointLight(PointLightData pointLight, float4 worldPos, float3 
 
 float3 BRDF_DirectionalLight(DirLightData dirLight, float3 viewPos, float4 worldPos, float3 pixelNormal, float3 diffuseColor, float3 specularColor, float roughness, Texture2D shadowMap)
 {
-    float3 directLight = BRDF_DirectLighting(viewPos, worldPos.xyz, dirLight.Color, -dirLight.Direction.xyz, worldPos.xyz, pixelNormal, diffuseColor, specularColor, roughness);
+    float3 directLight = BRDF_DirectLighting(viewPos, worldPos.xyz, dirLight.Color, -dirLight.Direction, worldPos.xyz, pixelNormal, diffuseColor, specularColor, roughness);
 
     // Attenuation
-    float lightAttenuation = saturate(dot(pixelNormal, -dirLight.Direction.xyz));
+    float lightAttenuation = saturate(dot(pixelNormal, -dirLight.Direction));
     float intensity = dirLight.Intensity * lightAttenuation;
     directLight *= intensity;
     
-    float shadowFactor = ShadowFactorDLightSpotLight(dirLight.View, dirLight.Projection, dirLight.Direction.xyz, worldPos, pixelNormal, dirLight.MinBias, dirLight.MaxBias, shadowMap, dirLight.ShadowSamples);
+    float shadowFactor = ShadowFactorDLightSpotLight(dirLight.View, dirLight.Projection, dirLight.Direction, worldPos, pixelNormal, dirLight.MinBias, dirLight.MaxBias, shadowMap, dirLight.ShadowSamples);
     directLight *= saturate(shadowFactor);
     return directLight;
 }

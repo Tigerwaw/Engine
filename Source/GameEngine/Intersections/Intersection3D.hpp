@@ -151,6 +151,43 @@ namespace CommonUtilities
 		return false;
 	}
 
+	template <class T>
+	bool IntersectionAABBRay(const AABB3D<T>& aAABB, const Ray<T>& aRay, Vector3<T>& outIntersectionPoint = Vector3<T>())
+	{
+		std::vector<Plane<T>> planeVector;
+
+		planeVector.push_back(Plane<T>(aAABB.GetMin(), Vector3<T>(-1, 0, 0)));
+		planeVector.push_back(Plane<T>(aAABB.GetMin(), Vector3<T>(0, -1, 0)));
+		planeVector.push_back(Plane<T>(aAABB.GetMin(), Vector3<T>(0, 0, -1)));
+		planeVector.push_back(Plane<T>(aAABB.GetMax(), Vector3<T>(1, 0, 0)));
+		planeVector.push_back(Plane<T>(aAABB.GetMax(), Vector3<T>(0, 1, 0)));
+		planeVector.push_back(Plane<T>(aAABB.GetMax(), Vector3<T>(0, 0, 1)));
+
+		Vector3<T> closestIntersectionPoint;
+		float closestDistanceSqr = FLT_MAX;
+		bool hit = false;
+
+		for each (Plane<T> plane in planeVector)
+		{
+			Vector3<T> intersectionPoint;
+			if (IntersectionPlaneRay(plane, aRay, intersectionPoint))
+			{
+				hit = aAABB.IsInside(intersectionPoint);
+				if (hit)
+				{
+					float pointDistanceSqr = Vector3<T>(intersectionPoint - aRay.GetPoint()).LengthSqr();
+					if (pointDistanceSqr < closestDistanceSqr)
+					{
+						closestDistanceSqr = pointDistanceSqr;
+						closestIntersectionPoint = intersectionPoint;
+					}
+				}
+			}
+		}
+		
+		return hit;
+	}
+
 	// If the ray intersects the sphere, true is returned, if not, false is returned.
 	// A ray intersecting the surface of the sphere is considered as intersecting it.
 	template <class T>

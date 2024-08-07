@@ -176,7 +176,7 @@ void ImGuiHandler::Lighting()
 			ImGui::Text("Shadow Min Bias");
 			if (ImGui::SliderFloat("##DirectionalMinBias", &minBias, 0, 0.001f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
 			ImGui::Text("Shadow Max Bias");
-			if (ImGui::SliderFloat("##DirectionalMaxBias", &maxBias, 0, 0.01f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
+			if (ImGui::SliderFloat("##DirectionalMaxBias", &maxBias, 0, 0.1f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
 			ImGui::Text("Shadow Samples");
 			if (ImGui::SliderInt("##DirectionalSamples", &shadowSamples, 1, 64)) dLight->SetShadowSamples(shadowSamples);
 			ImGui::Spacing();
@@ -207,7 +207,7 @@ void ImGuiHandler::Lighting()
 			ImGui::Text("Shadow Min Bias");
 			if (ImGui::SliderFloat("##PointMinBias", &minBias, 0, 0.001f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
 			ImGui::Text("Shadow Max Bias");
-			if (ImGui::SliderFloat("##PointMaxBias", &maxBias, 0, 0.001f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
+			if (ImGui::SliderFloat("##PointMaxBias", &maxBias, 0, 0.01f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
 			ImGui::Text("Shadow Samples");
 			if (ImGui::SliderInt("##PointSamples", &shadowSamples, 1, 64)) pLight->SetShadowSamples(shadowSamples);
 			ImGui::Spacing();
@@ -248,7 +248,7 @@ void ImGuiHandler::Lighting()
 			ImGui::Text("Shadow Min Bias");
 			if (ImGui::SliderFloat("##SpotMinBias", &minBias, 0, 0.001f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
 			ImGui::Text("Shadow Max Bias");
-			if (ImGui::SliderFloat("##SpotMaxBias", &maxBias, 0, 0.001f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
+			if (ImGui::SliderFloat("##SpotMaxBias", &maxBias, 0, 0.1f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
 			ImGui::Text("Shadow Samples");
 			if (ImGui::SliderInt("##SpotSamples", &shadowSamples, 1, 64)) sLight->SetShadowSamples(shadowSamples);
 			ImGui::Spacing();

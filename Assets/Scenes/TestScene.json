@@ -9,7 +9,7 @@
           "Type": "Transform",
           "Position": [ 0.0, 0.0, 0.0 ],
           "Rotation": [ 0.0, 0.0, 0.0 ],
-          "Scale": [ 2000.0, 2000.0, 2000.0 ]
+          "Scale": [ 1000.0, 1000.0, 1000.0 ]
         },
         {
           "Type": "Model",
@@ -88,7 +88,7 @@
       "Components": [
         {
           "Type": "Transform",
-          "Position": [ -1500.0, 0.0, 500.0 ],
+          "Position": [ -500.0, 0.0, 500.0 ],
           "Rotation": [ 0.0, 180.0, 0.0 ],
           "Scale": [ 1.0, 1.0, 1.0 ]
         },
@@ -350,18 +350,18 @@
           "Intensity": 1.0,
           "Color": [ 1.0, 1.0, 1.0 ],
           "CastShadows": true,
-          "ShadowTextureSize": 2048,
+          "ShadowTextureSize": 4096,
           "MinShadowBias": 0.0003,
-          "MaxShadowBias": 0.01,
+          "MaxShadowBias": 0.016,
           "ShadowSamples": 32
         },
         {
           "Type": "Camera",
           "Perspective": false,
-          "LeftPlane": -512.0,
-          "RightPlane": 512.0,
-          "TopPlane": 512.0,
-          "BottomPlane": -512.0,
+          "LeftPlane": -1024.0,
+          "RightPlane": 1024.0,
+          "TopPlane": 1024.0,
+          "BottomPlane": -1024.0,
           "NearPlane": 1.0,
           "FarPlane": 6000.0
         },
@@ -390,7 +390,7 @@
           "ShadowTextureSize": 512,
           "MinShadowBias": 0.0,
           "MaxShadowBias": 0.00014,
-          "ShadowSamples": 8
+          "ShadowSamples": 32
         },
         {
           "Type": "Camera",
@@ -425,14 +425,14 @@
           "CastShadows": true,
           "ShadowTextureSize": 512,
           "MinShadowBias": 0.00002,
-          "MaxShadowBias": 0.00018,
-          "ShadowSamples": 8
+          "MaxShadowBias": 0.051,
+          "ShadowSamples": 32
         },
         {
           "Type": "Camera",
           "Perspective": true,
           "FOV": 90.0,
-          "NearPlane": 1.0,
+          "NearPlane": 50.0,
           "FarPlane": 2000.0,
           "Resolution": [ 512.0, 512.0 ]
         },
