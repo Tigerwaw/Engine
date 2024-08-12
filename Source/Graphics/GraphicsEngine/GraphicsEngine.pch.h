@@ -1,4 +1,4 @@
-#include "Logger/Logger.h"
+#pragma once
 #include <d3d11.h>
 #include <wrl.h>
 
@@ -15,6 +15,7 @@
 #include <unordered_map>
 #include <any>
 
+#include "Logger/Logger.h"
 #include "GraphicsEngine/GraphicsEngine.h"
 
 #if _DEBUG

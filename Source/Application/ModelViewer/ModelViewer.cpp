@@ -1,118 +1,21 @@
-#pragma once
-#include "ModelViewer.h"
+#include "GameEngine/Application.h"
+#include "GameEngine/EntryPoint.h"
 
-#include <filesystem>
-#include <future>
-#include <iostream>
-#include <vector>
-
-DEFINE_LOG_CATEGORY(LogModelViewer);
-
-#if _DEBUG
-#include "imgui.h"
-#endif 
-
-#include "AssetManager.h"
-#include "Asset.h"
-
-#include "GameEngine/Engine.h"
-#include "GameEngine/Input/InputHandler.h"
-#include "GameEngine/SceneHandler/SceneHandler.h"
-#include "GameEngine/DebugDrawer/DebugDrawer.h"
-#include "GameEngine/Audio/AudioEngine.h"
-#include "GameEngine/ImGui/ImGuiHandler.h"
-
-#include "Graphics/GraphicsEngine/Objects/Spritesheet.h"
-
-namespace CU = CommonUtilities;
-
-ModelViewer::ModelViewer() = default;
-
-void ModelViewer::Shutdown()
+class ModelViewer : public Application
 {
-	Engine::GetInstance().Destroy();
+public:
+	ModelViewer() {}
+    ~ModelViewer() {}
+
+    void InitializeApplication() override;
+};
+
+Application* CreateApplication()
+{
+    return new ModelViewer();
 }
 
-bool ModelViewer::Initialize(WNDPROC aWindowProcess)
-{
-	Engine::GetInstance();
-
-	SIZE windowSize = { static_cast<long>(Engine::GetInstance().GetWindowSize().x), static_cast<long>(Engine::GetInstance().GetWindowSize().y) };
-	LPCWSTR windowTitle = L"ModelViewer";
-	constexpr LPCWSTR windowClassName = L"ModelViewerMainWindow";
-
-	if (Engine::GetInstance().GetIsFullscreen())
-	{
-		windowSize = { GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };
-	}
-
-	// First we create our Window Class
-	WNDCLASS windowClass = {};
-	windowClass.style = CS_VREDRAW | CS_HREDRAW | CS_OWNDC;
-	windowClass.lpfnWndProc = aWindowProcess;
-	windowClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	windowClass.lpszClassName = windowClassName;
-	RegisterClass(&windowClass);
-
-	LONG posX = (GetSystemMetrics(SM_CXSCREEN) - windowSize.cx) / 2;
-	if (posX < 0)
-		posX = 0;
-
-	LONG posY = (GetSystemMetrics(SM_CYSCREEN) - windowSize.cy) / 2;
-	if (posY < 0)
-		posY = 0;
-
-	long flags;
-
-	if (Engine::GetInstance().GetIsBorderless())
-	{
-		flags = WS_POPUP;
-	}
-	else
-	{
-		flags = WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME | WS_POPUP;
-	}
-
-	// Then we use the class to create our window
-	myMainWindowHandle = CreateWindow(
-		windowClassName,		// Classname
-		windowTitle,			// Window Title
-		flags,					// Flags
-		posX,
-		posY,
-		windowSize.cx,
-		windowSize.cy,
-		nullptr, nullptr, nullptr,
-		nullptr
-	);
-
-	MVLOG(Log, "Initializing Graphics Engine...");
-
-	if (!GraphicsEngine::Get().Initialize(myMainWindowHandle))
-	{
-		MVLOG(Log, "Failed to Initialize Graphics Engine...");
-		return false;
-	}
-
-	CU::Vector2f resolution = Engine::GetInstance().GetResolution();
-	GraphicsEngine::Get().SetResolution(resolution.x, resolution.y);
-
-	AssetManager::Get().Initialize(Engine::GetInstance().GetContentRootPath());
-
-#ifdef _DEBUG
-	Engine::GetInstance().GetImGuiHandler().Initialize(myMainWindowHandle);
-	GraphicsEngine::Get().InitializeImGui();
-#endif
-
-	ShowWindow(myMainWindowHandle, SW_SHOW);
-	SetForegroundWindow(myMainWindowHandle);
-
-	InitModelViewer();
-	MVLOG(Log, "Ready!");
-	return true;
-}
-
-void ModelViewer::InitModelViewer()
+void ModelViewer::InitializeApplication()
 {
 	Engine::GetInstance().GetInputHandler().SetControllerDeadZone(0.1f, 0.06f);
 	Engine::GetInstance().GetAudioEngine().Initialize();
@@ -137,7 +40,7 @@ void ModelViewer::InitModelViewer()
 	inputHandler.RegisterAnalog2DAction("MousePos", MouseMovement2D::MousePos);
 	inputHandler.RegisterAnalog2DAction("MouseNDCPos", MouseMovement2D::MousePosNDC);
 	inputHandler.RegisterAnalog2DAction("MouseDelta", MouseMovement2D::MousePosDelta);
-	
+
 	inputHandler.RegisterBinaryAction("A_Gamepad", ControllerButtons::A, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("B", ControllerButtons::B, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("X", ControllerButtons::X, GenericInput::ActionType::Held);
@@ -159,79 +62,4 @@ void ModelViewer::InitModelViewer()
 
 	inputHandler.RegisterBinaryAction("SharedAction", Keys::W, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("SharedAction", ControllerButtons::A, GenericInput::ActionType::Held);
-}
-
-int ModelViewer::Run()
-{
-	MSG msg;
-	ZeroMemory(&msg, sizeof(MSG));
-
-	bool isRunning = true;
-	bool isPaused = false;
-	//bool isResizing = false;
-
-	while (isRunning)
-	{
-		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-
-#if _DEBUG
-			extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-			if (ImGui_ImplWin32_WndProcHandler(msg.hwnd, msg.message, msg.wParam, msg.lParam)) return true;
-#endif
-
-			if (msg.message == WM_QUIT)
-			{
-				isRunning = false;
-			}
-
-			if (msg.message == WM_ACTIVATE)
-			{
-				if (LOWORD(msg.wParam) == WA_INACTIVE)
-				{
-					isPaused = true;
-				}
-				else
-				{
-					isPaused = false;
-				}
-			}
-
-			//if (msg.message == WM_ENTERSIZEMOVE)
-			//{
-			//	isPaused = true;
-			//	isResizing = true;
-			//}
-
-			//if (msg.message == WM_EXITSIZEMOVE)
-			//{
-			//	isPaused = false;
-			//	isResizing = false;
-
-			//	RECT clientRect = {};
-			//	GetClientRect(myMainWindowHandle, &clientRect);
-			//	const float clientWidth = static_cast<float>(clientRect.right - clientRect.left);
-			//	const float clientHeight = static_cast<float>(clientRect.bottom - clientRect.top);
-
-			//	GraphicsEngine::Get().SetResolution(clientWidth, clientHeight);
-			//	GraphicsEngine::Get().SetWindowSize(clientWidth, clientHeight);
-			//}
-
-			Engine::GetInstance().GetInputHandler().UpdateEvents(msg.message, msg.wParam, msg.lParam);
-		}
-
-		if (isPaused) continue;
-
-		Engine::GetInstance().GetImGuiHandler().BeginFrame();
-		GraphicsEngine::Get().BeginFrame();
-		Engine::GetInstance().Update();
-		GraphicsEngine::Get().RenderFrame();
-		Engine::GetInstance().GetImGuiHandler().Render();
-		GraphicsEngine::Get().EndFrame();
-	}
-
-	Shutdown();
-	return 0;
 }

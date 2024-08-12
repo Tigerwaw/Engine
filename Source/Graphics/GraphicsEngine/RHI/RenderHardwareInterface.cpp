@@ -19,6 +19,8 @@
 #include "GraphicsEngine/Objects/ConstantBuffers/ConstantBuffer.h"
 #include "GraphicsEngine/Objects/DynamicVertexBuffer.h"
 
+#include "Logger/Logger.h"
+
 #ifdef _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(RhiLog, RHI, Verbose);
 #else
@@ -81,7 +83,7 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 		selectedAdapterVRAM /= megabyte;
 	}
 
-	LOG(RhiLog, Log, " * VRAM: {} MB", selectedAdapterVRAM);
+	LOG(RhiLog, Log, "VRAM: {} MB", selectedAdapterVRAM);
 
 	ComPtr<ID3D11Device> device;
 	ComPtr<ID3D11DeviceContext> context;

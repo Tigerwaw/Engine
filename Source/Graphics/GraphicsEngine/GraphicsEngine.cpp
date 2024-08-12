@@ -253,17 +253,6 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<M
 
 	SetTextureResource_PS(127, *myLUTtexture);
 
-	if (myCurrentDebugMode != DebugMode::None)
-	{
-		aOverrideMaterialPSO = true;
-
-		std::shared_ptr<PipelineStateObject> pso = AssetManager::Get().GetAsset<PSOAsset>(DebugModeNames[static_cast<int>(myCurrentDebugMode)])->pso;
-		if (myCurrentPSO != pso)
-		{
-			ChangePipelineState(pso);
-		}
-	}
-
 	for (const auto& element : aMesh.GetElements())
 	{
 		if (aMaterialList.size() > element.MaterialIndex)

@@ -73,7 +73,16 @@ void Scene::Render()
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(126, myAmbientLight->GetComponent<AmbientLight>()->GetEnvironmentTexture());
 	QueueShadowmapTextureResources();
 
-	QueueGameObjects(myCamera->GetComponent<Camera>());
+
+	if (GraphicsEngine::Get().GetCurrentDebugMode() != DebugMode::None)
+	{
+		std::shared_ptr<PipelineStateObject> pso = AssetManager::Get().GetAsset<PSOAsset>(GraphicsEngine::Get().DebugModeNames[static_cast<int>(GraphicsEngine::Get().GetCurrentDebugMode())])->pso;
+		QueueGameObjects(myCamera->GetComponent<Camera>(), false, pso);
+	}
+	else
+	{
+		QueueGameObjects(myCamera->GetComponent<Camera>());
+	}
 
 	if (GraphicsEngine::Get().DrawGizmos)
 	{
