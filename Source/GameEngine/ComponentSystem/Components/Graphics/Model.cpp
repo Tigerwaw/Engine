@@ -51,3 +51,31 @@ const CU::AABB3D<float> Model::GetBoundingBox() const
 
     return myMesh->GetBoundingBox();
 }
+
+bool Model::Serialize(nl::json& outJsonObject)
+{
+    outJsonObject;
+    return false;
+}
+
+bool Model::Deserialize(nl::json& aJsonObject)
+{
+    if (!aJsonObject.contains("Model")) return false;
+
+    if (aJsonObject.contains("ShouldViewcull"))
+    {
+        SetViewcull(aJsonObject["ShouldViewcull"].get<bool>());
+    }
+
+    SetMesh(AssetManager::Get().GetAsset<MeshAsset>(aJsonObject["Model"].get<std::string>())->mesh);
+
+    if (aJsonObject.contains("Materials"))
+    {
+        for (int i = 0; i < aJsonObject["Materials"].size(); i++)
+        {
+            SetMaterialOnSlot(i, AssetManager::Get().GetAsset<MaterialAsset>(aJsonObject["Materials"][i].get<std::string>())->material);
+        }
+    }
+
+    return true;
+}

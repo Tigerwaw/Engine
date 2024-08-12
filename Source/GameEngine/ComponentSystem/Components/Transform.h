@@ -47,6 +47,9 @@ public:
 	void AddUniformScale(float aScale);
 
 	const bool IsScaled() const;
+
+	bool Serialize(nl::json& outJsonObject) override;
+	bool Deserialize(nl::json& aJsonObject) override;
 private:
 	void UpdateToWorldMatrix(CU::Matrix4x4f aToWorldMatrix, CU::Matrix4x4f aToWorldMatrixNoScale);
 	void UpdateChildrenToWorldMatrix();

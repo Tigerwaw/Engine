@@ -52,6 +52,7 @@ void ImGuiHandler::BeginFrame()
 	ImGuiIO& io = ImGui::GetIO();
 	CU::Vector2f resolution = Engine::GetInstance().GetResolution();
 	io.DisplaySize = { resolution.x, resolution.y };
+	io.DisplayFramebufferScale = { 1.0f, 1.0f };
 
 	ImGui::NewFrame();
 #endif

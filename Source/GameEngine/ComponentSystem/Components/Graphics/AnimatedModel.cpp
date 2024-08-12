@@ -263,6 +263,100 @@ void AnimatedModel::StopAnimationOnLayer(std::string aStartJoint)
     StopAnimationOnLayer(myJointNameToLayerIndex.at(aStartJoint));
 }
 
+bool AnimatedModel::Serialize(nl::json& outJsonObject)
+{
+    outJsonObject;
+    return false;
+}
+
+bool AnimatedModel::Deserialize(nl::json& aJsonObject)
+{
+    if (!aJsonObject.contains("Model")) return false;
+
+    if (aJsonObject.contains("ShouldViewcull"))
+    {
+        SetViewcull(aJsonObject["ShouldViewcull"].get<bool>());
+    }
+
+    SetMesh(AssetManager::Get().GetAsset<MeshAsset>(aJsonObject["Model"].get<std::string>())->mesh);
+
+    if (aJsonObject.contains("Materials"))
+    {
+        for (int i = 0; i < aJsonObject["Materials"].size(); i++)
+        {
+            SetMaterialOnSlot(i, AssetManager::Get().GetAsset<MaterialAsset>(aJsonObject["Materials"][i].get<std::string>())->material);
+        }
+    }
+
+    if (aJsonObject.contains("AnimationLayers"))
+    {
+        for (auto& layer : aJsonObject["AnimationLayers"])
+        {
+            std::string startBone;
+
+            if (layer.contains("StartBone"))
+            {
+                startBone = layer["StartBone"].get<std::string>();
+            }
+
+            if (startBone != "")
+            {
+                AddAnimationLayer(startBone);
+            }
+
+            if (layer.contains("Animations"))
+            {
+                for (auto& animation : layer["Animations"])
+                {
+                    std::string animationName;
+                    std::shared_ptr<Animation> anim;
+                    bool shouldLoop = false;
+
+                    if (animation.contains("Name"))
+                    {
+                        animationName = animation["Name"].get<std::string>();
+                    }
+
+                    if (animation.contains("Path"))
+                    {
+                        anim = AssetManager::Get().GetAsset<AnimationAsset>(animation["Path"].get<std::string>())->animation;
+                    }
+
+                    if (animation.contains("Loop"))
+                    {
+                        shouldLoop = animation["Loop"].get<bool>();
+                    }
+
+                    AddAnimationToLayer(animationName, anim, startBone, shouldLoop);
+
+                    if (animation.contains("Events"))
+                    {
+                        for (auto& animEvent : animation["Events"])
+                        {
+                            GameObjectEventType eventType = GameObjectEventType::Count;
+                            unsigned eventFrame = 0;
+
+                            if (animEvent.contains("EventType"))
+                            {
+                                eventType = static_cast<GameObjectEventType>(animEvent["EventType"].get<int>());
+                            }
+
+                            if (animEvent.contains("Frame"))
+                            {
+                                eventFrame = animEvent["Frame"].get<int>();
+                            }
+
+                            AddAnimationEvent(animationName, eventFrame, eventType, startBone);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
 void AnimatedModel::UpdateAnimationLayer(AnimationLayer& aAnimationLayer)
 {
     if (!aAnimationLayer.isPlaying) return;

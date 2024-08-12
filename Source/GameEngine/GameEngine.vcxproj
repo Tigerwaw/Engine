@@ -258,6 +258,7 @@
     <ClInclude Include="SceneHandler\SceneHandler.h" />
     <ClInclude Include="SceneHandler\SceneLoader.h" />
     <ClInclude Include="Time\Timer.h" />
+    <ClInclude Include="Utility\SerializationUtils.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

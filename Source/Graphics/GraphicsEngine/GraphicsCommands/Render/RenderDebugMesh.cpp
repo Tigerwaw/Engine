@@ -30,6 +30,8 @@ RenderDebugMesh::RenderDebugMesh(std::shared_ptr<DebugModel> aModel)
 
 void RenderDebugMesh::Execute()
 {
+    if (!mesh) return;
+
     ObjectBuffer objBufferData;
     objBufferData.World = transform;
     objBufferData.WorldInvT = transform.GetFastInverse().GetTranspose();

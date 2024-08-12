@@ -87,6 +87,10 @@ public:
 
     void SetViewcull(bool aShouldViewcull) { myShouldViewcull = aShouldViewcull; }
     const bool GetShouldViewcull() const { return myShouldViewcull; }
+
+    bool Serialize(nl::json& outJsonObject) override;
+    bool Deserialize(nl::json& aJsonObject) override;
+
 private:
     void UpdateAnimationLayer(AnimationLayer& aAnimationLayer);
     void UpdateAnimationState(AnimationState& aAnimationState);

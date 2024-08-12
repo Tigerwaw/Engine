@@ -34,6 +34,8 @@ RenderMesh::RenderMesh(std::shared_ptr<Model> aModel, std::shared_ptr<PipelineSt
 
 void RenderMesh::Execute()
 {
+    if (!mesh) return;
+
     ObjectBuffer objBufferData;
     objBufferData.World = transform;
     objBufferData.WorldInvT = transform.GetFastInverse().GetTranspose();

@@ -8,17 +8,22 @@ class Texture;
 class AmbientLight : public Component
 {
 public:
-	AmbientLight(std::shared_ptr<Texture> aEnvironmentTexture, CU::Vector3f aColor = {1.0f, 1.0f, 1.0f}, float aIntensity = 1.0f);
+	AmbientLight() {}
+	AmbientLight(std::shared_ptr<Texture> aCubemap, CU::Vector3f aColor = {1.0f, 1.0f, 1.0f}, float aIntensity = 1.0f);
 	~AmbientLight() override;
 	void Start() override;
 	void Update() override;
 	void SetColor(CU::Vector3f aColor);
 	void SetIntensity(float aIntensity);
-	std::shared_ptr<Texture> GetEnvironmentTexture() const;
+	void SetCubemap(std::shared_ptr<Texture> aCubemap);
+	std::shared_ptr<Texture> GetCubemap() const;
 	CU::Vector3f GetColor() const { return myColor; }
 	float GetIntensity() const { return myIntensity; }
+
+	bool Serialize(nl::json& outJsonObject) override;
+	bool Deserialize(nl::json& aJsonObject) override;
 private:
-	std::shared_ptr<Texture> myEnvironmentTexture;
+	std::shared_ptr<Texture> myCubemap;
 	CU::Vector3f myColor = { 1.0f, 1.0f, 1.0f };
 	float myIntensity = 1.0f;
 };

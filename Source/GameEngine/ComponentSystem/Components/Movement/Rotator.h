@@ -15,6 +15,9 @@ public:
 
 	void SetRotationPerSecond(CU::Vector3<float> aRotationVector);
 
+	bool Serialize(nl::json& outJsonObject) override;
+	bool Deserialize(nl::json& aJsonObject) override;
+
 private:
 	void StartNewRotation();
 	float myCurrentRotationTime = 0;

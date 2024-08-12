@@ -30,6 +30,9 @@ public:
     void Play(std::string aAudioName);
     void AddAudioInstance(std::string aFMODEventName, bool aIsOneShot, SourceType aSourceType = SourceType::Non3D, bool aPlayOnStart = false);
     void SetAudioPlayOnEvent(std::string aAudioName, GameObjectEventType aEventType);
+
+    bool Serialize(nl::json& outJsonObject) override;
+    bool Deserialize(nl::json& aJsonObject) override;
 private:
     void Update3DLocation(std::shared_ptr<AudioInstance> aInstance);
     std::unordered_map<std::string, AudioInstanceData> myAudioInstances;

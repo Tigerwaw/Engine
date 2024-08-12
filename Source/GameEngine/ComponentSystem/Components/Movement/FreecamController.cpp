@@ -9,9 +9,8 @@
 
 FreecamController::FreecamController(float aMoveSpeed, float aRotSpeed)
 {
-	myMoveSpeed = aMoveSpeed;
-	myMoveSpeedMultiplier = 1.0f;
-	myRotSpeed = { aRotSpeed, aRotSpeed * 0.5f };
+	SetMoveSpeed(aMoveSpeed);
+	SetRotationSpeed(aRotSpeed);
 }
 
 void FreecamController::Start()
@@ -79,4 +78,35 @@ void FreecamController::Update()
 
 	gameObject->GetComponent<Transform>()->AddRotation(rotationDelta);
 	gameObject->GetComponent<Transform>()->SetTranslation(gameObject->GetComponent<Transform>()->GetTranslation() + inputDelta * myMoveSpeed * myMoveSpeedMultiplier * deltaTime);
+}
+
+void FreecamController::SetMoveSpeed(float aMoveSpeed)
+{
+	myMoveSpeed = aMoveSpeed;
+}
+
+void FreecamController::SetRotationSpeed(float aRotSpeed)
+{
+	myRotSpeed = { aRotSpeed, aRotSpeed * 0.5f };
+}
+
+bool FreecamController::Serialize(nl::json& outJsonObject)
+{
+	outJsonObject;
+	return false;
+}
+
+bool FreecamController::Deserialize(nl::json& aJsonObject)
+{
+	if (aJsonObject.contains("MoveSpeed"))
+	{
+		SetMoveSpeed(aJsonObject["MoveSpeed"].get<float>());
+	}
+
+	if (aJsonObject.contains("RotationSpeed"))
+	{
+		SetRotationSpeed(aJsonObject["RotationSpeed"].get<float>());
+	}
+
+	return true;
 }

@@ -28,7 +28,7 @@ public:
     void Initialize();
     void Destroy();
     void Update();
-    void SetListener(std::shared_ptr<GameObject> aGameObject);
+    void SetListener(GameObject* aGameObject);
     bool LoadBank(std::string aBankName);
     bool UnloadBank(std::string aBankName);
     bool AddBus(BusType aBusType, std::string aBusName);
@@ -46,7 +46,7 @@ private:
     std::unordered_map<std::string, FMOD::Studio::Bank*> myBanks;
     std::unordered_map<BusType, FMOD::Studio::Bus*> myBuses;
     std::unordered_map<std::string, FMOD::Studio::EventDescription*> myEvents;
-    std::shared_ptr<GameObject> myListener;
+    GameObject* myListener;
 
     bool myHasWarnedAboutListenerError = false;
 };

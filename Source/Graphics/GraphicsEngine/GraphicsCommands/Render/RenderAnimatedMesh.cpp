@@ -35,6 +35,8 @@ RenderAnimatedMesh::RenderAnimatedMesh(std::shared_ptr<AnimatedModel> aModel, st
 
 void RenderAnimatedMesh::Execute()
 {
+    if (!mesh) return;
+
     ObjectBuffer objBufferData;
     objBufferData.World = transform;
     objBufferData.WorldInvT = transform.GetFastInverse().GetTranspose();

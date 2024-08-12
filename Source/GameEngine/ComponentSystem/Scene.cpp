@@ -70,7 +70,7 @@ void Scene::Render()
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PBR")->pso);
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetDefaultRenderTarget>();
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(myCamera->GetComponent<Camera>());
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(126, myAmbientLight->GetComponent<AmbientLight>()->GetEnvironmentTexture());
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(126, myAmbientLight->GetComponent<AmbientLight>()->GetCubemap());
 	QueueShadowmapTextureResources();
 
 

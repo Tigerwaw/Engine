@@ -15,6 +15,9 @@
 #include <unordered_map>
 #include <any>
 
+#include <nlohmann/json.hpp>
+namespace nl = nlohmann;
+
 #include "Logger/Logger.h"
 #include "GraphicsEngine/GraphicsEngine.h"
 

@@ -84,6 +84,54 @@ void AudioSource::SetAudioPlayOnEvent(std::string aAudioName, GameObjectEventTyp
     myPlayOnEvents.at(aEventType).emplace_back(aAudioName);
 }
 
+bool AudioSource::Serialize(nl::json& outJsonObject)
+{
+    outJsonObject;
+    return false;
+}
+
+bool AudioSource::Deserialize(nl::json& aJsonObject)
+{
+    std::string audioName = "";
+    bool isOneShot = true;
+    AudioSource::SourceType sourceType = AudioSource::SourceType::Non3D;
+    bool playOnStart = false;
+
+    if (aJsonObject.contains("AudioName"))
+    {
+        audioName = aJsonObject["AudioName"].get<std::string>();
+    }
+
+    if (aJsonObject.contains("IsOneShot"))
+    {
+        isOneShot = aJsonObject["IsOneShot"].get<bool>();
+    }
+
+    if (aJsonObject.contains("SourceType"))
+    {
+        sourceType = static_cast<AudioSource::SourceType>(aJsonObject["SourceType"].get<int>());
+    }
+
+    if (aJsonObject.contains("PlayOnStart"))
+    {
+        playOnStart = aJsonObject["PlayOnStart"].get<bool>();
+    }
+
+    AddAudioInstance(audioName, isOneShot, sourceType, playOnStart);
+
+    if (aJsonObject.contains("PlayOnEvent"))
+    {
+        int eventInt = aJsonObject["PlayOnEvent"].get<int>();
+
+        if (eventInt > 0 && eventInt < static_cast<int>(GameObjectEventType::Count))
+        {
+            SetAudioPlayOnEvent(audioName, static_cast<GameObjectEventType>(eventInt));
+        }
+    }
+
+    return true;
+}
+
 void AudioSource::Update3DLocation(std::shared_ptr<AudioInstance> aInstance)
 {
     std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();

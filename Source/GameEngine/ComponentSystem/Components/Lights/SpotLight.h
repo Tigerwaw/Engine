@@ -10,6 +10,9 @@ public:
     float GetConeAngleRadians() const { return myConeAngleRadians; }
     float GetConeAngleDegrees() const { return myConeAngleDegrees; }
     void SetConeAngle(float aConeAngle);
+
+    bool Serialize(nl::json& outJsonObject) override;
+    bool Deserialize(nl::json& aJsonObject) override;
 protected:
     float myConeAngleRadians;
     float myConeAngleDegrees;

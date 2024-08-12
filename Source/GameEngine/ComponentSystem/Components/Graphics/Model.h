@@ -30,6 +30,9 @@ public:
     void SetViewcull(bool aShouldViewcull) { myShouldViewcull = aShouldViewcull; }
     const bool GetShouldViewcull() const { return myShouldViewcull; }
 
+    bool Serialize(nl::json& outJsonObject) override;
+    bool Deserialize(nl::json& aJsonObject) override;
+
 protected:
     std::shared_ptr<Mesh> myMesh = nullptr;
     std::vector<std::shared_ptr<Material>> myMaterials;

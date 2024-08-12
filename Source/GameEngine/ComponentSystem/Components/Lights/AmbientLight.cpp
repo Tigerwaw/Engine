@@ -4,16 +4,16 @@
 #include "Graphics/GraphicsEngine/GraphicsEngine.h"
 #include "Graphics/GraphicsEngine/Objects/Texture.h"
 
-AmbientLight::AmbientLight(std::shared_ptr<Texture> aEnvironmentTexture, CU::Vector3f aColor, float aIntensity)
+AmbientLight::AmbientLight(std::shared_ptr<Texture> aCubemap, CU::Vector3f aColor, float aIntensity)
 {
-	myEnvironmentTexture = aEnvironmentTexture;
+	myCubemap = aCubemap;
 	myColor = aColor;
 	myIntensity = aIntensity;
 }
 
 AmbientLight::~AmbientLight()
 {
-	myEnvironmentTexture = nullptr;
+	myCubemap = nullptr;
 }
 
 void AmbientLight::Start()
@@ -34,7 +34,28 @@ void AmbientLight::SetIntensity(float aIntensity)
 	myIntensity = aIntensity;
 }
 
-std::shared_ptr<Texture> AmbientLight::GetEnvironmentTexture() const
+void AmbientLight::SetCubemap(std::shared_ptr<Texture> aCubemap)
 {
-	return myEnvironmentTexture;
+	myCubemap = aCubemap;
+}
+
+std::shared_ptr<Texture> AmbientLight::GetCubemap() const
+{
+	return myCubemap;
+}
+
+bool AmbientLight::Serialize(nl::json& outJsonObject)
+{
+	outJsonObject;
+	return false;
+}
+
+bool AmbientLight::Deserialize(nl::json& aJsonObject)
+{
+	if (aJsonObject.contains("Cubemap"))
+	{
+		SetCubemap(AssetManager::Get().GetAsset<TextureAsset>(aJsonObject["Cubemap"].get<std::string>())->texture);
+	}
+
+	return true;
 }

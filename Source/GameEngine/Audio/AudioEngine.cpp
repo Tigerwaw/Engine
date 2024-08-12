@@ -58,7 +58,7 @@ void AudioEngine::Update()
     mySystem->update();
 }
 
-void AudioEngine::SetListener(std::shared_ptr<GameObject> aGameObject)
+void AudioEngine::SetListener(GameObject* aGameObject)
 {
     myListener = aGameObject;
 

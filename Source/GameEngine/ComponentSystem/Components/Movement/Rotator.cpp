@@ -5,6 +5,7 @@
 #include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "GameEngine/Engine.h"
 #include "GameEngine/Time/Timer.h"
+#include "GameEngine/Utility/SerializationUtils.hpp"
 
 Rotator::Rotator(CU::Vector3<float> aRotationVector)
 {
@@ -36,6 +37,22 @@ void Rotator::SetRotationPerSecond(CU::Vector3<float> aRotationVector)
 {
 	myRotationPerSecond = CU::Quatf(aRotationVector * 3.14f / 180.0f);
 	StartNewRotation();
+}
+
+bool Rotator::Serialize(nl::json& outJsonObject)
+{
+	outJsonObject;
+	return false;
+}
+
+bool Rotator::Deserialize(nl::json& aJsonObject)
+{
+	if (aJsonObject.contains("RotationPerSecond"))
+	{
+		SetRotationPerSecond(Utility::DeserializeVector3(aJsonObject["RotationPerSecond"]));
+	}
+
+	return true;
 }
 
 void Rotator::StartNewRotation()

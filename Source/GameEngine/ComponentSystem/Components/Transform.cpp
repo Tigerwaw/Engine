@@ -1,6 +1,7 @@
 #include "Enginepch.h"
 
 #include "Transform.h"
+#include "GameEngine/Utility/SerializationUtils.hpp"
 
 Transform::Transform(CU::Vector3f aPosition, CU::Vector3f aRotation, CU::Vector3f aScale)
 {
@@ -364,4 +365,34 @@ const bool Transform::IsScaled() const
 	float scaleLength = myScale.LengthSqr();
 
 	return (scaleLength < 1.0f - tolerance || scaleLength > 1.0f + tolerance);
+}
+
+bool Transform::Serialize(nl::json& outJsonObject)
+{
+	outJsonObject;
+	return false;
+}
+
+bool Transform::Deserialize(nl::json& aJsonObject)
+{
+	CU::Vector3f pos;
+	CU::Vector3f rot;
+	CU::Vector3f scale = { 1.0f, 1.0f, 1.0f };
+
+	if (aJsonObject.contains("Position"))
+	{
+		SetTranslation(Utility::DeserializeVector3(aJsonObject["Position"]));
+	};
+
+	if (aJsonObject.contains("Rotation"))
+	{
+		SetRotation(Utility::DeserializeVector3(aJsonObject["Rotation"]));
+	}
+
+	if (aJsonObject.contains("Scale"))
+	{
+		SetScale(Utility::DeserializeVector3(aJsonObject["Scale"]));
+	}
+
+	return true;
 }

@@ -131,3 +131,94 @@ bool Camera::GetViewcullingIntersection(std::shared_ptr<Transform> aObjectTransf
 
 	return CU::IntersectionBetweenPlaneVolumeAABB(GetFrustumPlaneVolume(objectMatrix), aObjectAABB);
 }
+
+bool Camera::Serialize(nl::json& outJsonObject)
+{
+	outJsonObject;
+	return false;
+}
+
+bool Camera::Deserialize(nl::json& aJsonObject)
+{
+	if (gameObject->GetName() == "MainCamera")
+	{
+		Engine::GetInstance().GetAudioEngine().SetListener(gameObject);
+	}
+
+	if (aJsonObject.contains("Perspective"))
+	{
+		bool isPerpective = aJsonObject["Perspective"].get<bool>();
+		if (isPerpective)
+		{
+			float fov = 0;
+			float nearPlane = 0;
+			float farPlane = 0;
+			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+
+			if (aJsonObject.contains("FOV"))
+			{
+				fov = aJsonObject["FOV"].get<float>();
+			}
+
+			if (aJsonObject.contains("NearPlane"))
+			{
+				nearPlane = aJsonObject["NearPlane"].get<float>();
+			}
+
+			if (aJsonObject.contains("FarPlane"))
+			{
+				farPlane = aJsonObject["FarPlane"].get<float>();
+			}
+
+			if (aJsonObject.contains("Resolution"))
+			{
+				resolution = { aJsonObject["Resolution"][0].get<float>(), aJsonObject["Resolution"][1].get<float>() };
+			}
+
+			InitPerspectiveProjection(fov, nearPlane, farPlane, resolution);
+		}
+		else
+		{
+			float leftPlane = 0;
+			float rightPlane = 0;
+			float topPlane = 0;
+			float bottomPlane = 0;
+			float nearPlane = 0;
+			float farPlane = 0;
+
+			if (aJsonObject.contains("LeftPlane"))
+			{
+				leftPlane = aJsonObject["LeftPlane"].get<float>();
+			}
+
+			if (aJsonObject.contains("RightPlane"))
+			{
+				rightPlane = aJsonObject["RightPlane"].get<float>();
+			}
+
+			if (aJsonObject.contains("TopPlane"))
+			{
+				topPlane = aJsonObject["TopPlane"].get<float>();
+			}
+
+			if (aJsonObject.contains("BottomPlane"))
+			{
+				bottomPlane = aJsonObject["BottomPlane"].get<float>();
+			}
+
+			if (aJsonObject.contains("NearPlane"))
+			{
+				nearPlane = aJsonObject["NearPlane"].get<float>();
+			}
+
+			if (aJsonObject.contains("FarPlane"))
+			{
+				farPlane = aJsonObject["FarPlane"].get<float>();
+			}
+
+			InitOrtographicProjection(leftPlane, rightPlane, topPlane, bottomPlane, nearPlane, farPlane);
+		}
+	}
+
+	return true;
+}

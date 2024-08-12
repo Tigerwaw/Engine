@@ -18,6 +18,10 @@ namespace nl = nlohmann;
 #include <unordered_map>
 #include <any>
 
+#include "AssetManager/AssetManager.h"
+#include "GameEngine/Engine.h"
+#include "GameEngine/Audio/AudioEngine.h"
+
 #include "Logger/Logger.h"
 #include "imgui.h"
 #include "backends/imgui_impl_win32.h"
