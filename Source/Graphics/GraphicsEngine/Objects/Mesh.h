@@ -1,8 +1,4 @@
 #pragma once
-#include <wrl.h>
-#include <vector>
-#include <string>
-#include <unordered_map>
 #include "GameEngine/Math/Matrix4x4.hpp"
 #include "GameEngine/Math/Vector.hpp"
 #include "GameEngine/Intersections/AABB3D.hpp"

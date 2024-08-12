@@ -1,5 +1,4 @@
 #pragma once
-#include <vector>
 #include "Graphics\GraphicsEngine\GraphicsEngine.h"
 
 struct ID3D11Buffer;

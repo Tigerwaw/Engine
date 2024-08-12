@@ -1,6 +1,4 @@
 #pragma once
-#include "wrl.h"
-#include <string>
 
 struct ID3D11Buffer;
 

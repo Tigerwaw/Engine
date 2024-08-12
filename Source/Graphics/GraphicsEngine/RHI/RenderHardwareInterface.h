@@ -1,8 +1,4 @@
 #pragma once
-#include <wrl.h>
-#include <memory>
-#include <unordered_map>
-
 #include "RHIStructs.h"
 
 struct PipelineStateObject;

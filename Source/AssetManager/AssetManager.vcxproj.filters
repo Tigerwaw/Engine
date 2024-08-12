@@ -33,9 +33,15 @@
     <ClInclude Include="TGAFBX\Version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Assetpch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssetManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Assetpch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

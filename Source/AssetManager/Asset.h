@@ -1,8 +1,4 @@
 #pragma once
-#include <filesystem>
-#include <string>
-
-#include "Asset.h"
 #include "Graphics/GraphicsEngine/Objects/Mesh.h"
 #include "Graphics/GraphicsEngine/Objects/Animation.h"
 #include "Graphics/GraphicsEngine/Objects/Texture.h"

@@ -1,22 +1,15 @@
+#include "Assetpch.h"
+
 #include "AssetManager.h"
-#include "Logger\Logger.h"
-#include <d3d11.h>
 #include "Asset.h"
 #include "GraphicsEngine.h"
 #include "Graphics/GraphicsEngine/Objects/Vertex.h"
 #include "Graphics/GraphicsEngine/Objects/DebugLineVertex.h"
 
-#include <iostream>
-#include <fstream>
-#include "Utilities/nlohmann/json.hpp"
-#include "TGAFBX/TGAFbx.h"
-
 #include "DefaultTextures/Default_C.h"
 #include "DefaultTextures/Default_N.h"
 #include "DefaultTextures/Default_M.h"
 #include "DefaultTextures/Default_FX.h"
-
-namespace nl = nlohmann;
 
 #ifdef _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(AssetManagerLog, AssetManager, Verbose);

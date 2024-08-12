@@ -1,6 +1,4 @@
 #pragma once
-#include <wrl.h>
-#include <array>
 
 class RenderHardwareInterface;
 struct ID3D11RenderTargetView;

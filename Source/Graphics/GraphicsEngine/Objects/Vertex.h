@@ -1,5 +1,4 @@
 #pragma once
-#include <vector>
 #include "GameEngine\Math\Vector.hpp"
 
 #include "Graphics/GraphicsEngine/RHI/RHIStructs.h"

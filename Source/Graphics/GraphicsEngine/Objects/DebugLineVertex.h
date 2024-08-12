@@ -1,5 +1,4 @@
 #pragma once
-#include <vector>
 #include "GameEngine\Math\Vector.hpp"
 namespace CU = CommonUtilities;
 #include "Graphics/GraphicsEngine/RHI/RHIStructs.h"
