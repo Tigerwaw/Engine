@@ -1,3 +1,5 @@
+#include "Enginepch.h"
+
 #include "Timer.h"
 
 Timer::Timer()

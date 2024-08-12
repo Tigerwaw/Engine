@@ -1,6 +1,5 @@
 #pragma once
 #include "GraphicsCommandBase.h"
-#include <memory>
 
 class Texture;
 

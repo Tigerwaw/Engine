@@ -1,6 +1,5 @@
 #pragma once
 #include "GenericInput.h"
-#include <array>
 #include "Math/Vector.hpp"
 namespace CU = CommonUtilities;
 #include "EnumKeys.h"

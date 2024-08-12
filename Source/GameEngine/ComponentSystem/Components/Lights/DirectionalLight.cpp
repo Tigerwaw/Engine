@@ -1,3 +1,5 @@
+#include "Enginepch.h"
+
 #include "DirectionalLight.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"

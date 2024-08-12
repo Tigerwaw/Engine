@@ -1,6 +1,6 @@
+#include "Enginepch.h"
+
 #include "SceneLoader.h"
-#include <iostream>
-#include <fstream>
 
 #include "GameEngine/ComponentSystem/Scene.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
@@ -25,8 +25,6 @@
 #include "GameEngine/ComponentSystem/Components/Movement/Rotator.h"
 #include "GameEngine/ComponentSystem/Components/Movement/FreecamController.h"
 #include "GameEngine/ComponentSystem/Components/AudioSource.h"
-
-#include "Logger/Logger.h"
 
 #if _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneLoader, SceneLoader, Verbose);

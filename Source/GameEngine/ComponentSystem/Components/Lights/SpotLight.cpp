@@ -1,3 +1,5 @@
+#include "Enginepch.h"
+
 #include "SpotLight.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/Math/MathConstants.hpp"

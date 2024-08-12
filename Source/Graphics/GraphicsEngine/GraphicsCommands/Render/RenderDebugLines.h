@@ -1,7 +1,5 @@
 #pragma once
 #include "Graphics/GraphicsEngine/GraphicsCommands/GraphicsCommandBase.h"
-#include <vector>
-#include <memory>
 
 class DynamicVertexBuffer;
 struct DebugLineVertex;

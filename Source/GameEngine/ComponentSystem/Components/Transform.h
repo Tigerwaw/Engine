@@ -4,8 +4,6 @@
 #include "GameEngine/Math/Vector.hpp"
 #include "GameEngine/Math/Quaternion.hpp"
 
-#include <vector>
-
 namespace CU = CommonUtilities;
 
 class Transform : public Component

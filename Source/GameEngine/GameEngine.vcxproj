@@ -116,9 +116,8 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Source\Utilities\Imgui;$(SolutionDir)Source\Utilities\fmod;$(SolutionDir)Source\GameEngine;$(SolutionDir)Source\Graphics;$(SolutionDir)Source\Utilities;$(ProjectDir);$(SolutionDir)Intermediate\Shaders\;$(SolutionDir)Source\;$(SolutionDir)Source\Graphics\GraphicsEngine;$(SolutionDir)Source\AssetManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>Enginepch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -178,9 +177,13 @@
     <ClCompile Include="ComponentSystem\Components\Transform.cpp" />
     <ClCompile Include="ComponentSystem\GameObject.cpp" />
     <ClCompile Include="ComponentSystem\Components\Graphics\Model.cpp" />
+    <ClCompile Include="ComponentSystem\GameObjectEvent.cpp" />
     <ClCompile Include="ComponentSystem\Scene.cpp" />
     <ClCompile Include="DebugDrawer\DebugDrawer.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Enginepch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="GlobalEventHandler\GlobalEventHandler.cpp" />
     <ClCompile Include="ImGui\ImGuiHandler.cpp" />
     <ClCompile Include="Input\ControllerInput.cpp" />
@@ -209,11 +212,13 @@
     <ClInclude Include="ComponentSystem\Components\Transform.h" />
     <ClInclude Include="ComponentSystem\GameObject.h" />
     <ClInclude Include="ComponentSystem\Components\Graphics\Model.h" />
+    <ClInclude Include="ComponentSystem\GameObjectEvent.h" />
     <ClInclude Include="ComponentSystem\GameObjectEventType.h" />
     <ClInclude Include="ComponentSystem\Scene.h" />
     <ClInclude Include="DebugDrawer\DebugDrawer.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="EngineDefines.h" />
+    <ClInclude Include="Enginepch.h" />
     <ClInclude Include="GlobalEventHandler\GlobalEventHandler.h" />
     <ClInclude Include="GlobalEventHandler\GlobalEventSubscriber.hpp" />
     <ClInclude Include="GlobalEventHandler\GlobalEventType.h" />

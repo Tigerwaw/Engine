@@ -1,7 +1,6 @@
 #pragma once
 #include <array>
 #include <math.h>
-#include <cassert>
 #include "Matrix3x3.hpp"
 #include "Vector4.hpp"
 #include "Vector3.hpp"

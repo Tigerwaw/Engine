@@ -1,3 +1,5 @@
+#include "Enginepch.h"
+
 #include "PointLight.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "Graphics/GraphicsEngine/GraphicsEngine.h"

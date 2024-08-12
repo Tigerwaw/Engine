@@ -1,6 +1,5 @@
 #pragma once
 #include "Graphics/GraphicsEngine/GraphicsCommands/GraphicsCommandBase.h"
-#include <memory>
 
 class PointLight;
 

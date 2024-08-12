@@ -1,10 +1,6 @@
 #pragma once
 #include "GameEngine/ComponentSystem/Component.h"
 
-#include <memory>
-#include <vector>
-#include <unordered_map>
-
 #include "GameEngine/EngineDefines.h"
 #include "GameEngine/Intersections/AABB3D.hpp"
 namespace CU = CommonUtilities;

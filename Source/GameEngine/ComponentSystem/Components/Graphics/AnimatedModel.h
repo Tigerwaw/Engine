@@ -6,11 +6,6 @@ namespace CU = CommonUtilities;
 
 #include "GameEngine/ComponentSystem/GameObjectEventType.h"
 
-#include <memory>
-#include <vector>
-#include <array>
-#include <unordered_map>
-
 // The reason why this class doesn't inherit from the Model class is that it creates problems with type-casting.
 // (Calling GetComponent<Model> would return a pointer to an instance of AnimatedModel, which may not be desired)
 

@@ -1,13 +1,9 @@
+#include "Enginepch.h"
+
 #include "AudioEngine.h"
 #include "GameEngine/Engine.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
-
-#include "fmod/fmod.hpp"
-#include "fmod/fmod_studio.hpp"
-#include "fmod/fmod_common.h"
-
-#include "Logger/Logger.h"
 
 #if _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(LogAudioEngine, AudioEngine, Verbose);

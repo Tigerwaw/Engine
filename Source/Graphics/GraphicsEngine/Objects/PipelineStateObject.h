@@ -1,7 +1,4 @@
 #pragma once
-#include <wrl.h>
-#include <memory>
-#include <unordered_map>
 
 struct ID3D11BlendState;
 struct ID3D11RasterizerState;

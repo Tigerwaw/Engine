@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include "GameEngine\Math\Vector.hpp"
 #include "GameEngine\Math\Matrix.hpp"
 namespace CU = CommonUtilities;

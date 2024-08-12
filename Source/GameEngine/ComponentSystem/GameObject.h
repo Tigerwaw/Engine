@@ -1,25 +1,8 @@
 #pragma once
-#include <vector>
-#include <memory>
-#include <string>
-#include <chrono>
-#include <any>
 #include "GameEngine/EngineDefines.h"
 
 #include "Component.h"
-#include "GameObjectEventType.h"
-
-struct GameObjectEvent
-{
-    GameObjectEventType type;
-    std::any data;
-
-    GameObjectEvent(GameObjectEventType aType, std::any aData)
-    {
-        type = aType;
-        data = aData;
-    }
-};
+#include "GameObjectEvent.h"
 
 class GameObject final
 {

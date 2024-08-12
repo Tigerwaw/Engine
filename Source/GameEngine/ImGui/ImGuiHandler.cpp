@@ -1,7 +1,6 @@
+#include "Enginepch.h"
+
 #include "ImGuiHandler.h"
-#include "imgui.h"
-#include "backends/imgui_impl_win32.h"
-#include "backends/imgui_impl_dx11.h"
 
 #include <Psapi.h>
 #include "Graphics/GraphicsEngine/GraphicsEngine.h"
@@ -44,13 +43,16 @@ void ImGuiHandler::Destroy()
 #endif
 }
 
-
-#include <iostream>
 void ImGuiHandler::BeginFrame()
 {
 #ifdef _DEBUG
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
+
+	ImGuiIO& io = ImGui::GetIO();
+	CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+	io.DisplaySize = { resolution.x, resolution.y };
+
 	ImGui::NewFrame();
 #endif
 }
@@ -75,9 +77,9 @@ void ImGuiHandler::Update()
 void ImGuiHandler::Settings()
 {
 #ifdef _DEBUG
-	CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
-	ImGui::SetNextWindowPos({ 0.01f * windowSize.x, 0.02f * windowSize.y });
-	ImGui::SetNextWindowContentSize({ 0.16f * windowSize.x, 0.2f * windowSize.y });
+	CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+	ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.02f * resolution.y });
+	ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.2f * resolution.y });
 	bool open = true;
 	ImGui::Begin("Modelviewer", &open, ImGuiWindowFlags_NoSavedSettings);
 
@@ -134,9 +136,9 @@ void ImGuiHandler::Settings()
 void ImGuiHandler::Lighting()
 {
 #ifdef _DEBUG
-	CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
-	ImGui::SetNextWindowPos({ 0.01f * windowSize.x, 0.26f * windowSize.y });
-	ImGui::SetNextWindowContentSize({ 0.16f * windowSize.x, 0.6f * windowSize.y });
+	CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+	ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.26f * resolution.y });
+	ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.6f * resolution.y });
 	bool open = true;
 	ImGui::Begin("Lighting Settings", &open, ImGuiWindowFlags_NoSavedSettings);
 	{
@@ -276,15 +278,15 @@ void ImGuiHandler::Lighting()
 void ImGuiHandler::Performance()
 {
 #ifdef _DEBUG
-	CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
-	ImGui::SetNextWindowPos({ 0.18f * windowSize.x, 0.02f * windowSize.y });
-	ImGui::SetNextWindowContentSize({ 0.16f * windowSize.x, 0.2f * windowSize.y });
+	CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+	ImGui::SetNextWindowPos({ 0.18f * resolution.x, 0.02f * resolution.y });
+	ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.2f * resolution.y });
 	bool open = true;
 	ImGui::Begin("Performance Info", &open, ImGuiWindowFlags_NoSavedSettings);
-	if (ImGui::BeginTable("PerformanceTable", 2, 0, { 0.18f * windowSize.x, 0 }))
+	if (ImGui::BeginTable("PerformanceTable", 2, 0, { 0.18f * resolution.x, 0 }))
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
-		style.CellPadding = { 0.001f * windowSize.x, 0.004f * windowSize.y };
+		style.CellPadding = { 0.001f * resolution.x, 0.004f * resolution.y };
 
 		// FPS
 		{
@@ -377,9 +379,9 @@ void ImGuiHandler::Performance()
 void ImGuiHandler::Controls()
 {
 #ifdef _DEBUG
-	CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
-	ImGui::SetNextWindowPos({ 0.85f * windowSize.x, 0.02f * windowSize.y });
-	ImGui::SetNextWindowContentSize({ 0.24f * windowSize.x, 0.26f * windowSize.y });
+	CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+	ImGui::SetNextWindowPos({ 0.85f * resolution.x, 0.02f * resolution.y });
+	ImGui::SetNextWindowContentSize({ 0.24f * resolution.x, 0.26f * resolution.y });
 	bool open = true;
 	ImGui::Begin("Controller Info", &open, ImGuiWindowFlags_NoSavedSettings);
 
@@ -508,9 +510,9 @@ void ImGuiHandler::Controls()
 void ImGuiHandler::WindowSize()
 {
 #ifdef _DEBUG
-	CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
-	ImGui::SetNextWindowPos({ 0.85f * windowSize.x, 0.32f * windowSize.y });
-	ImGui::SetNextWindowContentSize({ 0.24f * windowSize.x, 0.24f * windowSize.y });
+	CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+	ImGui::SetNextWindowPos({ 0.85f * resolution.x, 0.32f * resolution.y });
+	ImGui::SetNextWindowContentSize({ 0.24f * resolution.x, 0.24f * resolution.y });
 	bool open = true;
 	ImGui::Begin("Resolution", &open, ImGuiWindowFlags_NoSavedSettings);
 

@@ -1,3 +1,5 @@
+#include "Enginepch.h"
+
 #include "Engine.h"
 #include "GameEngine/Time/Timer.h"
 #include "GameEngine/Input/InputHandler.h"
@@ -6,13 +8,6 @@
 #include "GameEngine/DebugDrawer/DebugDrawer.h"
 #include "GameEngine/Audio/AudioEngine.h"
 #include "GameEngine/ImGui/ImGuiHandler.h"
-
-#include <iostream>
-#include <fstream>
-#include "nlohmann/json.hpp"
-namespace nl = nlohmann;
-
-#include "Logger/Logger.h"
 
 #if _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(LogGameEngine, GameEngine, Verbose);

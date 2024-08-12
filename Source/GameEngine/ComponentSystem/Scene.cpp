@@ -1,3 +1,5 @@
+#include "Enginepch.h"
+
 #include "Scene.h"
 #include "GraphicsEngine/GraphicsEngine.h"
 #include "GraphicsEngine/Objects/Sprite.h"
@@ -16,7 +18,6 @@
 #include "GameEngine/DebugDrawer/DebugDrawer.h"
 #include "AssetManager/AssetManager.h"
 
-#include "Logger/Logger.h"
 #include "GameEngine/Math/Vector.hpp"
 
 #if _DEBUG

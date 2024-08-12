@@ -1,11 +1,8 @@
+#include "Enginepch.h"
+
 #include "AudioInstance.h"
-#include "fmod/fmod.hpp"
-#include "fmod/fmod_studio.hpp"
-#include "fmod/fmod_common.h"
 #include "GameEngine/Engine.h"
 #include "GameEngine/Audio/AudioEngine.h"
-
-#include "Logger/Logger.h"
 
 #if _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(LogAudioPlayer, AudioInstance, Verbose);

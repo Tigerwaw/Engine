@@ -1,3 +1,5 @@
+#include "Enginepch.h"
+
 #include "GlobalEventHandler.h"
 
 GlobalEventHandler::GlobalEventHandler()

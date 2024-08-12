@@ -1,7 +1,5 @@
 #pragma once
 #include "Graphics/GraphicsEngine/GraphicsCommands/GraphicsCommandBase.h"
-#include <memory>
-#include <vector>
 
 class AmbientLight;
 class DirectionalLight;

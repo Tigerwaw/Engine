@@ -1,6 +1,4 @@
 #pragma once
-#include <vector>
-#include <memory>
 #include "GameEngine/Math/Matrix4x4.hpp"
 #include "GameEngine/Math/Vector.hpp"
 #include "GameEngine/Intersections/AABB3D.hpp"

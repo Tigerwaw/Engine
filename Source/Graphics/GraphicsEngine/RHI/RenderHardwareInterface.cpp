@@ -5,7 +5,6 @@
 #include <d3dcompiler.h>
 #include <d3d11shader.h>
 #include "GraphicsEngine/DDSTextureLoader/DDSTextureLoader11.h"
-#include "Logger\Logger.h"
 #include "StringHelpers.h"
 
 #if _DEBUG

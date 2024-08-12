@@ -1,3 +1,5 @@
+#include "Enginepch.h"
+
 #include "DebugDrawer.h"
 #include "Graphics/GraphicsEngine/GraphicsEngine.h"
 #include "Graphics/GraphicsEngine/Objects/DynamicVertexBuffer.h"
@@ -9,10 +11,6 @@
 #include "GameEngine/ComponentSystem/Components/Graphics/DebugModel.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
-
-#include <array>
-
-#include "Logger/Logger.h"
 
 #if _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(LogDebugDrawer, DebugDrawer, Verbose);

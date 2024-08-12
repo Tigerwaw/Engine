@@ -1,7 +1,6 @@
 #pragma once
 #include <array>
 #include <math.h>
-#include <cassert>
 #include "Vector3.hpp"
 
 namespace CommonUtilities

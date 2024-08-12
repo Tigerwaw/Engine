@@ -1,3 +1,5 @@
+#include "Enginepch.h"
+
 #include "AmbientLight.h"
 #include "Graphics/GraphicsEngine/GraphicsEngine.h"
 #include "Graphics/GraphicsEngine/Objects/Texture.h"

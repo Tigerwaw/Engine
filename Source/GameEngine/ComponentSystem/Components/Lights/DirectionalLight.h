@@ -1,6 +1,4 @@
 #pragma once
-#include <memory>
-
 #include "GameEngine/ComponentSystem/Components/Lights/LightSource.h"
 #include "GameEngine/Math/Vector.hpp"
 #include "GameEngine/Intersections/AABB3D.hpp"

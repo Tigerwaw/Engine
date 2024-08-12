@@ -1,8 +1,7 @@
+#include "Enginepch.h"
+
 #include "MKBInput.h"
-#include <Windows.h>
-#include <Windowsx.h>
 #include "Engine.h"
-#include <algorithm>
 
 MKBInput::MKBInput()
 {
@@ -55,13 +54,13 @@ const void MKBInput::UpdateEvents(UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_MOUSEMOVE:
 	{
-		CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+		CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
 		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_X)] = static_cast<float>(GET_X_LPARAM(lParam));
-		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_Y)] = resolution.y - static_cast<float>(GET_Y_LPARAM(lParam));
+		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_Y)] = windowSize.y - static_cast<float>(GET_Y_LPARAM(lParam));
 
 		CU::Vector2<float> ndcPos;
-		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePosNDC_X)] = ((myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_X)] / resolution.x) - 0.5f) * 2;
-		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePosNDC_Y)] = ((myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_Y)] / resolution.y) - 0.5f) * 2;
+		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePosNDC_X)] = ((myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_X)] / windowSize.x) - 0.5f) * 2;
+		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePosNDC_Y)] = ((myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_Y)] / windowSize.y) - 0.5f) * 2;
 		return;
 		break;
 	}

@@ -1,8 +1,4 @@
 #pragma once
-#include <memory>
-#include <vector>
-#include <string>
-
 class Scene;
 class GameObject;
 class SceneLoader;

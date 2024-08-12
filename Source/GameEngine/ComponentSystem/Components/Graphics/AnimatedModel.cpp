@@ -1,3 +1,5 @@
+#include "Enginepch.h"
+
 #include "GameEngine/ComponentSystem/GameObject.h"
 
 #include "AnimatedModel.h"
@@ -7,8 +9,6 @@
 #include "GameEngine/Time/Timer.h"
 #include "GameEngine/Math/Quaternion.hpp"
 namespace CU = CommonUtilities;
-
-#include "Logger/Logger.h"
 
 #ifdef _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(ComponentSystem, "ComponentSystem", Verbose);

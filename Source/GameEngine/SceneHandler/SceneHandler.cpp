@@ -1,11 +1,11 @@
+#include "Enginepch.h"
+
 #include "SceneHandler.h"
 #include "SceneLoader.h"
 #include "GameEngine/ComponentSystem/Scene.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 
 #include "Engine.h"
-
-#include "Logger/Logger.h"
 
 #if _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneHandler, SceneHandler, Verbose);

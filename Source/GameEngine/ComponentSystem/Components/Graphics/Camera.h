@@ -1,6 +1,4 @@
 #pragma once
-#include <array>
-#include <memory>
 #include "GameEngine/ComponentSystem/Component.h"
 #include "GameEngine/Math/Matrix.hpp"
 #include "GameEngine/Math/Vector.hpp"

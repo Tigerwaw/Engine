@@ -1,8 +1,6 @@
 #include "GraphicsEngine.pch.h"
 #include "GraphicsEngine.h"
 
-#include "Logger\Logger.h"
-
 #include "GameEngine/Engine.h"
 #include "GraphicsEngine/Objects/Shader.h"
 #include "GraphicsEngine/Objects/Vertex.h"

@@ -2,7 +2,6 @@
 #include "GraphicsCommandList.h"
 #include "GraphicsEngine/GraphicsEngine.h"
 #include <stdexcept>
-#include <memory>
 
 GraphicsCommandListIterator::GraphicsCommandListIterator(const GraphicsCommandList* aCommandList)
 {

@@ -6,12 +6,7 @@
 #include <iostream>
 #include <vector>
 
-#include <wrl.h>
-using namespace Microsoft::WRL;
-
 DEFINE_LOG_CATEGORY(LogModelViewer);
-
-#include <d3d11.h>
 
 #if _DEBUG
 #include "imgui.h"

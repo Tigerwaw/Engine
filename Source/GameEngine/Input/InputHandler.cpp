@@ -1,9 +1,7 @@
-#include "InputHandler.h"
-#include <Windows.h>
-#include <Windowsx.h>
-#include "Engine.h"
+#include "Enginepch.h"
 
-#include "Logger/Logger.h"
+#include "InputHandler.h"
+#include "Engine.h"
 
 #if _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(LogInputHandler, InputHandler, Verbose);
