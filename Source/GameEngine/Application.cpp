@@ -13,16 +13,6 @@ DECLARE_LOG_CATEGORY_WITH_NAME(LogApplication, Application, Warning);
 
 DEFINE_LOG_CATEGORY(LogApplication);
 
-#ifdef _DEBUG
-#if DEBUG_MEMORYLEAKS
-#include <stdlib.h>
-#include <crtdbg.h>
-#define _CRTDBG_MAP_ALLOC
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
-#endif
-#endif
-
 LRESULT CALLBACK WinProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam);
 
 Application::Application()

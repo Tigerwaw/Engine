@@ -88,6 +88,6 @@ void UpdateLightBuffer::Destroy()
 {
 	myAmbientLight = nullptr;
 	myDirectionalLight = nullptr;
-	myPointLights.clear();
-	mySpotLights.clear();
+	myPointLights.~vector();
+	mySpotLights.~vector();
 }

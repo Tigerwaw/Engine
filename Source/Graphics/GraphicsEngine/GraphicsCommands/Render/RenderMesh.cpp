@@ -56,6 +56,6 @@ void RenderMesh::Execute()
 void RenderMesh::Destroy()
 {
     mesh = nullptr;
-    materialList.clear();
     psoOverride = nullptr;
+    materialList.~vector();
 }

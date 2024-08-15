@@ -13,8 +13,9 @@
 * Simple Component System (Scenes -> Game objects -> Components).
 * Gameobject hierarchies with childing and parenting.
 * Game objects have an internal event system that lets components communicate with eachother without being coupled.
-* Worldspace and screenspace sprites.
+* Screenspace sprites.
 * Animation blending, layers, & events.
+* Scene loading from json.
 
 
 ### Miscellaneous
@@ -26,7 +27,7 @@
 
 #### Known issues and shortcomings
 
-* Memory leaks (suspected to come from the graphics command list or the runtime-updating of buffers).
+* Cache-miss galore (probably).
 * Soft shadows create artifacts and need to be improved.
 * The scene-loading from JSON is naively implemented and will most likely need to be improved for a more pleasant working experience.
 

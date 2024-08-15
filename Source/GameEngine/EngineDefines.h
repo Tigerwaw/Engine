@@ -1,7 +1,5 @@
 #pragma once
 
-#define DEBUG_MEMORYLEAKS false
-
 #define MAX_MODEL_MATERIALS 10
 
 // These may need to be changed manually in shader code as well

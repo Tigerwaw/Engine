@@ -45,5 +45,5 @@ void RenderDebugMesh::Execute()
 void RenderDebugMesh::Destroy()
 {
     mesh = nullptr;
-    materialList.clear();
+    materialList.~vector();
 }

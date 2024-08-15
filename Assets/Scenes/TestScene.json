@@ -112,40 +112,20 @@
       "Components": [
         {
           "Type": "Transform",
-          "Arguments": [
-            [
-              100.0,
-              40.0,
-              0.0
-            ],
-            [
-              -90.0,
-              0.0,
-              0.0
-            ],
-            [
-              1.0,
-              1.0,
-              1.0
-            ]
-          ]
+          "Position": [ 100.0, 40.0, 0.0 ],
+          "Rotation": [ -90.0, 0.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
         },
         {
           "Type": "Model",
-          "Arguments": [
-            "EngineAssets/Models/SM_Color_Checker.fbx",
+          "Model": "EngineAssets/Models/SM_Color_Checker.fbx",
+          "Materials": [
             "EngineAssets/Materials/ColorChecker.json"
           ]
         },
         {
           "Type": "Rotator",
-          "Arguments": [
-            [
-              0.0,
-              30.0,
-              0.0
-            ]
-          ]
+          "RotationPerSecond": [ 0.0, 30.0, 0.0 ]
         }
       ]
     },
@@ -413,8 +393,8 @@
       "Components": [
         {
           "Type": "Transform",
-          "Position": [ -150.0, 150.0, 0.0 ],
-          "Rotation": [ 45.0, -90.0, 0.0 ],
+          "Position": [ -70.0, 180.0, -200.0 ],
+          "Rotation": [ 45.0, -15.0, 0.0 ],
           "Scale": [ 1.0, 1.0, 1.0 ]
         },
         {
@@ -425,7 +405,7 @@
           "CastShadows": true,
           "ShadowTextureSize": 512,
           "MinShadowBias": 0.00002,
-          "MaxShadowBias": 0.051,
+          "MaxShadowBias": 0.01,
           "ShadowSamples": 32
         },
         {

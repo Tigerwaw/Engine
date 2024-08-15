@@ -61,5 +61,5 @@ void RenderAnimatedMesh::Execute()
 void RenderAnimatedMesh::Destroy()
 {
     mesh = nullptr;
-    materialList.clear();
+    materialList.~vector();
 }

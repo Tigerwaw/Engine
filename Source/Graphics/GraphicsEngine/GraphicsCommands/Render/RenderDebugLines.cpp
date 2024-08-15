@@ -19,6 +19,6 @@ void RenderDebugLines::Execute()
 
 void RenderDebugLines::Destroy()
 {
-	myLineVertices.clear();
+	myLineVertices.~vector();
 	myLineBuffer = nullptr;
 }

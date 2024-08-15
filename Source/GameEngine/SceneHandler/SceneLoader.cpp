@@ -129,18 +129,19 @@ void SceneLoader::CreateComponent(std::shared_ptr<GameObject> aGO, nl::json& aCo
     if (aComp.contains("Type"))
     {
         std::shared_ptr<Component> newComponent;
+        std::string comp = aComp["Type"];
 
-        if (aComp["Type"] == "Transform") newComponent = aGO->AddComponent<Transform>();
-        else if (aComp["Type"] == "AudioSource") newComponent = aGO->AddComponent<AudioSource>();
-        else if (aComp["Type"] == "Model") newComponent = aGO->AddComponent<Model>();
-        else if (aComp["Type"] == "AnimatedModel") newComponent = aGO->AddComponent<AnimatedModel>();
-        else if (aComp["Type"] == "Camera") newComponent = aGO->AddComponent<Camera>();
-        else if (aComp["Type"] == "AmbientLight") newComponent = aGO->AddComponent<AmbientLight>();
-        else if (aComp["Type"] == "DirectionalLight") newComponent = aGO->AddComponent<DirectionalLight>();
-        else if (aComp["Type"] == "PointLight") newComponent = aGO->AddComponent<PointLight>();
-        else if (aComp["Type"] == "SpotLight") newComponent = aGO->AddComponent<SpotLight>();
-        else if (aComp["Type"] == "Rotator") newComponent = aGO->AddComponent<Rotator>();
-        else if (aComp["Type"] == "FreecamController") newComponent = aGO->AddComponent<FreecamController>();
+        if (comp == "Transform") newComponent = aGO->AddComponent<Transform>();
+        else if (comp == "AudioSource") newComponent = aGO->AddComponent<AudioSource>();
+        else if (comp == "Model") newComponent = aGO->AddComponent<Model>();
+        else if (comp == "AnimatedModel") newComponent = aGO->AddComponent<AnimatedModel>();
+        else if (comp == "Camera") newComponent = aGO->AddComponent<Camera>();
+        else if (comp == "AmbientLight") newComponent = aGO->AddComponent<AmbientLight>();
+        else if (comp == "DirectionalLight") newComponent = aGO->AddComponent<DirectionalLight>();
+        else if (comp == "PointLight") newComponent = aGO->AddComponent<PointLight>();
+        else if (comp == "SpotLight") newComponent = aGO->AddComponent<SpotLight>();
+        else if (comp == "Rotator") newComponent = aGO->AddComponent<Rotator>();
+        else if (comp == "FreecamController") newComponent = aGO->AddComponent<FreecamController>();
 
         if (newComponent)
         {
