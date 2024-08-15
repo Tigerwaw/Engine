@@ -55,10 +55,10 @@ void ModelViewer::InitializeApplication()
 	inputHandler.RegisterBinaryAction("RB", ControllerButtons::RIGHT_SHOULDER, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("Start", ControllerButtons::START, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("Back", ControllerButtons::BACK, GenericInput::ActionType::Held);
-	inputHandler.RegisterAnalog2DAction("LeftStick", AnalogInput2D::LEFT_STICK);
-	inputHandler.RegisterAnalog2DAction("RightStick", AnalogInput2D::RIGHT_STICK);
-	inputHandler.RegisterAnalogAction("LeftTrigger", AnalogInput::LEFT_TRIGGER);
-	inputHandler.RegisterAnalogAction("RightTrigger", AnalogInput::RIGHT_TRIGGER);
+	inputHandler.RegisterAnalog2DAction("LeftStick", ControllerAnalog2D::LEFT_STICK);
+	inputHandler.RegisterAnalog2DAction("RightStick", ControllerAnalog2D::RIGHT_STICK);
+	inputHandler.RegisterAnalogAction("LeftTrigger", ControllerAnalog::LEFT_TRIGGER);
+	inputHandler.RegisterAnalogAction("RightTrigger", ControllerAnalog::RIGHT_TRIGGER);
 
 	inputHandler.RegisterBinaryAction("SharedAction", Keys::W, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("SharedAction", ControllerButtons::A, GenericInput::ActionType::Held);

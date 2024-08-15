@@ -9,15 +9,6 @@
 #include "GameEngine/Audio/AudioEngine.h"
 #include "GameEngine/ImGui/ImGuiHandler.h"
 
-#if _DEBUG
-DECLARE_LOG_CATEGORY_WITH_NAME(LogGameEngine, GameEngine, Verbose);
-#else
-DECLARE_LOG_CATEGORY_WITH_NAME(LogGameEngine, GameEngine, Warning);
-#endif
-
-#define ENGINELOG(Verbosity, Message, ...) LOG(LogGameEngine, Verbosity, Message, ##__VA_ARGS__)
-DEFINE_LOG_CATEGORY(LogGameEngine);
-
 void Engine::Update()
 {
     myDebugDrawer->ClearObjects();
@@ -60,7 +51,7 @@ void Engine::Destroy()
 
 Engine::Engine()
 {
-    ENGINELOG(Log, "Initializing Game Engine...");
+    LOG(LogGameEngine, Log, "Initializing Game Engine...");
 
     myTimer = std::make_unique<Timer>();
     myInputHandler = std::make_unique<InputHandler>();
@@ -84,7 +75,7 @@ Engine::Engine()
     }
     catch (nl::json::parse_error e)
     {
-        ENGINELOG(Error, "Couldn't read application settings file, {}!", e.what());
+        LOG(LogGameEngine, Error, "Couldn't read application settings file, {}!", e.what());
         return;
     }
     path.close();
@@ -115,7 +106,7 @@ Engine::Engine()
         myIsBorderless = data["borderless"].get<bool>();
     }
 
-    ENGINELOG(Log, "Game Engine initialized!");
+    LOG(LogGameEngine, Log, "Game Engine initialized!");
 }
 
 Engine::~Engine()

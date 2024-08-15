@@ -344,10 +344,6 @@
           "BottomPlane": -1024.0,
           "NearPlane": 1.0,
           "FarPlane": 6000.0
-        },
-        {
-          "Type": "DebugModel",
-          "Model": "EngineAssets/Models/DirectionalLightGizmo.fbx"
         }
       ]
     },
@@ -379,10 +375,6 @@
           "NearPlane": 1.0,
           "FarPlane": 3000.0,
           "Resolution": [ 512.0, 512.0 ]
-        },
-        {
-          "Type": "DebugModel",
-          "Model": "EngineAssets/Models/PointLightGizmo.fbx"
         }
       ]
     },
@@ -415,10 +407,6 @@
           "NearPlane": 50.0,
           "FarPlane": 2000.0,
           "Resolution": [ 512.0, 512.0 ]
-        },
-        {
-          "Type": "DebugModel",
-          "Model": "EngineAssets/Models/SpotLightGizmo.fbx"
         }
       ]
     }

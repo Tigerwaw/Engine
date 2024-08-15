@@ -26,5 +26,3 @@ DECLARE_LOG_CATEGORY_WITH_NAME(LogGraphicsEngine, GraphicsEngine, Verbose);
 #else
 DECLARE_LOG_CATEGORY_WITH_NAME(LogGraphicsEngine, GraphicsEngine, Warning);
 #endif
-
-#define GELOG(Verbosity, Message, ...) LOG(LogGraphicsEngine, Verbosity, Message, ##__VA_ARGS__)

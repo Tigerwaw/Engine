@@ -7,15 +7,6 @@
 
 #include "Engine.h"
 
-#if _DEBUG
-DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneHandler, SceneHandler, Verbose);
-#else
-DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneHandler, SceneHandler, Warning);
-#endif
-
-#define SCENEHANDLERLOG(Verbosity, Message, ...) LOG(LogSceneHandler, Verbosity, Message, ##__VA_ARGS__)
-DEFINE_LOG_CATEGORY(LogSceneHandler);
-
 SceneHandler::SceneHandler()
 {
     mySceneLoader = std::make_shared<SceneLoader>();
@@ -25,7 +16,7 @@ void SceneHandler::UpdateActiveScene()
 {
     if (!myActiveScene)
     {
-        SCENEHANDLERLOG(Error, "Scenehandler does not contain an active scene!");
+        LOG(LogSceneHandler, Error, "Scenehandler does not contain an active scene!");
         return;
     }
 
@@ -36,7 +27,7 @@ void SceneHandler::RenderActiveScene()
 {
     if (!myActiveScene)
     {
-        SCENEHANDLERLOG(Error, "Scenehandler does not contain an active scene!");
+        LOG(LogSceneHandler, Error, "Scenehandler does not contain an active scene!");
         return;
     }
 
@@ -73,7 +64,7 @@ void SceneHandler::UnloadScene(unsigned aSceneIndex)
     }
 
     myLoadedScenes.erase(myLoadedScenes.begin() + aSceneIndex);
-    SCENEHANDLERLOG(Log, "Unloaded scene with index {}!", aSceneIndex);
+    LOG(LogSceneHandler, Log, "Unloaded scene with index {}!", aSceneIndex);
 }
 
 void SceneHandler::ChangeActiveScene(unsigned aSceneIndex)
@@ -90,7 +81,7 @@ void SceneHandler::Instantiate(std::shared_ptr<GameObject> aGameObject)
 {
     if (!myActiveScene)
     {
-        SCENEHANDLERLOG(Error, "Scenehandler does not contain an active scene!");
+        LOG(LogSceneHandler, Error, "Scenehandler does not contain an active scene!");
         return;
     }
 
@@ -101,7 +92,7 @@ void SceneHandler::Destroy(std::shared_ptr<GameObject> aGameObject)
 {
     if (!myActiveScene)
     {
-        SCENEHANDLERLOG(Error, "Scenehandler does not contain an active scene!");
+        LOG(LogSceneHandler, Error, "Scenehandler does not contain an active scene!");
         return;
     }
 
@@ -112,7 +103,7 @@ const unsigned SceneHandler::GetObjectAmount() const
 {
     if (!myActiveScene)
     {
-        SCENEHANDLERLOG(Error, "Scenehandler does not contain an active scene!");
+        LOG(LogSceneHandler, Error, "Scenehandler does not contain an active scene!");
         return 0;
     }
 
@@ -123,7 +114,7 @@ const unsigned SceneHandler::GetActiveObjectAmount() const
 {
     if (!myActiveScene)
     {
-        SCENEHANDLERLOG(Error, "Scenehandler does not contain an active scene!");
+        LOG(LogSceneHandler, Error, "Scenehandler does not contain an active scene!");
         return 0;
     }
 

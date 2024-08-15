@@ -25,13 +25,13 @@ void FreecamController::Start()
 	inputHandler.RegisterBinaryAction("CameraReset", Keys::R, GenericInput::ActionType::Clicked);
 	inputHandler.RegisterBinaryAction("CameraReset", ControllerButtons::BACK, GenericInput::ActionType::Clicked);
 	inputHandler.RegisterAnalogAction("CameraXMovement", Keys::A, Keys::D);
-	inputHandler.RegisterAnalogAction("CameraXMovement", AnalogInput::LEFT_STICK_X);
+	inputHandler.RegisterAnalogAction("CameraXMovement", ControllerAnalog::LEFT_STICK_X);
 	inputHandler.RegisterAnalogAction("CameraYMovement", Keys::CONTROL, Keys::SPACE);
 	inputHandler.RegisterAnalogAction("CameraYMovement", ControllerButtons::B, ControllerButtons::A);
 	inputHandler.RegisterAnalogAction("CameraZMovement", Keys::S, Keys::W);
-	inputHandler.RegisterAnalogAction("CameraZMovement", AnalogInput::LEFT_STICK_Y);
+	inputHandler.RegisterAnalogAction("CameraZMovement", ControllerAnalog::LEFT_STICK_Y);
 	inputHandler.RegisterAnalog2DAction("CameraRotation", MouseMovement2D::MousePosDelta);
-	inputHandler.RegisterAnalog2DAction("CameraRotation", AnalogInput2D::RIGHT_STICK);
+	inputHandler.RegisterAnalog2DAction("CameraRotation", ControllerAnalog2D::RIGHT_STICK);
 }
 
 void FreecamController::Update()

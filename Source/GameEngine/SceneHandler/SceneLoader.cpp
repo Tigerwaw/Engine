@@ -26,15 +26,6 @@
 #include "GameEngine/ComponentSystem/Components/Movement/FreecamController.h"
 #include "GameEngine/ComponentSystem/Components/AudioSource.h"
 
-#if _DEBUG
-DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneLoader, SceneLoader, Verbose);
-#else
-DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneLoader, SceneLoader, Warning);
-#endif
-
-#define SCENELOADERLOG(Verbosity, Message, ...) LOG(LogSceneLoader, Verbosity, Message, ##__VA_ARGS__)
-DEFINE_LOG_CATEGORY(LogSceneLoader);
-
 SceneLoader::SceneLoader()
 {
 
@@ -61,7 +52,7 @@ bool SceneLoader::LoadScene(std::shared_ptr<Scene> aScene, std::filesystem::path
     }
     catch (nl::json::parse_error e)
     {
-        SCENELOADERLOG(Error, "Couldn't read scene file, {}!", e.what());
+        LOG(LogSceneLoader, Error, "Couldn't read scene file, {}!", e.what());
         return false;
     }
     path.close();
@@ -147,5 +138,13 @@ void SceneLoader::CreateComponent(std::shared_ptr<GameObject> aGO, nl::json& aCo
         {
             newComponent->Deserialize(aComp);
         }
+        else
+        {
+            LOG(LogSceneLoader, Warning, "Could not create component of type {} for gameobject {}", comp, aGO->GetName());
+        }
+    }
+    else
+    {
+        LOG(LogSceneLoader, Warning, "Could not find type of component to add to gameobject {}", aGO->GetName());
     }
 }

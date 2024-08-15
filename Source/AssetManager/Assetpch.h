@@ -1,5 +1,4 @@
 #pragma once
-#include "Logger/Logger.h"
 #include "Utilities/nlohmann/json.hpp"
 namespace nl = nlohmann;
 #include "TGAFBX/TGAFbx.h"
@@ -22,3 +21,11 @@ namespace nl = nlohmann;
 #include <unordered_map>
 #include <any>
 
+
+#include "Logger/Logger.h"
+
+#ifdef _DEBUG
+DECLARE_LOG_CATEGORY_WITH_NAME(LogAssetManager, AssetManager, Verbose);
+#else
+DECLARE_LOG_CATEGORY_WITH_NAME(LogAssetManager, AssetManager, Warning);
+#endif

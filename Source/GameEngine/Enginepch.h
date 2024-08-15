@@ -22,10 +22,31 @@ namespace nl = nlohmann;
 #include "GameEngine/Engine.h"
 #include "GameEngine/Audio/AudioEngine.h"
 
-#include "Logger/Logger.h"
 #include "imgui.h"
 #include "backends/imgui_impl_win32.h"
 #include "backends/imgui_impl_dx11.h"
 #include "fmod/fmod.hpp"
 #include "fmod/fmod_studio.hpp"
 #include "fmod/fmod_common.h"
+
+#include "Logger/Logger.h"
+
+#ifdef _DEBUG
+DECLARE_LOG_CATEGORY_WITH_NAME(LogGameEngine, GameEngine, Verbose);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogApplication, Application, Verbose);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogAudioEngine, AudioEngine, Verbose);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogAudioPlayer, AudioInstance, Verbose);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogDebugDrawer, DebugDrawer, Verbose);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogScene, Scene, Verbose);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneHandler, SceneHandler, Verbose);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneLoader, SceneLoader, Verbose);
+#else
+DECLARE_LOG_CATEGORY_WITH_NAME(LogGameEngine, GameEngine, Warning);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogApplication, Application, Warning);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogAudioEngine, AudioEngine, Warning);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogAudioPlayer, AudioInstance, Warning);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogDebugDrawer, DebugDrawer, Warning);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogScene, Scene, Warning);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneHandler, SceneHandler, Warning);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneLoader, SceneLoader, Warning);
+#endif

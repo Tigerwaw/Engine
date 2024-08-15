@@ -10,9 +10,9 @@ ControllerInput::ControllerInput()
 {
     myCurrentBinaryState = std::array<bool, static_cast<int>(ControllerButtons::COUNT)>();
     myPreviousBinaryState = std::array<bool, static_cast<int>(ControllerButtons::COUNT)>();
-    myCurrentAnalogState = std::array<float, static_cast<int>(AnalogInput::COUNT)>();
-    myPreviousAnalogState = std::array<float, static_cast<int>(AnalogInput::COUNT)>();
-    myDeltaAnalogState = std::array<float, static_cast<int>(AnalogInput::COUNT)>();
+    myCurrentAnalogState = std::array<float, static_cast<int>(ControllerAnalog::COUNT)>();
+    myPreviousAnalogState = std::array<float, static_cast<int>(ControllerAnalog::COUNT)>();
+    myDeltaAnalogState = std::array<float, static_cast<int>(ControllerAnalog::COUNT)>();
 }
 
 const void ControllerInput::UpdateEvents(UINT message, WPARAM wParam, LPARAM lParam)
@@ -32,38 +32,38 @@ const void ControllerInput::UpdateInput()
 
         if (dwResult == 0)
         {
-            int input = static_cast<int>(AnalogInput::LEFT_TRIGGER);
+            int input = static_cast<int>(ControllerAnalog::LEFT_TRIGGER);
             myPreviousAnalogState[input] = myCurrentAnalogState[input];
             myCurrentAnalogState[input] = static_cast<float>(state.Gamepad.bLeftTrigger) / 255;
             myDeltaAnalogState[input] = myCurrentAnalogState[input] - myPreviousAnalogState[input];
 
-            input = static_cast<int>(AnalogInput::RIGHT_TRIGGER);
+            input = static_cast<int>(ControllerAnalog::RIGHT_TRIGGER);
             myPreviousAnalogState[input] = myCurrentAnalogState[input];
             myCurrentAnalogState[input] = static_cast<float>(state.Gamepad.bRightTrigger) / 255;
             myDeltaAnalogState[input] = myCurrentAnalogState[input] - myPreviousAnalogState[input];
 
-            input = static_cast<int>(AnalogInput::LEFT_STICK_X);
+            input = static_cast<int>(ControllerAnalog::LEFT_STICK_X);
             myPreviousAnalogState[input] = myCurrentAnalogState[input];
             float value = std::fmaxf(-1, static_cast<float>(state.Gamepad.sThumbLX) / 32767);
             myCurrentAnalogState[input] = (abs(value) < myLeftStickDeadZone.x ? 0 : (abs(value) - myLeftStickDeadZone.x) * (value / abs(value)));
             if (myLeftStickDeadZone.x > 0) myCurrentAnalogState[input] /= 1 - myLeftStickDeadZone.x;
             myDeltaAnalogState[input] = myCurrentAnalogState[input] - myPreviousAnalogState[input];
 
-            input = static_cast<int>(AnalogInput::LEFT_STICK_Y);
+            input = static_cast<int>(ControllerAnalog::LEFT_STICK_Y);
             myPreviousAnalogState[input] = myCurrentAnalogState[input];
             value = std::fmaxf(-1, static_cast<float>(state.Gamepad.sThumbLY) / 32767);
             myCurrentAnalogState[input] = (abs(value) < myLeftStickDeadZone.y ? 0 : (abs(value) - myLeftStickDeadZone.y) * (value / abs(value)));
             if (myLeftStickDeadZone.y > 0) myCurrentAnalogState[input] /= 1 - myLeftStickDeadZone.y;
             myDeltaAnalogState[input] = myCurrentAnalogState[input] - myPreviousAnalogState[input];
 
-            input = static_cast<int>(AnalogInput::RIGHT_STICK_X);
+            input = static_cast<int>(ControllerAnalog::RIGHT_STICK_X);
             myPreviousAnalogState[input] = myCurrentAnalogState[input];
             value = std::fmaxf(-1, static_cast<float>(state.Gamepad.sThumbRX) / 32767);
             myCurrentAnalogState[input] = (abs(value) < myRightStickDeadZone.x ? 0 : (abs(value) - myRightStickDeadZone.x) * (value / abs(value)));
             if (myRightStickDeadZone.x > 0) myCurrentAnalogState[input] /= 1 - myRightStickDeadZone.x;
             myDeltaAnalogState[input] = myCurrentAnalogState[input] - myPreviousAnalogState[input];
 
-            input = static_cast<int>(AnalogInput::RIGHT_STICK_Y);
+            input = static_cast<int>(ControllerAnalog::RIGHT_STICK_Y);
             myPreviousAnalogState[input] = myCurrentAnalogState[input];
             value = std::fmaxf(-1, static_cast<float>(state.Gamepad.sThumbRY) / 32767);
             myCurrentAnalogState[input] = (abs(value) < myRightStickDeadZone.y ? 0 : (abs(value) - myRightStickDeadZone.y) * (value / abs(value)));
@@ -153,24 +153,24 @@ const bool ControllerInput::GetBinary(const GenericInput::ActionType aActionType
 
 const float ControllerInput::GetAnalog(const unsigned aKeyCode) const
 {
-    switch (static_cast<AnalogInput>(aKeyCode))
+    switch (static_cast<ControllerAnalog>(aKeyCode))
     {
-    case AnalogInput::LEFT_TRIGGER:
+    case ControllerAnalog::LEFT_TRIGGER:
         return myCurrentAnalogState[aKeyCode];
         break;
-    case AnalogInput::RIGHT_TRIGGER:
+    case ControllerAnalog::RIGHT_TRIGGER:
         return myCurrentAnalogState[aKeyCode];
         break;
-    case AnalogInput::LEFT_STICK_X:
+    case ControllerAnalog::LEFT_STICK_X:
         return myCurrentAnalogState[aKeyCode];
         break;
-    case AnalogInput::LEFT_STICK_Y:
+    case ControllerAnalog::LEFT_STICK_Y:
         return myCurrentAnalogState[aKeyCode];
         break;
-    case AnalogInput::RIGHT_STICK_X:
+    case ControllerAnalog::RIGHT_STICK_X:
         return myDeltaAnalogState[aKeyCode];
         break;
-    case AnalogInput::RIGHT_STICK_Y:
+    case ControllerAnalog::RIGHT_STICK_Y:
         return myDeltaAnalogState[aKeyCode];
         break;
     }
@@ -180,13 +180,13 @@ const float ControllerInput::GetAnalog(const unsigned aKeyCode) const
 
 const CU::Vector2f ControllerInput::GetAnalog2D(const unsigned aKeyCode) const
 {
-    switch (static_cast<AnalogInput2D>(aKeyCode))
+    switch (static_cast<ControllerAnalog2D>(aKeyCode))
     {
-    case AnalogInput2D::LEFT_STICK:
-        return { myCurrentAnalogState[static_cast<int>(AnalogInput::LEFT_STICK_X)], myCurrentAnalogState[static_cast<int>(AnalogInput::LEFT_STICK_Y)] };
+    case ControllerAnalog2D::LEFT_STICK:
+        return { myCurrentAnalogState[static_cast<int>(ControllerAnalog::LEFT_STICK_X)], myCurrentAnalogState[static_cast<int>(ControllerAnalog::LEFT_STICK_Y)] };
         break;
-    case AnalogInput2D::RIGHT_STICK:
-        return { myCurrentAnalogState[static_cast<int>(AnalogInput::RIGHT_STICK_X)], myCurrentAnalogState[static_cast<int>(AnalogInput::RIGHT_STICK_Y)] };
+    case ControllerAnalog2D::RIGHT_STICK:
+        return { myCurrentAnalogState[static_cast<int>(ControllerAnalog::RIGHT_STICK_X)], myCurrentAnalogState[static_cast<int>(ControllerAnalog::RIGHT_STICK_Y)] };
         break;
     }
 

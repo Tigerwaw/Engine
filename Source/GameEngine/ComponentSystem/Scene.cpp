@@ -20,15 +20,6 @@
 
 #include "GameEngine/Math/Vector.hpp"
 
-#if _DEBUG
-DECLARE_LOG_CATEGORY_WITH_NAME(LogScene, Scene, Verbose);
-#else
-DECLARE_LOG_CATEGORY_WITH_NAME(LogScene, Scene, Warning);
-#endif
-
-#define SCENELOG(Verbosity, Message, ...) LOG(LogScene, Verbosity, Message, ##__VA_ARGS__)
-DEFINE_LOG_CATEGORY(LogScene);
-
 Scene::Scene()
 {
 }
@@ -102,7 +93,7 @@ std::shared_ptr<GameObject> Scene::FindGameObjectByName(std::string aName)
 		}
 	}
 
-	SCENELOG(Warning, "Could not find game object with name {} in the scene!", aName);
+	LOG(LogScene, Warning, "Could not find game object with name {} in the scene!", aName);
 	return std::shared_ptr<GameObject>();
 }
 
@@ -110,7 +101,7 @@ void Scene::Instantiate(std::shared_ptr<GameObject> aGameObject)
 {
 	if (!aGameObject)
 	{
-		SCENELOG(Warning, "Tried to instantiate a non-existing gameobject!");
+		LOG(LogScene, Warning, "Tried to instantiate a non-existing gameobject!");
 		return;
 	}
 
@@ -176,13 +167,16 @@ void Scene::Instantiate(std::shared_ptr<GameObject> aGameObject)
 	else if (aGameObject->GetComponent<DirectionalLight>())
 	{
 		myDirectionalLight = aGameObject;
+		myDirectionalLight->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/DirectionalLightGizmo.fbx")->mesh);
 	}
 	else if (aGameObject->GetComponent<PointLight>())
 	{
+		aGameObject->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/PointLightGizmo.fbx")->mesh);
 		myPointLights.emplace_back(aGameObject);
 	}
 	else if (aGameObject->GetComponent<SpotLight>())
 	{
+		aGameObject->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/SpotLightGizmo.fbx")->mesh);
 		mySpotLights.emplace_back(aGameObject);
 	}
 	else if (aGameObject->GetComponent<Camera>())
@@ -198,7 +192,7 @@ void Scene::Destroy(std::shared_ptr<GameObject> aGameObject)
 {
 	if (!aGameObject)
 	{
-		SCENELOG(Warning, "Tried to destroy a non-existing gameobject!");
+		LOG(LogScene, Warning, "Tried to destroy a non-existing gameobject!");
 		return;
 	}
 
@@ -211,7 +205,7 @@ void Scene::Destroy(std::shared_ptr<GameObject> aGameObject)
 		}
 	}
 
-	SCENELOG(Warning, "Could not find GameObject {} in scene!", aGameObject->GetName());
+	LOG(LogScene, Warning, "Could not find GameObject {} in scene!", aGameObject->GetName());
 }
 
 void Scene::QueueClearTextureResources()

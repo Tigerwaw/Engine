@@ -35,6 +35,8 @@ private:
 	bool RegisterCubePrimitive();
 	bool RegisterRampPrimitive();
 
+	void LogAssetLoadError(const std::filesystem::path& aPath);
+
 	std::unordered_map<std::filesystem::path, std::shared_ptr<Asset>> myAssets;
 	std::filesystem::path myContentRoot;
 };
@@ -50,7 +52,8 @@ inline std::shared_ptr<T> AssetManager::GetAsset(const std::filesystem::path& aP
 	}
 	else
 	{
-		assert(myAssets.contains(aPath) && std::string("Asset manager can not find asset at path: " + aPath.string()).c_str());
+		LogAssetLoadError(aPath);
+		assert(myAssets.contains(aPath));
 		return nullptr;
 	}
 

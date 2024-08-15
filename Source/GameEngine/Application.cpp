@@ -1,18 +1,6 @@
 #include "Enginepch.h"
 #include "Application.h"
 
-#include "Logger/Logger.h"
-
-#if _DEBUG
-DECLARE_LOG_CATEGORY_WITH_NAME(LogApplication, Application, Verbose);
-#else
-DECLARE_LOG_CATEGORY_WITH_NAME(LogApplication, Application, Warning);
-#endif
-
-#define APPLOG(Verbosity, Message, ...) LOG(LogApplication, Verbosity, Message, ##__VA_ARGS__)
-
-DEFINE_LOG_CATEGORY(LogApplication);
-
 LRESULT CALLBACK WinProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam);
 
 Application::Application()
@@ -144,26 +132,19 @@ void Application::Shutdown()
 
 bool Application::InitializeEngine()
 {
-#ifdef _DEBUG
-#if DEBUG_MEMORYLEAKS
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);
-	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
-#endif
-#endif
-
 	Engine::GetInstance();
 
 	if (!InitializeWindow())
 	{
-		APPLOG(Log, "Failed to Initialize Main Window...");
+		LOG(LogApplication, Log, "Failed to Initialize Main Window...");
 		return false;
 	}
 
-	APPLOG(Log, "Initializing Graphics Engine...");
+	LOG(LogApplication, Log, "Initializing Graphics Engine...");
 
 	if (!GraphicsEngine::Get().Initialize(myMainWindowHandle))
 	{
-		APPLOG(Log, "Failed to Initialize Graphics Engine...");
+		LOG(LogApplication, Log, "Failed to Initialize Graphics Engine...");
 		return false;
 	}
 
@@ -180,7 +161,7 @@ bool Application::InitializeEngine()
 	ShowWindow(myMainWindowHandle, SW_SHOW);
 	SetForegroundWindow(myMainWindowHandle);
 
-	APPLOG(Log, "Ready!");
+	LOG(LogApplication, Log, "Ready!");
 	return true;
 }
 

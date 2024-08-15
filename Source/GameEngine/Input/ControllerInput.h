@@ -27,9 +27,9 @@ public:
 private:
     std::array<bool, static_cast<int>(ControllerButtons::COUNT)> myCurrentBinaryState;
     std::array<bool, static_cast<int>(ControllerButtons::COUNT)> myPreviousBinaryState;
-    std::array<float, static_cast<int>(AnalogInput::COUNT)> myCurrentAnalogState;
-    std::array<float, static_cast<int>(AnalogInput::COUNT)> myPreviousAnalogState;
-    std::array<float, static_cast<int>(AnalogInput::COUNT)> myDeltaAnalogState;
+    std::array<float, static_cast<int>(ControllerAnalog::COUNT)> myCurrentAnalogState;
+    std::array<float, static_cast<int>(ControllerAnalog::COUNT)> myPreviousAnalogState;
+    std::array<float, static_cast<int>(ControllerAnalog::COUNT)> myDeltaAnalogState;
 
     CU::Vector2f myLeftStickDeadZone;
     CU::Vector2f myRightStickDeadZone;

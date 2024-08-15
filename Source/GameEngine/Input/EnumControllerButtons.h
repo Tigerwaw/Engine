@@ -19,7 +19,7 @@ enum class ControllerButtons : int
     COUNT
 };
 
-enum class AnalogInput : int
+enum class ControllerAnalog : int
 {
     LEFT_TRIGGER = 0,
     RIGHT_TRIGGER = 1,
@@ -30,7 +30,7 @@ enum class AnalogInput : int
     COUNT
 };
 
-enum class AnalogInput2D : int
+enum class ControllerAnalog2D : int
 {
     LEFT_STICK = 0,
     RIGHT_STICK = 1,

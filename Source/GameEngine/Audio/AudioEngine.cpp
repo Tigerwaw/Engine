@@ -5,33 +5,24 @@
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
 
-#if _DEBUG
-DECLARE_LOG_CATEGORY_WITH_NAME(LogAudioEngine, AudioEngine, Verbose);
-#else
-DECLARE_LOG_CATEGORY_WITH_NAME(LogAudioEngine, AudioEngine, Warning);
-#endif
-
-#define AUDIOLOG(Verbosity, Message, ...) LOG(LogAudioEngine, Verbosity, Message, ##__VA_ARGS__)
-DEFINE_LOG_CATEGORY(LogAudioEngine);
-
 void AudioEngine::Initialize()
 {
     static FMOD_RESULT result = mySystem->create(&mySystem, FMOD_VERSION);
     if (result != FMOD_OK)
     {
-        AUDIOLOG(Error, "Failed to create fmod system with code {}", static_cast<int>(result));
+        LOG(LogAudioEngine, Error, "Failed to create fmod system with code {}", static_cast<int>(result));
         return;
     }
 
     result = mySystem->initialize(FMOD_MAX_CHANNEL_WIDTH, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, nullptr);
     if (result != FMOD_OK)
     {
-        AUDIOLOG(Error, "Failed to initialize fmod system with code {}", static_cast<int>(result));
+        LOG(LogAudioEngine, Error, "Failed to initialize fmod system with code {}", static_cast<int>(result));
         return;
     }
 
     myContentRoot = Engine::GetInstance().GetContentRootPath().string() + "AudioBanks/";
-    AUDIOLOG(Log, "Successfully initialized fmod system");
+    LOG(LogAudioEngine, Log, "Successfully initialized fmod system");
 }
 
 void AudioEngine::Destroy()
@@ -39,11 +30,11 @@ void AudioEngine::Destroy()
     FMOD_RESULT result = mySystem->release();
     if (result != FMOD_OK)
     {
-        AUDIOLOG(Error, "Failed to release fmod system with code {}", static_cast<int>(result));
+        LOG(LogAudioEngine, Error, "Failed to release fmod system with code {}", static_cast<int>(result));
         return;
     }
 
-    AUDIOLOG(Log, "Successfully released and deleted fmod system");
+    LOG(LogAudioEngine, Log, "Successfully released and deleted fmod system");
 }
 
 void AudioEngine::Update()
@@ -70,7 +61,7 @@ void AudioEngine::UpdateListener()
     {
         if (!myHasWarnedAboutListenerError)
         {
-            AUDIOLOG(Warning, "No listener has been set!");
+            LOG(LogAudioEngine, Warning, "No listener has been set!");
             myHasWarnedAboutListenerError = true;
         }
         
@@ -82,7 +73,7 @@ void AudioEngine::UpdateListener()
     {
         if (!myHasWarnedAboutListenerError)
         {
-            AUDIOLOG(Error, "Listener does not contain a transform component!");
+            LOG(LogAudioEngine, Error, "Listener does not contain a transform component!");
             myHasWarnedAboutListenerError = true;
         }
 
@@ -96,7 +87,7 @@ void AudioEngine::UpdateListener()
     {
         if (!myHasWarnedAboutListenerError)
         {
-            AUDIOLOG(Error, "Failed to set listener attributes!");
+            LOG(LogAudioEngine, Error, "Failed to set listener attributes!");
             myHasWarnedAboutListenerError = true;
         }
 
@@ -109,7 +100,7 @@ bool AudioEngine::LoadBank(std::string aBankName)
     auto bankIterator = myBanks.find(aBankName);
     if (bankIterator != myBanks.end())
     {
-        AUDIOLOG(Warning, "Audio bank {} is already loaded", aBankName);
+        LOG(LogAudioEngine, Warning, "Audio bank {} is already loaded", aBankName);
         return true;
     }
 
@@ -117,12 +108,12 @@ bool AudioEngine::LoadBank(std::string aBankName)
     FMOD_RESULT result = mySystem->loadBankFile((myContentRoot + aBankName + ".bank").c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &newBank);
     if (result != FMOD_OK)
     {
-        AUDIOLOG(Error, "Failed to load audio bank {}", aBankName);
+        LOG(LogAudioEngine, Error, "Failed to load audio bank {}", aBankName);
         return false;
     }
 
     myBanks.emplace(aBankName, newBank);
-    AUDIOLOG(Log, "Successfully loaded audio bank {}", aBankName);
+    LOG(LogAudioEngine, Log, "Successfully loaded audio bank {}", aBankName);
     LoadBankEvents(aBankName);
     return true;
 }
@@ -132,7 +123,7 @@ bool AudioEngine::UnloadBank(std::string aBankFileName)
     FMOD_RESULT result = myBanks[aBankFileName]->unload();
     if (result != FMOD_OK)
     {
-        AUDIOLOG(Error, "Failed to unload audio bank {}", aBankFileName);
+        LOG(LogAudioEngine, Error, "Failed to unload audio bank {}", aBankFileName);
         return false;
     }
 
@@ -146,12 +137,12 @@ bool AudioEngine::AddBus(BusType aBusType, std::string aBusName)
     FMOD_RESULT result = mySystem->getBus(path.c_str(), &newBus);
     if (result != FMOD_OK)
     {
-        AUDIOLOG(Error, "Failed to add audio bus {}", aBusName);
+        LOG(LogAudioEngine, Error, "Failed to add audio bus {}", aBusName);
         return false;
     }
 
     myBuses.emplace(aBusType, newBus);
-    AUDIOLOG(Log, "Successfully added audio bus {}", aBusName);
+    LOG(LogAudioEngine, Log, "Successfully added audio bus {}", aBusName);
     return true;
 }
 
@@ -160,7 +151,7 @@ void AudioEngine::SetVolumeOfBus(BusType aBusType, float aVolume)
     auto busIterator = myBuses.find(aBusType);
     if (busIterator == myBuses.end())
     {
-        AUDIOLOG(Warning, "Can't find audio bus type ", static_cast<unsigned>(aBusType));
+        LOG(LogAudioEngine, Warning, "Can't find audio bus type ", static_cast<unsigned>(aBusType));
         return;
     }
 
@@ -172,7 +163,7 @@ const float AudioEngine::GetVolumeOfBus(BusType aBusType) const
     auto busIterator = myBuses.find(aBusType);
     if (busIterator == myBuses.end())
     {
-        AUDIOLOG(Warning, "Can't find audio bus type ", static_cast<unsigned>(aBusType));
+        LOG(LogAudioEngine, Warning, "Can't find audio bus type ", static_cast<unsigned>(aBusType));
         return 0;
     }
 
@@ -186,7 +177,7 @@ void AudioEngine::IncreaseVolumeOfBus(BusType aBusType, float aVolumeIncrease)
     auto busIterator = myBuses.find(aBusType);
     if (busIterator == myBuses.end())
     {
-        AUDIOLOG(Warning, "Can't find audio bus type ", static_cast<unsigned>(aBusType));
+        LOG(LogAudioEngine, Warning, "Can't find audio bus type ", static_cast<unsigned>(aBusType));
         return;
     }
 
@@ -200,7 +191,7 @@ void AudioEngine::DecreaseVolumeOfBus(BusType aBusType, float aVolumeDecrease)
     auto busIterator = myBuses.find(aBusType);
     if (busIterator == myBuses.end())
     {
-        AUDIOLOG(Warning, "Can't find audio bus type ", static_cast<unsigned>(aBusType));
+        LOG(LogAudioEngine, Warning, "Can't find audio bus type ", static_cast<unsigned>(aBusType));
         return;
     }
 
@@ -214,7 +205,7 @@ FMOD::Studio::EventInstance* AudioEngine::CreateEventInstance(std::string aEvent
     auto eventIterator = myEvents.find(aEventName);
     if (eventIterator == myEvents.end())
     {
-        AUDIOLOG(Warning, "Can't find event description {}", aEventName);
+        LOG(LogAudioEngine, Warning, "Can't find event description {}", aEventName);
         return nullptr;
     }
 
@@ -222,11 +213,11 @@ FMOD::Studio::EventInstance* AudioEngine::CreateEventInstance(std::string aEvent
     FMOD_RESULT result = myEvents[aEventName]->createInstance(&eventInstance);
     if (result != FMOD_OK)
     {
-        AUDIOLOG(Error, "Failed to create event instance of {}", aEventName);
+        LOG(LogAudioEngine, Error, "Failed to create event instance of {}", aEventName);
         return nullptr;
     }
 
-    AUDIOLOG(Log, "Created event instance of {}", aEventName);
+    LOG(LogAudioEngine, Log, "Created event instance of {}", aEventName);
     return eventInstance;
 }
 
@@ -251,22 +242,22 @@ bool AudioEngine::LoadBankEvents(std::string aBankName)
         FMOD_RESULT result = eventDesc->getPath(charPath, 256, nullptr);
         if (result != FMOD_OK)
         {
-            AUDIOLOG(Error, "Failed to load event path with code {}", static_cast<int>(result));
+            LOG(LogAudioEngine, Error, "Failed to load event path with code {}", static_cast<int>(result));
             return false;
         }
 
         eventPath.assign(charPath);
         if (eventPath == "")
         {
-            AUDIOLOG(Error, "Event path is empty and has been discarded");
+            LOG(LogAudioEngine, Error, "Event path is empty and has been discarded");
             return false;
         }
 
         std::string cleanedPath = eventPath.substr(strlen("event:/"));
-        AUDIOLOG(Log, "Loaded Event Description {}", cleanedPath);
+        LOG(LogAudioEngine, Log, "Loaded Event Description {}", cleanedPath);
         myEvents.emplace(cleanedPath, eventDesc);
     }
 
-    AUDIOLOG(Log, "Successfully loaded all {} events in audio bank {}", eventCount, aBankName);
+    LOG(LogAudioEngine, Log, "Successfully loaded all {} events in audio bank {}", eventCount, aBankName);
     return true;
 }

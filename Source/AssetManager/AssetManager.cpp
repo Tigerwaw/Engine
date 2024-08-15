@@ -11,26 +11,18 @@
 #include "DefaultTextures/Default_M.h"
 #include "DefaultTextures/Default_FX.h"
 
-#ifdef _DEBUG
-DECLARE_LOG_CATEGORY_WITH_NAME(AssetManagerLog, AssetManager, Verbose);
-#else
-DECLARE_LOG_CATEGORY_WITH_NAME(AssetManagerLog, AssetManager, Error);
-#endif
-
-DEFINE_LOG_CATEGORY(AssetManagerLog);
-
 bool AssetManager::Initialize(const std::filesystem::path& aContentRootPath, bool aAutoRegisterAllAssetsInRoot)
 {
-    LOG(AssetManagerLog, Log, "Initializing Asset Manager...");
+    LOG(LogAssetManager, Log, "Initializing Asset Manager...");
 
     myContentRoot = std::filesystem::absolute(aContentRootPath);
     if (!std::filesystem::exists(aContentRootPath))
     {
-        LOG(AssetManagerLog, Error, "Can't find directory at path '{}'! Trying to create a new directory!", aContentRootPath.string());
+        LOG(LogAssetManager, Error, "Can't find directory at path '{}'! Trying to create a new directory!", aContentRootPath.string());
 
         if (!std::filesystem::create_directories(aContentRootPath))
         {
-            LOG(AssetManagerLog, Error, "Failed to initialize Asset Manager! Can't find or create directory at path '{}'!", aContentRootPath.string());
+            LOG(LogAssetManager, Error, "Failed to initialize Asset Manager! Can't find or create directory at path '{}'!", aContentRootPath.string());
             return false;
         }
     }
@@ -42,7 +34,7 @@ bool AssetManager::Initialize(const std::filesystem::path& aContentRootPath, boo
         RegisterAllAssetsInDirectory();
     }
 
-    LOG(AssetManagerLog, Log, "Asset Manager Initialized! Root content directory set to '{}'.", myContentRoot.string());
+    LOG(LogAssetManager, Log, "Asset Manager Initialized! Root content directory set to '{}'.", myContentRoot.string());
     return true;
 }
 
@@ -62,7 +54,7 @@ void AssetManager::RegisterEngineAssets()
     asset->name = "DefaultMaterial";
     myAssets.emplace(asset->name, asset);
 
-    LOG(AssetManagerLog, Log, "Registered material asset {}", asset->name.string());
+    LOG(LogAssetManager, Log, "Registered material asset {}", asset->name.string());
 
     RegisterPlanePrimitive();
     RegisterCubePrimitive();
@@ -225,7 +217,7 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
     asset->name = assetPath.stem();
     myAssets.emplace(assetPath, asset);
 
-    LOG(AssetManagerLog, Log, "Registered mesh asset {}", asset->path.filename().string());
+    LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->path.filename().string());
     return true;
 }
 
@@ -266,7 +258,7 @@ bool AssetManager::RegisterAnimationAsset(const std::filesystem::path& aPath)
     asset->name = assetPath.stem();
     myAssets.emplace(assetPath, asset);
 
-    LOG(AssetManagerLog, Log, "Registered animation asset {}", asset->path.filename().string());
+    LOG(LogAssetManager, Log, "Registered animation asset {}", asset->path.filename().string());
     return true;
 }
 
@@ -295,7 +287,7 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
     }
     catch (nl::json::parse_error e)
     {
-        LOG(AssetManagerLog, Error, "Failed to read material asset {}, {}", asset->path.filename().string(), e.what());
+        LOG(LogAssetManager, Error, "Failed to read material asset {}, {}", asset->path.filename().string(), e.what());
         return false;
     }
     path.close();
@@ -335,7 +327,7 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
     asset->name = assetPath.stem();
     myAssets.emplace(assetPath, asset);
 
-    LOG(AssetManagerLog, Log, "Registered material asset {}", asset->path.filename().string());
+    LOG(LogAssetManager, Log, "Registered material asset {}", asset->path.filename().string());
     return true;
 }
 
@@ -351,14 +343,14 @@ bool AssetManager::RegisterTextureAsset(const std::filesystem::path& aPath)
     std::filesystem::path absolutePath = aPath;
     if (!GraphicsEngine::Get().LoadTexture(absolutePath, *asset->texture))
     {
-        LOG(AssetManagerLog, Error, "Failed to register texture asset {}", assetPath.string());
+        LOG(LogAssetManager, Error, "Failed to register texture asset {}", assetPath.string());
         return false;
     }
     asset->path = assetPath;
     asset->name = assetPath.stem();
     myAssets.emplace(assetPath, asset);
 
-    LOG(AssetManagerLog, Log, "Registered texture asset {}", asset->path.filename().string());
+    LOG(LogAssetManager, Log, "Registered texture asset {}", asset->path.filename().string());
     return true;
 }
 
@@ -374,7 +366,7 @@ bool AssetManager::RegisterShaderAsset(const std::filesystem::path& aPath)
     std::filesystem::path absolutePath = aPath;
     if (!GraphicsEngine::Get().LoadShader(absolutePath, *asset->shader))
     {
-        LOG(AssetManagerLog, Error, "Failed to register shader asset {}", assetPath.string());
+        LOG(LogAssetManager, Error, "Failed to register shader asset {}", assetPath.string());
         return false;
     }
 
@@ -382,7 +374,7 @@ bool AssetManager::RegisterShaderAsset(const std::filesystem::path& aPath)
     asset->name = assetPath.stem();
     myAssets.emplace(assetPath.filename(), asset);
 
-    LOG(AssetManagerLog, Log, "Registered shader asset {}", asset->path.filename().string());
+    LOG(LogAssetManager, Log, "Registered shader asset {}", asset->path.filename().string());
     return true;
 }
 
@@ -405,7 +397,7 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
     }
     catch (nl::json::parse_error e)
     {
-        LOG(AssetManagerLog, Error, "Failed to read pso asset {}, {}", asset->path.filename().string(), e.what());
+        LOG(LogAssetManager, Error, "Failed to read pso asset {}, {}", asset->path.filename().string(), e.what());
         return false;
     }
     path.close();
@@ -484,7 +476,7 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
     if (!GraphicsEngine::Get().CreatePSO(asset->pso, name, inputLayoutDefinition, vertexStride, vsPath,
                                          vsShader, gsShader, psShader, &samplers, fillMode, cullMode, antiAliasedLine))
     {
-        LOG(AssetManagerLog, Error, "Failed to create pso asset {}", asset->path.filename().string());
+        LOG(LogAssetManager, Error, "Failed to create pso asset {}", asset->path.filename().string());
         return false;
     }
 
@@ -492,7 +484,7 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
     asset->name = assetPath.stem();
     myAssets.emplace(asset->name, asset);
 
-    LOG(AssetManagerLog, Log, "Registered PSO asset {}", asset->name.string());
+    LOG(LogAssetManager, Log, "Registered PSO asset {}", asset->name.string());
     return true;
 }
 
@@ -510,13 +502,13 @@ bool AssetManager::ValidateAsset(const std::filesystem::path& aPath)
 {
     if (!aPath.has_extension())
     {
-        LOG(AssetManagerLog, Error, "Path '{}' does not contain an extension!", aPath.string());
+        LOG(LogAssetManager, Error, "Path '{}' does not contain an extension!", aPath.string());
         return false;
     }
 
     if (!std::filesystem::exists(aPath))
     {
-        LOG(AssetManagerLog, Error, "Could not find asset at path '{}'!", aPath.string());
+        LOG(LogAssetManager, Error, "Could not find asset at path '{}'!", aPath.string());
         return false;
     }
 
@@ -550,13 +542,13 @@ bool AssetManager::RegisterEngineTextureAsset(std::string_view aName, const uint
     asset->texture = std::make_shared<Texture>();
     if (!GraphicsEngine::Get().LoadTexture(aName, aTextureDataPtr, aTextureDataSize, *asset->texture))
     {
-        LOG(AssetManagerLog, Error, "Failed to register default texture asset {}", aName);
+        LOG(LogAssetManager, Error, "Failed to register default texture asset {}", aName);
         return false;
     }
     asset->name = aName;
     myAssets.emplace(aName, asset);
 
-    LOG(AssetManagerLog, Log, "Registered default texture asset {}", aName);
+    LOG(LogAssetManager, Log, "Registered default texture asset {}", aName);
 
     return true;
 }
@@ -615,7 +607,7 @@ bool AssetManager::RegisterPlanePrimitive()
     asset->name = "PlanePrimitive";
     myAssets.emplace(asset->name, asset);
 
-    LOG(AssetManagerLog, Log, "Registered mesh asset {}", asset->name.string());
+    LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
     return true;
 }
 
@@ -806,7 +798,7 @@ bool AssetManager::RegisterCubePrimitive()
     asset->name = "CubePrimitive";
     myAssets.emplace(asset->name, asset);
 
-    LOG(AssetManagerLog, Log, "Registered mesh asset {}", asset->name.string());
+    LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
     return true;
 }
 
@@ -962,6 +954,12 @@ bool AssetManager::RegisterRampPrimitive()
     asset->name = "RampPrimitive";
     myAssets.emplace(asset->name, asset);
 
-    LOG(AssetManagerLog, Log, "Registered mesh asset {}", asset->name.string());
+    LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
     return true;
+}
+
+void AssetManager::LogAssetLoadError(const std::filesystem::path& aPath)
+{
+    LOG(LogAssetManager, Error, "Asset manager can not find asset at path: {}", aPath.string());
+    MessageBox(NULL, L"Asset manager can not find asset, Please check the log for more information!", L"Asset Manager Error", MB_ICONERROR);
 }

@@ -12,15 +12,6 @@
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
 
-#if _DEBUG
-DECLARE_LOG_CATEGORY_WITH_NAME(LogDebugDrawer, DebugDrawer, Verbose);
-#else
-DECLARE_LOG_CATEGORY_WITH_NAME(LogDebugDrawer, DebugDrawer, Warning);
-#endif
-
-#define DEBUGDRAWERLOG(Verbosity, Message, ...) LOG(LogDebugDrawer, Verbosity, Message, ##__VA_ARGS__)
-DEFINE_LOG_CATEGORY(LogDebugDrawer);
-
 void DebugDrawer::InitializeDebugDrawer()
 {
     myLineVertices.emplace_back(DebugLineVertex({ 0, 0, 0 }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }));
@@ -28,7 +19,7 @@ void DebugDrawer::InitializeDebugDrawer()
     myLineBuffer = std::make_shared<DynamicVertexBuffer>();
     if (!myLineBuffer->CreateBuffer("Debug_Line_Buffer", myLineVertices, MAX_DEBUG_LINES))
     {
-        DEBUGDRAWERLOG(Error, "Failed to create debug line buffer!");
+        LOG(LogDebugDrawer, Error, "Failed to create debug line buffer!");
     }
 
     myLineVertices.clear();
@@ -57,7 +48,7 @@ void DebugDrawer::DrawLine(CU::Vector3f aFromPosition, CU::Vector3f aToPosition,
         if (!myHasWarned)
         {
             myHasWarned = true;
-            DEBUGDRAWERLOG(Warning, "Debug Drawer Lines has exceeded its limit and all lines are not being drawn! Either draw less lines or consider increasing the max amount in engine defines.");
+            LOG(LogDebugDrawer, Warning, "Debug Drawer Lines has exceeded its limit and all lines are not being drawn! Either draw less lines or consider increasing the max amount in engine defines.");
         }
         
         return;

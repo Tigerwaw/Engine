@@ -35,9 +35,9 @@ public:
 	void RegisterAnalogAction(std::string aActionName, Keys aNegativeInput, Keys aPositiveInput);
 	void RegisterAnalogAction(std::string aActionName, ControllerButtons aNegativeInput, ControllerButtons aPositiveInput);
 	void RegisterAnalogAction(std::string aActionName, MouseMovement aInput);
-	void RegisterAnalogAction(std::string aActionName, AnalogInput aInput);
+	void RegisterAnalogAction(std::string aActionName, ControllerAnalog aInput);
 	void RegisterAnalog2DAction(std::string aActionName, MouseMovement2D aInput);
-	void RegisterAnalog2DAction(std::string aActionName, AnalogInput2D aInput);
+	void RegisterAnalog2DAction(std::string aActionName, ControllerAnalog2D aInput);
 
 	const bool GetBinaryAction(std::string aActionName) const;
 	const float GetAnalogAction(std::string aActionName) const;

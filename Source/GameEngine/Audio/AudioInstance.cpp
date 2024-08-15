@@ -4,15 +4,6 @@
 #include "GameEngine/Engine.h"
 #include "GameEngine/Audio/AudioEngine.h"
 
-#if _DEBUG
-DECLARE_LOG_CATEGORY_WITH_NAME(LogAudioPlayer, AudioInstance, Verbose);
-#else
-DECLARE_LOG_CATEGORY_WITH_NAME(LogAudioPlayer, AudioPlayer, Warning);
-#endif
-
-#define AUDIOLOG(Verbosity, Message, ...) LOG(LogAudioPlayer, Verbosity, Message, ##__VA_ARGS__)
-DEFINE_LOG_CATEGORY(LogAudioPlayer);
-
 AudioInstance::~AudioInstance()
 {
     ClearAllInstances();
@@ -27,7 +18,7 @@ void AudioInstance::ClearAllInstances()
         FMOD_RESULT result = eventInstance->release();
         if (result != FMOD_OK)
         {
-            AUDIOLOG(Error, "Failed to delete audio instance {}", myEventName);
+            LOG(LogAudioPlayer, Error, "Failed to delete audio instance {}", myEventName);
         }
     }
 
@@ -39,12 +30,12 @@ void AudioInstance::AddInstance()
     FMOD::Studio::EventInstance* eventInstance = Engine::GetInstance().GetAudioEngine().CreateEventInstance(myEventName);
     if (!eventInstance)
     {
-        AUDIOLOG(Error, "Could not initialize audio instance {}", myEventName);
+        LOG(LogAudioPlayer, Error, "Could not initialize audio instance {}", myEventName);
         return;
     }
 
     myEventInstances.emplace_back(eventInstance);
-    AUDIOLOG(Log, "Added an audio instance of {}", myEventName);
+    LOG(LogAudioPlayer, Log, "Added an audio instance of {}", myEventName);
 }
 
 bool AudioInstance::Initialize(std::string aEventName, bool aAllowOverlap)
@@ -52,7 +43,7 @@ bool AudioInstance::Initialize(std::string aEventName, bool aAllowOverlap)
     FMOD::Studio::EventInstance* eventInstance = Engine::GetInstance().GetAudioEngine().CreateEventInstance(aEventName);
     if (!eventInstance)
     {
-        AUDIOLOG(Error, "Could not initialize audio instance {}", aEventName);
+        LOG(LogAudioPlayer, Error, "Could not initialize audio instance {}", aEventName);
         return false;
     }
 
@@ -72,7 +63,7 @@ void AudioInstance::Play()
         FMOD_RESULT result = instance->getPlaybackState(&playbackState);
         if (result != FMOD_OK)
         {
-            AUDIOLOG(Error, "Failed to get playback state of audio instance {}", myEventName);
+            LOG(LogAudioPlayer, Error, "Failed to get playback state of audio instance {}", myEventName);
             continue;
         }
 
@@ -138,7 +129,7 @@ void AudioInstance::Set3dPosition(CU::Vector3f aPosition, CU::Vector3f aVelocity
         FMOD_RESULT result = instance->set3DAttributes(&attributes);
         if (result != FMOD_OK)
         {
-            AUDIOLOG(Error, "Failed to set 3d attributes of audio instance {}", myEventName);
+            LOG(LogAudioPlayer, Error, "Failed to set 3d attributes of audio instance {}", myEventName);
             continue;
         }
     }
@@ -152,30 +143,30 @@ const bool AudioInstance::GetIsPlaying() const
         FMOD_RESULT result = instance->getPlaybackState(&playbackState);
         if (result != FMOD_OK)
         {
-            AUDIOLOG(Error, "Failed to get playback state of audio instance {}", myEventName);
+            LOG(LogAudioPlayer, Error, "Failed to get playback state of audio instance {}", myEventName);
             continue;
         }
 
         switch (playbackState)
         {
         case FMOD_STUDIO_PLAYBACK_PLAYING:
-            AUDIOLOG(Log, "Playing");
+            LOG(LogAudioPlayer, Log, "Playing");
             return true;
             break;
         case FMOD_STUDIO_PLAYBACK_SUSTAINING:
-            AUDIOLOG(Log, "Sustaining");
+            LOG(LogAudioPlayer, Log, "Sustaining");
             break;
         case FMOD_STUDIO_PLAYBACK_STOPPED:
-            AUDIOLOG(Log, "Stopped");
+            LOG(LogAudioPlayer, Log, "Stopped");
             break;
         case FMOD_STUDIO_PLAYBACK_STARTING:
-            AUDIOLOG(Log, "Starting");
+            LOG(LogAudioPlayer, Log, "Starting");
             break;
         case FMOD_STUDIO_PLAYBACK_STOPPING:
-            AUDIOLOG(Log, "Stopping");
+            LOG(LogAudioPlayer, Log, "Stopping");
             break;
         case FMOD_STUDIO_PLAYBACK_FORCEINT:
-            AUDIOLOG(Log, "Forceint");
+            LOG(LogAudioPlayer, Log, "Forceint");
             break;
         default:
             break;

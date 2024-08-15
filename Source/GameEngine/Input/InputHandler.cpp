@@ -112,7 +112,7 @@ void InputHandler::RegisterAnalogAction(std::string aActionName, MouseMovement a
 	myActions[aActionName].emplace_back(std::make_shared<AnalogAction>(myInputModes.at(InputMode::MKB), static_cast<unsigned>(aInput)));
 }
 
-void InputHandler::RegisterAnalogAction(std::string aActionName, AnalogInput aInput)
+void InputHandler::RegisterAnalogAction(std::string aActionName, ControllerAnalog aInput)
 {
 	if (!ValidateActionName(aActionName, true))
 	{
@@ -132,7 +132,7 @@ void InputHandler::RegisterAnalog2DAction(std::string aActionName, MouseMovement
 	myActions[aActionName].emplace_back(std::make_shared<Analog2DAction>(myInputModes.at(InputMode::MKB), static_cast<unsigned>(aInput)));
 }
 
-void InputHandler::RegisterAnalog2DAction(std::string aActionName, AnalogInput2D aInput)
+void InputHandler::RegisterAnalog2DAction(std::string aActionName, ControllerAnalog2D aInput)
 {
 	if (!ValidateActionName(aActionName, true))
 	{

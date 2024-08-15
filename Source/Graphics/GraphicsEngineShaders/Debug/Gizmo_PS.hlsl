@@ -2,5 +2,5 @@
 
 float4 main(MeshVStoPS input) : SV_TARGET
 {
-    return input.VertexColor0;
+    return float4(1.0f, 1.0f, 1.0f, 1.0f);
 }

@@ -1,0 +1,190 @@
+****************************************************************************************************
+Logging has started at 2024-08-15 18:18:49.
+****************************************************************************************************
+[18:18:49][   LOG   ][AssetManager] Initializing Asset Manager...
+[18:18:49][   LOG   ][AssetManager] Registered default texture asset Default_C
+[18:18:49][   LOG   ][AssetManager] Registered default texture asset Default_N
+[18:18:49][   LOG   ][AssetManager] Registered default texture asset Default_M
+[18:18:49][   LOG   ][AssetManager] Registered default texture asset Default_FX
+[18:18:49][   LOG   ][AssetManager] Registered material asset DefaultMaterial
+[18:18:49][   LOG   ][AssetManager] Registered mesh asset PlanePrimitive
+[18:18:49][   LOG   ][AssetManager] Registered mesh asset CubePrimitive
+[18:18:49][   LOG   ][AssetManager] Registered mesh asset RampPrimitive
+[18:18:49][   LOG   ][AssetManager] Registered mesh asset CameraGizmo.fbx
+[18:18:49][   LOG   ][AssetManager] Registered mesh asset DirectionalLightGizmo.fbx
+[18:18:49][   LOG   ][AssetManager] Registered mesh asset PointLightGizmo.fbx
+[18:18:50][   LOG   ][AssetManager] Registered mesh asset SM_Color_Checker.fbx
+[18:18:50][   LOG   ][AssetManager] Registered mesh asset SpotLightGizmo.fbx
+[18:18:50][   LOG   ][AssetManager] Registered texture asset T_Color_Checker_C.dds
+[18:18:50][   LOG   ][AssetManager] Registered texture asset T_Color_Checker_M.dds
+[18:18:50][   LOG   ][AssetManager] Registered texture asset T_Color_Checker_N.dds
+[18:18:50][   LOG   ][AssetManager] Registered texture asset TestCube_C.dds
+[18:18:50][   LOG   ][AssetManager] Registered texture asset TestCube_M.dds
+[18:18:50][   LOG   ][AssetManager] Registered texture asset TestCube_N.dds
+[18:18:51][   LOG   ][AssetManager] Registered texture asset Flat_Normal.dds
+[18:18:51][   LOG   ][AssetManager] Registered texture asset perlin.dds
+[18:18:51][   LOG   ][AssetManager] Registered shader asset brdfLUT_PS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset brdfLUT_VS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset DebugLine_GS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset DebugLine_VS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset DebugObject_PS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset DebugPixelNormals_PS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset DebugTextureNormals_PS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset DebugUVs_PS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset DebugVertexNormals_PS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset Gizmo_PS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset Mesh_VS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset PBRMesh_PS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset ShadowCube_GS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset ShadowCube_VS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset Spritesheet_PS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset Sprite_GS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset Sprite_PS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset Sprite_VS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset Unlit_PS.cso
+[18:18:51][   LOG   ][AssetManager] Registered shader asset Wireframe_PS.cso
+[18:18:51][   LOG   ][AssetManager] Registered PSO asset DebugLine
+[18:18:51][   LOG   ][AssetManager] Registered PSO asset DebugPixelNormals
+[18:18:51][   LOG   ][AssetManager] Registered PSO asset DebugTextureNormals
+[18:18:51][   LOG   ][AssetManager] Registered PSO asset DebugUVs
+[18:18:51][   LOG   ][AssetManager] Registered PSO asset DebugVertexNormals
+[18:18:51][   LOG   ][AssetManager] Registered PSO asset Gizmo
+[18:18:51][   LOG   ][AssetManager] Registered PSO asset PBR
+[18:18:51][   LOG   ][AssetManager] Registered PSO asset Shadow
+[18:18:51][   LOG   ][AssetManager] Registered PSO asset ShadowCube
+[18:18:51][   LOG   ][AssetManager] Registered PSO asset Sprite
+[18:18:51][   LOG   ][AssetManager] Registered PSO asset Spritesheet
+[18:18:51][   LOG   ][AssetManager] Registered PSO asset Unlit
+[18:18:51][   LOG   ][AssetManager] Registered PSO asset Wireframe
+[18:18:51][   LOG   ][AssetManager] Registered material asset ColorChecker.json
+[18:18:51][   LOG   ][AssetManager] Registered material asset TestCube.json
+[18:18:51][   LOG   ][AssetManager] Registered mesh asset SK_C_TGA_Bro.fbx
+[18:18:51][   LOG   ][AssetManager] Registered mesh asset SM_Chest.fbx
+[18:18:52][   LOG   ][AssetManager] Registered mesh asset TMA_Matball.fbx
+[18:18:52][   LOG   ][AssetManager] Registered animation asset A_C_TGA_Bro_Idle_Wave.fbx
+[18:18:52][   LOG   ][AssetManager] Registered animation asset A_C_TGA_Bro_Run.fbx
+[18:18:52][   LOG   ][AssetManager] Registered animation asset A_C_TGA_Bro_Walk.fbx
+[18:18:52][   LOG   ][AssetManager] Registered texture asset Chest_C.dds
+[18:18:52][   LOG   ][AssetManager] Registered texture asset Chest_FX.dds
+[18:18:52][   LOG   ][AssetManager] Registered texture asset Chest_M.dds
+[18:18:52][   LOG   ][AssetManager] Registered texture asset Chest_N.dds
+[18:18:52][   LOG   ][AssetManager] Registered texture asset Skansen_Cube.dds
+[18:18:52][   LOG   ][AssetManager] Registered texture asset Matball_One_c.dds
+[18:18:52][   LOG   ][AssetManager] Registered texture asset Matball_One_fx.dds
+[18:18:52][   LOG   ][AssetManager] Registered texture asset Matball_One_m.dds
+[18:18:52][   LOG   ][AssetManager] Registered texture asset Matball_One_n.dds
+[18:18:52][   LOG   ][AssetManager] Registered texture asset Matball_Two_c.dds
+[18:18:52][   LOG   ][AssetManager] Registered texture asset Matball_Two_fx.dds
+[18:18:52][   LOG   ][AssetManager] Registered texture asset Matball_Two_m.dds
+[18:18:52][   LOG   ][AssetManager] Registered texture asset Matball_Two_n.dds
+[18:18:52][   LOG   ][AssetManager] Registered texture asset TGA_Bro_C.dds
+[18:18:52][   LOG   ][AssetManager] Registered texture asset TGA_Bro_M.dds
+[18:18:52][   LOG   ][AssetManager] Registered texture asset TGA_Bro_N.dds
+[18:18:52][   LOG   ][AssetManager] Registered texture asset Explosion.dds
+[18:18:52][   LOG   ][AssetManager] Registered material asset Chest.json
+[18:18:52][   LOG   ][AssetManager] Registered material asset ExplosionMaterial.json
+[18:18:52][   LOG   ][AssetManager] Registered material asset MatballOne.json
+[18:18:52][   LOG   ][AssetManager] Registered material asset MatballTwo.json
+[18:18:52][   LOG   ][AssetManager] Registered material asset TgaBro.json
+[18:18:52][   LOG   ][AssetManager] Asset Manager Initialized! Root content directory set to 'C:\Users\Axel\Desktop\TGP\Assets\'.
+****************************************************************************************************
+Logging has started at 2024-08-15 18:25:55.
+****************************************************************************************************
+[18:25:55][   LOG   ][AssetManager] Initializing Asset Manager...
+[18:25:55][   LOG   ][AssetManager] Registered default texture asset Default_C
+[18:25:55][   LOG   ][AssetManager] Registered default texture asset Default_N
+[18:25:55][   LOG   ][AssetManager] Registered default texture asset Default_M
+[18:25:55][   LOG   ][AssetManager] Registered default texture asset Default_FX
+[18:25:55][   LOG   ][AssetManager] Registered material asset DefaultMaterial
+[18:25:55][   LOG   ][AssetManager] Registered mesh asset PlanePrimitive
+[18:25:55][   LOG   ][AssetManager] Registered mesh asset CubePrimitive
+[18:25:55][   LOG   ][AssetManager] Registered mesh asset RampPrimitive
+[18:25:55][   LOG   ][AssetManager] Registered mesh asset CameraGizmo.fbx
+[18:25:55][   LOG   ][AssetManager] Registered mesh asset DirectionalLightGizmo.fbx
+[18:25:55][   LOG   ][AssetManager] Registered mesh asset PointLightGizmo.fbx
+[18:25:56][   LOG   ][AssetManager] Registered mesh asset SM_Color_Checker.fbx
+[18:25:56][   LOG   ][AssetManager] Registered mesh asset SpotLightGizmo.fbx
+[18:25:56][   LOG   ][AssetManager] Registered texture asset T_Color_Checker_C.dds
+[18:25:56][   LOG   ][AssetManager] Registered texture asset T_Color_Checker_M.dds
+[18:25:56][   LOG   ][AssetManager] Registered texture asset T_Color_Checker_N.dds
+[18:25:56][   LOG   ][AssetManager] Registered texture asset TestCube_C.dds
+[18:25:56][   LOG   ][AssetManager] Registered texture asset TestCube_M.dds
+[18:25:56][   LOG   ][AssetManager] Registered texture asset TestCube_N.dds
+[18:25:56][   LOG   ][AssetManager] Registered texture asset Flat_Normal.dds
+[18:25:56][   LOG   ][AssetManager] Registered texture asset perlin.dds
+[18:25:56][   LOG   ][AssetManager] Registered shader asset brdfLUT_PS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset brdfLUT_VS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset DebugLine_GS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset DebugLine_VS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset DebugObject_PS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset DebugPixelNormals_PS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset DebugTextureNormals_PS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset DebugUVs_PS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset DebugVertexNormals_PS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset Gizmo_PS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset Mesh_VS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset PBRMesh_PS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset ShadowCube_GS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset ShadowCube_VS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset Spritesheet_PS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset Sprite_GS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset Sprite_PS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset Sprite_VS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset Unlit_PS.cso
+[18:25:56][   LOG   ][AssetManager] Registered shader asset Wireframe_PS.cso
+[18:25:56][   LOG   ][AssetManager] Registered PSO asset DebugLine
+[18:25:56][   LOG   ][AssetManager] Registered PSO asset DebugPixelNormals
+[18:25:56][   LOG   ][AssetManager] Registered PSO asset DebugTextureNormals
+[18:25:56][   LOG   ][AssetManager] Registered PSO asset DebugUVs
+[18:25:56][   LOG   ][AssetManager] Registered PSO asset DebugVertexNormals
+[18:25:56][   LOG   ][AssetManager] Registered PSO asset Gizmo
+[18:25:56][   LOG   ][AssetManager] Registered PSO asset PBR
+[18:25:56][   LOG   ][AssetManager] Registered PSO asset Shadow
+[18:25:56][   LOG   ][AssetManager] Registered PSO asset ShadowCube
+[18:25:56][   LOG   ][AssetManager] Registered PSO asset Sprite
+[18:25:56][   LOG   ][AssetManager] Registered PSO asset Spritesheet
+[18:25:56][   LOG   ][AssetManager] Registered PSO asset Unlit
+[18:25:56][   LOG   ][AssetManager] Registered PSO asset Wireframe
+[18:25:56][   LOG   ][AssetManager] Registered material asset ColorChecker.json
+[18:25:56][   LOG   ][AssetManager] Registered material asset TestCube.json
+[18:25:56][   LOG   ][AssetManager] Registered mesh asset SK_C_TGA_Bro.fbx
+[18:25:56][   LOG   ][AssetManager] Registered mesh asset SM_Chest.fbx
+[18:25:57][   LOG   ][AssetManager] Registered mesh asset TMA_Matball.fbx
+[18:25:58][   LOG   ][AssetManager] Registered animation asset A_C_TGA_Bro_Idle_Wave.fbx
+[18:25:58][   LOG   ][AssetManager] Registered animation asset A_C_TGA_Bro_Run.fbx
+[18:25:58][   LOG   ][AssetManager] Registered animation asset A_C_TGA_Bro_Walk.fbx
+[18:25:58][   LOG   ][AssetManager] Registered texture asset Chest_C.dds
+[18:25:58][   LOG   ][AssetManager] Registered texture asset Chest_FX.dds
+[18:25:58][   LOG   ][AssetManager] Registered texture asset Chest_M.dds
+[18:25:58][   LOG   ][AssetManager] Registered texture asset Chest_N.dds
+[18:25:58][   LOG   ][AssetManager] Registered texture asset Skansen_Cube.dds
+[18:25:58][   LOG   ][AssetManager] Registered texture asset Matball_One_c.dds
+[18:25:58][   LOG   ][AssetManager] Registered texture asset Matball_One_fx.dds
+[18:25:58][   LOG   ][AssetManager] Registered texture asset Matball_One_m.dds
+[18:25:58][   LOG   ][AssetManager] Registered texture asset Matball_One_n.dds
+[18:25:58][   LOG   ][AssetManager] Registered texture asset Matball_Two_c.dds
+[18:25:58][   LOG   ][AssetManager] Registered texture asset Matball_Two_fx.dds
+[18:25:58][   LOG   ][AssetManager] Registered texture asset Matball_Two_m.dds
+[18:25:58][   LOG   ][AssetManager] Registered texture asset Matball_Two_n.dds
+[18:25:58][   LOG   ][AssetManager] Registered texture asset TGA_Bro_C.dds
+[18:25:58][   LOG   ][AssetManager] Registered texture asset TGA_Bro_M.dds
+[18:25:58][   LOG   ][AssetManager] Registered texture asset TGA_Bro_N.dds
+[18:25:58][   LOG   ][AssetManager] Registered texture asset Explosion.dds
+[18:25:58][   LOG   ][AssetManager] Registered material asset Chest.json
+[18:25:58][   LOG   ][AssetManager] Registered material asset ExplosionMaterial.json
+[18:25:58][   LOG   ][AssetManager] Registered material asset MatballOne.json
+[18:25:58][   LOG   ][AssetManager] Registered material asset MatballTwo.json
+[18:25:58][   LOG   ][AssetManager] Registered material asset TgaBro.json
+[18:25:58][   LOG   ][AssetManager] Asset Manager Initialized! Root content directory set to 'C:\Users\Axel\Desktop\TGP\Assets\'.
+****************************************************************************************************
+Logging has started at 2024-08-15 18:32:49.
+****************************************************************************************************
+[18:32:49][  ERROR  ][AssetManager] Asset manager can not find asset at path: Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Brething.fbx
+****************************************************************************************************
+Logging has started at 2024-08-15 19:05:32.
+****************************************************************************************************
+[19:05:32][  ERROR  ][AssetManager] Asset manager can not find asset at path: Textures/Chest/Chest_C.dd
+****************************************************************************************************
+Logging has started at 2024-08-15 19:19:05.
+****************************************************************************************************
+[19:19:05][  ERROR  ][AssetManager] Asset manager can not find asset at path: Materials/Chest.json
