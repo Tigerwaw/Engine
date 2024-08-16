@@ -61,6 +61,8 @@ void Application::Run()
 
 	InitializeApplication();
 
+	std::thread gameUpdate(&Engine::Update, std::ref(Engine::GetInstance()));
+
 	MSG msg;
 	ZeroMemory(&msg, sizeof(MSG));
 
@@ -119,6 +121,7 @@ void Application::Run()
 		Engine::GetInstance().GetImGuiHandler().BeginFrame();
 		GraphicsEngine::Get().BeginFrame();
 		Engine::GetInstance().Update();
+		Engine::GetInstance().GetImGuiHandler().Update();
 		GraphicsEngine::Get().RenderFrame();
 		Engine::GetInstance().GetImGuiHandler().Render();
 		GraphicsEngine::Get().EndFrame();

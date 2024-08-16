@@ -30,6 +30,11 @@ public:
     void SetViewcull(bool aShouldViewcull) { myShouldViewcull = aShouldViewcull; }
     const bool GetShouldViewcull() const { return myShouldViewcull; }
 
+    void SetCustomShaderData_1(CU::Vector3f aCustomShaderData) { myCustomShaderData_1 = aCustomShaderData; }
+    void SetCustomShaderData_2(CU::Vector4f aCustomShaderData) { myCustomShaderData_2 = aCustomShaderData; }
+    const CU::Vector3f& GetCustomShaderData_1() const { return myCustomShaderData_1; }
+    const CU::Vector4f& GetCustomShaderData_2() const { return myCustomShaderData_2; }
+
     bool Serialize(nl::json& outJsonObject) override;
     bool Deserialize(nl::json& aJsonObject) override;
 
@@ -38,5 +43,8 @@ protected:
     std::vector<std::shared_ptr<Material>> myMaterials;
     std::unordered_map<unsigned, unsigned> mySlotToIndex;
     bool myShouldViewcull = true;
+
+    CU::Vector3f myCustomShaderData_1;
+    CU::Vector4f myCustomShaderData_2;
 };
 

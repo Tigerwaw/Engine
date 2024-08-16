@@ -126,7 +126,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>GraphicsEngine.pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Source\Utilities\Imgui;$(SolutionDir)Source\Graphics\;$(SolutionDir)Source\Utilities\;$(SolutionDir)Source\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\Utilities\Imgui;$(SolutionDir)Source\Graphics\GraphicsEngine\;$(SolutionDir)Source\Graphics\;$(SolutionDir)Source\Utilities\;$(SolutionDir)Source\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -156,7 +156,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>GraphicsEngine.pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Source\Utilities\Imgui;$(SolutionDir)Source\Graphics\;$(SolutionDir)Source\Utilities\;$(SolutionDir)Source\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\Utilities\Imgui;$(SolutionDir)Source\Graphics\GraphicsEngine\;$(SolutionDir)Source\Graphics\;$(SolutionDir)Source\Utilities\;$(SolutionDir)Source\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>

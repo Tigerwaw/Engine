@@ -9,7 +9,7 @@
     "AntialiasedLine": false
   },
   "Samplers": {
-    "DefaultSS": 0,
+    "LinearWrapSS": 0,
     "LutSS": 14,
     "ShadowSS": 15
   }

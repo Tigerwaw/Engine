@@ -49,7 +49,7 @@ bool Rotator::Deserialize(nl::json& aJsonObject)
 {
 	if (aJsonObject.contains("RotationPerSecond"))
 	{
-		SetRotationPerSecond(Utility::DeserializeVector3(aJsonObject["RotationPerSecond"]));
+		SetRotationPerSecond(Utility::DeserializeVector3<float>(aJsonObject["RotationPerSecond"]));
 	}
 
 	return true;

@@ -602,21 +602,101 @@ void RenderHardwareInterface::ChangePipelineState(const PipelineStateObject& aNe
 
 void RenderHardwareInterface::CreateDefaultSamplerStates()
 {
-	D3D11_SAMPLER_DESC defaultSamplerDesc = {};
-	defaultSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	defaultSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	defaultSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	defaultSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	defaultSamplerDesc.MipLODBias = 0.0f;
-	defaultSamplerDesc.MaxAnisotropy = 1;
-	defaultSamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	defaultSamplerDesc.BorderColor[0] = 1.0f;
-	defaultSamplerDesc.BorderColor[1] = 1.0f;
-	defaultSamplerDesc.BorderColor[2] = 1.0f;
-	defaultSamplerDesc.BorderColor[3] = 1.0f;
-	defaultSamplerDesc.MinLOD = -D3D11_FLOAT32_MAX;
-	defaultSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	CreateSamplerState("DefaultSS", defaultSamplerDesc);
+	D3D11_SAMPLER_DESC pointWrapDesc = {};
+	pointWrapDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	pointWrapDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	pointWrapDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	pointWrapDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	pointWrapDesc.MipLODBias = 0.0f;
+	pointWrapDesc.MaxAnisotropy = 1;
+	pointWrapDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	pointWrapDesc.BorderColor[0] = 1.0f;
+	pointWrapDesc.BorderColor[1] = 1.0f;
+	pointWrapDesc.BorderColor[2] = 1.0f;
+	pointWrapDesc.BorderColor[3] = 1.0f;
+	pointWrapDesc.MinLOD = -D3D11_FLOAT32_MAX;
+	pointWrapDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	CreateSamplerState("PointWrapSS", pointWrapDesc);
+
+	D3D11_SAMPLER_DESC linearWrapDesc = {};
+	linearWrapDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	linearWrapDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	linearWrapDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	linearWrapDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	linearWrapDesc.MipLODBias = 0.0f;
+	linearWrapDesc.MaxAnisotropy = 1;
+	linearWrapDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	linearWrapDesc.BorderColor[0] = 1.0f;
+	linearWrapDesc.BorderColor[1] = 1.0f;
+	linearWrapDesc.BorderColor[2] = 1.0f;
+	linearWrapDesc.BorderColor[3] = 1.0f;
+	linearWrapDesc.MinLOD = -D3D11_FLOAT32_MAX;
+	linearWrapDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	CreateSamplerState("LinearWrapSS", linearWrapDesc);
+
+	D3D11_SAMPLER_DESC anisoWrapDesc = {};
+	anisoWrapDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	anisoWrapDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	anisoWrapDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	anisoWrapDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	anisoWrapDesc.MipLODBias = 0.0f;
+	anisoWrapDesc.MaxAnisotropy = 1;
+	anisoWrapDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	anisoWrapDesc.BorderColor[0] = 1.0f;
+	anisoWrapDesc.BorderColor[1] = 1.0f;
+	anisoWrapDesc.BorderColor[2] = 1.0f;
+	anisoWrapDesc.BorderColor[3] = 1.0f;
+	anisoWrapDesc.MinLOD = -D3D11_FLOAT32_MAX;
+	anisoWrapDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	CreateSamplerState("AnisoWrapSS", anisoWrapDesc);
+
+	D3D11_SAMPLER_DESC pointClampDesc = {};
+	pointClampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	pointClampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	pointClampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	pointClampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	pointClampDesc.MipLODBias = 0.0f;
+	pointClampDesc.MaxAnisotropy = 1;
+	pointClampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	pointClampDesc.BorderColor[0] = 1.0f;
+	pointClampDesc.BorderColor[1] = 1.0f;
+	pointClampDesc.BorderColor[2] = 1.0f;
+	pointClampDesc.BorderColor[3] = 1.0f;
+	pointClampDesc.MinLOD = -D3D11_FLOAT32_MAX;
+	pointClampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	CreateSamplerState("PointClampSS", pointClampDesc);
+
+	D3D11_SAMPLER_DESC linearClampDesc = {};
+	linearClampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	linearClampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	linearClampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	linearClampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	linearClampDesc.MipLODBias = 0.0f;
+	linearClampDesc.MaxAnisotropy = 1;
+	linearClampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	linearClampDesc.BorderColor[0] = 1.0f;
+	linearClampDesc.BorderColor[1] = 1.0f;
+	linearClampDesc.BorderColor[2] = 1.0f;
+	linearClampDesc.BorderColor[3] = 1.0f;
+	linearClampDesc.MinLOD = -D3D11_FLOAT32_MAX;
+	linearClampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	CreateSamplerState("LinearClampSS", linearClampDesc);
+
+	D3D11_SAMPLER_DESC anisoClampDesc = {};
+	anisoClampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	anisoClampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	anisoClampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	anisoClampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	anisoClampDesc.MipLODBias = 0.0f;
+	anisoClampDesc.MaxAnisotropy = 1;
+	anisoClampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	anisoClampDesc.BorderColor[0] = 1.0f;
+	anisoClampDesc.BorderColor[1] = 1.0f;
+	anisoClampDesc.BorderColor[2] = 1.0f;
+	anisoClampDesc.BorderColor[3] = 1.0f;
+	anisoClampDesc.MinLOD = -D3D11_FLOAT32_MAX;
+	anisoClampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	CreateSamplerState("AnisoClampSS", anisoClampDesc);
 
 	D3D11_SAMPLER_DESC shadowSamplerDesc = {};
 	shadowSamplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
@@ -685,6 +765,20 @@ bool RenderHardwareInterface::CreateRasterizerState(std::string_view aName, cons
 
 	LOG(RhiLog, Log, "Created rasterizer state {}", aName);
 	SetObjectName(aPSO.RasterizerState, aName);
+	return true;
+}
+
+bool RenderHardwareInterface::CreateBlendState(std::string_view aName, const D3D11_BLEND_DESC& aBlendDesc, PipelineStateObject& aPSO)
+{
+	const HRESULT result = myDevice->CreateBlendState(&aBlendDesc, aPSO.BlendState.GetAddressOf());
+	if (FAILED(result))
+	{
+		LOG(RhiLog, Error, "Failed to create blend state {}", aName);
+		return false;
+	}
+
+	LOG(RhiLog, Log, "Created blend state {}", aName);
+	SetObjectName(aPSO.BlendState, aName);
 	return true;
 }
 

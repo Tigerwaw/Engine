@@ -8,11 +8,9 @@ public:
     void BeginFrame();
     void Render();
     void Update();
+    void AddNewFunction(std::function<void()> aFunction);
 private:
-    void Settings();
-    void Lighting();
-    void Performance();
-    void Controls();
-    void WindowSize();
+
+    std::vector<std::function<void()>> myLambdaList;
 };
 

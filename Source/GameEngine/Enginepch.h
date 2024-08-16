@@ -4,6 +4,7 @@
 #include <wrl.h>
 
 #include <memory>
+#include <functional>
 #include <algorithm>
 #include <math.h>
 #include <filesystem>

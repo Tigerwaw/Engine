@@ -49,7 +49,7 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 
 	{
 		PipelineStateObject defaultPSO;
-		defaultPSO.SamplerStates[0] = myRHI->GetSamplerState("DefaultSS");
+		defaultPSO.SamplerStates[0] = myRHI->GetSamplerState("LinearWrapSS");
 
 		defaultPSO.VertexStride = sizeof(Vertex);
 
@@ -311,7 +311,7 @@ void GraphicsEngine::CreateConstantBuffers()
 	myConstantBuffers.emplace(ConstantBufferType::FrameBuffer, std::move(frameBuffer));
 
 	ConstantBuffer objectBuffer;
-	myRHI->CreateConstantBuffer("ObjectBuffer", sizeof(ObjectBuffer), 1, PIPELINE_STAGE_VERTEX_SHADER, objectBuffer);
+	myRHI->CreateConstantBuffer("ObjectBuffer", sizeof(ObjectBuffer), 1, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_GEOMETRY_SHADER | PIPELINE_STAGE_PIXEL_SHADER, objectBuffer);
 	myConstantBuffers.emplace(ConstantBufferType::ObjectBuffer, std::move(objectBuffer));
 
 	ConstantBuffer animationBuffer;
@@ -319,7 +319,7 @@ void GraphicsEngine::CreateConstantBuffers()
 	myConstantBuffers.emplace(ConstantBufferType::AnimationBuffer, std::move(animationBuffer));
 
 	ConstantBuffer materialBuffer;
-	myRHI->CreateConstantBuffer("MaterialBuffer", sizeof(MaterialBuffer), 3, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_PIXEL_SHADER, materialBuffer);
+	myRHI->CreateConstantBuffer("MaterialBuffer", sizeof(MaterialBuffer), 3, PIPELINE_STAGE_PIXEL_SHADER, materialBuffer);
 	myConstantBuffers.emplace(ConstantBufferType::MaterialBuffer, std::move(materialBuffer));
 
 	ConstantBuffer lightBuffer;

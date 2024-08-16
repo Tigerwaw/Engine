@@ -20,6 +20,8 @@ RenderMesh::RenderMesh(std::shared_ptr<Model> aModel)
     mesh = aModel->GetMesh();
     transform = aModel->gameObject->GetComponent<Transform>()->GetWorldMatrix();
     materialList = aModel->GetMaterials();
+    customShaderParams_1 = aModel->GetCustomShaderData_1();
+    customShaderParams_2 = aModel->GetCustomShaderData_2();
 
     if (GraphicsEngine::Get().DrawBoundingBoxes)
     {
@@ -40,6 +42,8 @@ void RenderMesh::Execute()
     objBufferData.World = transform;
     objBufferData.WorldInvT = transform.GetFastInverse().GetTranspose();
     objBufferData.hasSkinning = false;
+    objBufferData.customData_1 = customShaderParams_1;
+    objBufferData.customData_2 = customShaderParams_2;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
     if (psoOverride)

@@ -31,7 +31,7 @@ bool PointLight::Deserialize(nl::json& aJsonObject)
 
     if (aJsonObject.contains("Color"))
     {
-        SetColor(Utility::DeserializeVector3(aJsonObject["Color"]));
+        SetColor(Utility::DeserializeVector3<float>(aJsonObject["Color"]));
     }
 
     if (aJsonObject.contains("CastShadows") && aJsonObject["CastShadows"].get<bool>())

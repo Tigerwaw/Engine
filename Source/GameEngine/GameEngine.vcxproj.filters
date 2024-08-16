@@ -114,6 +114,9 @@
     <ClCompile Include="ComponentSystem\Components\Physics\Collider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ComponentSystem\Components\Graphics\VFXModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComponentSystem\Component.h">
@@ -306,6 +309,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ComponentSystem\Components\Physics\Collider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentSystem\Components\Graphics\VFXModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

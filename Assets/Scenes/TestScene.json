@@ -409,6 +409,35 @@
           "Resolution": [ 512.0, 512.0 ]
         }
       ]
+    },
+    {
+      "Name": "VFXTest",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 0.0, 200.0, 0.0 ],
+          "Rotation": [ -45.0, 0.0, 0.0 ],
+          "Scale": [ 100.0, 100.0, 100.0 ]
+        },
+        {
+          "Type": "Model",
+          "ShouldViewcull": true,
+          "Model": "PlanePrimitive",
+          "Materials": [
+            "Materials/ExplosionVFX.json"
+          ]
+        },
+        {
+          "Type": "VFXModel",
+          "Lifetime": 1.0,
+          "EventTrigger": 0,
+          "IsBillboard": true,
+          "IsSpritesheet": true,
+          "SpritesheetSize": [ 8.0, 4.0 ]
+        }
+      ]
     }
   ]
 }

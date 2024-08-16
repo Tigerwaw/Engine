@@ -16,6 +16,7 @@ struct ID3D11DeviceChild;
 struct ID3D11SamplerState;
 struct D3D11_SAMPLER_DESC;
 struct D3D11_RASTERIZER_DESC;
+struct D3D11_BLEND_DESC;
 
 class RenderHardwareInterface
 {
@@ -68,6 +69,7 @@ public:
 	const Microsoft::WRL::ComPtr<ID3D11SamplerState>& GetSamplerState(const std::string& aName) const;
 
 	bool CreateRasterizerState(std::string_view aName, const D3D11_RASTERIZER_DESC& aRasterDesc, PipelineStateObject& aPSO);
+	bool CreateBlendState(std::string_view aName, const D3D11_BLEND_DESC& aBlendDesc, PipelineStateObject& aPSO);
 
 	bool LoadTexture(std::string_view aName, const uint8_t* aTextureDataPtr, size_t aTextureDataSize, Texture& outTexture) const;
 	bool SetTextureResource(unsigned aPipelineStages, unsigned aSlot, const Texture& aTexture) const;

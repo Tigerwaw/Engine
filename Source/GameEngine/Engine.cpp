@@ -15,8 +15,6 @@ void Engine::Update()
     myTimer->Update();
 
     mySceneHandler->UpdateActiveScene();
-    myImGuiHandler->Update();
-
     myInputHandler->UpdateInput();
     myAudioEngine->Update();
     mySceneHandler->RenderActiveScene();

@@ -9,6 +9,6 @@
     "AntialiasedLine": false
   },
   "Samplers": {
-    "DefaultSS": 0
+    "LinearWrapSS": 0
   }
 }

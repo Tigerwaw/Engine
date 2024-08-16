@@ -381,17 +381,17 @@ bool Transform::Deserialize(nl::json& aJsonObject)
 
 	if (aJsonObject.contains("Position"))
 	{
-		SetTranslation(Utility::DeserializeVector3(aJsonObject["Position"]));
+		SetTranslation(Utility::DeserializeVector3<float>(aJsonObject["Position"]));
 	};
 
 	if (aJsonObject.contains("Rotation"))
 	{
-		SetRotation(Utility::DeserializeVector3(aJsonObject["Rotation"]));
+		SetRotation(Utility::DeserializeVector3<float>(aJsonObject["Rotation"]));
 	}
 
 	if (aJsonObject.contains("Scale"))
 	{
-		SetScale(Utility::DeserializeVector3(aJsonObject["Scale"]));
+		SetScale(Utility::DeserializeVector3<float>(aJsonObject["Scale"]));
 	}
 
 	return true;

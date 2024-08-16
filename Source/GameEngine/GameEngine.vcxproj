@@ -168,6 +168,7 @@
     <ClCompile Include="ComponentSystem\Components\Graphics\AnimatedModel.cpp" />
     <ClCompile Include="ComponentSystem\Components\Graphics\Camera.cpp" />
     <ClCompile Include="ComponentSystem\Components\Graphics\DebugModel.cpp" />
+    <ClCompile Include="ComponentSystem\Components\Graphics\VFXModel.cpp" />
     <ClCompile Include="ComponentSystem\Components\Lights\AmbientLight.cpp" />
     <ClCompile Include="ComponentSystem\Components\Lights\DirectionalLight.cpp" />
     <ClCompile Include="ComponentSystem\Components\Lights\PointLight.cpp" />
@@ -205,6 +206,7 @@
     <ClInclude Include="ComponentSystem\Component.h" />
     <ClInclude Include="ComponentSystem\Components\Graphics\Camera.h" />
     <ClInclude Include="ComponentSystem\Components\Graphics\DebugModel.h" />
+    <ClInclude Include="ComponentSystem\Components\Graphics\VFXModel.h" />
     <ClInclude Include="ComponentSystem\Components\Lights\AmbientLight.h" />
     <ClInclude Include="ComponentSystem\Components\Lights\DirectionalLight.h" />
     <ClInclude Include="ComponentSystem\Components\Lights\PointLight.h" />
