@@ -37,6 +37,12 @@ void Engine::LoadSettings(const std::string& aSettingsFilepath)
     }
     path.close();
 
+    if (data.contains("title"))
+    {
+        std::string title = data["title"].get<std::string>();
+        myTitle = title;
+    }
+
     if (data.contains("assetsDir"))
     {
         std::filesystem::path assetsDir = data["assetsDir"].get<std::string>();
@@ -67,6 +73,11 @@ void Engine::LoadSettings(const std::string& aSettingsFilepath)
 const std::filesystem::path Engine::GetContentRootPath()
 {
     return myContentRoot;
+}
+
+const std::string& Engine::GetApplicationTitle()
+{
+    return myTitle;
 }
 
 void Engine::SetResolution(float aWidth, float aHeight)

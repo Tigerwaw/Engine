@@ -1,5 +1,5 @@
-#include "GameEngine/Application.h"
-#include "GameEngine/EntryPoint.h"
+#include "GameEngine/Application/Application.h"
+#include "GameEngine/Application/EntryPoint.h"
 
 #include <GameEngine/Engine.h>
 

@@ -1,4 +1,5 @@
-C:\Users\Axel\Desktop\TGP\Source\GameEngine\Application.cpp;C:\Users\Axel\Desktop\TGP\Temp\Debug\GameEngine\Application.obj
+C:\Users\Axel\Desktop\TGP\Source\GameEngine\Application\Application.cpp;C:\Users\Axel\Desktop\TGP\Temp\Debug\GameEngine\Application.obj
+C:\Users\Axel\Desktop\TGP\Source\GameEngine\Application\Window.cpp;C:\Users\Axel\Desktop\TGP\Temp\Debug\GameEngine\Window.obj
 C:\Users\Axel\Desktop\TGP\Source\GameEngine\Audio\AudioEngine.cpp;C:\Users\Axel\Desktop\TGP\Temp\Debug\GameEngine\AudioEngine.obj
 C:\Users\Axel\Desktop\TGP\Source\GameEngine\Audio\AudioInstance.cpp;C:\Users\Axel\Desktop\TGP\Temp\Debug\GameEngine\AudioInstance.obj
 C:\Users\Axel\Desktop\TGP\Source\GameEngine\ComponentSystem\Component.cpp;C:\Users\Axel\Desktop\TGP\Temp\Debug\GameEngine\Component.obj

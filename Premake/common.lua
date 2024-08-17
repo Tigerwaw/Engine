@@ -27,8 +27,9 @@ dirs.shaders["relative"] = "../Assets/EngineAssets/Shaders/"
 engine_settings = os.realpath("ApplicationSettings.json")
 
 
-function default_settings()
+function default_settings(app_name)
 	return {
+		title = app_name,
 		assetsDir = dirs["root"] .. "Assets/",
 		resolution = { width=1920, height=1080 },
 		windowSize = { width=1920, height=1080 },
@@ -46,7 +47,7 @@ function verify_or_create_settings(app_name)
 	defines { 'APP_SETTINGS_PATH="' .. settings_filename .. '"' }
 	local app_settings = dirs["bin"] .. "/" .. app_name .."/" .. settings_filename
 	
-	local settings = default_settings()
+	local settings = default_settings(app_name)
 	if os.isfile(app_settings) then
 		local old_settings = json.decode(io.readfile(app_settings))
 		for k,v in pairs(old_settings) do

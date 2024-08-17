@@ -33,6 +33,7 @@ public:
 
     void LoadSettings(const std::string& aSettingsFilepath);
     const std::filesystem::path GetContentRootPath();
+    const std::string& GetApplicationTitle();
 
     void SetResolution(float aWidth, float aHeight);
     void SetWindowSize(float aWidth, float aHeight);
@@ -62,8 +63,8 @@ private:
     std::unique_ptr<AudioEngine> myAudioEngine;
     std::unique_ptr<ImGuiHandler> myImGuiHandler;
 
+    std::string myTitle;
     std::filesystem::path myContentRoot;
-
     CU::Vector2f myResolution;
     CU::Vector2f myWindowSize;
     bool myIsFullscreen;

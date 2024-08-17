@@ -1,5 +1,6 @@
 ﻿  Enginepch.cpp
   Application.cpp
+  Window.cpp
   AudioEngine.cpp
   AudioInstance.cpp
   Component.cpp
