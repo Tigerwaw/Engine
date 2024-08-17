@@ -1,6 +1,6 @@
 #include "GraphicsEngine.pch.h"
 #include "GraphicsCommandList.h"
-#include "GraphicsEngine/GraphicsEngine.h"
+#include "GraphicsEngine.h"
 #include <stdexcept>
 
 GraphicsCommandListIterator::GraphicsCommandListIterator(const GraphicsCommandList* aCommandList)

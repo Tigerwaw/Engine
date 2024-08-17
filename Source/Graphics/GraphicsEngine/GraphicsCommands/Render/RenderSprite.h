@@ -1,7 +1,6 @@
 #pragma once
 #include "GraphicsCommandBase.h"
-#include "GameEngine/Math/Matrix.hpp"
-
+#include "Math/Matrix.hpp"
 namespace CU = CommonUtilities;
 
 class Sprite;

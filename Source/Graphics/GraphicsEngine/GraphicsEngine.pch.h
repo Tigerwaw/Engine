@@ -19,7 +19,7 @@
 namespace nl = nlohmann;
 
 #include "Logger/Logger.h"
-#include "GraphicsEngine/GraphicsEngine.h"
+#include "GraphicsEngine.h"
 
 #if _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(LogGraphicsEngine, GraphicsEngine, Verbose);

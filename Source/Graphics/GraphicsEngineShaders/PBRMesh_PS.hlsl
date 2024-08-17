@@ -68,14 +68,5 @@ float4 main(MeshVStoPS input) : SV_TARGET
     color.rgb = saturate(radiance);
     color.a = albedoMap.a;
     
-    // DEBUG
-    float3 debugInputNormals = (input.Normal + 1) * 0.5f;
-    float3 debugInputTangents = (input.Tangent + 1) * 0.5f;
-    float3 debugInputBinormals = (input.Binormal + 1) * 0.5f;
-    float3 debugCalculatedNormals = (calculatedNormals + 1) * 0.5f;
-    float3 debugPixelNormals = (pixelNormal + 1) * 0.5f;
-    float3 debugUVs = float3(input.TexCoord0.x, input.TexCoord0.y, 0);
-    float4 debug = float4(debugUVs, 1);
-    
     return color;
 }

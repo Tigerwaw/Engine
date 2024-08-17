@@ -84,7 +84,6 @@ private:
     bool InitializeWindow();
 
     HWND myMainWindowHandle = nullptr;
-    HWND myConsoleWindow = nullptr;
 
     bool myIsRunning = true;
     bool myIsPaused = false;

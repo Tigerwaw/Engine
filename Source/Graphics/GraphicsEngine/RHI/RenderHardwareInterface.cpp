@@ -4,13 +4,13 @@
 
 #include <d3dcompiler.h>
 #include <d3d11shader.h>
-#include "GraphicsEngine/DDSTextureLoader/DDSTextureLoader11.h"
+#include "DDSTextureLoader/DDSTextureLoader11.h"
 #include "StringHelpers.h"
 
 #if _DEBUG
-#include "imgui.h"
-#include "backends/imgui_impl_win32.h"
-#include "backends/imgui_impl_dx11.h"
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_win32.h"
+#include "imgui/backends/imgui_impl_dx11.h"
 #endif
 
 #include "GraphicsEngine/Objects/Texture.h"
@@ -19,6 +19,7 @@
 #include "GraphicsEngine/Objects/ConstantBuffers/ConstantBuffer.h"
 #include "GraphicsEngine/Objects/DynamicVertexBuffer.h"
 
+#include "GameEngine/Engine.h"
 #include "Logger/Logger.h"
 
 #ifdef _DEBUG
@@ -986,17 +987,15 @@ bool RenderHardwareInterface::CreateLUT(std::string_view aName, unsigned aWidth,
 		return false;
 	}
 
-#include "../Intermediate/Shaders/CompiledShaderHeaders/brdfLUT_VS.h"
-#include "../Intermediate/Shaders/CompiledShaderHeaders/brdfLUT_PS.h"
 	std::shared_ptr<Shader> LUTshaderVS = std::make_shared<Shader>();
-	if (!LoadShaderFromMemory("LUT_VS", *LUTshaderVS, BuiltIn_brdfLUT_VS_ByteCode, sizeof(BuiltIn_brdfLUT_VS_ByteCode)))
+	if (!LoadShaderFromFilePath("LUT_VS", *LUTshaderVS, Engine::GetInstance().GetContentRootPath() / L"EngineAssets/Shaders/brdfLUT_VS.cso"))
 	{
 		LOG(RhiLog, Error, "Failed to load LUT vertex shader!");
 		return false;
 	}
 
 	std::shared_ptr<Shader> LUTshaderPS = std::make_shared<Shader>();
-	if (!LoadShaderFromMemory("LUT_PS", *LUTshaderPS, BuiltIn_brdfLUT_PS_ByteCode, sizeof(BuiltIn_brdfLUT_PS_ByteCode)))
+	if (!LoadShaderFromFilePath("LUT_PS", *LUTshaderPS, Engine::GetInstance().GetContentRootPath() / L"EngineAssets/Shaders/brdfLUT_PS.cso"))
 	{
 		LOG(RhiLog, Error, "Failed to load LUT pixel shader!");
 		return false;

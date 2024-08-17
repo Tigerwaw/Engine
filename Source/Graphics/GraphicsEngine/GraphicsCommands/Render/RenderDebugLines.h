@@ -1,5 +1,5 @@
 #pragma once
-#include "Graphics/GraphicsEngine/GraphicsCommands/GraphicsCommandBase.h"
+#include "GraphicsCommands/GraphicsCommandBase.h"
 
 class DynamicVertexBuffer;
 struct DebugLineVertex;

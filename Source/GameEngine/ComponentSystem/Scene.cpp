@@ -167,16 +167,22 @@ void Scene::Instantiate(std::shared_ptr<GameObject> aGameObject)
 	else if (aGameObject->GetComponent<DirectionalLight>())
 	{
 		myDirectionalLight = aGameObject;
+#ifdef _DEBUG
 		myDirectionalLight->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/DirectionalLightGizmo.fbx")->mesh);
+#endif
 	}
 	else if (aGameObject->GetComponent<PointLight>())
 	{
+#ifdef _DEBUG
 		aGameObject->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/PointLightGizmo.fbx")->mesh);
+#endif
 		myPointLights.emplace_back(aGameObject);
 	}
 	else if (aGameObject->GetComponent<SpotLight>())
 	{
+#ifdef _DEBUG
 		aGameObject->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/SpotLightGizmo.fbx")->mesh);
+#endif
 		mySpotLights.emplace_back(aGameObject);
 	}
 	else if (aGameObject->GetComponent<Camera>())

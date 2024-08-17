@@ -1,5 +1,5 @@
 #pragma once
-#include "GraphicsCommandBase.h"
+#include "GraphicsCommands/GraphicsCommandBase.h"
 #include "GameEngine/Math/Matrix4x4.hpp"
 
 namespace CU = CommonUtilities;

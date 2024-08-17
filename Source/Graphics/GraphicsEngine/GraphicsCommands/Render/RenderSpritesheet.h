@@ -1,5 +1,5 @@
 #pragma once
-#include "GraphicsCommandBase.h"
+#include "GraphicsCommands/GraphicsCommandBase.h"
 #include "GameEngine/Math/Vector.hpp"
 #include "GameEngine/Math/Matrix.hpp"
 

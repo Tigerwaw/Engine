@@ -1,5 +1,5 @@
 #pragma once
-#include "Utilities/nlohmann/json.hpp"
+#include "nlohmann/json.hpp"
 namespace nl = nlohmann;
 #include "TGAFBX/TGAFbx.h"
 

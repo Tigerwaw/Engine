@@ -1,54 +1,105 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Debug">
+      <UniqueIdentifier>{0C95060D-78A9-2EBE-412B-D21DADFE2AEF}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="Debug\Objects">
+      <UniqueIdentifier>{C57F40A4-3140-BCDA-FA7A-055866FA00B7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Includes">
+      <UniqueIdentifier>{FC04D2DC-E8D1-2CE8-11EB-1A90FD166276}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Includes\ConstantBuffers">
+      <UniqueIdentifier>{22FD78FB-0E22-C87B-376D-AD0B23F1C699}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="brdfLUT">
+      <UniqueIdentifier>{98C6C18C-04A6-4028-0DBE-CBFE791CA789}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Debug\Unlit_PS.hlsl" />
-    <FxCompile Include="brdfLUT\brdfLUT_PS.hlsl" />
-    <FxCompile Include="brdfLUT\brdfLUT_VS.hlsl" />
-    <FxCompile Include="Debug\Wireframe_PS.hlsl" />
-    <FxCompile Include="ShadowCube_VS.hlsl" />
-    <FxCompile Include="ShadowCube_GS.hlsl" />
-    <FxCompile Include="Debug\DebugVertexNormals_PS.hlsl" />
-    <FxCompile Include="Debug\DebugPixelNormals_PS.hlsl" />
-    <FxCompile Include="Debug\DebugTextureNormals_PS.hlsl" />
-    <FxCompile Include="Debug\DebugUVs_PS.hlsl" />
-    <FxCompile Include="Debug\Gizmo_PS.hlsl" />
-    <FxCompile Include="Sprite_VS.hlsl" />
-    <FxCompile Include="Sprite_PS.hlsl" />
-    <FxCompile Include="Sprite_GS.hlsl" />
-    <FxCompile Include="Debug\Objects\DebugObject_PS.hlsl" />
-    <FxCompile Include="Debug\Objects\DebugLine_GS.hlsl" />
-    <FxCompile Include="Debug\Objects\DebugLine_VS.hlsl" />
+    <FxCompile Include="Debug\DebugPixelNormals_PS.hlsl">
+      <Filter>Debug</Filter>
+    </FxCompile>
+    <FxCompile Include="Debug\DebugTextureNormals_PS.hlsl">
+      <Filter>Debug</Filter>
+    </FxCompile>
+    <FxCompile Include="Debug\DebugUVs_PS.hlsl">
+      <Filter>Debug</Filter>
+    </FxCompile>
+    <FxCompile Include="Debug\DebugVertexNormals_PS.hlsl">
+      <Filter>Debug</Filter>
+    </FxCompile>
+    <FxCompile Include="Debug\Gizmo_PS.hlsl">
+      <Filter>Debug</Filter>
+    </FxCompile>
+    <FxCompile Include="Debug\Objects\DebugLine_GS.hlsl">
+      <Filter>Debug\Objects</Filter>
+    </FxCompile>
+    <FxCompile Include="Debug\Objects\DebugLine_VS.hlsl">
+      <Filter>Debug\Objects</Filter>
+    </FxCompile>
+    <FxCompile Include="Debug\Objects\DebugObject_PS.hlsl">
+      <Filter>Debug\Objects</Filter>
+    </FxCompile>
+    <FxCompile Include="Debug\Unlit_PS.hlsl">
+      <Filter>Debug</Filter>
+    </FxCompile>
+    <FxCompile Include="Debug\Wireframe_PS.hlsl">
+      <Filter>Debug</Filter>
+    </FxCompile>
     <FxCompile Include="Mesh_VS.hlsl" />
     <FxCompile Include="PBRMesh_PS.hlsl" />
+    <FxCompile Include="ShadowCube_GS.hlsl" />
+    <FxCompile Include="ShadowCube_VS.hlsl" />
+    <FxCompile Include="Sprite_GS.hlsl" />
+    <FxCompile Include="Sprite_PS.hlsl" />
+    <FxCompile Include="Sprite_VS.hlsl" />
     <FxCompile Include="Spritesheet_PS.hlsl" />
     <FxCompile Include="VFXSpritesheet_PS.hlsl" />
+    <FxCompile Include="brdfLUT\brdfLUT_PS.hlsl">
+      <Filter>brdfLUT</Filter>
+    </FxCompile>
+    <FxCompile Include="brdfLUT\brdfLUT_VS.hlsl">
+      <Filter>brdfLUT</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Includes\DefaultShaderIncludes.hlsli" />
-    <None Include="Includes\ConstantBuffers\FrameBuffer.hlsli" />
-    <None Include="Includes\ConstantBuffers\ObjectBuffer.hlsli" />
-    <None Include="Includes\ConstantBuffers\AnimationBuffer.hlsli" />
-    <None Include="Includes\ConstantBuffers\MaterialBuffer.hlsli" />
-    <None Include="Includes\ConstantBuffers\LightBuffer.hlsli" />
-    <None Include="Includes\BRDF_Functions.hlsli" />
-    <None Include="Includes\Lambertian_Functions.hlsli" />
-    <None Include="Includes\ConstantBuffers\ShadowBuffer.hlsli" />
-    <None Include="Includes\ConstantBuffers\SpriteBuffer.hlsli" />
-    <None Include="Includes\Debug_Includes.hlsli" />
-    <None Include="Includes\Sprite_Includes.hlsli" />
+    <None Include="Includes\BRDF_Functions.hlsli">
+      <Filter>Includes</Filter>
+    </None>
+    <None Include="Includes\ConstantBuffers\AnimationBuffer.hlsli">
+      <Filter>Includes\ConstantBuffers</Filter>
+    </None>
+    <None Include="Includes\ConstantBuffers\FrameBuffer.hlsli">
+      <Filter>Includes\ConstantBuffers</Filter>
+    </None>
+    <None Include="Includes\ConstantBuffers\LightBuffer.hlsli">
+      <Filter>Includes\ConstantBuffers</Filter>
+    </None>
+    <None Include="Includes\ConstantBuffers\MaterialBuffer.hlsli">
+      <Filter>Includes\ConstantBuffers</Filter>
+    </None>
+    <None Include="Includes\ConstantBuffers\ObjectBuffer.hlsli">
+      <Filter>Includes\ConstantBuffers</Filter>
+    </None>
+    <None Include="Includes\ConstantBuffers\ShadowBuffer.hlsli">
+      <Filter>Includes\ConstantBuffers</Filter>
+    </None>
+    <None Include="Includes\ConstantBuffers\SpriteBuffer.hlsli">
+      <Filter>Includes\ConstantBuffers</Filter>
+    </None>
+    <None Include="Includes\Debug_Includes.hlsli">
+      <Filter>Includes</Filter>
+    </None>
+    <None Include="Includes\DefaultShaderIncludes.hlsli">
+      <Filter>Includes</Filter>
+    </None>
+    <None Include="Includes\Lambertian_Functions.hlsli">
+      <Filter>Includes</Filter>
+    </None>
+    <None Include="Includes\Sprite_Includes.hlsli">
+      <Filter>Includes</Filter>
+    </None>
   </ItemGroup>
 </Project>

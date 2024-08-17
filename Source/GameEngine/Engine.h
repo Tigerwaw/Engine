@@ -31,6 +31,7 @@ public:
     AudioEngine& GetAudioEngine() { return *myAudioEngine; }
     ImGuiHandler& GetImGuiHandler() { return *myImGuiHandler; }
 
+    void LoadSettings(const std::string& aSettingsFilepath);
     const std::filesystem::path GetContentRootPath();
 
     void SetResolution(float aWidth, float aHeight);

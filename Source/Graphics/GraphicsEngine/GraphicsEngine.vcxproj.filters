@@ -1,240 +1,244 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="DDSTextureLoader">
+      <UniqueIdentifier>{681569CE-540E-8820-7D40-6DA56998672C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="GraphicsCommands">
+      <UniqueIdentifier>{28E50BB9-14DE-2A0B-3D10-109029680A17}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="GraphicsCommands\ConstantBuffer">
+      <UniqueIdentifier>{7B054584-E7E8-53C4-F0EB-81005C4E1A15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GraphicsCommands\Render">
+      <UniqueIdentifier>{9766FB74-039E-430C-0CA8-A72F785E6A05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GraphicsCommands\Resource">
+      <UniqueIdentifier>{3F14E9AD-ABD6-1C38-F486-ABC46088F515}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects">
+      <UniqueIdentifier>{CF2649B1-3B06-C84C-441E-5323B07C2EAE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\ConstantBuffers">
+      <UniqueIdentifier>{F564A7FD-619C-EF94-6AA6-53B8D65C168E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RHI">
+      <UniqueIdentifier>{4819880B-B422-887C-3D9E-9E7CA9A6937C}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GraphicsEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsEngine.pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RHI\RenderHardwareInterface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\Vertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RHI\RHIStructs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\ConstantBuffers\ConstantBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\ConstantBuffers\FrameBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\ConstantBuffers\ObjectBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\Mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\PipelineStateObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCommands\GraphicsCommandList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\Animation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\ConstantBuffers\AnimationBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\Material.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\ConstantBuffers\MaterialBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCommands\Render\RenderMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCommands\GraphicsCommandBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCommands\Render\RenderAnimatedMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCommands\LambdaGraphicsCommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DDSTextureLoader\DDSTextureLoader11.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\ConstantBuffers\LightBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCommands\Resource\SetTextureResource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCommands\Resource\ClearTextureResource.h">
-      <Filter>Header Files</Filter>
+      <Filter>DDSTextureLoader</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsCommands\ChangePipelineState.h">
-      <Filter>Header Files</Filter>
+      <Filter>GraphicsCommands</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsCommands\ConstantBuffer\UpdateFrameBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\ConstantBuffers\ShadowBuffer.h">
-      <Filter>Header Files</Filter>
+      <Filter>GraphicsCommands\ConstantBuffer</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsCommands\ConstantBuffer\UpdateLightBuffer.h">
-      <Filter>Header Files</Filter>
+      <Filter>GraphicsCommands\ConstantBuffer</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsCommands\ConstantBuffer\UpdateShadowBuffer.h">
-      <Filter>Header Files</Filter>
+      <Filter>GraphicsCommands\ConstantBuffer</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCommands\Render\RenderDebugMesh.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="GraphicsCommands\GraphicsCommandBase.h">
+      <Filter>GraphicsCommands</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCommands\SetRenderTarget.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="GraphicsCommands\GraphicsCommandList.h">
+      <Filter>GraphicsCommands</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCommands\SetDefaultRenderTarget.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="GraphicsCommands\LambdaGraphicsCommand.h">
+      <Filter>GraphicsCommands</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\Sprite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\ConstantBuffers\SpriteBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCommands\Render\RenderSprite.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="GraphicsCommands\Render\RenderAnimatedMesh.h">
+      <Filter>GraphicsCommands\Render</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsCommands\Render\RenderDebugLines.h">
-      <Filter>Header Files</Filter>
+      <Filter>GraphicsCommands\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\DynamicVertexBuffer.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="GraphicsCommands\Render\RenderDebugMesh.h">
+      <Filter>GraphicsCommands\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\DebugLineVertex.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="GraphicsCommands\Render\RenderMesh.h">
+      <Filter>GraphicsCommands\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCommands\Render\RenderSprite.h">
+      <Filter>GraphicsCommands\Render</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsCommands\Render\RenderSpritesheet.h">
-      <Filter>Header Files</Filter>
+      <Filter>GraphicsCommands\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCommands\Resource\ClearTextureResource.h">
+      <Filter>GraphicsCommands\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCommands\Resource\SetTextureResource.h">
+      <Filter>GraphicsCommands\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCommands\SetDefaultRenderTarget.h">
+      <Filter>GraphicsCommands</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCommands\SetRenderTarget.h">
+      <Filter>GraphicsCommands</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsEngine.h" />
+    <ClInclude Include="GraphicsEngine.pch.h" />
+    <ClInclude Include="Objects\Animation.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\ConstantBuffers\AnimationBuffer.h">
+      <Filter>Objects\ConstantBuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\ConstantBuffers\ConstantBuffer.h">
+      <Filter>Objects\ConstantBuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\ConstantBuffers\FrameBuffer.h">
+      <Filter>Objects\ConstantBuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\ConstantBuffers\LightBuffer.h">
+      <Filter>Objects\ConstantBuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\ConstantBuffers\MaterialBuffer.h">
+      <Filter>Objects\ConstantBuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\ConstantBuffers\ObjectBuffer.h">
+      <Filter>Objects\ConstantBuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\ConstantBuffers\ShadowBuffer.h">
+      <Filter>Objects\ConstantBuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\ConstantBuffers\SpriteBuffer.h">
+      <Filter>Objects\ConstantBuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\DebugLineVertex.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\DynamicVertexBuffer.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Material.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Mesh.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\PipelineStateObject.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Shader.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Sprite.h">
+      <Filter>Objects</Filter>
     </ClInclude>
     <ClInclude Include="Objects\Spritesheet.h">
-      <Filter>Header Files</Filter>
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Texture.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Vertex.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="RHI\RHIStructs.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="RHI\RenderHardwareInterface.h">
+      <Filter>RHI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GraphicsEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsEngine.pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RHI\RenderHardwareInterface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Objects\Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Objects\Vertex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Objects\Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Objects\ConstantBuffers\ConstantBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Objects\Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Objects\PipelineStateObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCommands\GraphicsCommandList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Objects\Material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCommands\Render\RenderMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCommands\GraphicsCommandBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCommands\Render\RenderAnimatedMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCommands\LambdaGraphicsCommand.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DDSTextureLoader\DDSTextureLoader11.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCommands\Resource\SetTextureResource.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCommands\Resource\ClearTextureResource.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>DDSTextureLoader</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCommands\ChangePipelineState.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>GraphicsCommands</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCommands\ConstantBuffer\UpdateFrameBuffer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>GraphicsCommands\ConstantBuffer</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCommands\ConstantBuffer\UpdateLightBuffer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>GraphicsCommands\ConstantBuffer</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCommands\ConstantBuffer\UpdateShadowBuffer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>GraphicsCommands\ConstantBuffer</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCommands\Render\RenderDebugMesh.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="GraphicsCommands\GraphicsCommandBase.cpp">
+      <Filter>GraphicsCommands</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCommands\SetRenderTarget.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="GraphicsCommands\GraphicsCommandList.cpp">
+      <Filter>GraphicsCommands</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCommands\SetDefaultRenderTarget.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="GraphicsCommands\LambdaGraphicsCommand.cpp">
+      <Filter>GraphicsCommands</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\Sprite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCommands\Render\RenderSprite.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="GraphicsCommands\Render\RenderAnimatedMesh.cpp">
+      <Filter>GraphicsCommands\Render</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCommands\Render\RenderDebugLines.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>GraphicsCommands\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\DynamicVertexBuffer.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="GraphicsCommands\Render\RenderDebugMesh.cpp">
+      <Filter>GraphicsCommands\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\DebugLineVertex.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="GraphicsCommands\Render\RenderMesh.cpp">
+      <Filter>GraphicsCommands\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsCommands\Render\RenderSprite.cpp">
+      <Filter>GraphicsCommands\Render</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCommands\Render\RenderSpritesheet.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>GraphicsCommands\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsCommands\Resource\ClearTextureResource.cpp">
+      <Filter>GraphicsCommands\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsCommands\Resource\SetTextureResource.cpp">
+      <Filter>GraphicsCommands\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsCommands\SetDefaultRenderTarget.cpp">
+      <Filter>GraphicsCommands</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsCommands\SetRenderTarget.cpp">
+      <Filter>GraphicsCommands</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsEngine.cpp" />
+    <ClCompile Include="GraphicsEngine.pch.cpp" />
+    <ClCompile Include="Objects\ConstantBuffers\ConstantBuffer.cpp">
+      <Filter>Objects\ConstantBuffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\DebugLineVertex.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\DynamicVertexBuffer.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Material.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Mesh.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\PipelineStateObject.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Shader.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Sprite.cpp">
+      <Filter>Objects</Filter>
     </ClCompile>
     <ClCompile Include="Objects\Spritesheet.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Texture.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Vertex.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="RHI\RenderHardwareInterface.cpp">
+      <Filter>RHI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

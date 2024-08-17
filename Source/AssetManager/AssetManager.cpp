@@ -3,8 +3,12 @@
 #include "AssetManager.h"
 #include "Asset.h"
 #include "GraphicsEngine.h"
-#include "Graphics/GraphicsEngine/Objects/Vertex.h"
-#include "Graphics/GraphicsEngine/Objects/DebugLineVertex.h"
+#include "Objects/Vertex.h"
+#include "Objects/DebugLineVertex.h"
+
+#include "Math/Matrix.hpp"
+#include "Math/Vector.hpp"
+namespace CU = CommonUtilities;
 
 #include "DefaultTextures/Default_C.h"
 #include "DefaultTextures/Default_N.h"

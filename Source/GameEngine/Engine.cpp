@@ -21,6 +21,49 @@ void Engine::Update()
     myDebugDrawer->DrawObjects();
 }
 
+void Engine::LoadSettings(const std::string& aSettingsFilepath)
+{
+    std::ifstream path(aSettingsFilepath);
+    nl::json data = nl::json();
+
+    try
+    {
+        data = nl::json::parse(path);
+    }
+    catch (nl::json::parse_error e)
+    {
+        LOG(LogGameEngine, Error, "Couldn't read application settings file, {}!", e.what());
+        return;
+    }
+    path.close();
+
+    if (data.contains("assetsDir"))
+    {
+        std::filesystem::path assetsDir = data["assetsDir"].get<std::string>();
+        myContentRoot = assetsDir;
+    }
+
+    if (data.contains("resolution"))
+    {
+        myResolution = { data["resolution"]["width"].get<float>(), data["resolution"]["height"].get<float>() };
+    }
+
+    if (data.contains("windowSize"))
+    {
+        myWindowSize = { data["windowSize"]["width"].get<float>(), data["windowSize"]["height"].get<float>() };
+    }
+
+    if (data.contains("fullscreen"))
+    {
+        myIsFullscreen = data["fullscreen"].get<bool>();
+    }
+
+    if (data.contains("borderless"))
+    {
+        myIsBorderless = data["borderless"].get<bool>();
+    }
+}
+
 const std::filesystem::path Engine::GetContentRootPath()
 {
     return myContentRoot;
@@ -62,47 +105,7 @@ Engine::Engine()
     myResolution = { 1920.0f, 1080.0f };
     myWindowSize = { 1920.0f, 1080.0f };
     myIsFullscreen = false;
-
-    std::filesystem::path exeDir = std::filesystem::current_path();
-    std::ifstream path(exeDir / "ApplicationSettings.json");
-    nl::json data = nl::json();
-
-    try
-    {
-        data = nl::json::parse(path);
-    }
-    catch (nl::json::parse_error e)
-    {
-        LOG(LogGameEngine, Error, "Couldn't read application settings file, {}!", e.what());
-        return;
-    }
-    path.close();
-
-    if (data.contains("assetsDir"))
-    {
-        std::filesystem::path assetsDir = exeDir / data["assetsDir"].get<std::string>();
-        myContentRoot = assetsDir;
-    }
-
-    if (data.contains("resolution"))
-    {
-        myResolution = { data["resolution"]["width"].get<float>(), data["resolution"]["height"].get<float>() };
-    }
-
-    if (data.contains("windowSize"))
-    {
-        myWindowSize = { data["windowSize"]["width"].get<float>(), data["windowSize"]["height"].get<float>() };
-    }
-
-    if (data.contains("fullscreen"))
-    {
-        myIsFullscreen = data["fullscreen"].get<bool>();
-    }
-
-    if (data.contains("borderless"))
-    {
-        myIsBorderless = data["borderless"].get<bool>();
-    }
+    myIsBorderless = false;
 
     LOG(LogGameEngine, Log, "Game Engine initialized!");
 }

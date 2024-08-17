@@ -1,10 +1,10 @@
 #pragma once
-#include "Graphics/GraphicsEngine/Objects/Mesh.h"
-#include "Graphics/GraphicsEngine/Objects/Animation.h"
-#include "Graphics/GraphicsEngine/Objects/Texture.h"
-#include "Graphics/GraphicsEngine/Objects/Material.h"
-#include "Graphics/GraphicsEngine/Objects/Shader.h"
-#include "Graphics/GraphicsEngine/Objects/PipelineStateObject.h"
+#include "Objects/Mesh.h"
+#include "Objects/Animation.h"
+#include "Objects/Texture.h"
+#include "Objects/Material.h"
+#include "Objects/Shader.h"
+#include "Objects/PipelineStateObject.h"
 
 struct Asset
 {
