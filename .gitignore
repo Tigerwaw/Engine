@@ -1,6 +1,9 @@
 # Project
 .vs
-Intermediate
+.sln
+Temp/**
+Bin/**
+Lib/**
 
 # Prerequisites
 *.d
