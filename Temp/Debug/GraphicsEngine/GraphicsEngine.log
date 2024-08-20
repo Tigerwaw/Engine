@@ -1,7 +1,0 @@
-﻿  UpdateFrameBuffer.cpp
-  RenderAnimatedMesh.cpp
-  RenderDebugMesh.cpp
-  RenderMesh.cpp
-  GraphicsEngine.cpp
-  RenderHardwareInterface.cpp
-  GraphicsEngine.vcxproj -> C:\Users\Axel\Desktop\TGP\Lib\Debug\GraphicsEngine\GraphicsEngine_Debug.lib
