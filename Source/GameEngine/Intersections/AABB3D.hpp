@@ -15,9 +15,14 @@ namespace CommonUtilities
 		AABB3D<T>(const AABB3D<T>& aAABB3D);
 		// Constructor taking the positions of the minimum and maximum corners.
 		AABB3D<T>(const Vector3<T>& aMin, const Vector3<T>& aMax);
+		AABB3D<T>(const Vector3<T>& aCenter, const T aWidth, const T aHeight, const T aDepth);
 		// Init the AABB with the positions of the minimum and maximum corners, same as
 		// the constructor above.
 		void InitWithMinAndMax(const Vector3<T>& aMin, const Vector3<T>& aMax);
+		void InitWithCenterAndExtents(const Vector3<T>& aCenter, const T aWidth, const T aHeight, const T aDepth);
+		void InitWithCenterAndExtents(const Vector3<T>& aCenter, const Vector3<T>& aExtents);
+		AABB3D<T> GetAABBinNewSpace(const Matrix4x4<T>& aMatrix) const;
+
 		// Returns whether a point is inside the AABB: it is inside when the point is on any
 		// of the AABB's sides or inside of the AABB.
 		bool IsInside(const Vector3<T>& aPosition) const;
@@ -25,6 +30,7 @@ namespace CommonUtilities
 		const Vector3<T> GetMax() const;
 		const std::vector<Vector3<T>> GetCorners() const;
 		const Vector3<T> GetCenter() const;
+		const Vector3<T> GetExtents() const;
 	private:
 		Vector3<T> minPoint;
 		Vector3<T> maxPoint;
@@ -40,15 +46,19 @@ namespace CommonUtilities
 	template<class T>
 	AABB3D<T>::AABB3D(const AABB3D<T>& aAABB3D)
 	{
-		minPoint = aAABB3D.minPoint;
-		maxPoint = aAABB3D.maxPoint;
+		InitWithMinAndMax(aAABB3D.minPoint, aAABB3D.maxPoint);
 	}
 
 	template<class T>
 	AABB3D<T>::AABB3D(const Vector3<T>& aMin, const Vector3<T>& aMax)
 	{
-		minPoint = aMin;
-		maxPoint = aMax;
+		InitWithMinAndMax(aMin, aMax);
+	}
+
+	template<class T>
+	inline AABB3D<T>::AABB3D(const Vector3<T>& aCenter, const T aWidth, const T aHeight, const T aDepth)
+	{
+		InitWithCenterAndExtents(aCenter, aWidth, aHeight, aDepth);
 	}
 
 	template<class T>
@@ -56,6 +66,44 @@ namespace CommonUtilities
 	{
 		minPoint = aMin;
 		maxPoint = aMax;
+	}
+
+	template<class T>
+	inline void AABB3D<T>::InitWithCenterAndExtents(const Vector3<T>& aCenter, const T aWidth, const T aHeight, const T aDepth)
+	{
+		InitWithCenterAndExtents(aCenter, { aWidth, aHeight, aDepth });
+	}
+
+	template<class T>
+	inline void AABB3D<T>::InitWithCenterAndExtents(const Vector3<T>& aCenter, const Vector3<T>& aExtents)
+	{
+		Vector3<T> halfExtents = aExtents * 0.5f;
+		Vector3<T> newMin = aCenter - halfExtents;
+		Vector3<T> newMax = aCenter + halfExtents;
+		InitWithMinAndMax(newMin, newMax);
+	}
+
+	template<class T>
+	inline AABB3D<T> AABB3D<T>::GetAABBinNewSpace(const Matrix4x4<T>& aMatrix) const
+	{
+		Vector3<T> newMin = { FLT_MAX, FLT_MAX, FLT_MAX };
+		Vector3<T> newMax = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+		for (Vector3<T> corner : GetCorners())
+		{
+			corner = ToVector3(ToVector4(corner, 1.0f) * aMatrix);
+
+			newMin.x = std::fminf(corner.x, newMin.x);
+			newMax.x = std::fmaxf(corner.x, newMax.x);
+			newMin.y = std::fminf(corner.y, newMin.y);
+			newMax.y = std::fmaxf(corner.y, newMax.y);
+			newMin.z = std::fminf(corner.z, newMin.z);
+			newMax.z = std::fmaxf(corner.z, newMax.z);
+		}
+
+		AABB3D<T> newAABB(newMin, newMax);
+
+		return newAABB;
 	}
 
 	template<class T>
@@ -111,5 +159,11 @@ namespace CommonUtilities
 	inline const Vector3<T> AABB3D<T>::GetCenter() const
 	{
 		return Vector3<T>::Abs(maxPoint) - Vector3<T>::Abs(minPoint);
+	}
+
+	template<class T>
+	inline const Vector3<T> AABB3D<T>::GetExtents() const
+	{
+		return Vector3<T>::Abs(maxPoint) - GetCenter();
 	}
 }

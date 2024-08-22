@@ -212,30 +212,26 @@ namespace CommonUtilities
 	template<class T>
 	bool IntersectionBetweenAABBS(const AABB3D<T>& aBoundingBoxOne, const AABB3D<T>& aBoundingBoxTwo)
 	{
-		if (aBoundingBoxOne.IsInside(aBoundingBoxTwo.GetMin())) { return true; }
-		if (aBoundingBoxOne.IsInside(aBoundingBoxTwo.GetMax())) { return true; }
-		if (aBoundingBoxOne.IsInside(Vector3<float>(aBoundingBoxTwo.GetMax().x, aBoundingBoxTwo.GetMax().y, aBoundingBoxTwo.GetMin().z))) { return true; }
-		if (aBoundingBoxOne.IsInside(Vector3<float>(aBoundingBoxTwo.GetMax().x, aBoundingBoxTwo.GetMin().y, aBoundingBoxTwo.GetMin().z))) { return true; }
-		if (aBoundingBoxOne.IsInside(Vector3<float>(aBoundingBoxTwo.GetMax().x, aBoundingBoxTwo.GetMin().y, aBoundingBoxTwo.GetMax().z))) { return true; }
-		if (aBoundingBoxOne.IsInside(Vector3<float>(aBoundingBoxTwo.GetMin().x, aBoundingBoxTwo.GetMax().y, aBoundingBoxTwo.GetMin().z))) { return true; }
-		if (aBoundingBoxOne.IsInside(Vector3<float>(aBoundingBoxTwo.GetMin().x, aBoundingBoxTwo.GetMin().y, aBoundingBoxTwo.GetMax().z))) { return true; }
-		if (aBoundingBoxOne.IsInside(Vector3<float>(aBoundingBoxTwo.GetMin().x, aBoundingBoxTwo.GetMax().y, aBoundingBoxTwo.GetMax().z))) { return true; }
+		Vector3<T> minA = aBoundingBoxOne.GetMin();
+		Vector3<T> maxA = aBoundingBoxOne.GetMax();
+		Vector3<T> minB = aBoundingBoxTwo.GetMin();
+		Vector3<T> maxB = aBoundingBoxTwo.GetMax();
+		bool x = minA.x <= maxB.x && maxA.x >= minB.x;
+		bool y = minA.y <= maxB.y && maxA.y >= minB.y;
+		bool z = minA.z <= maxB.z && maxA.z >= minB.z;
 
-		return false;
+		return x && y && z;
 	}
 
 	template<class T>
 	bool IntersectionBetweenSpheres(const Sphere<T>& aSphereOne, const Sphere<T>& aSphereTwo)
 	{
-		Vector2<T> differenceFromCenterToCenter = aSphereOne.GetPoint() - aSphereTwo.GetPoint();
-		T distance = differenceFromCenterToCenter.LengthSqr();
+		Vector3<T> differenceFromCenterToCenter = aSphereOne.GetPoint() - aSphereTwo.GetPoint();
+		T distanceSqr = differenceFromCenterToCenter.LengthSqr();
+		T radiusSum = aSphereOne.GetRadius() + aSphereTwo.GetRadius();
+		T sqrdRadii = radiusSum * radiusSum;
 
-		if (distance <= aSphereTwo.GetRadiusSqr() + aSphereOne.GetRadiusSqr())
-		{
-			return true;
-		}
-
-		return false;
+		return (distanceSqr <= sqrdRadii);
 	}
 
 	template<class T>

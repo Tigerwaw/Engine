@@ -2,6 +2,8 @@
 
 #include "SceneHandler.h"
 #include "SceneLoader.h"
+#include "GameEngine/Renderer/Renderer.h"
+#include "GameEngine/CollisionHandler/CollisionHandler.h"
 #include "GameEngine/ComponentSystem/Scene.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 
@@ -9,7 +11,13 @@
 
 SceneHandler::SceneHandler()
 {
-    mySceneLoader = std::make_shared<SceneLoader>();
+    mySceneLoader = std::make_unique<SceneLoader>();
+    myRenderer = std::make_unique<Renderer>();
+    myCollisionHandler = std::make_unique<CollisionHandler>();
+}
+
+SceneHandler::~SceneHandler()
+{
 }
 
 void SceneHandler::UpdateActiveScene()
@@ -21,6 +29,7 @@ void SceneHandler::UpdateActiveScene()
     }
 
     myActiveScene->Update();
+    myCollisionHandler->TestCollisions(*myActiveScene);
 }
 
 void SceneHandler::RenderActiveScene()
@@ -31,7 +40,7 @@ void SceneHandler::RenderActiveScene()
         return;
     }
 
-    myActiveScene->Render();
+    myRenderer->RenderScene(*myActiveScene);
 }
 
 void SceneHandler::CreateEmptyScene()

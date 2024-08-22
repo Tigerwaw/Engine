@@ -11,6 +11,7 @@
 #include "GameEngine/ComponentSystem/Components/Graphics/DebugModel.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
+#include "GameEngine/Math/MathConstants.hpp"
 
 void DebugDrawer::InitializeDebugDrawer()
 {
@@ -104,14 +105,47 @@ void DebugDrawer::DrawBoundingBox(std::shared_ptr<DebugModel> aModel, CU::Vector
     DrawBoundingBox(boundingBox, objectMatrix, aColor);
 }
 
+void DebugDrawer::DrawBoundingSphere(CU::Sphere<float> aSphere, CU::Matrix4x4f aWorldMatrix, CU::Vector4f aColor)
+{
+    int numPoints = 20;
+    float angleinc = 2.0f * CU::PI / static_cast<float>(numPoints);
+    float radius = aSphere.GetRadius();
+    CU::Vector3f center = aSphere.GetSphereinNewSpace(aWorldMatrix).GetPoint();
+
+    {
+        CU::Vector3f previousPointRight;
+        CU::Vector3f nextPointRight = center;
+        nextPointRight.x += radius;
+        CU::Vector3f previousPointUp;
+        CU::Vector3f nextPointUp = center;
+        nextPointUp.y += radius;
+        CU::Vector3f previousPointForward;
+        CU::Vector3f nextPointForward = center;
+        nextPointForward.z += radius;
+
+        for (int i = 0; i <= numPoints; i++)
+        {
+            previousPointRight = nextPointRight;
+            previousPointUp = nextPointUp;
+            previousPointForward = nextPointForward;
+
+            float c = cos(angleinc * i) * radius;
+            float s = sin(angleinc * i) * radius;
+
+            nextPointRight = center + CU::Vector3f(c, s, 0);
+            nextPointUp = center + CU::Vector3f(0, c, s);
+            nextPointForward = center + CU::Vector3f(s, 0, c);
+            DrawLine(previousPointRight, nextPointRight, aColor);
+            DrawLine(previousPointUp, nextPointUp, aColor);
+            DrawLine(previousPointForward, nextPointForward, aColor);
+        }
+    }
+}
+
 void DebugDrawer::DrawBoundingBox(CU::AABB3D<float> aAABB, CU::Matrix4x4f aWorldMatrix, CU::Vector4f aColor)
 {
+    aAABB = aAABB.GetAABBinNewSpace(aWorldMatrix);
     std::vector<CU::Vector3f> corners = aAABB.GetCorners();
-
-    for (auto& corner : corners)
-    {
-        corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * aWorldMatrix);
-    }
 
     DrawLine(corners[0], corners[1], aColor);
     DrawLine(corners[1], corners[2], aColor);

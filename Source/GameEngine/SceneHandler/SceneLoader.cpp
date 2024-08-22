@@ -27,15 +27,8 @@
 #include "GameEngine/ComponentSystem/Components/Movement/FreecamController.h"
 #include "GameEngine/ComponentSystem/Components/AudioSource.h"
 
-SceneLoader::SceneLoader()
-{
-
-}
-
-SceneLoader::~SceneLoader()
-{
-
-}
+SceneLoader::SceneLoader() = default;
+SceneLoader::~SceneLoader() = default;
 
 bool SceneLoader::LoadScene(std::shared_ptr<Scene> aScene, std::filesystem::path aSceneFilepath)
 {

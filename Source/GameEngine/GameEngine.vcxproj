@@ -146,6 +146,7 @@
     <ClInclude Include="Application\Window.h" />
     <ClInclude Include="Audio\AudioEngine.h" />
     <ClInclude Include="Audio\AudioInstance.h" />
+    <ClInclude Include="CollisionHandler\CollisionHandler.h" />
     <ClInclude Include="ComponentSystem\Component.h" />
     <ClInclude Include="ComponentSystem\Components\AudioSource.h" />
     <ClInclude Include="ComponentSystem\Components\Graphics\AnimatedModel.h" />
@@ -161,7 +162,9 @@
     <ClInclude Include="ComponentSystem\Components\Movement\FreecamController.h" />
     <ClInclude Include="ComponentSystem\Components\Movement\ObjectController.h" />
     <ClInclude Include="ComponentSystem\Components\Movement\Rotator.h" />
-    <ClInclude Include="ComponentSystem\Components\Physics\Collider.h" />
+    <ClInclude Include="ComponentSystem\Components\Physics\Colliders\BoxCollider.h" />
+    <ClInclude Include="ComponentSystem\Components\Physics\Colliders\Collider.h" />
+    <ClInclude Include="ComponentSystem\Components\Physics\Colliders\SphereCollider.h" />
     <ClInclude Include="ComponentSystem\Components\Transform.h" />
     <ClInclude Include="ComponentSystem\GameObject.h" />
     <ClInclude Include="ComponentSystem\GameObjectEvent.h" />
@@ -203,6 +206,7 @@
     <ClInclude Include="Math\Vector2.hpp" />
     <ClInclude Include="Math\Vector3.hpp" />
     <ClInclude Include="Math\Vector4.hpp" />
+    <ClInclude Include="Renderer\Renderer.h" />
     <ClInclude Include="SceneHandler\SceneHandler.h" />
     <ClInclude Include="SceneHandler\SceneLoader.h" />
     <ClInclude Include="Time\Timer.h" />
@@ -213,6 +217,7 @@
     <ClCompile Include="Application\Window.cpp" />
     <ClCompile Include="Audio\AudioEngine.cpp" />
     <ClCompile Include="Audio\AudioInstance.cpp" />
+    <ClCompile Include="CollisionHandler\CollisionHandler.cpp" />
     <ClCompile Include="ComponentSystem\Component.cpp" />
     <ClCompile Include="ComponentSystem\Components\AudioSource.cpp" />
     <ClCompile Include="ComponentSystem\Components\Graphics\AnimatedModel.cpp" />
@@ -228,7 +233,9 @@
     <ClCompile Include="ComponentSystem\Components\Movement\FreecamController.cpp" />
     <ClCompile Include="ComponentSystem\Components\Movement\ObjectController.cpp" />
     <ClCompile Include="ComponentSystem\Components\Movement\Rotator.cpp" />
-    <ClCompile Include="ComponentSystem\Components\Physics\Collider.cpp" />
+    <ClCompile Include="ComponentSystem\Components\Physics\Colliders\BoxCollider.cpp" />
+    <ClCompile Include="ComponentSystem\Components\Physics\Colliders\Collider.cpp" />
+    <ClCompile Include="ComponentSystem\Components\Physics\Colliders\SphereCollider.cpp" />
     <ClCompile Include="ComponentSystem\Components\Transform.cpp" />
     <ClCompile Include="ComponentSystem\GameObject.cpp" />
     <ClCompile Include="ComponentSystem\GameObjectEvent.cpp" />
@@ -243,6 +250,7 @@
     <ClCompile Include="Input\ControllerInput.cpp" />
     <ClCompile Include="Input\InputHandler.cpp" />
     <ClCompile Include="Input\MKBInput.cpp" />
+    <ClCompile Include="Renderer\Renderer.cpp" />
     <ClCompile Include="SceneHandler\SceneHandler.cpp" />
     <ClCompile Include="SceneHandler\SceneLoader.cpp" />
     <ClCompile Include="Time\Timer.cpp" />

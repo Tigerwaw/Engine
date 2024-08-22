@@ -13,6 +13,8 @@
 #include <GameEngine/ComponentSystem/Components/Graphics/Model.h>
 #include <GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h>
 #include <GameEngine/ComponentSystem/Components/Graphics/VFXModel.h>
+#include <GameEngine/ComponentSystem/Components/Physics/Colliders/BoxCollider.h>
+#include <GameEngine/ComponentSystem/Components/Physics/Colliders/SphereCollider.h>
 
 class FeatureShowcase : public Application
 {
@@ -43,6 +45,9 @@ void FeatureShowcase::InitializeApplication()
 
 	Engine::GetInstance().GetDebugDrawer().InitializeDebugDrawer();
 	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/TestScene.json");
+
+	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("ColorChecker")->AddComponent<BoxCollider>(CU::Vector3f(60.0f, 60.0f, 90.0f), CU::Vector3f(0, 0, 5.0f));
+	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("MatballTwo")->AddComponent<SphereCollider>(60.0f, CU::Vector3f(0, 70.0f, 0));
 
 	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
 	inputHandler.RegisterBinaryAction("W", Keys::W, GenericInput::ActionType::Held);
@@ -560,37 +565,6 @@ void FeatureShowcase::InitializeApplication()
 			{
 				GraphicsEngine::Get().SetResolution(3840.0f, 2160.0f);
 				Engine::GetInstance().SetResolution(3840.0f, 2160.0f);
-			}
-
-			ImGui::End();
-#endif
-		});
-
-	Engine::GetInstance().GetImGuiHandler().AddNewFunction([]()
-		{
-#ifdef _DEBUG
-			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
-			ImGui::SetNextWindowPos({ 0.55f * resolution.x, 0.02f * resolution.y });
-			ImGui::SetNextWindowContentSize({ 0.24f * resolution.x, 0.24f * resolution.y });
-			bool open = true;
-			ImGui::Begin("Component System", &open, ImGuiWindowFlags_NoSavedSettings);
-
-			if (ImGui::Button("Create Cube"))
-			{
-				std::shared_ptr<GameObject> newGO = std::make_shared<GameObject>();
-				newGO->SetName("Cube");
-				newGO->AddComponent<Transform>(CU::Vector3f(0.0f, 300.0f, 0.0f), CU::Vector3f(0.0f, 0.0f, 0.0f), CU::Vector3f(100.0f, 100.0f, 100.0f));
-				newGO->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("CubePrimitive")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("DefaultMaterial")->material);
-				Engine::GetInstance().GetSceneHandler().Instantiate(newGO);
-			}
-
-			std::shared_ptr<GameObject> go = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Cube");
-			if (ImGui::Button("Destroy Cube"))
-			{
-				if (go)
-				{
-					Engine::GetInstance().GetSceneHandler().Destroy(go);
-				}
 			}
 
 			ImGui::End();
