@@ -22,6 +22,8 @@
 #include "GameEngine/ComponentSystem/Components/Lights/PointLight.h"
 #include "GameEngine/ComponentSystem/Components/Lights/SpotLight.h"
 
+#include "GameEngine/ComponentSystem/Components/Physics/Colliders/BoxCollider.h"
+#include "GameEngine/ComponentSystem/Components/Physics/Colliders/SphereCollider.h"
 
 #include "GameEngine/ComponentSystem/Components/Movement/Rotator.h"
 #include "GameEngine/ComponentSystem/Components/Movement/FreecamController.h"
@@ -128,6 +130,8 @@ void SceneLoader::CreateComponent(std::shared_ptr<GameObject> aGO, nl::json& aCo
         else if (comp == "SpotLight") newComponent = aGO->AddComponent<SpotLight>();
         else if (comp == "Rotator") newComponent = aGO->AddComponent<Rotator>();
         else if (comp == "FreecamController") newComponent = aGO->AddComponent<FreecamController>();
+        else if (comp == "BoxCollider") newComponent = aGO->AddComponent<BoxCollider>();
+        else if (comp == "SphereCollider") newComponent = aGO->AddComponent<SphereCollider>();
 
         if (newComponent)
         {

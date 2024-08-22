@@ -17,6 +17,7 @@
 * Scene loading from json.
 * Screenspace sprites.
 * Animation blending, layers, & events.
+* Collision handling.
 
 
 ### Miscellaneous

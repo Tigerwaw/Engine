@@ -15,6 +15,9 @@ public:
     bool TestCollision(const SphereCollider* aCollider) const override;
 
     const CU::Sphere<float>& GetSphere() const;
+
+    bool Serialize(nl::json& outJsonObject) override;
+    bool Deserialize(nl::json& aJsonObject) override;
 protected:
     CU::Sphere<float> mySphere;
 };

@@ -46,9 +46,6 @@ void FeatureShowcase::InitializeApplication()
 	Engine::GetInstance().GetDebugDrawer().InitializeDebugDrawer();
 	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/TestScene.json");
 
-	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("ColorChecker")->AddComponent<BoxCollider>(CU::Vector3f(60.0f, 60.0f, 90.0f), CU::Vector3f(0, 0, 5.0f));
-	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("MatballTwo")->AddComponent<SphereCollider>(60.0f, CU::Vector3f(0, 70.0f, 0));
-
 	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
 	inputHandler.RegisterBinaryAction("W", Keys::W, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("A", Keys::A, GenericInput::ActionType::Held);

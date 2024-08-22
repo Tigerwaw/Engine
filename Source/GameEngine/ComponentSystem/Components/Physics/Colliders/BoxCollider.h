@@ -15,6 +15,9 @@ public:
     bool TestCollision(const SphereCollider* aCollider) const override;
 
     const CU::AABB3D<float>& GetAABB() const;
+
+    bool Serialize(nl::json& outJsonObject) override;
+    bool Deserialize(nl::json& aJsonObject) override;
 protected:
     CU::AABB3D<float> myAABB;
 };
