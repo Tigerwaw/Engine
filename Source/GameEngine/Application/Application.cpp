@@ -55,8 +55,8 @@ void Application::Run()
 
 		Engine::GetInstance().GetImGuiHandler().BeginFrame();
 		GraphicsEngine::Get().BeginFrame();
-		Engine::GetInstance().Update();
 		Engine::GetInstance().GetImGuiHandler().Update();
+		Engine::GetInstance().Update();
 		GraphicsEngine::Get().RenderFrame();
 		Engine::GetInstance().GetImGuiHandler().Render();
 		GraphicsEngine::Get().EndFrame();

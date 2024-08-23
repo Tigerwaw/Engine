@@ -1,6 +1,8 @@
 # Project
 .vs
 .sln
+.vcxproj
+.vcxproj.user
 Temp/**
 Bin/**
 Lib/**
