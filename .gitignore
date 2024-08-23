@@ -1,9 +1,9 @@
 # Project
-.vs
-.sln
-.vcxproj
-.vcxproj.user
-.vcxproj.filters
+*.vs
+*.sln
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
 Temp/**
 Bin/**
 Lib/**
