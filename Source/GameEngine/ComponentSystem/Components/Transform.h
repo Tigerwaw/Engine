@@ -18,6 +18,9 @@ public:
 	void AddChild(Transform* aTransform);
 	void RemoveChild(Transform* aTransform);
 
+	const Transform* GetParent() const { return myParent; }
+	const std::vector<Transform*> GetChildren() const { return myChildren; }
+
 	const CU::Matrix4x4f& GetMatrix(bool aNoScale = false);
 	const CU::Matrix4x4f GetWorldMatrix(bool aNoScale = false);
 	const CU::Matrix4x4f GetToWorldMatrix(bool aNoScale = false);

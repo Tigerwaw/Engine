@@ -122,12 +122,40 @@ void Scene::Destroy(std::shared_ptr<GameObject> aGameObject)
 	{
 		if (myGameObjects[i].get() == aGameObject.get())
 		{
-			myGameObjects.erase(myGameObjects.begin() + i);
+			std::shared_ptr<Transform> goTransform = myGameObjects[i]->GetComponent<Transform>();
+			if (goTransform)
+			{
+				DestroyHierarchy(goTransform.get());
+			}
+
 			return;
 		}
 	}
 
 	LOG(LogScene, Warning, "Could not find GameObject {} in scene!", aGameObject->GetName());
+}
+
+void Scene::DestroyInternal(GameObject* aGameObject)
+{
+	for (size_t i = 0; i < myGameObjects.size(); i++)
+	{
+		if (myGameObjects[i].get() == aGameObject)
+		{
+			LOG(LogScene, Log, "Destroyed GameObject {}!", aGameObject->GetName());
+			myGameObjects.erase(myGameObjects.begin() + i);
+			return;
+		}
+	}
+}
+
+void Scene::DestroyHierarchy(Transform* aTransform)
+{
+	for (auto& child : aTransform->GetChildren())
+	{
+		DestroyHierarchy(child);
+	}
+
+	DestroyInternal(aTransform->gameObject);
 }
 
 void Scene::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)

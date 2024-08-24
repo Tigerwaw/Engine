@@ -4,6 +4,7 @@ namespace CU = CommonUtilities;
 
 class GameObject;
 class Camera;
+class Transform;
 struct PipelineStateObject;
 
 class Scene final
@@ -28,6 +29,8 @@ public:
 	const bool GetActive() const { return myIsActive; }
 
 private:
+	void DestroyInternal(GameObject* aGameObject);
+	void DestroyHierarchy(Transform* aTransform);
 	void UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject);
 
 	std::vector<std::shared_ptr<GameObject>> myGameObjects;
