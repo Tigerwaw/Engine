@@ -105,8 +105,18 @@ void Renderer::QueueShadowmapTextureResources(Scene& aScene)
 
 void Renderer::QueueUpdateLightBuffer(Scene& aScene)
 {
-	std::shared_ptr<AmbientLight> ambientLight = aScene.myAmbientLight->GetComponent<AmbientLight>();
-	std::shared_ptr<DirectionalLight> dirLight = aScene.myDirectionalLight->GetComponent<DirectionalLight>();
+	std::shared_ptr<AmbientLight> ambientLight;
+	if (aScene.myAmbientLight)
+	{
+		ambientLight = aScene.myAmbientLight->GetComponent<AmbientLight>();
+	}
+
+	std::shared_ptr<DirectionalLight> dirLight;
+	if (aScene.myDirectionalLight)
+	{
+		dirLight = aScene.myDirectionalLight->GetComponent<DirectionalLight>();
+	}
+
 	std::vector<std::shared_ptr<PointLight>> pointLights;
 	for (auto& plight : aScene.myPointLights)
 	{

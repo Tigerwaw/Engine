@@ -14,6 +14,9 @@ public:
 	template<typename T>
 	std::shared_ptr<T> GetAsset(const std::filesystem::path& aPath);
 
+	bool UnregisterAsset(const std::filesystem::path& aPath);
+	bool UnregisterAsset(const std::shared_ptr<Asset> aAsset);
+
 	bool Initialize(const std::filesystem::path& aContentRootPath, bool aAutoRegisterAllAssetsInRoot = true);
 	bool RegisterMeshAsset(const std::filesystem::path& aPath);
 	bool RegisterAnimationAsset(const std::filesystem::path& aPath);

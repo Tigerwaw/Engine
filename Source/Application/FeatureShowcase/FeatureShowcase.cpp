@@ -79,6 +79,7 @@ void FeatureShowcase::InitializeApplication()
 	inputHandler.RegisterBinaryAction("SharedAction", Keys::W, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("SharedAction", ControllerButtons::A, GenericInput::ActionType::Held);
 
+	
 	Engine::GetInstance().GetImGuiHandler().AddNewFunction([]()
 		{
 #ifdef _DEBUG

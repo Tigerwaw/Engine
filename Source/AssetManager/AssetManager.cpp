@@ -15,6 +15,24 @@ namespace CU = CommonUtilities;
 #include "DefaultTextures/Default_M.h"
 #include "DefaultTextures/Default_FX.h"
 
+bool AssetManager::UnregisterAsset(const std::filesystem::path& aPath)
+{
+    if (!myAssets.contains(aPath))
+    {
+        LOG(LogAssetManager, Warning, "Couldn't unregister asset at path {} since it does not seem to exist!", aPath.string());
+        return false;
+    }
+
+    myAssets.erase(aPath);
+    LOG(LogAssetManager, Log, "Successfully unregistered asset at path {}!", aPath.string());
+    return true;
+}
+
+bool AssetManager::UnregisterAsset(const std::shared_ptr<Asset> aAsset)
+{
+    return UnregisterAsset(aAsset->path);
+}
+
 bool AssetManager::Initialize(const std::filesystem::path& aContentRootPath, bool aAutoRegisterAllAssetsInRoot)
 {
     LOG(LogAssetManager, Log, "Initializing Asset Manager...");
