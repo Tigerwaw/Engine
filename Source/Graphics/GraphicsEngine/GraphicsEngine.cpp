@@ -20,14 +20,6 @@
 #include "GraphicsEngine/Objects/DynamicVertexBuffer.h"
 #include "AssetManager/AssetManager.h"
 
-#ifdef _DEBUG
-DECLARE_LOG_CATEGORY_WITH_NAME(GraphicsLog, GraphicsEngine, Verbose);
-#else
-DECLARE_LOG_CATEGORY_WITH_NAME(GraphicsLog, GraphicsEngine, Error);
-#endif
-
-DEFINE_LOG_CATEGORY(GraphicsLog);
-
 GraphicsEngine& GraphicsEngine::Get()
 {
 	static GraphicsEngine myInstance;
@@ -38,12 +30,12 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 {
 	myRHI = std::make_unique<RenderHardwareInterface>();
 
-	LOG(GraphicsLog, Log, "Initializing Graphics Engine...");
+	LOG(LogGraphicsEngine, Log, "Initializing Graphics Engine...");
 
 	if (!myRHI->Initialize(aWindowHandle, true))
 	{
 		myRHI.reset();
-		LOG(GraphicsLog, Error, "Failed to initialize graphics engine!");
+		LOG(LogGraphicsEngine, Error, "Failed to initialize graphics engine!");
 		return false;
 	}
 
@@ -56,21 +48,21 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 		std::wstring root = Engine::GetInstance().GetContentRootPath().wstring();
 		if (!myRHI->CreateInputLayout(defaultPSO.InputLayout, Vertex::InputLayoutDefinition, root + L"EngineAssets/Shaders/Mesh_VS.cso"))
 		{
-			LOG(GraphicsLog, Error, "Failed to load default input layout!");
+			LOG(LogGraphicsEngine, Error, "Failed to load default input layout!");
 			return false;
 		}
 
 		defaultPSO.VertexShader = std::make_shared<Shader>();
 		if (!myRHI->LoadShaderFromFilePath("Default_VS", *defaultPSO.VertexShader, root + L"EngineAssets/Shaders/Mesh_VS.cso"))
 		{
-			LOG(GraphicsLog, Error, "Failed to load default vertex shader!");
+			LOG(LogGraphicsEngine, Error, "Failed to load default vertex shader!");
 			return false;
 		}
 
 		defaultPSO.PixelShader = std::make_shared<Shader>();
 		if (!myRHI->LoadShaderFromFilePath("Default_PS", *defaultPSO.PixelShader, root + L"EngineAssets/Shaders/Unlit_PS.cso"))
 		{
-			LOG(GraphicsLog, Error, "Failed to load default pixel shader!");
+			LOG(LogGraphicsEngine, Error, "Failed to load default pixel shader!");
 			return false;
 		}
 
@@ -85,7 +77,7 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	
 	myCommandList = std::make_unique<GraphicsCommandList>();
 
-	LOG(GraphicsLog, Log, "Initialized Graphics Engine!");
+	LOG(LogGraphicsEngine, Log, "Initialized Graphics Engine!");
 	return true;
 }
 
@@ -195,7 +187,7 @@ bool GraphicsEngine::CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, std::s
 	{
 		if (!myRHI->CreateInputLayout(aPSO->InputLayout, aInputLayoutDefinition, aVSpath))
 		{
-			LOG(GraphicsLog, Error, "Failed to create PSO!");
+			LOG(LogGraphicsEngine, Error, "Failed to create PSO!");
 			return false;
 		}
 	}
@@ -213,7 +205,7 @@ bool GraphicsEngine::CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, std::s
 
 		if (!myRHI->CreateRasterizerState(aName + "_Rasterizer", rastDesc, *aPSO))
 		{
-			LOG(GraphicsLog, Error, "Failed to create PSO!");
+			LOG(LogGraphicsEngine, Error, "Failed to create PSO!");
 			return false;
 		}
 	}
@@ -226,7 +218,7 @@ bool GraphicsEngine::CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, std::s
 		}
 	}
 
-	LOG(GraphicsLog, Log, "Created PSO {}!", aName);
+	LOG(LogGraphicsEngine, Log, "Created PSO {}!", aName);
 	return true;
 }
 

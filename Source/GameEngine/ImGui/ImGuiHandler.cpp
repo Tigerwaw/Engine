@@ -17,6 +17,8 @@
 
 void ImGuiHandler::Initialize(HWND aMainWindowHandle)
 {
+	aMainWindowHandle;
+
 #ifdef _DEBUG
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();

@@ -3,15 +3,6 @@
 #include "InputHandler.h"
 #include "Engine.h"
 
-#if _DEBUG
-DECLARE_LOG_CATEGORY_WITH_NAME(LogInputHandler, InputHandler, Verbose);
-#else
-DECLARE_LOG_CATEGORY_WITH_NAME(LogInputHandler, InputHandler, Warning);
-#endif
-
-#define INPUTLOG(Verbosity, Message, ...) LOG(LogInputHandler, Verbosity, Message, ##__VA_ARGS__)
-DEFINE_LOG_CATEGORY(LogInputHandler);
-
 InputHandler::InputHandler()
 {
 	myInputModes.emplace(InputMode::MKB, std::make_shared<MKBInput>());
@@ -208,7 +199,7 @@ const bool InputHandler::ValidateActionName(std::string aActionName, bool aNoLog
 	{
 		if (!aNoLog)
 		{
-			INPUTLOG(Warning, "Input action {} does not exist!", aActionName);
+			LOG(LogInputHandler, Warning, "Input action {} does not exist!", aActionName);
 		}
 		return false;
 	}

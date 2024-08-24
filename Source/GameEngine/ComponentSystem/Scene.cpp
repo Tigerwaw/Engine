@@ -106,6 +106,7 @@ void Scene::Instantiate(std::shared_ptr<GameObject> aGameObject)
 		if (aGameObject->GetName() == "MainCamera")
 		{
 			myMainCamera = aGameObject;
+			Engine::GetInstance().GetAudioEngine().SetListener(aGameObject);
 		}
 	}
 }

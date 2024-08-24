@@ -49,15 +49,14 @@ void AudioEngine::Update()
     mySystem->update();
 }
 
-void AudioEngine::SetListener(GameObject* aGameObject)
+void AudioEngine::SetListener(std::shared_ptr<GameObject> aGameObject)
 {
-    myListener = aGameObject;
-
+    myListener = std::weak_ptr<GameObject>(aGameObject);
 }
 
 void AudioEngine::UpdateListener()
 {
-    if (!myListener)
+    if (!myListener.lock())
     {
         if (!myHasWarnedAboutListenerError)
         {
@@ -68,7 +67,7 @@ void AudioEngine::UpdateListener()
         return;
     }
 
-    std::shared_ptr<Transform> transform = myListener->GetComponent<Transform>();
+    std::shared_ptr<Transform> transform = myListener.lock()->GetComponent<Transform>();
     if (!transform)
     {
         if (!myHasWarnedAboutListenerError)

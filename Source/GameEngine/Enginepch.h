@@ -30,7 +30,9 @@ namespace nl = nlohmann;
 #include "fmod/fmod_studio.hpp"
 #include "fmod/fmod_common.h"
 
+#ifndef _RELEASE
 #include "Logger/Logger.h"
+#endif
 
 #ifdef _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(LogGameEngine, GameEngine, Verbose);
@@ -41,7 +43,9 @@ DECLARE_LOG_CATEGORY_WITH_NAME(LogDebugDrawer, DebugDrawer, Verbose);
 DECLARE_LOG_CATEGORY_WITH_NAME(LogScene, Scene, Verbose);
 DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneHandler, SceneHandler, Verbose);
 DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneLoader, SceneLoader, Verbose);
-#else
+DECLARE_LOG_CATEGORY_WITH_NAME(LogInputHandler, InputHandler, Verbose);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogComponentSystem, ComponentSystem, Verbose);
+#elif _INTERNAL
 DECLARE_LOG_CATEGORY_WITH_NAME(LogGameEngine, GameEngine, Warning);
 DECLARE_LOG_CATEGORY_WITH_NAME(LogApplication, Application, Warning);
 DECLARE_LOG_CATEGORY_WITH_NAME(LogAudioEngine, AudioEngine, Warning);
@@ -50,4 +54,8 @@ DECLARE_LOG_CATEGORY_WITH_NAME(LogDebugDrawer, DebugDrawer, Warning);
 DECLARE_LOG_CATEGORY_WITH_NAME(LogScene, Scene, Warning);
 DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneHandler, SceneHandler, Warning);
 DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneLoader, SceneLoader, Warning);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogInputHandler, InputHandler, Warning);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogComponentSystem, ComponentSystem, Warning);
+#else
+#define LOG(Category, Verbosity, Message, ...);
 #endif

@@ -8,6 +8,7 @@
 #include <functional>
 #include <stdexcept>
 #include <filesystem>
+#include <fstream>
 
 #include <string>
 #include <vector>
@@ -18,11 +19,18 @@
 #include <nlohmann/json.hpp>
 namespace nl = nlohmann;
 
+#ifndef _RELEASE
 #include "Logger/Logger.h"
-#include "GraphicsEngine.h"
+#endif
 
 #if _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(LogGraphicsEngine, GraphicsEngine, Verbose);
-#else
+DECLARE_LOG_CATEGORY_WITH_NAME(LogRHI, RHI, Verbose);
+#elif _INTERNAL
 DECLARE_LOG_CATEGORY_WITH_NAME(LogGraphicsEngine, GraphicsEngine, Warning);
+DECLARE_LOG_CATEGORY_WITH_NAME(LogRHI, RHI, Warning);
+#else
+#define LOG(Category, Verbosity, Message, ...);
 #endif
+
+#include "GraphicsEngine.h"

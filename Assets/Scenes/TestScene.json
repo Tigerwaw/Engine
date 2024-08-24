@@ -28,7 +28,7 @@
       "Components": [
         {
           "Type": "Transform",
-          "Position": [ 200.0, 50.0, 200.0 ],
+          "Position": [ 100.0, 50.0, 200.0 ],
           "Rotation": [ 0.0, 0.0, 0.0 ],
           "Scale": [ 50.0, 50.0, 50.0 ]
         },
@@ -234,11 +234,11 @@
                   "Loop": true,
                   "Events": [
                     {
-                      "EventType": 0,
+                      "EventType": 1,
                       "Frame": 1
                     },
                     {
-                      "EventType": 0,
+                      "EventType": 1,
                       "Frame": 17
                     }
                   ]
@@ -249,11 +249,11 @@
                   "Loop": true,
                   "Events": [
                     {
-                      "EventType": 0,
+                      "EventType": 1,
                       "Frame": 4
                     },
                     {
-                      "EventType": 0,
+                      "EventType": 1,
                       "Frame": 13
                     }
                   ]
@@ -282,7 +282,7 @@
           "AudioName": "TgaBroFootsteps",
           "IsOneShot": true,
           "SourceType": 2,
-          "PlayOnEvent": 0
+          "PlayOnEvent": 1
         }
       ]
     },

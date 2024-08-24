@@ -140,11 +140,6 @@ bool Camera::Serialize(nl::json& outJsonObject)
 
 bool Camera::Deserialize(nl::json& aJsonObject)
 {
-	if (gameObject->GetName() == "MainCamera")
-	{
-		Engine::GetInstance().GetAudioEngine().SetListener(gameObject);
-	}
-
 	if (aJsonObject.contains("Perspective"))
 	{
 		bool isPerpective = aJsonObject["Perspective"].get<bool>();

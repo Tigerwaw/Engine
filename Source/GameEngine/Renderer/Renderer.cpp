@@ -7,6 +7,7 @@
 #include "GraphicsEngine/GraphicsEngine.h"
 #include "GameEngine/Math/Vector.hpp"
 #include "GameEngine/Intersections/AABB3D.hpp"
+#include "GameEngine/Intersections/Intersection3D.hpp"
 namespace CU = CommonUtilities;
 
 #include "GameEngine/ComponentSystem/Scene.h"
@@ -57,6 +58,8 @@ void Renderer::RenderScene(Scene& aScene)
 	{
 		QueueDebugGizmos(aScene, aScene.myMainCamera->GetComponent<Camera>());
 	}
+
+	QueueDebugLines(aScene);
 
 	QueueClearTextureResources();
 }
@@ -164,7 +167,7 @@ void Renderer::QueuePointLightShadows(Scene& aScene)
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("ShadowCube")->pso);
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(aScene.myPointLights[i]->GetComponent<Camera>());
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateShadowBuffer>(pointLight);
-		QueueGameObjects(aScene, aScene.myPointLights[i]->GetComponent<Camera>(), true, AssetManager::Get().GetAsset<PSOAsset>("ShadowCube")->pso);
+		QueueGameObjects(aScene, pointLight, false, AssetManager::Get().GetAsset<PSOAsset>("ShadowCube")->pso);
 	}
 }
 
@@ -198,7 +201,7 @@ void Renderer::QueueDebugGizmos(Scene& aScene, std::shared_ptr<Camera> aRenderCa
 	}
 }
 
-void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aRenderCamera, bool disableViewCulling, std::shared_ptr<PipelineStateObject> aPSOoverride)
+void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aRenderCamera, bool aDisableViewCulling, std::shared_ptr<PipelineStateObject> aPSOoverride)
 {
 	for (auto& gameObject : aScene.myGameObjects)
 	{
@@ -207,7 +210,7 @@ void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aRenderCa
 		std::shared_ptr<Model> model = gameObject->GetComponent<Model>();
 		if (model && model->GetActive())
 		{
-			if (disableViewCulling || !GraphicsEngine::Get().UseViewCulling || !model->GetShouldViewcull() || aRenderCamera->GetViewcullingIntersection(gameObject->GetComponent<Transform>(), model->GetBoundingBox()))
+			if (aDisableViewCulling || !model->GetShouldViewcull() || IsInsideFrustum(aRenderCamera, gameObject->GetComponent<Transform>(), model->GetBoundingBox()))
 			{
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model, aPSOoverride);
 			}
@@ -216,11 +219,45 @@ void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aRenderCa
 		std::shared_ptr<AnimatedModel> animModel = gameObject->GetComponent<AnimatedModel>();
 		if (animModel && animModel->GetActive())
 		{
-			if (disableViewCulling || !GraphicsEngine::Get().UseViewCulling || !animModel->GetShouldViewcull() || aRenderCamera->GetViewcullingIntersection(gameObject->GetComponent<Transform>(), animModel->GetBoundingBox()))
+			if (aDisableViewCulling || !animModel->GetShouldViewcull() || IsInsideFrustum(aRenderCamera, gameObject->GetComponent<Transform>(), animModel->GetBoundingBox()))
 			{
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel, aPSOoverride);
 			}
 		}
+	}
+}
+
+void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<PointLight> aPointLight, bool aDisableViewCulling, std::shared_ptr<PipelineStateObject> aPSOoverride)
+{
+	for (auto& gameObject : aScene.myGameObjects)
+	{
+		if (!gameObject->GetActive()) continue;
+
+		std::shared_ptr<Model> model = gameObject->GetComponent<Model>();
+		if (model && model->GetActive())
+		{
+			if (aDisableViewCulling || !model->GetShouldViewcull() || IsInsideRadius(aPointLight, gameObject->GetComponent<Transform>(), model->GetBoundingBox()))
+			{
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model, aPSOoverride);
+			}
+		}
+
+		std::shared_ptr<AnimatedModel> animModel = gameObject->GetComponent<AnimatedModel>();
+		if (animModel && animModel->GetActive())
+		{
+			if (aDisableViewCulling || !animModel->GetShouldViewcull() || IsInsideRadius(aPointLight, gameObject->GetComponent<Transform>(), animModel->GetBoundingBox()))
+			{
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel, aPSOoverride);
+			}
+		}
+	}
+}
+
+void Renderer::QueueDebugLines(Scene& aScene)
+{
+	for (auto& gameObject : aScene.myGameObjects)
+	{
+		if (!gameObject->GetActive()) continue;
 
 		if (GraphicsEngine::Get().DrawCameraFrustums)
 		{
@@ -245,4 +282,35 @@ void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aRenderCa
 			Engine::GetInstance().GetDebugDrawer().DrawBoundingSphere(sphereCollider->GetSphere(), gameObject->GetComponent<Transform>()->GetWorldMatrix(), colliderColor);
 		}
 	}
+}
+
+bool Renderer::IsInsideFrustum(std::shared_ptr<Camera> aRenderCamera, std::shared_ptr<Transform> aObjectTransform, CU::AABB3D<float> aObjectAABB)
+{
+	if (!GraphicsEngine::Get().UseViewCulling) return true;
+
+	return aRenderCamera->GetViewcullingIntersection(aObjectTransform, aObjectAABB);
+}
+
+bool Renderer::IsInsideRadius(std::shared_ptr<PointLight> aPointLight, std::shared_ptr<Transform> aObjectTransform, CU::AABB3D<float> aObjectAABB)
+{
+	if (!GraphicsEngine::Get().UseViewCulling) return true;
+
+	std::shared_ptr<Transform> pointLightTransform = aPointLight->gameObject->GetComponent<Transform>();
+	std::shared_ptr<Camera> pointLightCam = aPointLight->gameObject->GetComponent<Camera>();
+	if (!pointLightTransform) return true;
+
+	CU::Matrix4x4f objectMatrix = aObjectTransform->GetWorldMatrix();
+
+	if (aObjectTransform->IsScaled())
+	{
+		objectMatrix = objectMatrix.GetInverse();
+	}
+	else
+	{
+		objectMatrix = objectMatrix.GetFastInverse();
+	}
+
+	CU::Sphere<float> sphere(pointLightTransform->GetTranslation(), pointLightCam->GetFarPlane());
+	sphere = sphere.GetSphereinNewSpace(pointLightTransform->GetWorldMatrix() * objectMatrix);
+	return CU::IntersectionSphereAABB(sphere, aObjectAABB);
 }

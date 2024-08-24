@@ -82,7 +82,42 @@ namespace CommonUtilities
 	// aOutIntersectionPoint.
 	// A sphere touching the aabb is considered overlapping.
 	template <class T>
-	bool IntersectionSphereAABB(const Sphere<T>& aSphere, const AABB3D<T>& aAABB3D, Vector3<T>& outIntersectionPoint = Vector3<T>())
+	bool IntersectionSphereAABB(const Sphere<T>& aSphere, const AABB3D<T>& aAABB3D)
+	{
+		Vector3<T> closestPoint = aSphere.GetPoint();
+
+		if (aSphere.GetPoint().x <= aAABB3D.GetMin().x)
+		{
+			closestPoint.x = aAABB3D.GetMin().x;
+		}
+		else if (aSphere.GetPoint().x >= aAABB3D.GetMax().x)
+		{
+			closestPoint.x = aAABB3D.GetMax().x;
+		}
+
+		if (aSphere.GetPoint().y <= aAABB3D.GetMin().y)
+		{
+			closestPoint.y = aAABB3D.GetMin().y;
+		}
+		else if (aSphere.GetPoint().y >= aAABB3D.GetMax().y)
+		{
+			closestPoint.y = aAABB3D.GetMax().y;
+		}
+
+		if (aSphere.GetPoint().z <= aAABB3D.GetMin().z)
+		{
+			closestPoint.z = aAABB3D.GetMin().z;
+		}
+		else if (aSphere.GetPoint().z >= aAABB3D.GetMax().z)
+		{
+			closestPoint.z = aAABB3D.GetMax().z;
+		}
+
+		return aSphere.IsInside(closestPoint);
+	}
+
+	template <class T>
+	bool IntersectionSphereAABB(const Sphere<T>& aSphere, const AABB3D<T>& aAABB3D, Vector3<T>& outIntersectionPoint)
 	{
 		Vector3<T> closestPoint = aSphere.GetPoint();
 

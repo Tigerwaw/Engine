@@ -10,14 +10,6 @@
 #include "GameEngine/Math/Quaternion.hpp"
 namespace CU = CommonUtilities;
 
-#ifdef _DEBUG
-DECLARE_LOG_CATEGORY_WITH_NAME(ComponentSystem, "ComponentSystem", Verbose);
-#else
-DECLARE_LOG_CATEGORY_WITH_NAME(ComponentSystem, "ComponentSystem", Error);
-#endif
-
-DEFINE_LOG_CATEGORY(ComponentSystem);
-
 AnimatedModel::~AnimatedModel()
 {
     myMesh = nullptr;
@@ -166,7 +158,7 @@ void AnimatedModel::AddAnimationEvent(std::string aAnimationName, unsigned aEven
 
     if (aEventFrame < 0 || aEventFrame >= myAnimationLayers[aLayerIndex].myAnimationStates.at(aAnimationName)->animation->Frames.size())
     {
-        LOG(ComponentSystem, Warning, "Frame {} is out of the range of Animation {}! Event will not be added!", aEventFrame, aAnimationName);
+        LOG(LogComponentSystem, Warning, "Frame {} is out of the range of Animation {}! Event will not be added!", aEventFrame, aAnimationName);
         return;
     }
 
@@ -478,7 +470,7 @@ const bool AnimatedModel::ValidateMesh() const
 {
     if (!myMesh.get())
     {
-        LOG(ComponentSystem, Error, "Could not find mesh!");
+        LOG(LogComponentSystem, Error, "Could not find mesh!");
         return false;
     }
 
@@ -489,7 +481,7 @@ const bool AnimatedModel::ValidateJointIndex(unsigned aStartJoint) const
 {
     if (aStartJoint >= myMesh->GetSkeleton().myJoints.size())
     {
-        LOG(ComponentSystem, Error, "Joint index {} out of range!", aStartJoint);
+        LOG(LogComponentSystem, Error, "Joint index {} out of range!", aStartJoint);
         return false;
     }
 
@@ -500,7 +492,7 @@ const bool AnimatedModel::ValidateJointName(std::string aStartJoint) const
 {
     if (myMesh->GetSkeleton().JointNameToIndex.find(aStartJoint) == myMesh->GetSkeleton().JointNameToIndex.end())
     {
-        LOG(ComponentSystem, Error, "Could not find joint with name {}!", aStartJoint);
+        LOG(LogComponentSystem, Error, "Could not find joint with name {}!", aStartJoint);
         return false;
     }
 
@@ -511,7 +503,7 @@ const bool AnimatedModel::ValidateLayerIndex(unsigned aLayerIndex) const
 {
     if (aLayerIndex < 0 || aLayerIndex >= myAnimationLayers.size())
     {
-        LOG(ComponentSystem, Error, "Layer index {} out of range!", aLayerIndex);
+        LOG(LogComponentSystem, Error, "Layer index {} out of range!", aLayerIndex);
         return false;
     }
 
@@ -522,7 +514,7 @@ const bool AnimatedModel::ValidateLayerJointName(std::string aStartJoint) const
 {
     if (myJointNameToLayerIndex.find(aStartJoint) == myJointNameToLayerIndex.end())
     {
-        LOG(ComponentSystem, Error, "Could not find a layer by the name of {}!", aStartJoint);
+        LOG(LogComponentSystem, Error, "Could not find a layer by the name of {}!", aStartJoint);
         return false;
     }
 
@@ -533,7 +525,7 @@ const bool AnimatedModel::ValidateAnimationName(unsigned aLayerIndex, std::strin
 {
     if (myAnimationLayers[aLayerIndex].myAnimationStates.find(aAnimationName) == myAnimationLayers[aLayerIndex].myAnimationStates.end())
     {
-        LOG(ComponentSystem, Error, "Could not find an animation by the name of {} in layer {}!", aAnimationName, aLayerIndex);
+        LOG(LogComponentSystem, Error, "Could not find an animation by the name of {} in layer {}!", aAnimationName, aLayerIndex);
         return false;
     }
 

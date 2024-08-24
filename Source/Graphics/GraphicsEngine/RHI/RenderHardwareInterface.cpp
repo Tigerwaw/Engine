@@ -20,15 +20,6 @@
 #include "GraphicsEngine/Objects/DynamicVertexBuffer.h"
 
 #include "GameEngine/Engine.h"
-#include "Logger/Logger.h"
-
-#ifdef _DEBUG
-DECLARE_LOG_CATEGORY_WITH_NAME(RhiLog, RHI, Verbose);
-#else
-DECLARE_LOG_CATEGORY_WITH_NAME(RhiLog, RHI, Error);
-#endif
-
-DEFINE_LOG_CATEGORY(RhiLog);
 
 using namespace Microsoft::WRL;
 
@@ -43,11 +34,11 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 	result = CreateDXGIFactory(__uuidof(IDXGIFactory), &dxFactory);
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create DX Factory!");
+		LOG(LogRHI, Error, "Failed to create DX Factory!");
 		return false;
 	}
 
-	LOG(RhiLog, Log, "Initializing RHI...");
+	LOG(LogRHI, Log, "Initializing RHI...");
 
 	ComPtr<IDXGIAdapter> tempAdapter;
 	std::vector<ComPtr<IDXGIAdapter>> adapters;
@@ -77,14 +68,14 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 	const wchar_t* wideAdapterName = selectedAdapterDesc.Description;
 	const std::string adapterName = str::wide_to_utf8(wideAdapterName);
 
-	LOG(RhiLog, Log, "Selected adapter is {}", adapterName);
+	LOG(LogRHI, Log, "Selected adapter is {}", adapterName);
 	constexpr size_t megabyte = (1024ULL * 1024ULL);
 	if (selectedAdapterVRAM > megabyte)
 	{
 		selectedAdapterVRAM /= megabyte;
 	}
 
-	LOG(RhiLog, Log, "VRAM: {} MB", selectedAdapterVRAM);
+	LOG(LogRHI, Log, "VRAM: {} MB", selectedAdapterVRAM);
 
 	ComPtr<ID3D11Device> device;
 	ComPtr<ID3D11DeviceContext> context;
@@ -104,7 +95,7 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to initialize DirectX!");
+		LOG(LogRHI, Error, "Failed to initialize DirectX!");
 		return false;
 	}
 
@@ -122,7 +113,7 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 	result = dxFactory->CreateSwapChain(device.Get(), &swapChainDesc, &swapChain);
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create SwapChain!");
+		LOG(LogRHI, Error, "Failed to create SwapChain!");
 		return false;
 	}
 
@@ -130,7 +121,7 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 	result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), &backBufferTexture);
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to retrieve back buffer!");
+		LOG(LogRHI, Error, "Failed to retrieve back buffer!");
 		return false;
 	}
 
@@ -138,7 +129,7 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 	result = device->CreateRenderTargetView(backBufferTexture.Get(), nullptr, myBackBuffer->myRTV.GetAddressOf());
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create Render Target View!");
+		LOG(LogRHI, Error, "Failed to create Render Target View!");
 		return false;
 	}
 
@@ -178,7 +169,7 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 	result = device->CreateTexture2D(&depthDesc, nullptr, depthTexture.GetAddressOf());
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create depth buffer!");
+		LOG(LogRHI, Error, "Failed to create depth buffer!");
 		return false;
 	}
 	
@@ -191,7 +182,7 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 	result = device->CreateDepthStencilView(depthTexture.Get(), &dsvDesc, myDepthBuffer->myDSV.GetAddressOf());
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create depth stencil view!");
+		LOG(LogRHI, Error, "Failed to create depth stencil view!");
 		return false;
 	}
 
@@ -208,7 +199,7 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 
 	CreateDefaultSamplerStates();
 
-	LOG(RhiLog, Log, "RHI Initialized!");
+	LOG(LogRHI, Log, "RHI Initialized!");
 
 	return true;
 }
@@ -233,7 +224,7 @@ void RenderHardwareInterface::SetResolution(float aNewWidth, float aNewHeight)
 	HRESULT result = mySwapChain->ResizeBuffers(0, static_cast<UINT>(aNewWidth), static_cast<UINT>(aNewHeight), DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING);
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to resize swapchain buffers!");
+		LOG(LogRHI, Error, "Failed to resize swapchain buffers!");
 		return;
 	}
 
@@ -241,7 +232,7 @@ void RenderHardwareInterface::SetResolution(float aNewWidth, float aNewHeight)
 	result = mySwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), &backBufferTexture);
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to retrieve back buffer!");
+		LOG(LogRHI, Error, "Failed to retrieve back buffer!");
 		return;
 	}
 
@@ -249,7 +240,7 @@ void RenderHardwareInterface::SetResolution(float aNewWidth, float aNewHeight)
 	result = myDevice->CreateRenderTargetView(backBufferTexture.Get(), nullptr, myBackBuffer->myRTV.GetAddressOf());
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create Render Target View!");
+		LOG(LogRHI, Error, "Failed to create Render Target View!");
 		return;
 	}
 
@@ -284,7 +275,7 @@ void RenderHardwareInterface::SetResolution(float aNewWidth, float aNewHeight)
 	result = myDevice->CreateTexture2D(&depthDesc, nullptr, depthTexture.GetAddressOf());
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create depth buffer!");
+		LOG(LogRHI, Error, "Failed to create depth buffer!");
 		return;
 	}
 
@@ -297,13 +288,13 @@ void RenderHardwareInterface::SetResolution(float aNewWidth, float aNewHeight)
 	result = myDevice->CreateDepthStencilView(depthTexture.Get(), &dsvDesc, myDepthBuffer->myDSV.GetAddressOf());
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create depth stencil view!");
+		LOG(LogRHI, Error, "Failed to create depth stencil view!");
 		return;
 	}
 
 	SetObjectName(myDepthBuffer->myDSV, "DepthBuffer_DSV");
 
-	LOG(RhiLog, Log, "Updated resolution to {}, {}", aNewWidth, aNewHeight);
+	LOG(LogRHI, Log, "Updated resolution to {}, {}", aNewWidth, aNewHeight);
 }
 
 void RenderHardwareInterface::SetWindowSize(float aNewWidth, float aNewHeight)
@@ -313,7 +304,7 @@ void RenderHardwareInterface::SetWindowSize(float aNewWidth, float aNewHeight)
 	modeDesc.Height = static_cast<UINT>(aNewHeight);
 	mySwapChain->ResizeTarget(&modeDesc);
 
-	LOG(RhiLog, Log, "Updated window size to {}, {}", aNewWidth, aNewHeight);
+	LOG(LogRHI, Log, "Updated window size to {}, {}", aNewWidth, aNewHeight);
 }
 
 void RenderHardwareInterface::MaximizeWindowSize()
@@ -336,7 +327,7 @@ bool RenderHardwareInterface::CreateIndexBuffer(std::string_view aName, const st
 	const HRESULT result = myDevice->CreateBuffer(&indexBufferDesc, &indexSubresourceData, outIxBuffer.GetAddressOf());
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create Index Buffer - {}!", aName);
+		LOG(LogRHI, Error, "Failed to create Index Buffer - {}!", aName);
 		return false;
 	}
 
@@ -348,7 +339,7 @@ bool RenderHardwareInterface::CreateConstantBuffer(std::string_view aName, size_
 {
 	if (aSize > 65536)
 	{
-		LOG(RhiLog, Error, "Failed to create constant buffer {}. Size is larger than 64Kb ({}).", aName, aSize);
+		LOG(LogRHI, Error, "Failed to create constant buffer {}. Size is larger than 64Kb ({}).", aName, aSize);
 		return false;
 	}
 
@@ -366,12 +357,12 @@ bool RenderHardwareInterface::CreateConstantBuffer(std::string_view aName, size_
 	const HRESULT result = myDevice->CreateBuffer(&bufferDesc, nullptr, outBuffer.myBuffer.GetAddressOf());
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create constant buffer {}. Check DirectX log for more information", aName);
+		LOG(LogRHI, Error, "Failed to create constant buffer {}. Check DirectX log for more information", aName);
 		return false;
 	}
 
 	SetObjectName(outBuffer.myBuffer, aName);
-	LOG(RhiLog, Log, "Created constant buffer {}.", aName);
+	LOG(LogRHI, Log, "Created constant buffer {}.", aName);
 
 	return true;
 }
@@ -445,7 +436,7 @@ bool RenderHardwareInterface::CreateInputLayout(Microsoft::WRL::ComPtr<ID3D11Inp
 
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create Input Layout!");
+		LOG(LogRHI, Error, "Failed to create Input Layout!");
 		return false;
 	}
 
@@ -459,7 +450,7 @@ bool RenderHardwareInterface::CreateInputLayout(Microsoft::WRL::ComPtr<ID3D11Inp
 
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to read input layout shader from filepath!");
+		LOG(LogRHI, Error, "Failed to read input layout shader from filepath!");
 		return false;
 	}
 
@@ -490,7 +481,7 @@ bool RenderHardwareInterface::LoadShaderFromMemory(std::string_view aName, Shade
 
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to load shader from memory!");
+		LOG(LogRHI, Error, "Failed to load shader from memory!");
 		return false;
 	}
 
@@ -539,7 +530,7 @@ bool RenderHardwareInterface::LoadShaderFromFilePath(std::string_view aName, Sha
 
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to read shader from filepath!");
+		LOG(LogRHI, Error, "Failed to read shader from filepath!");
 		return false;
 	}
 
@@ -738,7 +729,7 @@ bool RenderHardwareInterface::CreateSamplerState(std::string_view aName, const D
 	const HRESULT result = myDevice->CreateSamplerState(&aSamplerDesc, &samplerState);
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create sampler state {}", aName);
+		LOG(LogRHI, Error, "Failed to create sampler state {}", aName);
 		return false;
 	}
 
@@ -746,7 +737,7 @@ bool RenderHardwareInterface::CreateSamplerState(std::string_view aName, const D
 	std::string mapKey(aName);
 	mySamplerStates.emplace(mapKey, samplerState);
 
-	LOG(RhiLog, Log, "Created sampler state {}", aName);
+	LOG(LogRHI, Log, "Created sampler state {}", aName);
 	return true;
 }
 
@@ -760,11 +751,11 @@ bool RenderHardwareInterface::CreateRasterizerState(std::string_view aName, cons
 	const HRESULT result = myDevice->CreateRasterizerState(&aRasterDesc, aPSO.RasterizerState.GetAddressOf());
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create rasterizer state {}", aName);
+		LOG(LogRHI, Error, "Failed to create rasterizer state {}", aName);
 		return false;
 	}
 
-	LOG(RhiLog, Log, "Created rasterizer state {}", aName);
+	LOG(LogRHI, Log, "Created rasterizer state {}", aName);
 	SetObjectName(aPSO.RasterizerState, aName);
 	return true;
 }
@@ -774,11 +765,11 @@ bool RenderHardwareInterface::CreateBlendState(std::string_view aName, const D3D
 	const HRESULT result = myDevice->CreateBlendState(&aBlendDesc, aPSO.BlendState.GetAddressOf());
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create blend state {}", aName);
+		LOG(LogRHI, Error, "Failed to create blend state {}", aName);
 		return false;
 	}
 
-	LOG(RhiLog, Log, "Created blend state {}", aName);
+	LOG(LogRHI, Log, "Created blend state {}", aName);
 	SetObjectName(aPSO.BlendState, aName);
 	return true;
 }
@@ -789,7 +780,7 @@ bool RenderHardwareInterface::LoadTexture(std::string_view aName, const uint8_t*
 	const HRESULT result = DirectX::CreateDDSTextureFromMemory(myDevice.Get(), aTextureDataPtr, aTextureDataSize, &resource, &outTexture.mySRV);
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create texture {} from memory", aName);
+		LOG(LogRHI, Error, "Failed to create texture {} from memory", aName);
 		return false;
 	}
 	
@@ -808,7 +799,7 @@ bool RenderHardwareInterface::LoadTexture(std::string_view aName, const uint8_t*
 		}
 		default:
 		{
-			LOG(RhiLog, Error, "Engine does not support resources other than Texture2D at the moment!");
+			LOG(LogRHI, Error, "Engine does not support resources other than Texture2D at the moment!");
 			return false;
 			break;
 		}
@@ -818,7 +809,7 @@ bool RenderHardwareInterface::LoadTexture(std::string_view aName, const uint8_t*
 	std::string srvName(aName);
 	srvName.append("_SRV");
 	SetObjectName(outTexture.mySRV, srvName);
-	LOG(RhiLog, Log, "Succesfully loaded texture {}", aName);
+	LOG(LogRHI, Log, "Succesfully loaded texture {}", aName);
 
 	return true;
 }
@@ -827,7 +818,7 @@ bool RenderHardwareInterface::SetTextureResource(unsigned aPipelineStages, unsig
 {
 	if (!(aTexture.myBindFlags & D3D11_BIND_SHADER_RESOURCE))
 	{
-		LOG(RhiLog, Error, "This texture can not be used as a resource!");
+		LOG(LogRHI, Error, "This texture can not be used as a resource!");
 		return false;
 	}
 
@@ -878,7 +869,7 @@ bool RenderHardwareInterface::CreateShadowMap(std::string_view aName, unsigned a
 	result = myDevice->CreateTexture2D(&desc, nullptr, reinterpret_cast<ID3D11Texture2D**>(texture.GetAddressOf()));
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create texture for shadow map {}", aName);
+		LOG(LogRHI, Error, "Failed to create texture for shadow map {}", aName);
 		return false;
 	}
 	std::string baseName(aName);
@@ -892,7 +883,7 @@ bool RenderHardwareInterface::CreateShadowMap(std::string_view aName, unsigned a
 	result = myDevice->CreateDepthStencilView(texture.Get(), &depthDesc, &outTexture.myDSV);
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create depth stencil view for shadow map {}", aName);
+		LOG(LogRHI, Error, "Failed to create depth stencil view for shadow map {}", aName);
 		return false;
 	}
 	SetObjectName(outTexture.myDSV, baseName + "_DSV");
@@ -906,7 +897,7 @@ bool RenderHardwareInterface::CreateShadowMap(std::string_view aName, unsigned a
 	result = myDevice->CreateShaderResourceView(texture.Get(), &srvDesc, &outTexture.mySRV);
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create shader resource view for shadow map {}", aName);
+		LOG(LogRHI, Error, "Failed to create shader resource view for shadow map {}", aName);
 		return false;
 	}
 	SetObjectName(outTexture.mySRV, baseName + "_SRV");
@@ -937,7 +928,7 @@ bool RenderHardwareInterface::CreateShadowCubemap(std::string_view aName, unsign
 	result = myDevice->CreateTexture2D(&desc, nullptr, reinterpret_cast<ID3D11Texture2D**>(texture.GetAddressOf()));
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create texture for shadow cubemap {}", aName);
+		LOG(LogRHI, Error, "Failed to create texture for shadow cubemap {}", aName);
 		return false;
 	}
 	std::string baseName(aName);
@@ -954,7 +945,7 @@ bool RenderHardwareInterface::CreateShadowCubemap(std::string_view aName, unsign
 	result = myDevice->CreateDepthStencilView(texture.Get(), &depthDesc, &outTexture.myDSV);
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create depth stencil view for shadow cubemap {}", aName);
+		LOG(LogRHI, Error, "Failed to create depth stencil view for shadow cubemap {}", aName);
 		return false;
 	}
 	SetObjectName(outTexture.myDSV, baseName + "_DSV");
@@ -969,7 +960,7 @@ bool RenderHardwareInterface::CreateShadowCubemap(std::string_view aName, unsign
 	result = myDevice->CreateShaderResourceView(texture.Get(), &srvDesc, &outTexture.mySRV);
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create shader resource view for shadow map {}", aName);
+		LOG(LogRHI, Error, "Failed to create shader resource view for shadow map {}", aName);
 		return false;
 	}
 	SetObjectName(outTexture.mySRV, baseName + "_SRV");
@@ -990,14 +981,14 @@ bool RenderHardwareInterface::CreateLUT(std::string_view aName, unsigned aWidth,
 	std::shared_ptr<Shader> LUTshaderVS = std::make_shared<Shader>();
 	if (!LoadShaderFromFilePath("LUT_VS", *LUTshaderVS, Engine::GetInstance().GetContentRootPath() / L"EngineAssets/Shaders/brdfLUT_VS.cso"))
 	{
-		LOG(RhiLog, Error, "Failed to load LUT vertex shader!");
+		LOG(LogRHI, Error, "Failed to load LUT vertex shader!");
 		return false;
 	}
 
 	std::shared_ptr<Shader> LUTshaderPS = std::make_shared<Shader>();
 	if (!LoadShaderFromFilePath("LUT_PS", *LUTshaderPS, Engine::GetInstance().GetContentRootPath() / L"EngineAssets/Shaders/brdfLUT_PS.cso"))
 	{
-		LOG(RhiLog, Error, "Failed to load LUT pixel shader!");
+		LOG(LogRHI, Error, "Failed to load LUT pixel shader!");
 		return false;
 	}
 	
@@ -1017,7 +1008,7 @@ bool RenderHardwareInterface::CreateLUT(std::string_view aName, unsigned aWidth,
 	SetInputLayout(nullptr);
 	Draw(4);
 
-	LOG(RhiLog, Log, "Successfully created LUT Texture {}!", aName);
+	LOG(LogRHI, Log, "Successfully created LUT Texture {}!", aName);
 	return true;
 }
 
@@ -1112,7 +1103,7 @@ bool RenderHardwareInterface::CreateVertexBufferInternal(std::string_view aName,
 		const HRESULT result = myDevice->CreateBuffer(&vxBufferDesc, nullptr, outVxBuffer.GetAddressOf());
 		if (FAILED(result))
 		{
-			LOG(RhiLog, Error, "Failed to create Dynamic Vertex Buffer!");
+			LOG(LogRHI, Error, "Failed to create Dynamic Vertex Buffer!");
 			return false;
 		}
 	}
@@ -1121,7 +1112,7 @@ bool RenderHardwareInterface::CreateVertexBufferInternal(std::string_view aName,
 		const HRESULT result = myDevice->CreateBuffer(&vxBufferDesc, &vxResource, outVxBuffer.GetAddressOf());
 		if (FAILED(result))
 		{
-			LOG(RhiLog, Error, "Failed to create Static Vertex Buffer!");
+			LOG(LogRHI, Error, "Failed to create Static Vertex Buffer!");
 			return false;
 		}
 	}
@@ -1130,7 +1121,7 @@ bool RenderHardwareInterface::CreateVertexBufferInternal(std::string_view aName,
 
 	if (aIsDynamic)
 	{
-		LOG(RhiLog, Log, "Created Vertex Buffer {}!", aName);
+		LOG(LogRHI, Log, "Created Vertex Buffer {}!", aName);
 	}
 
 	return true;
@@ -1140,7 +1131,7 @@ bool RenderHardwareInterface::UpdateDynamicVertexBufferInternal(DynamicVertexBuf
 {
 	if (!outVxBuffer.GetVertexBuffer())
 	{
-		LOG(RhiLog, Error, "Failed to update dynamic vertex buffer. Vertex Buffer is invalid.");
+		LOG(LogRHI, Error, "Failed to update dynamic vertex buffer. Vertex Buffer is invalid.");
 		return false;
 	}
 
@@ -1148,7 +1139,7 @@ bool RenderHardwareInterface::UpdateDynamicVertexBufferInternal(DynamicVertexBuf
 	size_t bufferSize = outVxBuffer.GetMaxVertexCount() * aVertexSize;
 	if (bufferDataSize > bufferSize)
 	{
-		LOG(RhiLog, Error, "Failed to update dynamic vertex buffer. Data too large.");
+		LOG(LogRHI, Error, "Failed to update dynamic vertex buffer. Data too large.");
 		return false;
 	}
 
@@ -1156,7 +1147,7 @@ bool RenderHardwareInterface::UpdateDynamicVertexBufferInternal(DynamicVertexBuf
 	HRESULT result = myContext->Map(outVxBuffer.GetVertexBuffer().Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &bufferData);
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to map dynamic vertex buffer!");
+		LOG(LogRHI, Error, "Failed to map dynamic vertex buffer!");
 		return false;
 	}
 
@@ -1170,13 +1161,13 @@ bool RenderHardwareInterface::UpdateConstantBufferInternal(const ConstantBuffer&
 {
 	if (!aBuffer.myBuffer)
 	{
-		LOG(RhiLog, Error, "Failed to update constant buffer. Buffer {} is invalid.", aBuffer.myName);
+		LOG(LogRHI, Error, "Failed to update constant buffer. Buffer {} is invalid.", aBuffer.myName);
 		return false;
 	}
 
 	if (aBufferDataSize > aBuffer.mySize)
 	{
-		LOG(RhiLog, Error, "Failed to update constant buffer. Data too large.");
+		LOG(LogRHI, Error, "Failed to update constant buffer. Data too large.");
 		return false;
 	}
 
@@ -1184,7 +1175,7 @@ bool RenderHardwareInterface::UpdateConstantBufferInternal(const ConstantBuffer&
 	HRESULT result = myContext->Map(aBuffer.myBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &bufferData);
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to map constant buffer {}.", aBuffer.myName);
+		LOG(LogRHI, Error, "Failed to map constant buffer {}.", aBuffer.myName);
 		return false;
 	}
 
@@ -1259,7 +1250,7 @@ bool RenderHardwareInterface::CreateTexture(std::string_view aName, unsigned aWi
 	result = myDevice->CreateTexture2D(&desc, nullptr, reinterpret_cast<ID3D11Texture2D**>(texture.GetAddressOf()));
 	if (FAILED(result))
 	{
-		LOG(RhiLog, Error, "Failed to create the texture {}!", aName);
+		LOG(LogRHI, Error, "Failed to create the texture {}!", aName);
 		return false;
 	}
 
@@ -1270,7 +1261,7 @@ bool RenderHardwareInterface::CreateTexture(std::string_view aName, unsigned aWi
 		result = myDevice->CreateShaderResourceView(texture.Get(), nullptr, &outTexture.mySRV);
 		if (FAILED(result))
 		{
-			LOG(RhiLog, Error, "Failed to create the texture {}! Failed to create a shader resource view!", aName);
+			LOG(LogRHI, Error, "Failed to create the texture {}! Failed to create a shader resource view!", aName);
 			return false;
 		}
 
@@ -1282,7 +1273,7 @@ bool RenderHardwareInterface::CreateTexture(std::string_view aName, unsigned aWi
 		result = myDevice->CreateRenderTargetView(texture.Get(), nullptr, &outTexture.myRTV);
 		if (FAILED(result))
 		{
-			LOG(RhiLog, Error, "Failed to create the texture {}! Failed to create a render target view!", aName);
+			LOG(LogRHI, Error, "Failed to create the texture {}! Failed to create a render target view!", aName);
 			return false;
 		}
 
