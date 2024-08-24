@@ -18,7 +18,9 @@ project "ProjectCreator"
 
   files {
 		"%{dirs.utilities}/%{prj.name}/*.h",
-		"%{dirs.utilities}/%{prj.name}/*.cpp"
+		"%{dirs.utilities}/%{prj.name}/*.cpp",
+		"%{dirs.utilities}/%{prj.name}/*.rc"
+    
 	}
 
   includedirs { 

@@ -31,7 +31,8 @@ project "FeatureShowcase"
 		"**.hpp",
 		"**.cpp",
 		"**.hlsl",
-		"**.hlsli"
+		"**.hlsli",
+    "**.rc"
 	}
 
   includedirs { 

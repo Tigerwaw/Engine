@@ -2,7 +2,6 @@
 
 class Scene;
 class GameObject;
-class Transform;
 class SceneLoader;
 class Renderer;
 class CollisionHandler;

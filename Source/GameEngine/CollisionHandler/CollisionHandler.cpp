@@ -3,6 +3,7 @@
 #include "GameEngine/ComponentSystem/Scene.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Component.h"
+#include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "GameEngine/ComponentSystem/Components/Physics/Colliders/Collider.h"
 
 CollisionHandler::CollisionHandler()
