@@ -34,6 +34,7 @@ void Camera::InitPerspectiveProjection(float aFOV, float aNearPlane, float aFarP
 	float horizontalFOV = 1 / tanf(fov / 2);
 	myHFOV = horizontalFOV;
 	float verticalFOV = horizontalFOV * aspectRatio;
+	myViewportDimensions = aResolution;
 
 	myProjectionMatrix = CU::Matrix4x4<float>();
 	myProjectionMatrix(1, 1) = horizontalFOV;
@@ -65,6 +66,7 @@ void Camera::InitPerspectiveProjection(float aFOV, float aNearPlane, float aFarP
 
 void Camera::InitOrtographicProjection(float aLeft, float aRight, float aTop, float aBottom, float aNearPlane, float aFarPlane)
 {
+	myViewportDimensions = { aRight - aLeft, aTop - aBottom };
 	myNearPlane = aNearPlane;
 	myFarPlane = aFarPlane;
 	myProjectionMatrix = CU::Matrix4x4<float>();
@@ -91,11 +93,7 @@ CU::PlaneVolume<float> Camera::GetFrustumPlaneVolume(CU::Matrix4x4f aToObjectSpa
 {
 	std::vector<CU::Vector3f> corners;
 	
-	CU::Matrix4x4f matrix = gameObject->GetComponent<Transform>()->GetWorldMatrix();
-	if (aToObjectSpace != CU::Matrix4x4f())
-	{
-		matrix = matrix * aToObjectSpace;
-	}
+	CU::Matrix4x4f matrix = gameObject->GetComponent<Transform>()->GetWorldMatrix() * aToObjectSpace;
 
 	for (auto& corner : myFrustumCorners)
 	{

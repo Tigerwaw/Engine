@@ -44,7 +44,7 @@ bool SpotLight::Deserialize(nl::json& aJsonObject)
         unsigned shadowTextureSize = 512;
         float minShadowBias = 0.001f;
         float maxShadowBias = 0.005f;
-        unsigned shadowSamples = 1;
+        float lightSize = 1.0f;
 
         if (aJsonObject.contains("ShadowTextureSize"))
         {
@@ -61,14 +61,14 @@ bool SpotLight::Deserialize(nl::json& aJsonObject)
             maxShadowBias = aJsonObject["MaxShadowBias"].get<float>();
         }
 
-        if (aJsonObject.contains("ShadowSamples"))
+        if (aJsonObject.contains("LightSize"))
         {
-            shadowSamples = aJsonObject["ShadowSamples"].get<unsigned>();
+            lightSize = aJsonObject["LightSize"].get<float>();
         }
 
         EnableShadowCasting(shadowTextureSize, shadowTextureSize);
         SetShadowBias(minShadowBias, maxShadowBias);
-        SetShadowSamples(shadowSamples);
+        SetLightSize(lightSize);
     }
 
     return true;

@@ -9,7 +9,7 @@
           "Type": "Transform",
           "Position": [ 0.0, 0.0, 0.0 ],
           "Rotation": [ 0.0, 0.0, 0.0 ],
-          "Scale": [ 1000.0, 1000.0, 1000.0 ]
+          "Scale": [ 5000.0, 5000.0, 5000.0 ]
         },
         {
           "Type": "Model",
@@ -346,8 +346,8 @@
           "CastShadows": true,
           "ShadowTextureSize": 4096,
           "MinShadowBias": 0.0003,
-          "MaxShadowBias": 0.016,
-          "ShadowSamples": 32
+          "MaxShadowBias": 0.001,
+          "LightSize": 1000.0
         },
         {
           "Type": "Camera",
@@ -378,9 +378,9 @@
           "Color": [ 1.0, 1.0, 1.0 ],
           "CastShadows": true,
           "ShadowTextureSize": 512,
-          "MinShadowBias": 0.0,
-          "MaxShadowBias": 0.00014,
-          "ShadowSamples": 32
+          "MinShadowBias": 0.00005,
+          "MaxShadowBias": 0.0002,
+          "LightSize": 1500.0
         },
         {
           "Type": "Camera",
@@ -410,9 +410,9 @@
           "ConeAngle": 600.0,
           "CastShadows": true,
           "ShadowTextureSize": 512,
-          "MinShadowBias": 0.00002,
-          "MaxShadowBias": 0.01,
-          "ShadowSamples": 32
+          "MinShadowBias": 0.0001,
+          "MaxShadowBias": 0.015,
+          "LightSize": 0.7
         },
         {
           "Type": "Camera",

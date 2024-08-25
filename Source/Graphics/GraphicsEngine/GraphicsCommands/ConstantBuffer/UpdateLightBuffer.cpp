@@ -29,15 +29,19 @@ void UpdateLightBuffer::Execute()
 
 	if (myDirectionalLight->GetActive())
 	{
+		std::shared_ptr<Camera> cam = myDirectionalLight->gameObject->GetComponent<Camera>();
+
 		lightBufferData.DirLight.Color = myDirectionalLight->GetColor();
 		lightBufferData.DirLight.Intensity = myDirectionalLight->GetIntensity();
 		lightBufferData.DirLight.Direction = myDirectionalLight->GetDirection();
 		lightBufferData.DirLight.View = myDirectionalLight->gameObject->GetComponent<Transform>()->GetMatrix().GetFastInverse();
-		lightBufferData.DirLight.Projection = myDirectionalLight->gameObject->GetComponent<Camera>()->GetProjectionMatrix();
+		lightBufferData.DirLight.Projection = cam->GetProjectionMatrix();
 		lightBufferData.DirLight.CastShadows = myDirectionalLight->CastsShadows();
 		lightBufferData.DirLight.MinBias = myDirectionalLight->GetMinShadowBias();
 		lightBufferData.DirLight.MaxBias = myDirectionalLight->GetMaxShadowBias();
-		lightBufferData.DirLight.ShadowSamples = myDirectionalLight->GetShadowSamples();
+		lightBufferData.DirLight.LightSize = myDirectionalLight->GetLightSize();
+		lightBufferData.DirLight.FrustumSize = cam->GetViewportDimensions();
+		lightBufferData.DirLight.NearPlane = cam->GetNearPlane();
 	}
 
 	int pIndex = 0;
@@ -47,15 +51,19 @@ void UpdateLightBuffer::Execute()
 
 		if (!pointLight->GetActive()) continue;
 
+		std::shared_ptr<Camera> cam = pointLight->gameObject->GetComponent<Camera>();
+
 		lightBufferData.PointLights[pIndex].Position = pointLight->GetPosition();
 		lightBufferData.PointLights[pIndex].Color = pointLight->GetColor();
 		lightBufferData.PointLights[pIndex].Intensity = pointLight->GetIntensity();
 		lightBufferData.PointLights[pIndex].CastShadows = pointLight->CastsShadows();
 		lightBufferData.PointLights[pIndex].MinBias = pointLight->GetMinShadowBias();
 		lightBufferData.PointLights[pIndex].MaxBias = pointLight->GetMaxShadowBias();
-		lightBufferData.PointLights[pIndex].ShadowSamples = pointLight->GetShadowSamples();
+		lightBufferData.PointLights[pIndex].LightSize = pointLight->GetLightSize();
+		lightBufferData.PointLights[pIndex].FrustumSize = cam->GetViewportDimensions();
+		lightBufferData.PointLights[pIndex].NearPlane = cam->GetNearPlane();
 		
-		lightBufferData.PointLights[pIndex].Projection = pointLight->gameObject->GetComponent<Camera>()->GetProjectionMatrix();
+		lightBufferData.PointLights[pIndex].Projection = cam->GetProjectionMatrix();
 	}
 	lightBufferData.NumPointLights = pIndex;
 
@@ -65,6 +73,7 @@ void UpdateLightBuffer::Execute()
 		std::shared_ptr<SpotLight> spotLight = mySpotLights[sIndex];
 
 		if (!spotLight->GetActive()) continue;
+		std::shared_ptr<Camera> cam = spotLight->gameObject->GetComponent<Camera>();
 
 		lightBufferData.SpotLights[sIndex].Position = spotLight->GetPosition();
 		lightBufferData.SpotLights[sIndex].Direction = spotLight->GetDirection();
@@ -74,10 +83,12 @@ void UpdateLightBuffer::Execute()
 		lightBufferData.SpotLights[sIndex].CastShadows = spotLight->CastsShadows();
 		lightBufferData.SpotLights[sIndex].MinBias = spotLight->GetMinShadowBias();
 		lightBufferData.SpotLights[sIndex].MaxBias = spotLight->GetMaxShadowBias();
-		lightBufferData.SpotLights[sIndex].ShadowSamples = spotLight->GetShadowSamples();
-
+		lightBufferData.SpotLights[sIndex].LightSize = spotLight->GetLightSize();
+		lightBufferData.SpotLights[sIndex].FrustumSize = cam->GetViewportDimensions();
+		lightBufferData.SpotLights[sIndex].NearPlane = cam->GetNearPlane();
+		
 		lightBufferData.SpotLights[sIndex].View = spotLight->gameObject->GetComponent<Transform>()->GetMatrix().GetFastInverse();
-		lightBufferData.SpotLights[sIndex].Projection = spotLight->gameObject->GetComponent<Camera>()->GetProjectionMatrix();
+		lightBufferData.SpotLights[sIndex].Projection = cam->GetProjectionMatrix();
 	}
 	lightBufferData.NumSpotLights = sIndex;
 

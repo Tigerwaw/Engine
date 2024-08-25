@@ -58,9 +58,9 @@ void LightSource::SetShadowBias(float aMinShadowBias, float aMaxShadowBias)
     myMaxShadowBias = aMaxShadowBias;
 }
 
-void LightSource::SetShadowSamples(unsigned aNumSamples)
+void LightSource::SetLightSize(float aSize)
 {
-    myShadowSamples = static_cast<int>(aNumSamples);
+    myLightSize = aSize;
 }
 
 std::shared_ptr<Texture> LightSource::GetShadowMap()

@@ -1,6 +1,5 @@
 #include "Includes/DefaultShaderIncludes.hlsli"
-#include "Includes/BRDF_Functions.hlsli"
-#include "Includes/Lambertian_Functions.hlsli"
+#include "Includes/BRDF_Lights.hlsli"
 #include "Includes/ConstantBuffers/FrameBuffer.hlsli"
 #include "Includes/ConstantBuffers/LightBuffer.hlsli"
 #include "Includes/ConstantBuffers/MaterialBuffer.hlsli"

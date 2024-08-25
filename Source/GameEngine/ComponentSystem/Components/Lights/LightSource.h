@@ -24,8 +24,8 @@ public:
 	void SetShadowBias(float aMinShadowBias, float aMaxShadowBias);
 	const float GetMinShadowBias() const { return myMinShadowBias; }
 	const float GetMaxShadowBias() const { return myMaxShadowBias; }
-	void SetShadowSamples(unsigned aNumSamples);
-	const int GetShadowSamples() const { return myShadowSamples; }
+	void SetLightSize(float aSize);
+	const float GetLightSize() const { return myLightSize; }
 	std::shared_ptr<Texture> GetShadowMap();
 	const CU::Vector2f GetShadowMapSize() const { return myShadowMapSize; }
 protected:
@@ -36,6 +36,6 @@ protected:
 	CU::Vector2f myShadowMapSize;
 	float myMinShadowBias = 0.001f;
 	float myMaxShadowBias = 0.005f;
-	int myShadowSamples = 1;
+	float myLightSize = 1.0f;
 };
 

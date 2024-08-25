@@ -17,12 +17,14 @@ cbuffer LightBuffer : register(b4)
         int CastShadows;        // 4 bytes
         float MinBias;          // 4 bytes
         float MaxBias;          // 4 bytes
-        int ShadowSamples;      // 4 bytes
-        float Padding;         // 4 bytes
+        float LightSize;        // 4 bytes
+        float2 FrustumSize;     // 8 bytes
+        float NearPlane;        // 4 bytes
+        float Padding;          // 4 bytes
 
         float4x4 View;          // 64 bytes
         float4x4 Projection;    // 64 bytes
-    } LB_DirLight;              // 176 bytes
+    } LB_DirLight;              // 192 bytes
 	
     struct PointLightData
     {
@@ -32,11 +34,13 @@ cbuffer LightBuffer : register(b4)
         int CastShadows;        // 4 bytes
         float MinBias;          // 4 bytes
         float MaxBias;          // 4 bytes
-        int ShadowSamples;      // 4 bytes
-        float Padding;         // 4 bytes
+        float LightSize;		// 4 bytes
+		float NearPlane;		// 4 bytes
+		float2 FrustumSize;	    // 8 bytes
+        float2 Padding;         // 8 bytes
         
         float4x4 Projection;    // 64 bytes
-    } LB_PointLights[4];        // 112 * 4 = 448
+    } LB_PointLights[4];        // 128 * 4 = 512
 
     struct SpotLightData
     {
@@ -48,19 +52,21 @@ cbuffer LightBuffer : register(b4)
         float ConeAngle;        // 4 bytes
         float MinBias;          // 4 bytes
         float MaxBias;          // 4 bytes
-        int ShadowSamples;      // 4 bytes
-        float Padding;         // 4 bytes
+        float LightSize;		// 4 bytes
+		float NearPlane;		// 4 bytes
+		float2 FrustumSize;	    // 8 bytes
+		float2 Padding;         // 8 bytes
 
         float4x4 View;          // 64 bytes
         float4x4 Projection;    // 64 bytes
-    } LB_SpotLights[4];         // 192 * 4 = 768 bytes
+    } LB_SpotLights[4];         // 208 * 4 = 832 bytes
 
     int LB_NumPointLights;      // 4 bytes
     int LB_NumSpotLights;       // 4 bytes
 
-	// Total Size: 1416 bytes, missing 8
+	// Total Size: 1560 bytes, missing 8
     float2 LB_Padding;
-    // Total Size: 1424 bytes (16 * 89)
+    // Total Size: 1568 bytes (16 * 98)
 }
 
 #endif // _LIGHT_BUFFER_

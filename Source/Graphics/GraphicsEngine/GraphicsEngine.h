@@ -118,6 +118,7 @@ public:
 	bool DrawGizmos = false;
 	bool DrawBoundingBoxes = false;
 	bool DrawCameraFrustums = false;
+	bool DrawColliders = false;
 	bool UseViewCulling = true;
 
 private:

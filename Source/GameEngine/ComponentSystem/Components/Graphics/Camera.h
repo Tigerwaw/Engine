@@ -24,6 +24,7 @@ public:
 	float GetNearPlane() const { return myNearPlane; }
 	float GetFarPlane() const { return myFarPlane; }
 	float GetHorizontalFOV() const { return myHFOV; }
+	CU::Vector2f GetViewportDimensions() const { return myViewportDimensions; }
 
 	const std::array<CU::Vector3f, 8>& GetFrustumCorners() const { return myFrustumCorners; }
 	// Get Frustum Plane Volume in object space (Leave arguments empty to get in world space)
@@ -39,5 +40,6 @@ protected:
 	float myNearPlane = 0;
 	float myFarPlane = 0;
 	float myHFOV = 0;
+	CU::Vector2f myViewportDimensions;
 };
 

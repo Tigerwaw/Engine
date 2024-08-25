@@ -29,5 +29,8 @@ private:
 
     bool IsInsideFrustum(std::shared_ptr<Camera> aRenderCamera, std::shared_ptr<Transform> aObjectTransform, CU::AABB3D<float> aObjectAABB);
     bool IsInsideRadius(std::shared_ptr<PointLight> aPointLight, std::shared_ptr<Transform> aObjectTransform, CU::AABB3D<float> aObjectAABB);
+
+    void UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject);
+    CU::AABB3D<float> myVisibleObjectsBB;
 };
 

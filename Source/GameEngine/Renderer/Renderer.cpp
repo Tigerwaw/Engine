@@ -29,8 +29,8 @@ Renderer::~Renderer() = default;
 
 void Renderer::RenderScene(Scene& aScene)
 {
-	Engine::GetInstance().GetDebugDrawer().DrawBoundingBox(aScene.myBoundingBox);
-	aScene.myDirectionalLight->GetComponent<DirectionalLight>()->RecalculateShadowFrustum(aScene.myMainCamera, aScene.myBoundingBox);
+	aScene.myDirectionalLight->GetComponent<DirectionalLight>()->RecalculateShadowFrustum(aScene.myMainCamera, myVisibleObjectsBB);
+	myVisibleObjectsBB.InitWithCenterAndExtents(CU::Vector3f(), CU::Vector3f());
 	QueueDirectionalLightShadows(aScene);
 	QueuePointLightShadows(aScene);
 	QueueSpotLightShadows(aScene);
@@ -212,6 +212,10 @@ void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aRenderCa
 		{
 			if (aDisableViewCulling || !model->GetShouldViewcull() || IsInsideFrustum(aRenderCamera, gameObject->GetComponent<Transform>(), model->GetBoundingBox()))
 			{
+				if (aRenderCamera->gameObject->GetName() == "MainCamera")
+				{
+					UpdateBoundingBox(gameObject);
+				}
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model, aPSOoverride);
 			}
 		}
@@ -221,6 +225,10 @@ void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aRenderCa
 		{
 			if (aDisableViewCulling || !animModel->GetShouldViewcull() || IsInsideFrustum(aRenderCamera, gameObject->GetComponent<Transform>(), animModel->GetBoundingBox()))
 			{
+				if (aRenderCamera->gameObject->GetName() == "MainCamera")
+				{
+					UpdateBoundingBox(gameObject);
+				}
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel, aPSOoverride);
 			}
 		}
@@ -255,6 +263,12 @@ void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<PointLight> aPoin
 
 void Renderer::QueueDebugLines(Scene& aScene)
 {
+	if (GraphicsEngine::Get().DrawBoundingBoxes)
+	{
+		Engine::GetInstance().GetDebugDrawer().DrawBoundingBox(aScene.myBoundingBox);
+		Engine::GetInstance().GetDebugDrawer().DrawBoundingBox(myVisibleObjectsBB);
+	}
+
 	for (auto& gameObject : aScene.myGameObjects)
 	{
 		if (!gameObject->GetActive()) continue;
@@ -268,18 +282,21 @@ void Renderer::QueueDebugLines(Scene& aScene)
 			}
 		}
 
-		std::shared_ptr<BoxCollider> boxCollider = gameObject->GetComponent<BoxCollider>();
-		if (boxCollider && boxCollider->GetActive())
+		if (GraphicsEngine::Get().DrawColliders)
 		{
-			CU::Vector4f colliderColor = boxCollider->debugColliding ? CU::Vector4f(1.0f, 0, 0, 1.0f) : CU::Vector4f(0, 1.0f, 0, 1.0f);
-			Engine::GetInstance().GetDebugDrawer().DrawBoundingBox(boxCollider->GetAABB(), gameObject->GetComponent<Transform>()->GetWorldMatrix(), colliderColor);
-		}
+			std::shared_ptr<BoxCollider> boxCollider = gameObject->GetComponent<BoxCollider>();
+			if (boxCollider && boxCollider->GetActive())
+			{
+				CU::Vector4f colliderColor = boxCollider->debugColliding ? CU::Vector4f(1.0f, 0, 0, 1.0f) : CU::Vector4f(0, 1.0f, 0, 1.0f);
+				Engine::GetInstance().GetDebugDrawer().DrawBoundingBox(boxCollider->GetAABB(), gameObject->GetComponent<Transform>()->GetWorldMatrix(), colliderColor);
+			}
 
-		std::shared_ptr<SphereCollider> sphereCollider = gameObject->GetComponent<SphereCollider>();
-		if (sphereCollider && sphereCollider->GetActive())
-		{
-			CU::Vector4f colliderColor = sphereCollider->debugColliding ? CU::Vector4f(1.0f, 0, 0, 1.0f) : CU::Vector4f(0, 1.0f, 0, 1.0f);
-			Engine::GetInstance().GetDebugDrawer().DrawBoundingSphere(sphereCollider->GetSphere(), gameObject->GetComponent<Transform>()->GetWorldMatrix(), colliderColor);
+			std::shared_ptr<SphereCollider> sphereCollider = gameObject->GetComponent<SphereCollider>();
+			if (sphereCollider && sphereCollider->GetActive())
+			{
+				CU::Vector4f colliderColor = sphereCollider->debugColliding ? CU::Vector4f(1.0f, 0, 0, 1.0f) : CU::Vector4f(0, 1.0f, 0, 1.0f);
+				Engine::GetInstance().GetDebugDrawer().DrawBoundingSphere(sphereCollider->GetSphere(), gameObject->GetComponent<Transform>()->GetWorldMatrix(), colliderColor);
+			}
 		}
 	}
 }
@@ -313,4 +330,65 @@ bool Renderer::IsInsideRadius(std::shared_ptr<PointLight> aPointLight, std::shar
 	CU::Sphere<float> sphere(pointLightTransform->GetTranslation(), pointLightCam->GetFarPlane());
 	sphere = sphere.GetSphereinNewSpace(pointLightTransform->GetWorldMatrix() * objectMatrix);
 	return CU::IntersectionSphereAABB(sphere, aObjectAABB);
+}
+
+void Renderer::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
+{
+	if (aGameObject->GetComponent<Transform>())
+	{
+		CU::Vector3f bbMin = myVisibleObjectsBB.GetMin();
+		CU::Vector3f bbMax = myVisibleObjectsBB.GetMax();
+		std::shared_ptr<Transform> objectTransform = aGameObject->GetComponent<Transform>();
+
+		std::shared_ptr<Model> model = aGameObject->GetComponent<Model>();
+		std::shared_ptr<AnimatedModel> animModel = aGameObject->GetComponent<AnimatedModel>();
+		if (model)
+		{
+			if (!model->GetShouldViewcull()) return;
+
+			auto& corners = model->GetBoundingBox().GetCorners();
+
+			for (CU::Vector3f corner : corners)
+			{
+				corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * objectTransform->GetWorldMatrix());
+
+				bbMin.x = std::fminf(corner.x, bbMin.x);
+				bbMax.x = std::fmaxf(corner.x, bbMax.x);
+				bbMin.y = std::fminf(corner.y, bbMin.y);
+				bbMax.y = std::fmaxf(corner.y, bbMax.y);
+				bbMin.z = std::fminf(corner.z, bbMin.z);
+				bbMax.z = std::fmaxf(corner.z, bbMax.z);
+			}
+		}
+		else if (animModel)
+		{
+			if (!animModel->GetShouldViewcull()) return;
+
+			auto& corners = animModel->GetBoundingBox().GetCorners();
+			for (CU::Vector3f corner : corners)
+			{
+				corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * objectTransform->GetWorldMatrix());
+
+				bbMin.x = std::fminf(corner.x, bbMin.x);
+				bbMax.x = std::fmaxf(corner.x, bbMax.x);
+				bbMin.y = std::fminf(corner.y, bbMin.y);
+				bbMax.y = std::fmaxf(corner.y, bbMax.y);
+				bbMin.z = std::fminf(corner.z, bbMin.z);
+				bbMax.z = std::fmaxf(corner.z, bbMax.z);
+			}
+		}
+		else
+		{
+			CU::Vector3f point = objectTransform->GetTranslation(true);
+
+			bbMin.x = std::fminf(point.x, bbMin.x);
+			bbMax.x = std::fmaxf(point.x, bbMax.x);
+			bbMin.y = std::fminf(point.y, bbMin.y);
+			bbMax.y = std::fmaxf(point.y, bbMax.y);
+			bbMin.z = std::fminf(point.z, bbMin.z);
+			bbMax.z = std::fmaxf(point.z, bbMax.z);
+		}
+
+		myVisibleObjectsBB.InitWithMinAndMax(bbMin, bbMax);
+	}
 }

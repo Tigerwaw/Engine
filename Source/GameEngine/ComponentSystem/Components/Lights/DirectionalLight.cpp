@@ -22,27 +22,31 @@ void DirectionalLight::RecalculateShadowFrustum(std::shared_ptr<GameObject> aRen
     std::shared_ptr<Transform> camTransform = aRenderCamera->GetComponent<Transform>();
     if (!camTransform) return;
 
-    CU::Matrix4x4f camToWorldMatrix = camTransform->GetMatrix();
-    CU::Matrix4x4f worldToLightMatrix = lightTransform->GetMatrix().GetFastInverse();
+    CU::Matrix4x4f camToWorldMatrix = camTransform->GetWorldMatrix();
+    CU::Matrix4x4f worldToLightMatrix = lightTransform->GetWorldMatrix().GetFastInverse();
 
     CU::Vector3f min = { FLT_MAX, FLT_MAX, FLT_MAX };
     CU::Vector3f max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
 
-    for (CU::Vector3f corner : renderCam->GetFrustumCorners())
+    //for (CU::Vector3f corner : renderCam->GetFrustumCorners())
+    //{
+    //    corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * camToWorldMatrix);
+    //    corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * worldToLightMatrix);
+
+    //    min.x = std::fminf(corner.x, min.x);
+    //    max.x = std::fmaxf(corner.x, max.x);
+    //    min.y = std::fminf(corner.y, min.y);
+    //    max.y = std::fmaxf(corner.y, max.y);
+    //}
+
+    for (CU::Vector3f corner : aSceneBB.GetCorners())
     {
-        corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * camToWorldMatrix);
         corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * worldToLightMatrix);
 
         min.x = std::fminf(corner.x, min.x);
         max.x = std::fmaxf(corner.x, max.x);
         min.y = std::fminf(corner.y, min.y);
         max.y = std::fmaxf(corner.y, max.y);
-    }
-
-    for (CU::Vector3f corner : aSceneBB.GetCorners())
-    {
-        corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * worldToLightMatrix);
-
         min.z = std::fminf(corner.z, min.z);
         max.z = std::fmaxf(corner.z, max.z);
     }
@@ -83,7 +87,7 @@ bool DirectionalLight::Deserialize(nl::json& aJsonObject)
         unsigned shadowTextureSize = 512;
         float minShadowBias = 0.001f;
         float maxShadowBias = 0.005f;
-        unsigned shadowSamples = 1;
+        float lightSize = 1.0f;
 
         if (aJsonObject.contains("ShadowTextureSize"))
         {
@@ -100,14 +104,14 @@ bool DirectionalLight::Deserialize(nl::json& aJsonObject)
             maxShadowBias = aJsonObject["MaxShadowBias"].get<float>();
         }
 
-        if (aJsonObject.contains("ShadowSamples"))
+        if (aJsonObject.contains("LightSize"))
         {
-            shadowSamples = aJsonObject["ShadowSamples"].get<unsigned>();
+            lightSize = aJsonObject["LightSize"].get<float>();
         }
 
         EnableShadowCasting(shadowTextureSize, shadowTextureSize);
         SetShadowBias(minShadowBias, maxShadowBias);
-        SetShadowSamples(shadowSamples);
+        SetLightSize(lightSize);
     }
 
     return true;

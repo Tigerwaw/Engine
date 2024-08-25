@@ -85,7 +85,7 @@ void FeatureShowcase::InitializeApplication()
 #ifdef _DEBUG
 			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
 			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.02f * resolution.y });
-			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.22f * resolution.y });
+			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.25f * resolution.y });
 			bool open = true;
 			ImGui::Begin("Modelviewer", &open, ImGuiWindowFlags_NoSavedSettings);
 
@@ -93,6 +93,7 @@ void FeatureShowcase::InitializeApplication()
 			ImGui::Checkbox("Draw Gizmos", &GraphicsEngine::Get().DrawGizmos);
 			ImGui::Checkbox("Draw Bounding Boxes", &GraphicsEngine::Get().DrawBoundingBoxes);
 			ImGui::Checkbox("Draw Camera Frustums", &GraphicsEngine::Get().DrawCameraFrustums);
+			ImGui::Checkbox("Draw Colliders", &GraphicsEngine::Get().DrawColliders);
 
 			// Rendering
 			{
@@ -155,8 +156,8 @@ void FeatureShowcase::InitializeApplication()
 		{
 #ifdef _DEBUG
 			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
-			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.28f * resolution.y });
-			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.6f * resolution.y });
+			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.3f * resolution.y });
+			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.65f * resolution.y });
 			bool open = true;
 			ImGui::Begin("Lighting Settings", &open, ImGuiWindowFlags_NoSavedSettings);
 			{
@@ -192,13 +193,13 @@ void FeatureShowcase::InitializeApplication()
 					ImGui::Spacing();
 					float minBias = dLight->GetMinShadowBias();
 					float maxBias = dLight->GetMaxShadowBias();
-					int shadowSamples = dLight->GetShadowSamples();
+					float lightSize = dLight->GetLightSize();
 					ImGui::Text("Shadow Min Bias");
 					if (ImGui::SliderFloat("##DirectionalMinBias", &minBias, 0, 0.001f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
 					ImGui::Text("Shadow Max Bias");
 					if (ImGui::SliderFloat("##DirectionalMaxBias", &maxBias, 0, 0.1f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
-					ImGui::Text("Shadow Samples");
-					if (ImGui::SliderInt("##DirectionalSamples", &shadowSamples, 1, 64)) dLight->SetShadowSamples(shadowSamples);
+					ImGui::Text("Light Size");
+					if (ImGui::SliderFloat("##DirectionalSize", &lightSize, 0, 2000.0f)) dLight->SetLightSize(lightSize);
 					ImGui::Spacing();
 					float color[3] = { dLight->GetColor().x, dLight->GetColor().y, dLight->GetColor().z };
 					ImGui::Text("Color");
@@ -223,13 +224,13 @@ void FeatureShowcase::InitializeApplication()
 
 					float minBias = pLight->GetMinShadowBias();
 					float maxBias = pLight->GetMaxShadowBias();
-					int shadowSamples = pLight->GetShadowSamples();
+					float lightSize = pLight->GetLightSize();
 					ImGui::Text("Shadow Min Bias");
 					if (ImGui::SliderFloat("##PointMinBias", &minBias, 0, 0.001f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
 					ImGui::Text("Shadow Max Bias");
 					if (ImGui::SliderFloat("##PointMaxBias", &maxBias, 0, 0.01f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
-					ImGui::Text("Shadow Samples");
-					if (ImGui::SliderInt("##PointSamples", &shadowSamples, 1, 64)) pLight->SetShadowSamples(shadowSamples);
+					ImGui::Text("Light Size");
+					if (ImGui::SliderFloat("##PointSize", &lightSize, 0, 10000.0f)) pLight->SetLightSize(lightSize);
 					ImGui::Spacing();
 
 					float color[3] = { pLight->GetColor().x, pLight->GetColor().y, pLight->GetColor().z };
@@ -264,13 +265,13 @@ void FeatureShowcase::InitializeApplication()
 
 					float minBias = sLight->GetMinShadowBias();
 					float maxBias = sLight->GetMaxShadowBias();
-					int shadowSamples = sLight->GetShadowSamples();
+					float lightSize = sLight->GetLightSize();
 					ImGui::Text("Shadow Min Bias");
 					if (ImGui::SliderFloat("##SpotMinBias", &minBias, 0, 0.001f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
 					ImGui::Text("Shadow Max Bias");
 					if (ImGui::SliderFloat("##SpotMaxBias", &maxBias, 0, 0.1f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
-					ImGui::Text("Shadow Samples");
-					if (ImGui::SliderInt("##SpotSamples", &shadowSamples, 1, 64)) sLight->SetShadowSamples(shadowSamples);
+					ImGui::Text("Light Size");
+					if (ImGui::SliderFloat("##SpotSize", &lightSize, 0, 10.0f)) sLight->SetLightSize(lightSize);
 					ImGui::Spacing();
 
 					float color[3] = { sLight->GetColor().x, sLight->GetColor().y, sLight->GetColor().z };
