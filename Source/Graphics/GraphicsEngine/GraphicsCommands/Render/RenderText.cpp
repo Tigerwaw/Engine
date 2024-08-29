@@ -11,7 +11,7 @@ RenderText::RenderText(std::shared_ptr<Text> aTextObject)
 
 void RenderText::Execute()
 {
-	GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("Text")->pso);
+	GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("PSO_Text")->pso);
 	GraphicsEngine::Get().RenderText(*text);
 }
 

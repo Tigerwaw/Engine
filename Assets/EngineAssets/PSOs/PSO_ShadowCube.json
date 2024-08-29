@@ -1,0 +1,15 @@
+{
+  "VertexType": "Default",
+  "VertexShader": "SH_ShadowCube_VS.cso",
+  "GeometryShader": "SH_ShadowCube_GS.cso",
+  "PixelShader": "",
+  "RasterizerDesc":
+  {
+    "FillMode": 3,
+    "CullMode": 3,
+    "AntialiasedLine": false
+  },
+  "Samplers":
+  {
+  }
+}

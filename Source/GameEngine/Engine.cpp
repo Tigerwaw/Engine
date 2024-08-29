@@ -8,6 +8,7 @@
 #include "GameEngine/DebugDrawer/DebugDrawer.h"
 #include "GameEngine/Audio/AudioEngine.h"
 #include "GameEngine/ImGui/ImGuiHandler.h"
+#include "GameEngine/Application/Application.h"
 
 void Engine::Update()
 {
@@ -19,6 +20,11 @@ void Engine::Update()
     myAudioEngine->Update();
     mySceneHandler->RenderActiveScene();
     myDebugDrawer->DrawObjects();
+}
+
+WindowsEventHandler& Engine::GetWindowsEventHandler()
+{
+    return myApplicationInstance->GetWindowsEventHandler();
 }
 
 void Engine::LoadSettings(const std::string& aSettingsFilepath)
@@ -68,6 +74,16 @@ void Engine::LoadSettings(const std::string& aSettingsFilepath)
     {
         myIsBorderless = data["borderless"].get<bool>();
     }
+
+    if (data.contains("allowdropfiles"))
+    {
+        myAllowDropFiles = data["allowdropfiles"].get<bool>();
+    }
+
+    if (data.contains("autoregisterassets"))
+    {
+        myAutoRegisterAssets = data["autoregisterassets"].get<bool>();
+    }
 }
 
 const std::filesystem::path Engine::GetContentRootPath()
@@ -93,6 +109,11 @@ void Engine::SetWindowSize(float aWidth, float aHeight)
 void Engine::ToggleFullscreen(bool aIsFullscreen)
 {
     myIsFullscreen = aIsFullscreen;
+}
+
+void Engine::SetApplicationInstance(Application* aApplication)
+{
+    myApplicationInstance = aApplication;
 }
 
 void Engine::Destroy()

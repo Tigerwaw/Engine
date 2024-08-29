@@ -44,7 +44,7 @@ void FeatureShowcase::InitializeApplication()
 	Engine::GetInstance().GetAudioEngine().AddBus(BusType::SFX, "SFX");
 
 	Engine::GetInstance().GetDebugDrawer().InitializeDebugDrawer();
-	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/TestScene.json");
+	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_TestScene.json");
 
 	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
 	inputHandler.RegisterBinaryAction("W", Keys::W, GenericInput::ActionType::Held);
@@ -78,7 +78,6 @@ void FeatureShowcase::InitializeApplication()
 
 	inputHandler.RegisterBinaryAction("SharedAction", Keys::W, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("SharedAction", ControllerButtons::A, GenericInput::ActionType::Held);
-
 	
 	Engine::GetInstance().GetImGuiHandler().AddNewFunction([]()
 		{

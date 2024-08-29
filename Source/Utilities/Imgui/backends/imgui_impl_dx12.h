@@ -4,6 +4,7 @@
 // Implemented features:
 //  [X] Renderer: User texture binding. Use 'D3D12_GPU_DESCRIPTOR_HANDLE' as ImTextureID. Read the FAQ about ImTextureID!
 //  [X] Renderer: Large meshes support (64k+ vertices) with 16-bit indices.
+//  [X] Renderer: Multi-viewport support (multiple windows). Enable with 'io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable'.
 
 // Important: to compile on 32-bit systems, this backend requires code to be compiled with '#define ImTextureID ImU64'.
 // See imgui_impl_dx12.cpp file for details.
@@ -26,6 +27,8 @@ struct ID3D12DescriptorHeap;
 struct ID3D12GraphicsCommandList;
 struct D3D12_CPU_DESCRIPTOR_HANDLE;
 struct D3D12_GPU_DESCRIPTOR_HANDLE;
+
+// Follow "Getting Started" link and check examples/ folder to learn about using backends!
 
 // cmd_list is the command list that the implementation will use to render imgui draw lists.
 // Before calling the render function, caller must prepare cmd_list by resetting it and setting the appropriate

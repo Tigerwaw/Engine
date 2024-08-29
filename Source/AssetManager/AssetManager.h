@@ -17,6 +17,8 @@ public:
 	bool UnregisterAsset(const std::filesystem::path& aPath);
 	bool UnregisterAsset(const std::shared_ptr<Asset> aAsset);
 
+	bool RegisterAsset(const std::filesystem::path& aPath);
+
 	bool Initialize(const std::filesystem::path& aContentRootPath, bool aAutoRegisterAllAssetsInRoot = true);
 	bool RegisterMeshAsset(const std::filesystem::path& aPath);
 	bool RegisterAnimationAsset(const std::filesystem::path& aPath);
@@ -26,11 +28,12 @@ public:
 	bool RegisterPSOAsset(const std::filesystem::path& aPath);
 	bool RegisterFontAsset(const std::filesystem::path& aPath);
 	std::filesystem::path& GetContentRoot() { return myContentRoot; }
+	std::filesystem::path MakeRelative(const std::filesystem::path& aPath);
+	bool DoesAssetExist(const std::filesystem::path& aPath);
 private:
 	AssetManager();
 	~AssetManager();
 	bool ValidateAsset(const std::filesystem::path& aPath);
-	std::filesystem::path MakeRelative(const std::filesystem::path& aPath);
 
 	void RegisterAllAssetsInDirectory();
 	void RegisterEngineAssets();

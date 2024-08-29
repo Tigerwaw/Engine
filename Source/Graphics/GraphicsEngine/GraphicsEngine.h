@@ -111,18 +111,19 @@ public:
 
 	std::vector<std::string> DebugModeNames = {
 		"None",
-		"Unlit",
-		"Wireframe",
-		"DebugVertexNormals",
-		"DebugPixelNormals",
-		"DebugTextureNormals",
-		"DebugUVs"
+		"PSO_Unlit",
+		"PSO_Wireframe",
+		"PSO_DebugVertexNormals",
+		"PSO_DebugPixelNormals",
+		"PSO_DebugTextureNormals",
+		"PSO_DebugUVs"
 	};
 	bool DrawGizmos = false;
 	bool DrawBoundingBoxes = false;
 	bool DrawCameraFrustums = false;
 	bool DrawColliders = false;
 	bool UseViewCulling = true;
+	bool RecalculateShadowFrustum = true;
 
 private:
 	GraphicsEngine();

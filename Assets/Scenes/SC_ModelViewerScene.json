@@ -1,0 +1,100 @@
+{
+  "GameObjects": [
+    {
+      "Name": "Plane",
+      "Active": true,
+      "Static": true,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 0.0, 0.0, 0.0 ],
+          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Scale": [ 500.0, 500.0, 500.0 ]
+        },
+        {
+          "Type": "Model",
+          "ShouldViewcull": false,
+          "Model": "PlanePrimitive",
+          "Materials": [
+            "DefaultMaterial"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "MainCamera",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 0.0, 400.0, -400.0 ],
+          "Rotation": [ 30.0, 0.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Camera",
+          "Perspective": true,
+          "FOV": 90.0,
+          "NearPlane": 1.0,
+          "FarPlane": 10000.0
+        },
+        {
+          "Type": "FreecamController",
+          "MoveSpeed": 400.0,
+          "RotationSpeed": 300.0
+        }
+      ]
+    },
+    {
+      "Name": "A_Light",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 0.0, 0.0, 0.0 ],
+          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "AmbientLight",
+          "Cubemap": "EngineAssets/Textures/Cubemaps/T_Skansen_Cube.dds"
+        }
+      ]
+    },
+    {
+      "Name": "D_Light",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -500.0, 500.0, -500.0 ],
+          "Rotation": [ 45.0, 45.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "DirectionalLight",
+          "Intensity": 1.0,
+          "Color": [ 1.0, 1.0, 1.0 ],
+          "CastShadows": true,
+          "ShadowTextureSize": 4096,
+          "MinShadowBias": 0.0003,
+          "MaxShadowBias": 0.001,
+          "LightSize": 1000.0
+        },
+        {
+          "Type": "Camera",
+          "Perspective": false,
+          "LeftPlane": -512.0,
+          "RightPlane": 512.0,
+          "TopPlane": 512.0,
+          "BottomPlane": -512.0,
+          "NearPlane": 1.0,
+          "FarPlane": 1000.0
+        }
+      ]
+    }
+  ]
+}

@@ -32,7 +32,7 @@ void RenderSprite::Execute()
     }
     else
     {
-        GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("Sprite")->pso);
+        GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("PSO_Sprite")->pso);
         GraphicsEngine::Get().SetTextureResource_PS(0, *texture);
         GraphicsEngine::Get().RenderSprite();
         GraphicsEngine::Get().ClearTextureResource_PS(0);

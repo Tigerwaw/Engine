@@ -34,7 +34,9 @@ function default_settings(app_name)
 		resolution = { width=1920, height=1080 },
 		windowSize = { width=1920, height=1080 },
 		fullscreen = true,
-		borderless = true
+		borderless = true,
+		allowdropfiles = false,
+		autoregisterassets = true,
 	}
 end
 

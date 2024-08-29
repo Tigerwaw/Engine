@@ -31,22 +31,28 @@ Renderer::~Renderer() = default;
 
 void Renderer::RenderScene(Scene& aScene)
 {
-	aScene.myDirectionalLight->GetComponent<DirectionalLight>()->RecalculateShadowFrustum(aScene.myMainCamera, myVisibleObjectsBB);
-	myVisibleObjectsBB.InitWithCenterAndExtents(CU::Vector3f(), CU::Vector3f());
+	GraphicsEngine& gfx = GraphicsEngine::Get();
+
+	if (gfx.RecalculateShadowFrustum)
+	{
+		aScene.myDirectionalLight->GetComponent<DirectionalLight>()->RecalculateShadowFrustum(aScene.myMainCamera, myVisibleObjectsBB);
+		myVisibleObjectsBB.InitWithCenterAndExtents(CU::Vector3f(), CU::Vector3f());
+	}
+
 	QueueDirectionalLightShadows(aScene);
 	QueuePointLightShadows(aScene);
 	QueueSpotLightShadows(aScene);
 	QueueUpdateLightBuffer(aScene);
 
 	// Final Render
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PBR")->pso);
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetDefaultRenderTarget>();
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(aScene.myMainCamera->GetComponent<Camera>());
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(126, aScene.myAmbientLight->GetComponent<AmbientLight>()->GetCubemap());
+	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_PBR")->pso);
+	gfx.GetGraphicsCommandList().Enqueue<SetDefaultRenderTarget>();
+	gfx.GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(aScene.myMainCamera->GetComponent<Camera>());
+	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(126, aScene.myAmbientLight->GetComponent<AmbientLight>()->GetCubemap());
 	QueueShadowmapTextureResources(aScene);
 
 
-	if (GraphicsEngine::Get().GetCurrentDebugMode() != DebugMode::None)
+	if (gfx.GetCurrentDebugMode() != DebugMode::None)
 	{
 		std::shared_ptr<PipelineStateObject> pso = AssetManager::Get().GetAsset<PSOAsset>(GraphicsEngine::Get().DebugModeNames[static_cast<int>(GraphicsEngine::Get().GetCurrentDebugMode())])->pso;
 		QueueGameObjects(aScene, aScene.myMainCamera->GetComponent<Camera>(), false, pso);
@@ -56,7 +62,7 @@ void Renderer::RenderScene(Scene& aScene)
 		QueueGameObjects(aScene, aScene.myMainCamera->GetComponent<Camera>());
 	}
 
-	if (GraphicsEngine::Get().DrawGizmos)
+	if (gfx.DrawGizmos)
 	{
 		QueueDebugGizmos(aScene, aScene.myMainCamera->GetComponent<Camera>());
 	}
@@ -152,10 +158,10 @@ void Renderer::QueueSpotLightShadows(Scene& aScene)
 		if (!spotLight->GetActive()) continue;
 		if (!spotLight->CastsShadows()) continue;
 
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("Shadow")->pso);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Shadow")->pso);
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, spotLight->GetShadowMap(), false, true);
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(aScene.mySpotLights[i]->GetComponent<Camera>());
-		QueueGameObjects(aScene, aScene.mySpotLights[i]->GetComponent<Camera>(), false, AssetManager::Get().GetAsset<PSOAsset>("Shadow")->pso);
+		QueueGameObjects(aScene, aScene.mySpotLights[i]->GetComponent<Camera>(), false, AssetManager::Get().GetAsset<PSOAsset>("PSO_Shadow")->pso);
 	}
 }
 
@@ -168,10 +174,10 @@ void Renderer::QueuePointLightShadows(Scene& aScene)
 		if (!pointLight->CastsShadows()) continue;
 
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, pointLight->GetShadowMap(), false, true);
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("ShadowCube")->pso);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_ShadowCube")->pso);
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(aScene.myPointLights[i]->GetComponent<Camera>());
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateShadowBuffer>(pointLight);
-		QueueGameObjects(aScene, pointLight, false, AssetManager::Get().GetAsset<PSOAsset>("ShadowCube")->pso);
+		QueueGameObjects(aScene, pointLight, false, AssetManager::Get().GetAsset<PSOAsset>("PSO_ShadowCube")->pso);
 	}
 }
 
@@ -182,14 +188,14 @@ void Renderer::QueueDirectionalLightShadows(Scene& aScene)
 	if (!dLight->CastsShadows()) return;
 
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, dLight->GetShadowMap(), false, true);
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("Shadow")->pso);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Shadow")->pso);
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(aScene.myDirectionalLight->GetComponent<Camera>());
-	QueueGameObjects(aScene, aScene.myDirectionalLight->GetComponent<Camera>(), false, AssetManager::Get().GetAsset<PSOAsset>("Shadow")->pso);
+	QueueGameObjects(aScene, aScene.myDirectionalLight->GetComponent<Camera>(), false, AssetManager::Get().GetAsset<PSOAsset>("PSO_Shadow")->pso);
 }
 
 void Renderer::QueueDebugGizmos(Scene& aScene, std::shared_ptr<Camera> aRenderCamera)
 {
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("Gizmo")->pso);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Gizmo")->pso);
 	CU::PlaneVolume<float> frustumVolume = aRenderCamera->GetFrustumPlaneVolume();
 
 	for (auto& gameObject : aScene.myGameObjects)
@@ -400,22 +406,22 @@ void Renderer::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
 // TEMP
 void Renderer::Init()
 {
-	myTestSprite = std::make_shared<Sprite>();
-	myTestText = std::make_shared<Text>();
+	//myTestSprite = std::make_shared<Sprite>();
+	//myTestText = std::make_shared<Text>();
 
-	myTestText->SetFont(AssetManager::Get().GetAsset<FontAsset>("Fonts/RobotoRegular.json")->font);
-	myTestText->SetPosition(CU::Vector2f(-500.0f, 700.0f));
-	myTestText->SetSize(5);
-	myTestText->SetTextContent("Test");
+	//myTestText->SetFont(AssetManager::Get().GetAsset<FontAsset>("Fonts/RobotoRegular.json")->font);
+	//myTestText->SetPosition(CU::Vector2f(-500.0f, 700.0f));
+	//myTestText->SetSize(5);
+	//myTestText->SetTextContent("Test");
 }
 
 void Renderer::DrawTestUI()
 {
-	myTestSprite->SetTexture(AssetManager::Get().GetAsset<TextureAsset>("EngineAssets/Textures/Utility/perlin.dds")->texture);
+	/*myTestSprite->SetTexture(AssetManager::Get().GetAsset<TextureAsset>("EngineAssets/Textures/Utility/perlin.dds")->texture);
 	myTestSprite->SetPosition(CU::Vector2f(500.0f, 500.0f));
 	myTestSprite->SetSize(CU::Vector2f(600.0f, 600.0f));
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(GraphicsEngine::Get().GetBackBuffer(), nullptr, false, false);
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderSprite>(myTestSprite);
 
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderText>(myTestText);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderText>(myTestText);*/
 }

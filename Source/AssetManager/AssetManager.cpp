@@ -34,6 +34,42 @@ bool AssetManager::UnregisterAsset(const std::shared_ptr<Asset> aAsset)
     return UnregisterAsset(aAsset->path);
 }
 
+bool AssetManager::RegisterAsset(const std::filesystem::path& aPath)
+{
+    std::filesystem::path assetPath = MakeRelative(aPath);
+    const std::string name = assetPath.filename().string();
+    if (name.starts_with("SM") || name.starts_with("SK"))
+    {
+        return RegisterMeshAsset(aPath);
+    }
+    else if (name.starts_with("A"))
+    {
+        return RegisterAnimationAsset(aPath);
+    }
+    else if (name.starts_with("MAT"))
+    {
+        return RegisterMaterialAsset(aPath);
+    }
+    else if (name.starts_with("T"))
+    {
+        return RegisterTextureAsset(aPath);
+    }
+    else if (name.starts_with("SH"))
+    {
+        return RegisterShaderAsset(aPath);
+    }
+    else if (name.starts_with("PSO"))
+    {
+        return RegisterPSOAsset(aPath);
+    }
+    else if (name.starts_with("F"))
+    {
+        return RegisterFontAsset(aPath);
+    }
+
+    return false;
+}
+
 bool AssetManager::Initialize(const std::filesystem::path& aContentRootPath, bool aAutoRegisterAllAssetsInRoot)
 {
     LOG(LogAssetManager, Log, "Initializing Asset Manager...");
@@ -126,43 +162,11 @@ void AssetManager::RegisterEngineAssets()
 
 void AssetManager::RegisterAllAssetsInDirectory()
 {
-    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "Models/"))
+    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot))
     {
         if (file.path().has_filename() && file.path().has_extension())
         {
-            RegisterMeshAsset(file.path());
-        }
-    }
-
-    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "Animations/"))
-    {
-        if (file.path().has_filename() && file.path().has_extension())
-        {
-            RegisterAnimationAsset(file.path());
-        }
-    }
-
-    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "Textures/"))
-    {
-        if (file.path().has_filename() && file.path().has_extension())
-        {
-            RegisterTextureAsset(file.path());
-        }
-    }
-
-    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "Materials/"))
-    {
-        if (file.path().has_filename() && file.path().has_extension())
-        {
-            RegisterMaterialAsset(file.path());
-        }
-    }
-
-    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "Fonts/"))
-    {
-        if (file.path().has_filename() && file.path().has_extension())
-        {
-            RegisterFontAsset(file.path());
+            RegisterAsset(file.path());
         }
     }
 }
@@ -323,9 +327,9 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
     }
     path.close();
 
-    if (data.contains("Type"))
+    if (data.contains("PSO"))
     {
-        asset->material->SetPSO(GetAsset<PSOAsset>(data["Type"].get<std::string>())->pso);
+        asset->material->SetPSO(GetAsset<PSOAsset>(data["PSO"].get<std::string>())->pso);
     }
 
     if (data.contains("AlbedoTint"))
@@ -339,18 +343,33 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
     if (data.contains("AlbedoTexture"))
     {
         std::filesystem::path albedoPath = data["AlbedoTexture"].get<std::string>();
+        if (myAssets.find(albedoPath) == myAssets.end())
+        {
+            RegisterTextureAsset(myContentRoot / albedoPath);
+        }
+
         asset->material->SetAlbedoTexture(GetAsset<TextureAsset>(albedoPath)->texture);
     }
 
     if (data.contains("NormalTexture"))
     {
         std::filesystem::path normalPath = data["NormalTexture"].get<std::string>();
+        if (myAssets.find(normalPath) == myAssets.end())
+        {
+            RegisterTextureAsset(myContentRoot / normalPath);
+        }
+
         asset->material->SetNormalTexture(GetAsset<TextureAsset>(normalPath)->texture);
     }
 
     if (data.contains("MaterialTexture"))
     {
         std::filesystem::path materialPath = data["MaterialTexture"].get<std::string>();
+        if (myAssets.find(materialPath) == myAssets.end())
+        {
+            RegisterTextureAsset(myContentRoot / materialPath);
+        }
+
         asset->material->SetMaterialTexture(GetAsset<TextureAsset>(materialPath)->texture);
     }
 
@@ -638,6 +657,13 @@ bool AssetManager::ValidateAsset(const std::filesystem::path& aPath)
         return false;
     }
 
+    std::filesystem::path assetPath = MakeRelative(aPath);
+    if (myAssets.find(assetPath) != myAssets.end())
+    {
+        LOG(LogAssetManager, Warning, "Asset at path '{}' is already registered!", aPath.string());
+        return false;
+    }
+
     return true;
 }
 
@@ -660,6 +686,12 @@ std::filesystem::path AssetManager::MakeRelative(const std::filesystem::path& aP
     }
 
     return aPath;
+}
+
+bool AssetManager::DoesAssetExist(const std::filesystem::path& aPath)
+{
+    aPath;
+    return false;
 }
 
 bool AssetManager::RegisterEngineTextureAsset(std::string_view aName, const uint8_t* aTextureDataPtr, size_t aTextureDataSize)

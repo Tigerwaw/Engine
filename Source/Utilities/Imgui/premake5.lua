@@ -21,6 +21,8 @@ project "Imgui"
     "%{dirs.imgui}/backends/imgui_impl_win32.cpp",
     "%{dirs.imgui}/backends/imgui_impl_dx11.h",
     "%{dirs.imgui}/backends/imgui_impl_dx11.cpp",
+    "%{dirs.imgui}/misc/debuggers/imgui.natvis",
+    "%{dirs.imgui}/misc/debuggers/imgui.natstepfilter",
 		"%{dirs.imgui}/*.h",
 		"%{dirs.imgui}/*.cpp"
 	}

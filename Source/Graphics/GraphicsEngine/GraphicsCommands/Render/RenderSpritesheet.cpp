@@ -36,7 +36,7 @@ void RenderSpritesheet::Execute()
     }
     else
     {
-        GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("Spritesheet")->pso);
+        GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("PSO_Spritesheet")->pso);
         GraphicsEngine::Get().SetTextureResource_PS(0, *texture);
         GraphicsEngine::Get().RenderSprite();
         GraphicsEngine::Get().ClearTextureResource_PS(0);

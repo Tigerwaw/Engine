@@ -10,6 +10,8 @@ class AudioEngine;
 class InputHandler;
 class Timer;
 class ImGuiHandler;
+class Application;
+class WindowsEventHandler;
 
 class Engine
 {
@@ -30,6 +32,7 @@ public:
     DebugDrawer& GetDebugDrawer() { return *myDebugDrawer; }
     AudioEngine& GetAudioEngine() { return *myAudioEngine; }
     ImGuiHandler& GetImGuiHandler() { return *myImGuiHandler; }
+    WindowsEventHandler& GetWindowsEventHandler();
 
     void LoadSettings(const std::string& aSettingsFilepath);
     const std::filesystem::path GetContentRootPath();
@@ -42,6 +45,10 @@ public:
     const CU::Vector2f& GetWindowSize() const { return myWindowSize; }
     const bool& GetIsFullscreen() const { return myIsFullscreen; }
     const bool& GetIsBorderless() const { return myIsBorderless; }
+    const bool& GetAllowDropFiles() const { return myAllowDropFiles; }
+    const bool& GetAutoRegisterAssets() const { return myAutoRegisterAssets; }
+
+    void SetApplicationInstance(Application* aApplication);
 
     // Temp kinda
     int RamUsage = 0;
@@ -63,10 +70,14 @@ private:
     std::unique_ptr<AudioEngine> myAudioEngine;
     std::unique_ptr<ImGuiHandler> myImGuiHandler;
 
+    Application* myApplicationInstance;
+
     std::string myTitle;
     std::filesystem::path myContentRoot;
     CU::Vector2f myResolution;
     CU::Vector2f myWindowSize;
     bool myIsFullscreen;
     bool myIsBorderless;
+    bool myAllowDropFiles;
+    bool myAutoRegisterAssets;
 };

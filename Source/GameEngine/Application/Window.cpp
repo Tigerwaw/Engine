@@ -3,7 +3,7 @@
 
 LRESULT CALLBACK WinProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam);
 
-bool Window::InitializeWindow(std::string aWindowTitle, CU::Vector2f aWindowSize, bool aIsFullscreen, bool aIsBorderless)
+bool Window::InitializeWindow(std::string aWindowTitle, CU::Vector2f aWindowSize, bool aIsFullscreen, bool aIsBorderless, bool aAllowDropFiles)
 {
     LOG(LogGameEngine, Log, "Initializing window...");
     
@@ -56,6 +56,8 @@ bool Window::InitializeWindow(std::string aWindowTitle, CU::Vector2f aWindowSize
 		nullptr, nullptr, nullptr,
 		nullptr
 	);
+
+	DragAcceptFiles(myMainWindowHandle, static_cast<BOOL>(aAllowDropFiles));
 
 	ShowWindow(myMainWindowHandle, SW_SHOW);
 	SetForegroundWindow(myMainWindowHandle);

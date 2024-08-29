@@ -1,0 +1,12 @@
+{
+  "PSO": "PSO_PBR",
+  "AlbedoTint": {
+    "R": 1.0,
+    "G": 1.0,
+    "B": 1.0,
+    "A": 1.0
+  },
+  "AlbedoTexture": "EngineAssets/Textures/TestCube/T_TestCube_C.dds",
+  "NormalTexture": "EngineAssets/Textures/TestCube/T_TestCube_N.dds",
+  "MaterialTexture": "EngineAssets/Textures/TestCube/T_TestCube_M.dds"
+}

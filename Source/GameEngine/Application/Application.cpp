@@ -50,6 +50,8 @@ void Application::Run()
 				}
 			}
 
+			myEventHandler->HandleMessage(&msg);
+
 			Engine::GetInstance().GetInputHandler().UpdateEvents(msg.message, msg.wParam, msg.lParam);
 		}
 
@@ -68,22 +70,36 @@ void Application::Shutdown()
 	Engine::GetInstance().Destroy();
 }
 
+Window& Application::GetWindow()
+{
+	return *myWindow;
+}
+
+WindowsEventHandler& Application::GetWindowsEventHandler()
+{
+	return *myEventHandler;
+}
+
 bool Application::InitializeEngine()
 {
 	myWindow = std::make_unique<Window>();
+	myEventHandler = std::make_unique<WindowsEventHandler>();
 
 	Engine& engine = Engine::GetInstance();
 	std::string title = Engine::GetInstance().GetApplicationTitle();
 	CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
 	bool fullscreen = Engine::GetInstance().GetIsFullscreen();
 	bool borderless = Engine::GetInstance().GetIsBorderless();
-	myWindow->InitializeWindow(title, windowSize, fullscreen, borderless);
+	bool allowDropFiles = Engine::GetInstance().GetAllowDropFiles();
+	myWindow->InitializeWindow(title, windowSize, fullscreen, borderless, allowDropFiles);
+
+	engine.SetApplicationInstance(this);
 
 	GraphicsEngine::Get().Initialize(myWindow->GetWindowHandle());
 	CU::Vector2f resolution = engine.GetResolution();
 	GraphicsEngine::Get().SetResolution(resolution.x, resolution.y);
 
-	AssetManager::Get().Initialize(engine.GetContentRootPath());
+	AssetManager::Get().Initialize(engine.GetContentRootPath(), engine.GetAutoRegisterAssets());
 
 #ifdef _DEBUG
 	Engine::GetInstance().GetImGuiHandler().Initialize(myWindow->GetWindowHandle());

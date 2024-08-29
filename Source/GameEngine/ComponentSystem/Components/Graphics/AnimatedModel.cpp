@@ -53,6 +53,13 @@ void AnimatedModel::SetMesh(std::shared_ptr<Mesh> aMesh)
 void AnimatedModel::SetMaterialOnSlot(unsigned aSlot, std::shared_ptr<Material> aMaterial)
 {
     myMaterials.emplace_back(aMaterial);
+
+    if (mySlotToIndex.find(aSlot) != mySlotToIndex.end())
+    {
+        myMaterials.erase(myMaterials.begin() + mySlotToIndex.at(aSlot));
+        mySlotToIndex.erase(aSlot);
+    }
+
     mySlotToIndex.emplace(aSlot, static_cast<unsigned>(myMaterials.size() - 1));
 }
 

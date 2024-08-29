@@ -53,21 +53,21 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 		defaultPSO.VertexStride = sizeof(Vertex);
 
 		std::wstring root = Engine::GetInstance().GetContentRootPath().wstring();
-		if (!myRHI->CreateInputLayout(defaultPSO.InputLayout, Vertex::InputLayoutDefinition, root + L"EngineAssets/Shaders/Mesh_VS.cso"))
+		if (!myRHI->CreateInputLayout(defaultPSO.InputLayout, Vertex::InputLayoutDefinition, root + L"EngineAssets/Shaders/SH_Mesh_VS.cso"))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to load default input layout!");
 			return false;
 		}
 
 		defaultPSO.VertexShader = std::make_shared<Shader>();
-		if (!myRHI->LoadShaderFromFilePath("Default_VS", *defaultPSO.VertexShader, root + L"EngineAssets/Shaders/Mesh_VS.cso"))
+		if (!myRHI->LoadShaderFromFilePath("Default_VS", *defaultPSO.VertexShader, root + L"EngineAssets/Shaders/SH_Mesh_VS.cso"))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to load default vertex shader!");
 			return false;
 		}
 
 		defaultPSO.PixelShader = std::make_shared<Shader>();
-		if (!myRHI->LoadShaderFromFilePath("Default_PS", *defaultPSO.PixelShader, root + L"EngineAssets/Shaders/Unlit_PS.cso"))
+		if (!myRHI->LoadShaderFromFilePath("Default_PS", *defaultPSO.PixelShader, root + L"EngineAssets/Shaders/SH_Unlit_PS.cso"))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to load default pixel shader!");
 			return false;

@@ -1,0 +1,13 @@
+{
+  "PSO": "PSO_PBR",
+  "AlbedoTint":
+  {
+    "R": 1.0,
+    "G": 1.0,
+    "B": 1.0,
+    "A": 1.0
+  },
+  "AlbedoTexture": "Textures/MatballOne/T_Matball_One_c.dds",
+  "NormalTexture": "Textures/MatballOne/T_Matball_One_n.dds",
+  "MaterialTexture": "Textures/MatballOne/T_Matball_One_m.dds"
+}
