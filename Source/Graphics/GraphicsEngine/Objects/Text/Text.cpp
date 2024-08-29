@@ -10,7 +10,6 @@ Text::Text(std::string aTextContent, std::shared_ptr<Font> aFont, const int aSiz
 	SetTextContent(aTextContent);
 	SetFont(aFont);
 	SetSize(aSize);
-	mySize = myFont->Atlas.Size;
 }
 
 void Text::Initialize()
@@ -41,25 +40,26 @@ void Text::SetTextContent(std::string aTextContent)
 	{
 		Font::Glyph& glyph = myFont->operator[](c);
 
-		const float charAdvance = glyph.Advance * mySize;
+		const int fontSize = myFont->Atlas.Size * mySize;
+		const float charAdvance = glyph.Advance * fontSize;
 		const unsigned currentVertexCount = static_cast<unsigned>(myTextData.vertices.size());
 		CU::Vector4f bounds = glyph.UVBounds;
 		CU::Vector4f offsets = glyph.PlaneBounds;
 
 		offsets.x = glyph.PlaneBounds.x * charAdvance;
-		offsets.z = glyph.PlaneBounds.z * mySize * scalarOffset;
+		offsets.z = glyph.PlaneBounds.z * fontSize * scalarOffset;
 		offsets.y = glyph.PlaneBounds.y * charAdvance;
-		offsets.w = glyph.PlaneBounds.w * mySize;
+		offsets.w = glyph.PlaneBounds.w * fontSize;
 
 		if (abs(offsets.w) > 0.005f)
 		{
-			offsets.w += myFont->Atlas.Descender * mySize;
+			offsets.w += myFont->Atlas.Descender * fontSize;
 		}
 
-		myTextData.vertices.push_back({ X + offsets.x, offsets.y, bounds.x, 1 - bounds.w });
-		myTextData.vertices.push_back({ X + offsets.x, offsets.w, bounds.x, 1 - bounds.y });
-		myTextData.vertices.push_back({ X + offsets.z, offsets.y, bounds.z, 1 - bounds.w });
-		myTextData.vertices.push_back({ X + offsets.z, offsets.w, bounds.z, 1 - bounds.y });
+		myTextData.vertices.push_back({ myMatrix(4, 1) + X + offsets.x, myMatrix(4, 2) + offsets.y, bounds.x, 1 - bounds.y });
+		myTextData.vertices.push_back({ myMatrix(4, 1) + X + offsets.x, myMatrix(4, 2) + offsets.w, bounds.x, 1 - bounds.w });
+		myTextData.vertices.push_back({ myMatrix(4, 1) + X + offsets.z, myMatrix(4, 2) + offsets.y, bounds.z, 1 - bounds.y });
+		myTextData.vertices.push_back({ myMatrix(4, 1) + X + offsets.z, myMatrix(4, 2) + offsets.w, bounds.z, 1 - bounds.w });
 
 		X += charAdvance + scalarOffset;
 

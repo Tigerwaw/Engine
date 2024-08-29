@@ -404,9 +404,9 @@ void Renderer::Init()
 	myTestText = std::make_shared<Text>();
 
 	myTestText->SetFont(AssetManager::Get().GetAsset<FontAsset>("Fonts/RobotoRegular.json")->font);
-	myTestText->SetTextContent("Blablabla");
-	myTestText->SetPosition(CU::Vector2f(200.0f, 200.0f));
-	//myTestText->SetSize(1);
+	myTestText->SetPosition(CU::Vector2f(-500.0f, 700.0f));
+	myTestText->SetSize(5);
+	myTestText->SetTextContent("Test");
 }
 
 void Renderer::DrawTestUI()

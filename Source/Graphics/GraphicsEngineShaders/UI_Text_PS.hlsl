@@ -16,10 +16,10 @@ float2 SafeNormalize(float2 v)
 
 float ScreenPxRange(float2 uvs)
 {
-    const float screenPxRange = 2; // Default for MSDF-atlad-gen
-    // 212 is the atlas size
-    float2 unitRange = float2(screenPxRange, screenPxRange) / float2(212, 212);
-    float2 screenTexSize = float2(1.0, 1.0f) / fwidth(uvs);
+    const float screenPxRange = 2; // Default for MSDF-atlas-gen
+    const float2 atlasSize = float2(388, 388);
+    float2 unitRange = float2(screenPxRange, screenPxRange) / atlasSize;
+    float2 screenTexSize = float2(1.0, 1.0) / fwidth(uvs);
     return max(0.5 * dot(unitRange, screenTexSize), 1.0);
 }
 
@@ -34,6 +34,10 @@ float4 main(Text_VSout input) : SV_TARGET
     
     float4 result;
     result.rgb = lerp(bgColor, fgColor, opacity);
-    result.a = (result.r + result.g + result.b) > 0.05f;
+    result.a = opacity;
+    if (result.a < 0.05f)
+    {
+        discard;
+    }
     return result;
 }
