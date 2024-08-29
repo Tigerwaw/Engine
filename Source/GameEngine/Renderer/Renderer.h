@@ -9,12 +9,19 @@ class Transform;
 class PointLight;
 struct PipelineStateObject;
 
+// TEMP
+class Sprite;
+class Text;
+
 class Renderer
 {
 public:
     Renderer();
     ~Renderer();
     void RenderScene(Scene& aScene);
+
+    // TEMP
+    void Init();
 private:
     void QueueClearTextureResources();
     void QueueShadowmapTextureResources(Scene& aScene);
@@ -32,5 +39,10 @@ private:
 
     void UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject);
     CU::AABB3D<float> myVisibleObjectsBB;
+
+    // TEMP
+    void DrawTestUI();
+    std::shared_ptr<Sprite> myTestSprite;
+    std::shared_ptr<Text> myTestText;
 };
 

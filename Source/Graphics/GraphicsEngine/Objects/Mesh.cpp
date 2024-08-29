@@ -1,7 +1,7 @@
 #include "GraphicsEngine.pch.h"
 #include "Graphics\GraphicsEngine\GraphicsEngine.h"
 #include "Mesh.h"
-#include "Vertex.h"
+#include "Vertices/Vertex.h"
 
 using namespace Microsoft::WRL;
 

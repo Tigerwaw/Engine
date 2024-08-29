@@ -10,6 +10,7 @@
 #include "Render/RenderMesh.h"
 #include "Render/RenderAnimatedMesh.h"
 #include "Render/RenderDebugMesh.h"
+#include "Render/RenderText.h"
 #include "Render/RenderSprite.h"
 #include "Render/RenderSpritesheet.h"
 #include "Render/RenderDebugLines.h"

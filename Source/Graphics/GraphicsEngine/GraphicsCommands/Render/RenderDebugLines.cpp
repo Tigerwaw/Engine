@@ -1,7 +1,7 @@
 #include "GraphicsEngine.pch.h"
 #include "RenderDebugLines.h"
 #include "GraphicsEngine/Objects/DynamicVertexBuffer.h"
-#include "GraphicsEngine/Objects/DebugLineVertex.h"
+#include "GraphicsEngine/Objects/Vertices/DebugLineVertex.h"
 #include "AssetManager/AssetManager.h"
 
 RenderDebugLines::RenderDebugLines(std::vector<DebugLineVertex> aLineVertices, std::shared_ptr<DynamicVertexBuffer> aLineBuffer)

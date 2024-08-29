@@ -314,12 +314,21 @@ void RenderHardwareInterface::MaximizeWindowSize()
 	SetWindowSize(static_cast<float>(posX), static_cast<float>(posY));
 }
 
-bool RenderHardwareInterface::CreateIndexBuffer(std::string_view aName, const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer)
+bool RenderHardwareInterface::CreateIndexBuffer(std::string_view aName, const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer, bool aIsDynamic)
 {
 	D3D11_BUFFER_DESC indexBufferDesc = {};
 	indexBufferDesc.ByteWidth = static_cast<unsigned>(aIndexList.size() * sizeof(unsigned));
-	indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	indexBufferDesc.CPUAccessFlags = 0;
+
+	if (aIsDynamic)
+	{
+		indexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		indexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		indexBufferDesc.MiscFlags = 0;
+		indexBufferDesc.StructureByteStride = 0;
+	}
 
 	D3D11_SUBRESOURCE_DATA indexSubresourceData = {};
 	indexSubresourceData.pSysMem = aIndexList.data();
@@ -396,6 +405,25 @@ void RenderHardwareInterface::SetConstantBuffer(const ConstantBuffer& aBuffer)
 	{
 		myContext->GSSetConstantBuffers(aBuffer.mySlotIndex, 1, aBuffer.myBuffer.GetAddressOf());
 	}
+}
+
+bool RenderHardwareInterface::UpdateDynamicIndexBuffer(const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer)
+{
+	const uint8_t* dataPtr = reinterpret_cast<const uint8_t*>(aIndexList.data());
+	size_t bufferSize = aIndexList.size() * sizeof(unsigned);
+
+	D3D11_MAPPED_SUBRESOURCE bufferData = {};
+	HRESULT result = myContext->Map(outIxBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &bufferData);
+	if (FAILED(result))
+	{
+		LOG(LogRHI, Error, "Failed to map dynamic index buffer!");
+		return false;
+	}
+	 
+	memcpy_s(bufferData.pData, bufferSize, dataPtr, bufferSize);
+	myContext->Unmap(outIxBuffer.Get(), 0);
+
+	return true;
 }
 
 void RenderHardwareInterface::SetPrimitiveTopology(Topology aTopology) const

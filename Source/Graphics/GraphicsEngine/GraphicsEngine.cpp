@@ -3,9 +3,10 @@
 
 #include "GameEngine/Engine.h"
 #include "GraphicsEngine/Objects/Shader.h"
-#include "GraphicsEngine/Objects/Vertex.h"
-#include "GraphicsEngine/Objects/DebugLineVertex.h"
+#include "GraphicsEngine/Objects/Vertices/Vertex.h"
+#include "GraphicsEngine/Objects/Vertices/DebugLineVertex.h"
 #include "GraphicsEngine/Objects/Mesh.h"
+#include "GraphicsEngine/Objects/Text/Text.h"
 #include "GraphicsEngine/Objects/Sprite.h"
 #include "GraphicsEngine/Objects/Material.h"
 #include "GraphicsEngine/Objects/Texture.h"
@@ -32,7 +33,13 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 
 	LOG(LogGraphicsEngine, Log, "Initializing Graphics Engine...");
 
-	if (!myRHI->Initialize(aWindowHandle, true))
+	bool createDebugLayer = true;
+
+#ifdef _RELEASE
+	createDebugLayer = false;
+#endif
+
+	if (!myRHI->Initialize(aWindowHandle, createDebugLayer))
 	{
 		myRHI.reset();
 		LOG(LogGraphicsEngine, Error, "Failed to initialize graphics engine!");
@@ -281,6 +288,21 @@ void GraphicsEngine::RenderSprite()
 	myRHI->Draw(1);
 }
 
+void GraphicsEngine::RenderText(const Text& aText)
+{
+	SetTextureResource_PS(3, *aText.GetTexture());
+
+	const Text::TextData& textData = aText.GetTextData();
+	myRHI->SetVertexBuffer(textData.vertexBuffer->GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
+	myRHI->SetIndexBuffer(textData.indexBuffer);
+	myRHI->SetPrimitiveTopology(Topology::TRIANGLELIST);
+
+	myRHI->DrawIndexed(0, textData.numIndices);
+	myDrawcallAmount++;
+
+	ClearTextureResource_PS(3);
+}
+
 void GraphicsEngine::RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsigned aLineAmount)
 {
 	myRHI->SetVertexBuffer(aDynamicBuffer.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
@@ -288,9 +310,14 @@ void GraphicsEngine::RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsig
 	myRHI->Draw(aLineAmount);
 }
 
-bool GraphicsEngine::CreateIndexBuffer(std::string_view aName, const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer)
+bool GraphicsEngine::CreateIndexBuffer(std::string_view aName, const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer, bool aIsDynamic)
 {
-	return myRHI->CreateIndexBuffer(aName, aIndexList, outIxBuffer);
+	return myRHI->CreateIndexBuffer(aName, aIndexList, outIxBuffer, aIsDynamic);
+}
+
+bool GraphicsEngine::UpdateDynamicIndexBuffer(const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer)
+{
+	return myRHI->UpdateDynamicIndexBuffer(aIndexList, outIxBuffer);
 }
 
 GraphicsEngine::GraphicsEngine() = default;

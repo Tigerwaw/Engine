@@ -5,6 +5,8 @@
 #include "GameEngine/DebugDrawer/DebugDrawer.h"
 #include "AssetManager/AssetManager.h"
 #include "GraphicsEngine/GraphicsEngine.h"
+#include "GraphicsEngine/Objects/Sprite.h"
+#include "GraphicsEngine/Objects/Text/Text.h"
 #include "GameEngine/Math/Vector.hpp"
 #include "GameEngine/Intersections/AABB3D.hpp"
 #include "GameEngine/Intersections/Intersection3D.hpp"
@@ -62,6 +64,8 @@ void Renderer::RenderScene(Scene& aScene)
 	QueueDebugLines(aScene);
 
 	QueueClearTextureResources();
+
+	DrawTestUI();
 }
 
 void Renderer::QueueClearTextureResources()
@@ -391,4 +395,27 @@ void Renderer::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
 
 		myVisibleObjectsBB.InitWithMinAndMax(bbMin, bbMax);
 	}
+}
+
+// TEMP
+void Renderer::Init()
+{
+	myTestSprite = std::make_shared<Sprite>();
+	myTestText = std::make_shared<Text>();
+
+	myTestText->SetFont(AssetManager::Get().GetAsset<FontAsset>("Fonts/RobotoRegular.json")->font);
+	myTestText->SetTextContent("Blablabla");
+	myTestText->SetPosition(CU::Vector2f(200.0f, 200.0f));
+	//myTestText->SetSize(1);
+}
+
+void Renderer::DrawTestUI()
+{
+	myTestSprite->SetTexture(AssetManager::Get().GetAsset<TextureAsset>("EngineAssets/Textures/Utility/perlin.dds")->texture);
+	myTestSprite->SetPosition(CU::Vector2f(500.0f, 500.0f));
+	myTestSprite->SetSize(CU::Vector2f(600.0f, 600.0f));
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(GraphicsEngine::Get().GetBackBuffer(), nullptr, false, false);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderSprite>(myTestSprite);
+
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderText>(myTestText);
 }

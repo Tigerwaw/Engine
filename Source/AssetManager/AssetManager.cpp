@@ -3,8 +3,9 @@
 #include "AssetManager.h"
 #include "Asset.h"
 #include "GraphicsEngine.h"
-#include "Objects/Vertex.h"
-#include "Objects/DebugLineVertex.h"
+#include "Objects/Vertices/Vertex.h"
+#include "Objects/Vertices/DebugLineVertex.h"
+#include "Objects/Vertices/TextVertex.h"
 
 #include "Math/Matrix.hpp"
 #include "Math/Vector.hpp"
@@ -154,6 +155,14 @@ void AssetManager::RegisterAllAssetsInDirectory()
         if (file.path().has_filename() && file.path().has_extension())
         {
             RegisterMaterialAsset(file.path());
+        }
+    }
+
+    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "Fonts/"))
+    {
+        if (file.path().has_filename() && file.path().has_extension())
+        {
+            RegisterFontAsset(file.path());
         }
     }
 }
@@ -450,6 +459,11 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
             inputLayoutDefinition = DebugLineVertex::InputLayoutDefinition;
             vertexStride = sizeof(DebugLineVertex);
         }
+        else if (data["VertexType"].get<std::string>() == "Text")
+        {
+            inputLayoutDefinition = TextVertex::InputLayoutDefinition;
+            vertexStride = sizeof(TextVertex);
+        }
     }
 
     if (data.contains("VertexShader") && data["VertexShader"] != "")
@@ -507,6 +521,96 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered PSO asset {}", asset->name.string());
+    return true;
+}
+
+bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
+{
+    if (!ValidateAsset(aPath)) return false;
+
+    std::filesystem::path assetPath = MakeRelative(aPath);
+    const std::string ext = assetPath.extension().string();
+    if (!ext.ends_with("json")) return false;
+
+    std::shared_ptr<FontAsset> asset = std::make_shared<FontAsset>();
+    asset->font = std::make_shared<Font>();
+
+    std::filesystem::path texturePath = assetPath;
+    texturePath = texturePath.replace_extension("dds");
+    if (!RegisterTextureAsset(myContentRoot / texturePath))
+    {
+        LOG(LogAssetManager, Error, "Failed to create a font texture at path {}", asset->path.string());
+        return false;
+    }
+
+    asset->font->Texture = GetAsset<TextureAsset>(texturePath)->texture;
+
+    std::ifstream path(aPath);
+    nl::json data = nl::json();
+
+    try
+    {
+        data = nl::json::parse(path);
+    }
+    catch (nl::json::parse_error e)
+    {
+        LOG(LogAssetManager, Error, "Failed to read font asset {}, {}", asset->path.filename().string(), e.what());
+        return false;
+    }
+    path.close();
+
+    Font& font = *asset->font;
+
+    font.Atlas.Size = data["atlas"]["size"];
+    font.Atlas.Width = data["atlas"]["width"];
+    font.Atlas.Height = data["atlas"]["height"];
+    font.Atlas.EmSize = data["metrics"]["emSize"];
+    font.Atlas.LineHeight = data["metrics"]["lineHeight"];
+    font.Atlas.Ascender = data["metrics"]["ascender"];
+    font.Atlas.Descender = data["metrics"]["descender"];
+
+    size_t glyphCount = data["glyphs"].size();
+    for (int i = 0; i < glyphCount; i++)
+    {
+        Font::Glyph newGlyph;
+        nl::json glyph = data["glyphs"][i];
+        unsigned unicode = glyph.value("unicode", 0);
+        float advance = glyph.value("advance", -1.0f);
+
+        CU::Vector4f planeBounds;
+        if (glyph.contains("planeBounds"))
+        {
+            planeBounds.x = glyph["planeBounds"]["left"].get<float>();
+            planeBounds.y = glyph["planeBounds"]["bottom"].get<float>();
+            planeBounds.z = glyph["planeBounds"]["right"].get<float>();
+            planeBounds.w = glyph["planeBounds"]["top"].get<float>();
+        }
+
+        CU::Vector4f uvBounds;
+        float atlasWidth = static_cast<float>(font.Atlas.Width);
+        float atlasHeight = static_cast<float>(font.Atlas.Height);
+        if (glyph.contains("atlasBounds"))
+        {
+            float UVStartX = glyph["atlasBounds"]["left"].get<float>() / atlasWidth;
+            float UVStartY = glyph["atlasBounds"]["bottom"].get<float>() / atlasHeight;
+            float UVEndX = glyph["atlasBounds"]["right"].get<float>() / atlasWidth;
+            float UVEndY = glyph["atlasBounds"]["top"].get<float>() / atlasHeight;
+
+            uvBounds = { UVStartX, UVStartY, UVEndX, UVEndY };
+        }
+
+        newGlyph.Character = static_cast<char>(unicode);
+        newGlyph.Advance = advance;
+        newGlyph.PlaneBounds = planeBounds;
+        newGlyph.UVBounds = uvBounds;
+        font.Glyphs.emplace(unicode, newGlyph);
+    }
+
+    asset->path = assetPath;
+    asset->name = assetPath.stem();
+    myAssets.emplace(assetPath, asset);
+
+    LOG(LogAssetManager, Log, "Registered font asset {}", asset->path.filename().string());
     return true;
 }
 

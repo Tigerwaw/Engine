@@ -5,6 +5,7 @@
 #include "Objects/Material.h"
 #include "Objects/Shader.h"
 #include "Objects/PipelineStateObject.h"
+#include "Objects/Text/Font.h"
 
 struct Asset
 {
@@ -41,4 +42,9 @@ struct ShaderAsset : public Asset
 struct PSOAsset : public Asset
 {
 	std::shared_ptr<PipelineStateObject> pso;
+};
+
+struct FontAsset : public Asset
+{
+	std::shared_ptr<Font> font;
 };

@@ -5,7 +5,7 @@
 #include "GameEngine/Intersections/Sphere.hpp"
 namespace CU = CommonUtilities;
 
-#include "Graphics/GraphicsEngine/Objects/DebugLineVertex.h"
+#include "Graphics/GraphicsEngine/Objects/Vertices/DebugLineVertex.h"
 
 class Camera;
 class Model;

@@ -16,12 +16,13 @@ void main(
     float3 position = lsMatrix._41_42_43;
     float2 size = lsMatrix._11_22;
 	
-	position.xy /= FB_Resolution;
-    position.z = 0.0f;
+    position.xy /= FB_Resolution;
+    position.xy = saturate(position.xy);
+    position.xy = (position.xy - 0.5f) * 2.0f;
     size /= FB_Resolution;
 	
-	float halfWidth = 0.5f * size.x;
-    float halfHeight = 0.5f * size.y;
+    float halfWidth = size.x * 0.5f;
+    float halfHeight = size.y * 0.5f;
 	
 	float4 v[4];
 	v[0] = float4(position + halfWidth * right - halfHeight * up, 1.0f);
@@ -32,7 +33,7 @@ void main(
 	[unroll]
 	for (uint i = 0; i < 4; i++)
 	{
-		Sprite_GSout element;        
+		Sprite_GSout element;
 		element.Position = v[i];
         element.TexCoord0 = defaultUVs[i];
         element.PrimID = primID;

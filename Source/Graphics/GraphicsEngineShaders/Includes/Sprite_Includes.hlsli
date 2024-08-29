@@ -13,4 +13,16 @@ struct Sprite_GSout
     uint PrimID         : SV_PrimitiveID;
 };
 
+struct TextVertex
+{
+    float4 Position : POSITION;
+    float2 TexCoord : TEXCOORD0;
+};
+
+struct Text_VSout
+{
+    float4 Position : SV_POSITION;
+    float2 TexCoord : TEXCOORD0;
+};
+
 #endif // _SPRITE_INCLUDES_

@@ -9,7 +9,7 @@ class Material;
 class Sprite
 {
 public:
-    Sprite(CU::Vector2f aPosition = CU::Vector2f(), CU::Vector2f aSize = CU::Vector2f());
+    Sprite(CU::Vector2f aPosition = CU::Vector2f(), CU::Vector2f aSize = CU::Vector2f(1.0f, 1.0f));
     ~Sprite();
 
     // Allows a sprite to be rendered with a custom PSO, texture does not need to be set.

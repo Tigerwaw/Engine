@@ -24,6 +24,7 @@ public:
 	bool RegisterTextureAsset(const std::filesystem::path& aPath);
 	bool RegisterShaderAsset(const std::filesystem::path& aPath);
 	bool RegisterPSOAsset(const std::filesystem::path& aPath);
+	bool RegisterFontAsset(const std::filesystem::path& aPath);
 	std::filesystem::path& GetContentRoot() { return myContentRoot; }
 private:
 	AssetManager();
