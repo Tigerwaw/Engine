@@ -12,6 +12,7 @@ class Timer;
 class ImGuiHandler;
 class Application;
 class WindowsEventHandler;
+class Window;
 
 class Engine
 {
@@ -33,6 +34,7 @@ public:
     AudioEngine& GetAudioEngine() { return *myAudioEngine; }
     ImGuiHandler& GetImGuiHandler() { return *myImGuiHandler; }
     WindowsEventHandler& GetWindowsEventHandler();
+    Window& GetApplicationWindow();
 
     void LoadSettings(const std::string& aSettingsFilepath);
     const std::filesystem::path GetContentRootPath();

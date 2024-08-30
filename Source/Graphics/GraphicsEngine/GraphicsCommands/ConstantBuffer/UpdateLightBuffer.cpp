@@ -34,7 +34,7 @@ void UpdateLightBuffer::Execute()
 		lightBufferData.DirLight.Color = myDirectionalLight->GetColor();
 		lightBufferData.DirLight.Intensity = myDirectionalLight->GetIntensity();
 		lightBufferData.DirLight.Direction = myDirectionalLight->GetDirection();
-		lightBufferData.DirLight.View = myDirectionalLight->gameObject->GetComponent<Transform>()->GetMatrix().GetFastInverse();
+		lightBufferData.DirLight.View = myDirectionalLight->gameObject->GetComponent<Transform>()->GetWorldMatrix().GetFastInverse();
 		lightBufferData.DirLight.Projection = cam->GetProjectionMatrix();
 		lightBufferData.DirLight.CastShadows = myDirectionalLight->CastsShadows();
 		lightBufferData.DirLight.MinBias = myDirectionalLight->GetMinShadowBias();

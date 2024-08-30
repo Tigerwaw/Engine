@@ -58,6 +58,13 @@ public:
         bool aIsFullscreen = true, bool aIsBorderless = true, bool aAllowDropFiles = false);
 
     HWND GetWindowHandle() const { return myMainWindowHandle; }
+
+    const CU::Vector2f GetCenter() const;
+    const CU::Vector2f GetTopLeft() const;
+    const CU::Vector2f GetTopRight() const;
+    const CU::Vector2f GetBottomLeft() const;
+    const CU::Vector2f GetBottomRight() const;
+    const CU::Vector2f GetSize() const;
 private:
     HWND myMainWindowHandle = nullptr;
 };

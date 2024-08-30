@@ -65,6 +65,84 @@ bool Window::InitializeWindow(std::string aWindowTitle, CU::Vector2f aWindowSize
 	return true;
 }
 
+const CU::Vector2f Window::GetCenter() const
+{
+	CU::Vector2f pos = GetSize();
+	pos /= 2.0f;
+
+	return pos;
+}
+
+const CU::Vector2f Window::GetTopLeft() const
+{
+	CU::Vector2f pos;
+
+	RECT rect;
+	if (GetWindowRect(myMainWindowHandle, &rect))
+	{
+		pos.x = static_cast<float>(rect.left);
+		pos.y = static_cast<float>(rect.top);
+	}
+
+	return pos;
+}
+
+const CU::Vector2f Window::GetTopRight() const
+{
+	CU::Vector2f pos;
+
+	RECT rect;
+	if (GetWindowRect(myMainWindowHandle, &rect))
+	{
+		pos.x = static_cast<float>(rect.right);
+		pos.y = static_cast<float>(rect.top);
+	}
+
+	return pos;
+}
+
+const CU::Vector2f Window::GetBottomLeft() const
+{
+	CU::Vector2f pos;
+
+	RECT rect;
+	if (GetWindowRect(myMainWindowHandle, &rect))
+	{
+		pos.x = static_cast<float>(rect.left);
+		pos.y = static_cast<float>(rect.bottom);
+	}
+
+	return pos;
+}
+
+const CU::Vector2f Window::GetBottomRight() const
+{
+	CU::Vector2f pos;
+
+	RECT rect;
+	if (GetWindowRect(myMainWindowHandle, &rect))
+	{
+		pos.x = static_cast<float>(rect.right);
+		pos.y = static_cast<float>(rect.bottom);
+	}
+
+	return pos;
+}
+
+const CU::Vector2f Window::GetSize() const
+{
+	CU::Vector2f size;
+
+	RECT rect;
+	if (GetWindowRect(myMainWindowHandle, &rect))
+	{
+		size.x = static_cast<float>(rect.right - rect.left);
+		size.y = static_cast<float>(rect.top - rect.bottom);
+	}
+
+	return size;
+}
+
 LRESULT CALLBACK WinProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam)
 {
 	if (uMsg == WM_DESTROY || uMsg == WM_CLOSE)

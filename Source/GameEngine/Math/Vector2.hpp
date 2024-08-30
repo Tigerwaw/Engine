@@ -156,6 +156,15 @@ namespace CommonUtilities
 		return aVector * (1 / aScalar);
 	}
 
+	//Component-wise division
+	template <class T>
+	Vector2<T> operator/(const Vector2<T>& aVector, const Vector2<T>& aOtherVector)
+	{
+		aVector.x /= aOtherVector.x;
+		aVector.y /= aOtherVector.y;
+		return aVector;
+	}
+
 	//Equivalent to setting aVector0 to (aVector0 + aVector1)
 	template <class T>
 	void operator+=(Vector2<T>& aVector0, const Vector2<T>& aVector1)

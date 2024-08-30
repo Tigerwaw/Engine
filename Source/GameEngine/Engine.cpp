@@ -27,6 +27,11 @@ WindowsEventHandler& Engine::GetWindowsEventHandler()
     return myApplicationInstance->GetWindowsEventHandler();
 }
 
+Window& Engine::GetApplicationWindow()
+{
+    return myApplicationInstance->GetWindow();
+}
+
 void Engine::LoadSettings(const std::string& aSettingsFilepath)
 {
     std::ifstream path(aSettingsFilepath);

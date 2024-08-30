@@ -86,7 +86,7 @@ void FeatureShowcase::InitializeApplication()
 			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.02f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.25f * resolution.y });
 			bool open = true;
-			ImGui::Begin("Modelviewer", &open, ImGuiWindowFlags_NoSavedSettings);
+			ImGui::Begin("FeatureShowcase", &open, ImGuiWindowFlags_NoSavedSettings);
 
 			ImGui::Checkbox("Use Viewculling", &GraphicsEngine::Get().UseViewCulling);
 			ImGui::Checkbox("Draw Gizmos", &GraphicsEngine::Get().DrawGizmos);

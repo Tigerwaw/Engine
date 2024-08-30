@@ -25,11 +25,18 @@ enum class DebugMode
 {
 	None,
 	Unlit,
+	DebugAO,
+	DebugRoughness,
+	DebugMetallic,
 	Wireframe,
 	DebugVertexNormals,
+	DebugVertexTangents,
+	DebugVertexBinormals,
 	DebugPixelNormals,
 	DebugTextureNormals,
-	DebugUVs
+	DebugUVs,
+	DebugVertexColor,
+	COUNT
 };
 
 enum class ConstantBufferType
@@ -112,12 +119,19 @@ public:
 	std::vector<std::string> DebugModeNames = {
 		"None",
 		"PSO_Unlit",
+		"PSO_DebugAO",
+		"PSO_DebugRoughness",
+		"PSO_DebugMetallic",
 		"PSO_Wireframe",
 		"PSO_DebugVertexNormals",
+		"PSO_DebugVertexTangents",
+		"PSO_DebugVertexBinormals",
 		"PSO_DebugPixelNormals",
 		"PSO_DebugTextureNormals",
-		"PSO_DebugUVs"
+		"PSO_DebugUVs",
+		"PSO_DebugVertexColor"
 	};
+
 	bool DrawGizmos = false;
 	bool DrawBoundingBoxes = false;
 	bool DrawCameraFrustums = false;

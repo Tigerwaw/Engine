@@ -80,6 +80,7 @@ public:
     virtual ~Application();
 
     virtual void InitializeApplication() {};
+    virtual void UpdateApplication() {};
     void Run();
     void Shutdown();
     Window& GetWindow();

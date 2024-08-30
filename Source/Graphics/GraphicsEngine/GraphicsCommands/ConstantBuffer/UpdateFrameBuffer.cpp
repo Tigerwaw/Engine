@@ -9,7 +9,7 @@
 
 UpdateFrameBuffer::UpdateFrameBuffer(std::shared_ptr<Camera> aCamera)
 {
-	myCameraInvView = aCamera->gameObject->GetComponent<Transform>()->GetMatrix().GetFastInverse();
+	myCameraInvView = aCamera->gameObject->GetComponent<Transform>()->GetWorldMatrix().GetFastInverse();
 	myCameraProj = aCamera->GetProjectionMatrix();
 	myViewPosition = CU::ToVector4(aCamera->gameObject->GetComponent<Transform>()->GetTranslation(true), 1.0f);
 	myViewDirection = CU::ToVector4(aCamera->gameObject->GetComponent<Transform>()->GetForwardVector(true), 1.0f);

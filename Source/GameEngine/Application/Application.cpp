@@ -23,15 +23,15 @@ void Application::Run()
 
     while (myIsRunning)
     {
+#if _DEBUG
+		extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+		ImGui_ImplWin32_WndProcHandler(msg.hwnd, msg.message, msg.wParam, msg.lParam);
+#endif
+
 		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-
-#if _DEBUG
-			extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-			ImGui_ImplWin32_WndProcHandler(msg.hwnd, msg.message, msg.wParam, msg.lParam);
-#endif
 
 			if (msg.message == WM_QUIT)
 			{
@@ -58,6 +58,7 @@ void Application::Run()
 		Engine::GetInstance().GetImGuiHandler().BeginFrame();
 		GraphicsEngine::Get().BeginFrame();
 		Engine::GetInstance().GetImGuiHandler().Update();
+		UpdateApplication();
 		Engine::GetInstance().Update();
 		GraphicsEngine::Get().RenderFrame();
 		Engine::GetInstance().GetImGuiHandler().Render();

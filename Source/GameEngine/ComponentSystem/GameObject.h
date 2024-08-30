@@ -23,6 +23,9 @@ public:
     const std::shared_ptr<T> AddComponent(Args&&... args);
 
     template <typename T>
+    const bool RemoveComponent();
+
+    template <typename T>
     const std::shared_ptr<T> GetComponent();
 
     template <typename T>
@@ -60,6 +63,25 @@ const std::shared_ptr<T> GameObject::AddComponent(Args&&... args)
     }
 
     return std::shared_ptr<T>();
+}
+
+template<typename T>
+inline const bool GameObject::RemoveComponent()
+{
+    std::shared_ptr<T> comp = GetComponent<T>();
+    if (comp)
+    {
+        for (size_t i = 0; i < myComponents.size(); i++)
+        {
+            if (comp == myComponents[i])
+            {
+                myComponents.erase(myComponents.begin() + i);
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 template<typename T>
