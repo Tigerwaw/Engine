@@ -26,7 +26,20 @@ private:
 	void SetMaterial(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath);
 	void SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath);
 
-	std::vector<std::string> myLogs;
+
+	struct Log
+	{
+		std::string message;
+		CU::Vector3f color = { 1.0f, 1.0f, 1.0f };
+
+		Log(std::string aMessage, CU::Vector3f aColor = CU::Vector3f(1.0f, 1.0f, 1.0f))
+		{
+			message = aMessage;
+			color = aColor;
+		}
+	};
+
+	std::vector<Log> myLogs;
 
 	std::shared_ptr<Material> myMaterial;
 	bool myIsCustomMaterial = false;
@@ -100,7 +113,7 @@ void ModelViewer::InitializeApplication()
 				if (assetPath == "")
 				{
 					LOG(LogApplication, Error, "Couldn't find asset path!");
-					myLogs.emplace_back("[ERROR] Couldn't find asset path!");
+					myLogs.emplace_back("[ERROR] Couldn't find asset path!", CU::Vector3f(1.0f, 0, 0));
 					return;
 				}
 
@@ -108,7 +121,7 @@ void ModelViewer::InitializeApplication()
 				if (!go)
 				{
 					LOG(LogApplication, Error, "Couldn't find game object");
-					myLogs.emplace_back("[ERROR] Couldn't find game object!");
+					myLogs.emplace_back("[ERROR] Couldn't find game object!", CU::Vector3f(1.0f, 0, 0));
 				}
 
 				const std::string assetName = assetPath.filename().stem().string();
@@ -135,7 +148,7 @@ void ModelViewer::InitializeApplication()
 				else
 				{
 					LOG(LogApplication, Error, "Can't load filetype {}", assetPath.extension().string().c_str());
-					myLogs.emplace_back("[ERROR] Can't load filetype" + assetPath.extension().string() + "!");
+					myLogs.emplace_back("[ERROR] Can't load filetype" + assetPath.extension().string() + "!", CU::Vector3f(1.0f, 0, 0));
 				}
 			}
 
@@ -273,7 +286,8 @@ void ModelViewer::InitializeApplication()
 					ImGui::Spacing();
 					float color[3] = { aLight->GetColor().x, aLight->GetColor().y, aLight->GetColor().z };
 					ImGui::Text("Color");
-					if (ImGui::ColorPicker3("##AmbientColor", color)) aLight->SetColor({ color[0], color[1], color[2] });
+					unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_PickerHueWheel;
+					if (ImGui::ColorPicker3("##AmbientColor", color, flags)) aLight->SetColor({ color[0], color[1], color[2] });
 					ImGui::Separator();
 				}
 			}
@@ -292,7 +306,8 @@ void ModelViewer::InitializeApplication()
 					ImGui::Spacing();
 					float color[3] = { dLight->GetColor().x, dLight->GetColor().y, dLight->GetColor().z };
 					ImGui::Text("Color");
-					if (ImGui::ColorPicker3("##DirectionalColor", color)) dLight->SetColor({ color[0], color[1], color[2] });
+					unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_PickerHueWheel;
+					if (ImGui::ColorPicker3("##DirectionalColor", color, flags)) dLight->SetColor({ color[0], color[1], color[2] });
 
 					std::shared_ptr<GameObject> dLightParent = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light_Parent");
 					std::shared_ptr<Transform> dlptransform = dLightParent->GetComponent<Transform>();
@@ -337,7 +352,7 @@ void ModelViewer::InitializeApplication()
 				{
 					for (size_t i = myLogs.size() - 1; i > 0; i--)
 					{
-						ImGui::Text(myLogs[i].c_str());
+						ImGui::TextColored({ myLogs[i].color.x, myLogs[i].color.y, myLogs[i].color.z, 1.0f }, myLogs[i].message.c_str());
 					}
 				}
 			}
@@ -388,16 +403,31 @@ void ModelViewer::InitializeApplication()
 				ImGui::Text(std::string("Albedo Texture - " + myAlbedoTexName).c_str());
 				ImGui::SetItemTooltip(myAlbedoTexPath.c_str());
 				ImGui::Image((void*)myMaterial->GetAlbedoTexture().GetSRV(), { 100.0f, 100.0f });
+				if (ImGui::BeginItemTooltip())
+				{
+					ImGui::Image((void*)myMaterial->GetAlbedoTexture().GetSRV(), { 256.0f, 256.0f });
+					ImGui::EndTooltip();
+				}
 				ImGui::Spacing();
 
 				ImGui::Text(std::string("Normal Texture - " + myNormalTexName).c_str());
 				ImGui::SetItemTooltip(myNormalTexPath.c_str());
 				ImGui::Image((void*)myMaterial->GetNormalTexture().GetSRV(), { 100.0f, 100.0f });
+				if (ImGui::BeginItemTooltip())
+				{
+					ImGui::Image((void*)myMaterial->GetNormalTexture().GetSRV(), { 256.0f, 256.0f });
+					ImGui::EndTooltip();
+				}
 				ImGui::Spacing();
 
 				ImGui::Text(std::string("Material Texture - " + myMaterialTexName).c_str());
 				ImGui::SetItemTooltip(myMaterialTexPath.c_str());
 				ImGui::Image((void*)myMaterial->GetMaterialTexture().GetSRV(), { 100.0f, 100.0f });
+				if (ImGui::BeginItemTooltip())
+				{
+					ImGui::Image((void*)myMaterial->GetMaterialTexture().GetSRV(), { 256.0f, 256.0f });
+					ImGui::EndTooltip();
+				}
 			}
 			ImGui::End();
 			ImGui::PopFont();
@@ -606,6 +636,6 @@ void ModelViewer::SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::p
 	else
 	{
 		LOG(LogApplication, Warning, "No recognized filename suffix detected!");
-		myLogs.emplace_back("[ERROR] No recognized filename suffix detected!");
+		myLogs.emplace_back("[ERROR] No recognized filename suffix detected!", CU::Vector3f(1.0f, 0, 0));
 	}
 }
