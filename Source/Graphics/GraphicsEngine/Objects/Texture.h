@@ -15,6 +15,7 @@ class Texture
 public:
 	Texture();
 	~Texture();
+	ID3D11ShaderResourceView* GetSRV(); // Pretty much only used for displaying a texture in Dear ImGui
 private:
 	void SetProperties(UINT aArraySize, D3D11_USAGE aUsage, UINT aBindFlags, UINT aCPUAccessFlags);
 

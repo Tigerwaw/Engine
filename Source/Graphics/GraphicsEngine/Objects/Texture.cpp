@@ -11,3 +11,8 @@ void Texture::SetProperties(UINT aArraySize, D3D11_USAGE aUsage, UINT aBindFlags
 	myBindFlags = aBindFlags;
 	myCPUAccessFlags = aCPUAccessFlags;
 }
+
+ID3D11ShaderResourceView* Texture::GetSRV()
+{
+	return mySRV.Get();
+}

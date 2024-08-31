@@ -19,6 +19,7 @@ public:
 private:
 	void ResetScene();
 	void ResetGameObject(std::shared_ptr<GameObject> aGO);
+	void ResetMaterial();
 	void SetModel(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath);
 	void SetAnimatedModel(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath);
 	void SetAnimation(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath);
@@ -26,7 +27,20 @@ private:
 	void SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath);
 
 	std::vector<std::string> myLogs;
-	std::vector<std::string> myLoadedAssets;
+
+	std::shared_ptr<Material> myMaterial;
+	bool myIsCustomMaterial = false;
+
+	std::string myMeshName;
+	std::string myMeshPath;
+	std::string myMaterialName;
+	std::string myMaterialPath;
+	std::string myAlbedoTexName;
+	std::string myAlbedoTexPath;
+	std::string myNormalTexName;
+	std::string myNormalTexPath;
+	std::string myMaterialTexName;
+	std::string myMaterialTexPath;
 
 	ImFont* newFont;
 	unsigned currentDebugMode = 0;
@@ -40,12 +54,17 @@ Application* CreateApplication()
 
 void ModelViewer::InitializeApplication()
 {
+	myLogs.emplace_back("[LOG] Started ModelViewer");
 	GraphicsEngine::Get().RecalculateShadowFrustum = false;
+	GraphicsEngine::Get().DrawGizmos = true;
 	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_ModelViewerScene.json");
 	std::shared_ptr<GameObject> newGO = std::make_shared<GameObject>();
 	newGO->SetName("Model");
 	newGO->AddComponent<Transform>(CU::Vector3f(0, 0, 0), CU::Vector3f(0, -180.0f, 0));
 	Engine::GetInstance().GetSceneHandler().Instantiate(newGO);
+
+	myMaterial = std::make_shared<Material>();
+	ResetMaterial();
 
 	std::filesystem::path fontPath = AssetManager::Get().GetContentRoot() / "Fonts/Roboto-Regular.ttf";
 	newFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 16.0f);
@@ -76,10 +95,7 @@ void ModelViewer::InitializeApplication()
 				DragQueryFile(hDrop, i, name, MAX_PATH);
 				std::filesystem::path filePath = name;
 
-				if (AssetManager::Get().RegisterAsset(filePath))
-				{
-					myLoadedAssets.emplace_back(filePath.string());
-				}
+				AssetManager::Get().RegisterAsset(filePath);
 				std::filesystem::path assetPath = AssetManager::Get().MakeRelative(filePath);
 				if (assetPath == "")
 				{
@@ -309,9 +325,7 @@ void ModelViewer::InitializeApplication()
 		{
 #ifdef _DEBUG
 			CU::Vector2f size(300.0f, 200.0f);
-			float offset = 10.0f;
 			CU::Vector2f windowPos = Engine::GetInstance().GetApplicationWindow().GetTopRight();
-			windowPos.x += offset;
 
 			ImGui::SetNextWindowPos({ windowPos.x, windowPos.y });
 			ImGui::SetNextWindowContentSize({ size.x, size.y });
@@ -326,6 +340,64 @@ void ModelViewer::InitializeApplication()
 						ImGui::Text(myLogs[i].c_str());
 					}
 				}
+			}
+			ImGui::End();
+			ImGui::PopFont();
+#endif
+		});
+
+	Engine::GetInstance().GetImGuiHandler().AddNewFunction([this]()
+		{
+#ifdef _DEBUG
+			CU::Vector2f size(300.0f, 500.0f);
+			CU::Vector2f windowPos = Engine::GetInstance().GetApplicationWindow().GetTopRight();
+			windowPos.y += 250.0f;
+
+			ImGui::SetNextWindowPos({ windowPos.x, windowPos.y });
+			ImGui::SetNextWindowContentSize({ size.x, size.y });
+			ImGui::PushFont(newFont);
+			bool open = true;
+			ImGui::Begin("Model Settings", &open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+			{
+				ImGui::Text(std::string("Mesh - " + myMeshName).c_str());
+				ImGui::SetItemTooltip(myMeshPath.c_str());
+				ImGui::Spacing();
+
+				ImGui::Text(std::string("Material - " + myMaterialName).c_str());
+				ImGui::SetItemTooltip(myMaterialPath.c_str());
+				ImGui::Spacing();
+
+				if (ImGui::Button("Reset Material"))
+				{
+					ResetMaterial();
+				};
+				ImGui::Spacing();
+
+				if (myIsCustomMaterial)
+				{
+					if (ImGui::Button("Export as new material"))
+					{
+						// Export Material
+					};
+					ImGui::Spacing();
+				}
+
+				ImGui::Spacing();
+				ImGui::Spacing();
+
+				ImGui::Text(std::string("Albedo Texture - " + myAlbedoTexName).c_str());
+				ImGui::SetItemTooltip(myAlbedoTexPath.c_str());
+				ImGui::Image((void*)myMaterial->GetAlbedoTexture().GetSRV(), { 100.0f, 100.0f });
+				ImGui::Spacing();
+
+				ImGui::Text(std::string("Normal Texture - " + myNormalTexName).c_str());
+				ImGui::SetItemTooltip(myNormalTexPath.c_str());
+				ImGui::Image((void*)myMaterial->GetNormalTexture().GetSRV(), { 100.0f, 100.0f });
+				ImGui::Spacing();
+
+				ImGui::Text(std::string("Material Texture - " + myMaterialTexName).c_str());
+				ImGui::SetItemTooltip(myMaterialTexPath.c_str());
+				ImGui::Image((void*)myMaterial->GetMaterialTexture().GetSRV(), { 100.0f, 100.0f });
 			}
 			ImGui::End();
 			ImGui::PopFont();
@@ -349,6 +421,8 @@ void ModelViewer::UpdateApplication()
 
 void ModelViewer::ResetScene()
 {
+	ResetMaterial();
+
 	std::shared_ptr<GameObject> go = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model");
 	ResetGameObject(go);
 
@@ -363,6 +437,7 @@ void ModelViewer::ResetScene()
 void ModelViewer::ResetGameObject(std::shared_ptr<GameObject> aGO)
 {
 	std::shared_ptr<Transform> transform = aGO->GetComponent<Transform>();
+	transform->SetTranslation(0, 0, 0);
 	transform->SetRotation(0, -180.0f, 0);
 	transform->SetScale(1.0f, 1.0f, 1.0f);
 
@@ -377,19 +452,47 @@ void ModelViewer::ResetGameObject(std::shared_ptr<GameObject> aGO)
 	}
 }
 
+void ModelViewer::ResetMaterial()
+{
+	AssetManager& am = AssetManager::Get();
+	std::shared_ptr<Material> defaultMat = am.GetAsset<MaterialAsset>("DefaultMaterial")->material;
+	myMaterial->MaterialSettings().albedoTint = { 1.0f, 1.0f, 1.0f, 1.0f };
+	myMaterial->SetAlbedoTexture(am.GetAsset<TextureAsset>("Default_C")->texture);
+	myMaterial->SetNormalTexture(am.GetAsset<TextureAsset>("Default_N")->texture);
+	myMaterial->SetMaterialTexture(am.GetAsset<TextureAsset>("Default_M")->texture);
+
+	myMaterialName = "DefaultMaterial";
+	myMaterialPath = "";
+	myAlbedoTexName = "Default_C";
+	myAlbedoTexPath = "";
+	myNormalTexName = "Default_N";
+	myNormalTexPath = "";
+	myMaterialTexName = "Default_M";
+	myMaterialTexPath = "";
+	myIsCustomMaterial = false;
+
+	myLogs.emplace_back("[LOG] Reset material to default");
+}
+
 void ModelViewer::SetModel(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath)
 {
 	ResetGameObject(aGO);
-	aGO->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>(aAssetPath)->mesh, AssetManager::Get().GetAsset<MaterialAsset>("DefaultMaterial")->material);
-	myLogs.emplace_back("[LOG] Model set to " + aAssetPath.filename().stem().string());
+	aGO->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>(aAssetPath)->mesh, myMaterial);
+	std::string assetName = aAssetPath.filename().stem().string();
+	myMeshName = assetName;
+	myMeshPath = aAssetPath.string();
+	myLogs.emplace_back("[LOG] Model set to " + assetName);
 }
 
 void ModelViewer::SetAnimatedModel(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath)
 {
 	ResetGameObject(aGO);
-	aGO->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>(aAssetPath)->mesh, AssetManager::Get().GetAsset<MaterialAsset>("DefaultMaterial")->material);
+	aGO->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>(aAssetPath)->mesh, myMaterial);
 	aGO->GetComponent<AnimatedModel>()->StopAnimation();
-	myLogs.emplace_back("[LOG] Model set to " + aAssetPath.filename().stem().string());
+	std::string assetName = aAssetPath.filename().stem().string();
+	myMeshName = assetName;
+	myMeshPath = aAssetPath.string();
+	myLogs.emplace_back("[LOG] Model set to " + assetName);
 }
 
 void ModelViewer::SetAnimation(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath)
@@ -411,95 +514,98 @@ void ModelViewer::SetAnimation(std::shared_ptr<GameObject> aGO, std::filesystem:
 
 void ModelViewer::SetMaterial(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath)
 {
+	myMaterial = AssetManager::Get().GetAsset<MaterialAsset>(aAssetPath)->material;
+	std::string assetName = aAssetPath.filename().stem().string();
+	myMaterialName = assetName;
+	myMaterialPath = aAssetPath.string();
+
+	std::ifstream path(AssetManager::Get().GetContentRoot() / aAssetPath);
+	nl::json data = nl::json();
+
+	try
+	{
+		data = nl::json::parse(path);
+	}
+	catch (nl::json::parse_error e)
+	{
+		LOG(LogApplication, Error, "Failed to read material asset {}, {}", aAssetPath.filename().string(), e.what());
+		return;
+	}
+	path.close();
+
+	if (data.contains("AlbedoTexture"))
+	{
+		std::filesystem::path albedoPath = data["AlbedoTexture"].get<std::string>();
+		myAlbedoTexName = albedoPath.filename().stem().string();
+		myAlbedoTexPath = albedoPath.string();
+	}
+
+	if (data.contains("NormalTexture"))
+	{
+		std::filesystem::path normalPath = data["NormalTexture"].get<std::string>();
+		myNormalTexName = normalPath.filename().stem().string();
+		myNormalTexPath = normalPath.string();
+	}
+
+	if (data.contains("MaterialTexture"))
+	{
+		std::filesystem::path materialPath = data["MaterialTexture"].get<std::string>();
+		myMaterialTexName = materialPath.filename().stem().string();
+		myMaterialTexPath = materialPath.string();
+	}
+
 	std::shared_ptr<Model> model = aGO->GetComponent<Model>();
 	std::shared_ptr<AnimatedModel> animModel = aGO->GetComponent<AnimatedModel>();
 	if (model)
 	{
-		model->SetMaterialOnSlot(0, AssetManager::Get().GetAsset<MaterialAsset>(aAssetPath)->material);
+		model->SetMaterialOnSlot(0, myMaterial);
 	}
 	else if (animModel)
 	{
-		animModel->SetMaterialOnSlot(0, AssetManager::Get().GetAsset<MaterialAsset>(aAssetPath)->material);
-	}
-	else
-	{
-		LOG(LogApplication, Warning, "No model exists to apply material to!");
-		myLogs.emplace_back("[ERROR] No model exists to apply material to!");
-		return;
+		animModel->SetMaterialOnSlot(0, myMaterial);
 	}
 
-	myLogs.emplace_back("[LOG] Set material to " + aAssetPath.filename().stem().string());
+	myLogs.emplace_back("[LOG] Set material to " + assetName);
+	myIsCustomMaterial = false;
 }
 
 void ModelViewer::SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath)
 {
 	std::string assetName = aAssetPath.filename().stem().string();
-	std::shared_ptr<Model> model = aGO->GetComponent<Model>();
-	std::shared_ptr<AnimatedModel> animModel = aGO->GetComponent<AnimatedModel>();
-	if (model)
+
+	if (assetName.ends_with("C") || assetName.ends_with("c"))
 	{
-		if (model->GetMaterialOnSlot(0) == AssetManager::Get().GetAsset<MaterialAsset>("DefaultMaterial")->material)
-		{
-			std::shared_ptr<Material> newMat = std::make_shared<Material>();
-			newMat->SetAlbedoTexture(AssetManager::Get().GetAsset<TextureAsset>("Default_C")->texture);
-			newMat->SetNormalTexture(AssetManager::Get().GetAsset<TextureAsset>("Default_N")->texture);
-			newMat->SetMaterialTexture(AssetManager::Get().GetAsset<TextureAsset>("Default_M")->texture);
-			newMat->MaterialSettings().albedoTint = { 1.0f, 1.0f, 1.0f, 1.0f };
-			model->SetMaterialOnSlot(0, newMat);
-		}
-
-		std::shared_ptr<Material> modelMat = model->GetMaterialOnSlot(0);
-
-		if (assetName.ends_with("C") || assetName.ends_with("c"))
-		{
-			modelMat->SetAlbedoTexture(AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
-			myLogs.emplace_back("[LOG] Set albedo texture to " + aAssetPath.filename().stem().string());
-		}
-		else if (assetName.ends_with("N") || assetName.ends_with("n"))
-		{
-			modelMat->SetNormalTexture(AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
-			myLogs.emplace_back("[LOG] Set normal texture to " + aAssetPath.filename().stem().string());
-		}
-		else if (assetName.ends_with("M") || assetName.ends_with("m"))
-		{
-			modelMat->SetMaterialTexture(AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
-			myLogs.emplace_back("[LOG] Set material texture to " + aAssetPath.filename().stem().string());
-		}
-		else
-		{
-			LOG(LogApplication, Warning, "No recognized filename suffix detected!");
-			myLogs.emplace_back("[ERROR] No recognized filename suffix detected!");
-		}
+		myMaterial->SetAlbedoTexture(AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
+		myAlbedoTexName = assetName;
+		myAlbedoTexPath = aAssetPath.string();
+		myLogs.emplace_back("[LOG] Set albedo texture to " + assetName);
+		myIsCustomMaterial = true;
+		myMaterialName = "";
+		myMaterialPath = "";
 	}
-	else if (animModel)
+	else if (assetName.ends_with("N") || assetName.ends_with("n"))
 	{
-		if (animModel->GetMaterialOnSlot(0) == AssetManager::Get().GetAsset<MaterialAsset>("DefaultMaterial")->material)
-		{
-			std::shared_ptr<Material> newMat = std::make_shared<Material>();
-			animModel->SetMaterialOnSlot(0, newMat);
-		}
-
-		std::shared_ptr<Material> modelMat = animModel->GetMaterialOnSlot(0);
-
-		if (assetName.ends_with("C"))
-		{
-			modelMat->SetAlbedoTexture(AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
-			myLogs.emplace_back("[LOG] Set albedo texture to " + aAssetPath.filename().stem().string());
-		}
-		else if (assetName.ends_with("N"))
-		{
-			modelMat->SetNormalTexture(AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
-			myLogs.emplace_back("[LOG] Set normal texture to " + aAssetPath.filename().stem().string());
-		}
-		else if (assetName.ends_with("M"))
-		{
-			modelMat->SetMaterialTexture(AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
-			myLogs.emplace_back("[LOG] Set material texture to " + aAssetPath.filename().stem().string());
-		}
+		myMaterial->SetNormalTexture(AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
+		myNormalTexName = assetName;
+		myNormalTexPath = aAssetPath.string();
+		myLogs.emplace_back("[LOG] Set normal texture to " + assetName);
+		myIsCustomMaterial = true;
+		myMaterialName = "";
+		myMaterialPath = "";
+	}
+	else if (assetName.ends_with("M") || assetName.ends_with("m"))
+	{
+		myMaterial->SetMaterialTexture(AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
+		myMaterialTexName = assetName;
+		myMaterialTexPath = aAssetPath.string();
+		myLogs.emplace_back("[LOG] Set material texture to " + assetName);
+		myIsCustomMaterial = true;
+		myMaterialName = "";
+		myMaterialPath = "";
 	}
 	else
 	{
-		LOG(LogApplication, Warning, "No model exists to apply texture to!");
-		myLogs.emplace_back("[ERROR] No model exists to apply texture to!");
+		LOG(LogApplication, Warning, "No recognized filename suffix detected!");
+		myLogs.emplace_back("[ERROR] No recognized filename suffix detected!");
 	}
 }

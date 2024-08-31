@@ -19,7 +19,7 @@ RenderDebugMesh::RenderDebugMesh(std::shared_ptr<DebugModel> aModel)
     if (!aModel.get()) return;
 
     mesh = aModel->GetMesh();
-    transform = aModel->gameObject->GetComponent<Transform>()->GetMatrix();
+    transform = aModel->gameObject->GetComponent<Transform>()->GetWorldMatrix();
     materialList = aModel->GetMaterials();
 
     if (GraphicsEngine::Get().DrawBoundingBoxes)
