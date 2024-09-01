@@ -23,8 +23,10 @@ project "Imgui"
     "%{dirs.imgui}/backends/imgui_impl_dx11.cpp",
     "%{dirs.imgui}/misc/debuggers/imgui.natvis",
     "%{dirs.imgui}/misc/debuggers/imgui.natstepfilter",
-		"%{dirs.imgui}/*.h",
-		"%{dirs.imgui}/*.cpp"
+    "%{dirs.imgui}/misc/cpp/imgui_stdlib.h",
+    "%{dirs.imgui}/misc/cpp/imgui_stdlib.cpp",
+	"%{dirs.imgui}/*.h",
+	"%{dirs.imgui}/*.cpp"
 	}
 
   includedirs { 

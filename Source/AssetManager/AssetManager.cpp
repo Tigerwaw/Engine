@@ -342,35 +342,47 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
 
     if (data.contains("AlbedoTexture"))
     {
+        bool textureExists = true;
         std::filesystem::path albedoPath = data["AlbedoTexture"].get<std::string>();
         if (myAssets.find(albedoPath) == myAssets.end())
         {
-            RegisterTextureAsset(myContentRoot / albedoPath);
+            textureExists = RegisterTextureAsset(myContentRoot / albedoPath);
         }
 
-        asset->material->SetAlbedoTexture(GetAsset<TextureAsset>(albedoPath)->texture);
+        if (textureExists)
+        {
+            asset->material->SetAlbedoTexture(GetAsset<TextureAsset>(albedoPath)->texture);
+        }
     }
 
     if (data.contains("NormalTexture"))
     {
+        bool textureExists = true;
         std::filesystem::path normalPath = data["NormalTexture"].get<std::string>();
         if (myAssets.find(normalPath) == myAssets.end())
         {
-            RegisterTextureAsset(myContentRoot / normalPath);
+            textureExists = RegisterTextureAsset(myContentRoot / normalPath);
         }
 
-        asset->material->SetNormalTexture(GetAsset<TextureAsset>(normalPath)->texture);
+        if (textureExists)
+        {
+            asset->material->SetNormalTexture(GetAsset<TextureAsset>(normalPath)->texture);
+        }
     }
 
     if (data.contains("MaterialTexture"))
     {
+        bool textureExists = true;
         std::filesystem::path materialPath = data["MaterialTexture"].get<std::string>();
         if (myAssets.find(materialPath) == myAssets.end())
         {
-            RegisterTextureAsset(myContentRoot / materialPath);
+            textureExists = RegisterTextureAsset(myContentRoot / materialPath);
         }
 
-        asset->material->SetMaterialTexture(GetAsset<TextureAsset>(materialPath)->texture);
+        if (textureExists)
+        {
+            asset->material->SetMaterialTexture(GetAsset<TextureAsset>(materialPath)->texture);
+        }
     }
 
     asset->path = assetPath;

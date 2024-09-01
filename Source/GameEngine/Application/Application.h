@@ -71,6 +71,7 @@
 
 #if _DEBUG
 #include "imgui.h"
+#include "utilities/Imgui/misc/cpp/imgui_stdlib.h"
 #endif 
 
 class Application

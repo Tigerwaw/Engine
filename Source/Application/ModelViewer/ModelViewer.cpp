@@ -20,16 +20,23 @@ private:
 	void ResetScene();
 	void ResetGameObject(std::shared_ptr<GameObject> aGO);
 	void ResetMaterial();
+	void ResetPSO();
 	void SetModel(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath);
 	void SetAnimatedModel(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath);
 	void SetAnimation(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath);
 	void SetMaterial(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath);
 	void SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath);
+	void SetPSO(std::filesystem::path& aAssetPath);
+	void SetShader(std::filesystem::path& aAssetPath);
 
+	void ExportMaterial();
+	void ExportPSO();
+	void SetupImguiStyle();
 
 	struct Log
 	{
 		std::string message;
+		std::string tooltip;
 		CU::Vector3f color = { 1.0f, 1.0f, 1.0f };
 
 		Log(std::string aMessage, CU::Vector3f aColor = CU::Vector3f(1.0f, 1.0f, 1.0f))
@@ -37,15 +44,23 @@ private:
 			message = aMessage;
 			color = aColor;
 		}
+
+		Log(std::string aMessage, std::string aTooltip)
+		{
+			message = aMessage;
+			tooltip = aTooltip;
+		}
 	};
 
 	std::vector<Log> myLogs;
 
 	std::shared_ptr<Material> myMaterial;
+	std::shared_ptr<PipelineStateObject> myPSO;
 	bool myIsCustomMaterial = false;
 
 	std::string myMeshName;
 	std::string myMeshPath;
+
 	std::string myMaterialName;
 	std::string myMaterialPath;
 	std::string myAlbedoTexName;
@@ -54,6 +69,15 @@ private:
 	std::string myNormalTexPath;
 	std::string myMaterialTexName;
 	std::string myMaterialTexPath;
+
+	std::string myPSOName;
+	std::string myPSOPath;
+	std::string myVertexShaderName;
+	std::string myVertexShaderPath;
+	std::string myGeometryShaderName;
+	std::string myGeometryShaderPath;
+	std::string myPixelShaderName;
+	std::string myPixelShaderPath;
 
 	ImFont* newFont;
 	unsigned currentDebugMode = 0;
@@ -77,11 +101,10 @@ void ModelViewer::InitializeApplication()
 	Engine::GetInstance().GetSceneHandler().Instantiate(newGO);
 
 	myMaterial = std::make_shared<Material>();
+	myPSO = std::make_shared<PipelineStateObject>();
 	ResetMaterial();
 
-	std::filesystem::path fontPath = AssetManager::Get().GetContentRoot() / "Fonts/Roboto-Regular.ttf";
-	newFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 16.0f);
-	ImGui::GetIO().Fonts->Build();
+	SetupImguiStyle();
 
 	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
 	inputHandler.RegisterBinaryAction("W", Keys::W, GenericInput::ActionType::Held);
@@ -145,10 +168,19 @@ void ModelViewer::InitializeApplication()
 				{
 					SetTexture(go, assetPath);
 				}
+				else if (assetName.starts_with("PSO"))
+				{
+					SetPSO(assetPath);
+				}
+				else if (assetName.starts_with("SH"))
+				{
+					myLogs.emplace_back("[ERROR] Modelviewer does not support loading in individual shaders currently!", CU::Vector3f(1.0f, 0, 0));
+					//SetShader(assetPath);
+				}
 				else
 				{
 					LOG(LogApplication, Error, "Can't load filetype {}", assetPath.extension().string().c_str());
-					myLogs.emplace_back("[ERROR] Can't load filetype" + assetPath.extension().string() + "!", CU::Vector3f(1.0f, 0, 0));
+					myLogs.emplace_back("[ERROR] Can't load filetype " + assetPath.extension().string() + "!", CU::Vector3f(1.0f, 0, 0));
 				}
 			}
 
@@ -159,7 +191,7 @@ void ModelViewer::InitializeApplication()
 		{
 #ifdef _DEBUG
 			CU::Vector2f size(250.0f, 200.0f);
-			float offset = 10.0f;
+			float offset = 15.0f;
 			CU::Vector2f windowPos = Engine::GetInstance().GetApplicationWindow().GetTopLeft();
 			windowPos.x -= size.x + offset;
 
@@ -261,8 +293,8 @@ void ModelViewer::InitializeApplication()
 	Engine::GetInstance().GetImGuiHandler().AddNewFunction([this]()
 		{
 #ifdef _DEBUG
-			CU::Vector2f size(250.0f, 500.0f);
-			float offset = 10.0f;
+			CU::Vector2f size(250.0f, 440.0f);
+			float offset = 15.0f;
 			CU::Vector2f windowPos = Engine::GetInstance().GetApplicationWindow().GetTopLeft();
 			windowPos.x -= size.x + offset;
 			windowPos.y += 250.0f;
@@ -273,61 +305,53 @@ void ModelViewer::InitializeApplication()
 			bool open = true;
 			ImGui::Begin("Lighting Settings", &open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 			{
-				std::shared_ptr<GameObject> ambientLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("A_Light");
-				bool active = ambientLight->GetActive();
-				if (ImGui::Checkbox("##AmbLightCheck", &active)) ambientLight->SetActive(active);
-				ImGui::SameLine();
-				if (ImGui::CollapsingHeader("Ambient Light"))
+				if (ImGui::BeginTabBar("Lights"))
 				{
-					std::shared_ptr<AmbientLight> aLight = ambientLight->GetComponent<AmbientLight>();
-					float intensity = aLight->GetIntensity();
-					ImGui::Text("Intensity");
-					if (ImGui::SliderFloat("##AmbientIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) aLight->SetIntensity(intensity);
-					ImGui::Spacing();
-					float color[3] = { aLight->GetColor().x, aLight->GetColor().y, aLight->GetColor().z };
-					ImGui::Text("Color");
-					unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_PickerHueWheel;
-					if (ImGui::ColorPicker3("##AmbientColor", color, flags)) aLight->SetColor({ color[0], color[1], color[2] });
-					ImGui::Separator();
-				}
-			}
-			ImGui::Spacing();
-			{
-				std::shared_ptr<GameObject> directionalLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light");
-				bool active = directionalLight->GetActive();
-				if (ImGui::Checkbox("##DLightCheck", &active)) directionalLight->SetActive(active);
-				ImGui::SameLine();
-				if (ImGui::CollapsingHeader("Directional Light"))
-				{
-					std::shared_ptr<DirectionalLight> dLight = directionalLight->GetComponent<DirectionalLight>();
-					float intensity = dLight->GetIntensity();
-					ImGui::Text("Intensity");
-					if (ImGui::SliderFloat("##DirectionalIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) dLight->SetIntensity(intensity);
-					ImGui::Spacing();
-					float color[3] = { dLight->GetColor().x, dLight->GetColor().y, dLight->GetColor().z };
-					ImGui::Text("Color");
-					unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_PickerHueWheel;
-					if (ImGui::ColorPicker3("##DirectionalColor", color, flags)) dLight->SetColor({ color[0], color[1], color[2] });
+					if (ImGui::BeginTabItem("Ambient Light"))
+					{
+						std::shared_ptr<GameObject> ambientLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("A_Light");
+						bool active = ambientLight->GetActive();
+						if (ImGui::Checkbox("Set Active", &active)) ambientLight->SetActive(active);
+						
+						std::shared_ptr<AmbientLight> aLight = ambientLight->GetComponent<AmbientLight>();
+						float intensity = aLight->GetIntensity();
+						ImGui::Text("Intensity");
+						if (ImGui::SliderFloat("##AmbientIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) aLight->SetIntensity(intensity);
+						ImGui::Spacing();
+						float color[3] = { aLight->GetColor().x, aLight->GetColor().y, aLight->GetColor().z };
+						ImGui::Text("Color");
+						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
+						if (ImGui::ColorPicker3("##AmbientColor", color, flags)) aLight->SetColor({ color[0], color[1], color[2] });
+						ImGui::EndTabItem();
+					}
 
-					std::shared_ptr<GameObject> dLightParent = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light_Parent");
-					std::shared_ptr<Transform> dlptransform = dLightParent->GetComponent<Transform>();
-					CU::Vector3f rotation = dlptransform->GetRotation();
-					float rot[3] = { rotation.x, rotation.y, rotation.z };
-					ImGui::Text("Rotation");
-					if (ImGui::DragFloat3("##DLightRot", rot)) dlptransform->SetRotation(rot[0], rot[1], rot[2]);
-					//ImGui::Spacing();
-					//if (ImGui::CollapsingHeader("Advanced Settings"))
-					//{
-					//	float minBias = dLight->GetMinShadowBias();
-					//	float maxBias = dLight->GetMaxShadowBias();
-					//	float lightSize = dLight->GetLightSize();
-					//	ImGui::Text("Shadow Min Bias");
-					//	if (ImGui::SliderFloat("##DirectionalMinBias", &minBias, 0, 0.001f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
-					//	ImGui::Text("Shadow Max Bias");
-					//	if (ImGui::SliderFloat("##DirectionalMaxBias", &maxBias, 0, 0.1f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
-					//	ImGui::Text("Light Size");
-					//	if (ImGui::SliderFloat("##DirectionalSize", &lightSize, 0, 2000.0f)) dLight->SetLightSize(lightSize);
-					//}
+					if (ImGui::BeginTabItem("Directional Light"))
+					{
+						std::shared_ptr<GameObject> directionalLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light");
+						bool active = directionalLight->GetActive();
+						if (ImGui::Checkbox("Set Active", &active)) directionalLight->SetActive(active);
+
+						std::shared_ptr<DirectionalLight> dLight = directionalLight->GetComponent<DirectionalLight>();
+						float intensity = dLight->GetIntensity();
+						ImGui::Text("Intensity");
+						if (ImGui::SliderFloat("##DirectionalIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) dLight->SetIntensity(intensity);
+						ImGui::Spacing();
+						float color[3] = { dLight->GetColor().x, dLight->GetColor().y, dLight->GetColor().z };
+						ImGui::Text("Color");
+						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
+						if (ImGui::ColorPicker3("##DirectionalColor", color, flags)) dLight->SetColor({ color[0], color[1], color[2] });
+						ImGui::Spacing();
+
+						std::shared_ptr<GameObject> dLightParent = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light_Parent");
+						std::shared_ptr<Transform> dlptransform = dLightParent->GetComponent<Transform>();
+						CU::Vector3f rotation = dlptransform->GetRotation();
+						float rot[3] = { rotation.x, rotation.y, rotation.z };
+						ImGui::Text("Rotation");
+						if (ImGui::DragFloat3("##DLightRot", rot)) dlptransform->SetRotation(rot[0], rot[1], rot[2]);
+						ImGui::EndTabItem();
+					}
+
+					ImGui::EndTabBar();
 				}
 			}
 
@@ -352,7 +376,13 @@ void ModelViewer::InitializeApplication()
 				{
 					for (size_t i = myLogs.size() - 1; i > 0; i--)
 					{
+						ImGui::PushTextWrapPos(280.0f);
 						ImGui::TextColored({ myLogs[i].color.x, myLogs[i].color.y, myLogs[i].color.z, 1.0f }, myLogs[i].message.c_str());
+						if (myLogs[i].tooltip != "")
+						{
+							ImGui::SetItemTooltip(myLogs[i].tooltip.c_str());
+						}
+						ImGui::PopTextWrapPos();
 					}
 				}
 			}
@@ -364,9 +394,12 @@ void ModelViewer::InitializeApplication()
 	Engine::GetInstance().GetImGuiHandler().AddNewFunction([this]()
 		{
 #ifdef _DEBUG
-			CU::Vector2f size(300.0f, 500.0f);
+			CU::Vector2f size(300.0f, 440.0f);
 			CU::Vector2f windowPos = Engine::GetInstance().GetApplicationWindow().GetTopRight();
 			windowPos.y += 250.0f;
+
+			CU::Vector2f textureSize(64.0f, 64.0f);
+			CU::Vector2f textureHoverSize(256.0f, 256.0f);
 
 			ImGui::SetNextWindowPos({ windowPos.x, windowPos.y });
 			ImGui::SetNextWindowContentSize({ size.x, size.y });
@@ -378,55 +411,110 @@ void ModelViewer::InitializeApplication()
 				ImGui::SetItemTooltip(myMeshPath.c_str());
 				ImGui::Spacing();
 
-				ImGui::Text(std::string("Material - " + myMaterialName).c_str());
-				ImGui::SetItemTooltip(myMaterialPath.c_str());
-				ImGui::Spacing();
-
-				if (ImGui::Button("Reset Material"))
+				if (ImGui::BeginTabBar("Settings"))
 				{
-					ResetMaterial();
-				};
-				ImGui::Spacing();
-
-				if (myIsCustomMaterial)
-				{
-					if (ImGui::Button("Export as new material"))
+					if (ImGui::BeginTabItem("Material"))
 					{
-						// Export Material
-					};
-					ImGui::Spacing();
-				}
+						if (myIsCustomMaterial)
+						{
+							ImGui::InputText("Material Name", &myMaterialName);
+						}
+						else
+						{
+							ImGui::Text(std::string("Material - " + myMaterialName).c_str());
+							ImGui::SetItemTooltip(myMaterialPath.c_str());
+						}
 
-				ImGui::Spacing();
-				ImGui::Spacing();
+						if (ImGui::Button("Reset Material"))
+						{
+							ResetMaterial();
+						};
 
-				ImGui::Text(std::string("Albedo Texture - " + myAlbedoTexName).c_str());
-				ImGui::SetItemTooltip(myAlbedoTexPath.c_str());
-				ImGui::Image((void*)myMaterial->GetAlbedoTexture().GetSRV(), { 100.0f, 100.0f });
-				if (ImGui::BeginItemTooltip())
-				{
-					ImGui::Image((void*)myMaterial->GetAlbedoTexture().GetSRV(), { 256.0f, 256.0f });
-					ImGui::EndTooltip();
-				}
-				ImGui::Spacing();
+						if (myIsCustomMaterial)
+						{
+							ImGui::SameLine();
+							if (ImGui::Button("Export as new material"))
+							{
+								ExportMaterial();
+							};
+						}
 
-				ImGui::Text(std::string("Normal Texture - " + myNormalTexName).c_str());
-				ImGui::SetItemTooltip(myNormalTexPath.c_str());
-				ImGui::Image((void*)myMaterial->GetNormalTexture().GetSRV(), { 100.0f, 100.0f });
-				if (ImGui::BeginItemTooltip())
-				{
-					ImGui::Image((void*)myMaterial->GetNormalTexture().GetSRV(), { 256.0f, 256.0f });
-					ImGui::EndTooltip();
-				}
-				ImGui::Spacing();
+						ImGui::Spacing();
+						ImGui::Spacing();
 
-				ImGui::Text(std::string("Material Texture - " + myMaterialTexName).c_str());
-				ImGui::SetItemTooltip(myMaterialTexPath.c_str());
-				ImGui::Image((void*)myMaterial->GetMaterialTexture().GetSRV(), { 100.0f, 100.0f });
-				if (ImGui::BeginItemTooltip())
-				{
-					ImGui::Image((void*)myMaterial->GetMaterialTexture().GetSRV(), { 256.0f, 256.0f });
-					ImGui::EndTooltip();
+						ImGui::Text(std::string("Albedo Texture - " + myAlbedoTexName).c_str());
+						ImGui::SetItemTooltip(myAlbedoTexPath.c_str());
+						ImGui::Image((void*)myMaterial->GetAlbedoTexture().GetSRV(), { textureSize.x, textureSize.y });
+						if (ImGui::BeginItemTooltip())
+						{
+							ImGui::Image((void*)myMaterial->GetAlbedoTexture().GetSRV(), { textureHoverSize.x, textureHoverSize.y });
+							ImGui::EndTooltip();
+						}
+						ImGui::Spacing();
+
+						ImGui::Text(std::string("Normal Texture - " + myNormalTexName).c_str());
+						ImGui::SetItemTooltip(myNormalTexPath.c_str());
+						ImGui::Image((void*)myMaterial->GetNormalTexture().GetSRV(), { textureSize.x, textureSize.y });
+						if (ImGui::BeginItemTooltip())
+						{
+							ImGui::Image((void*)myMaterial->GetNormalTexture().GetSRV(), { textureHoverSize.x, textureHoverSize.y });
+							ImGui::EndTooltip();
+						}
+						ImGui::Spacing();
+
+						ImGui::Text(std::string("Material Texture - " + myMaterialTexName).c_str());
+						ImGui::SetItemTooltip(myMaterialTexPath.c_str());
+						ImGui::Image((void*)myMaterial->GetMaterialTexture().GetSRV(), { textureSize.x, textureSize.y });
+						if (ImGui::BeginItemTooltip())
+						{
+							ImGui::Image((void*)myMaterial->GetMaterialTexture().GetSRV(), { textureHoverSize.x, textureHoverSize.y });
+							ImGui::EndTooltip();
+						}
+
+						ImGui::EndTabItem();
+					}
+
+					if (ImGui::BeginTabItem("PSO"))
+					{
+						if (myIsCustomMaterial)
+						{
+							ImGui::InputText("PSO Name", &myPSOName);
+						}
+						else
+						{
+							ImGui::Text(std::string("PSO - " + myPSOName).c_str());
+							ImGui::SetItemTooltip(myMaterialPath.c_str());
+						}
+
+						if (ImGui::Button("Reset PSO"))
+						{
+							ResetPSO();
+						};
+
+						if (myIsCustomMaterial)
+						{
+							ImGui::SameLine();
+							ImGui::BeginDisabled(true);
+							if (ImGui::Button("Export as new PSO"))
+							{
+								ExportPSO();
+							};
+							ImGui::EndDisabled();
+						}
+
+						ImGui::Text(std::string("Vertex Shader - " + myVertexShaderName).c_str());
+						ImGui::SetItemTooltip(myVertexShaderPath.c_str());
+
+						ImGui::Text(std::string("Geometry Shader - " + myGeometryShaderName).c_str());
+						ImGui::SetItemTooltip(myGeometryShaderPath.c_str());
+
+						ImGui::Text(std::string("Pixel Shader - " + myPixelShaderName).c_str());
+						ImGui::SetItemTooltip(myPixelShaderPath.c_str());
+
+						ImGui::EndTabItem();
+					}
+
+					ImGui::EndTabBar();
 				}
 			}
 			ImGui::End();
@@ -452,6 +540,7 @@ void ModelViewer::UpdateApplication()
 void ModelViewer::ResetScene()
 {
 	ResetMaterial();
+	ResetPSO();
 
 	std::shared_ptr<GameObject> go = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model");
 	ResetGameObject(go);
@@ -502,6 +591,23 @@ void ModelViewer::ResetMaterial()
 	myIsCustomMaterial = false;
 
 	myLogs.emplace_back("[LOG] Reset material to default");
+}
+
+void ModelViewer::ResetPSO()
+{
+	std::shared_ptr<PipelineStateObject> defaultPSO = GraphicsEngine::Get().GetDefaultPSO();
+	myPSO = defaultPSO;
+
+	myPSOName = "Default";
+	myPSOPath = "";
+	myVertexShaderName = "";
+	myVertexShaderPath = "";
+	myGeometryShaderName = "";
+	myGeometryShaderPath = "";
+	myPixelShaderName = "";
+	myPixelShaderPath = "";
+
+	myLogs.emplace_back("[LOG] Reset PSO to default");
 }
 
 void ModelViewer::SetModel(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath)
@@ -638,4 +744,189 @@ void ModelViewer::SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::p
 		LOG(LogApplication, Warning, "No recognized filename suffix detected!");
 		myLogs.emplace_back("[ERROR] No recognized filename suffix detected!", CU::Vector3f(1.0f, 0, 0));
 	}
+}
+
+void ModelViewer::SetPSO(std::filesystem::path& aAssetPath)
+{
+	myPSO = AssetManager::Get().GetAsset<PSOAsset>(aAssetPath.stem())->pso;
+	std::string assetName = aAssetPath.stem().string();
+	myPSOName = assetName;
+	myPSOPath = aAssetPath.string();
+
+	std::ifstream path(AssetManager::Get().GetContentRoot() / aAssetPath);
+	nl::json data = nl::json();
+
+	try
+	{
+		data = nl::json::parse(path);
+	}
+	catch (nl::json::parse_error e)
+	{
+		LOG(LogApplication, Error, "Failed to read pso asset {}, {}", aAssetPath.filename().string(), e.what());
+		return;
+	}
+	path.close();
+
+	if (data.contains("VertexShader"))
+	{
+		std::filesystem::path vsPath = data["VertexShader"].get<std::string>();
+		myVertexShaderName = vsPath.filename().stem().string();
+		myVertexShaderPath = vsPath.string();
+	}
+
+	if (data.contains("GeometryShader"))
+	{
+		std::filesystem::path gsPath = data["GeometryShader"].get<std::string>();
+		myGeometryShaderName = gsPath.filename().stem().string();
+		myGeometryShaderPath = gsPath.string();
+	}
+
+	if (data.contains("PixelShader"))
+	{
+		std::filesystem::path psPath = data["PixelShader"].get<std::string>();
+		myPixelShaderName = psPath.filename().stem().string();
+		myPixelShaderPath = psPath.string();
+	}
+
+	myMaterial->SetPSO(myPSO);
+
+	myLogs.emplace_back("[LOG] Set PSO to " + assetName);
+}
+
+void ModelViewer::SetShader(std::filesystem::path& aAssetPath)
+{
+	std::shared_ptr<ShaderAsset> shaderAsset = AssetManager::Get().GetAsset<ShaderAsset>(aAssetPath.filename());
+	if (!shaderAsset)
+	{
+		LOG(LogApplication, Warning, "Could not find asset at path {}!", aAssetPath.string());
+		myLogs.emplace_back("[ERROR] Could not find asset at path " + aAssetPath.string(), CU::Vector3f(1.0f, 0, 0));
+		return;
+	}
+
+	if (shaderAsset->name.string().ends_with("VS"))
+	{
+		myPSO->VertexShader = shaderAsset->shader;
+		myMaterial->SetPSO(myPSO);
+		myVertexShaderName = shaderAsset->name.string();
+		myVertexShaderPath = shaderAsset->path.string();
+	}
+	else if (shaderAsset->name.string().ends_with("GS"))
+	{
+		myPSO->GeometryShader = shaderAsset->shader;
+		myMaterial->SetPSO(myPSO);
+		myGeometryShaderName = shaderAsset->name.string();
+		myGeometryShaderPath = shaderAsset->path.string();
+	}
+	else if (shaderAsset->name.string().ends_with("PS"))
+	{
+		myPSO->PixelShader = shaderAsset->shader;
+		myMaterial->SetPSO(myPSO);
+		myPixelShaderName = shaderAsset->name.string();
+		myPixelShaderPath = shaderAsset->path.string();
+	}
+	else
+	{
+		LOG(LogApplication, Warning, "No recognized filename suffix detected!");
+		myLogs.emplace_back("[ERROR] No recognized filename suffix detected!", CU::Vector3f(1.0f, 0, 0));
+	}
+}
+
+void ModelViewer::ExportMaterial()
+{
+	nl::json newMat;
+
+	newMat["PSO"] = std::string("PSO_PBR");
+	std::unordered_map<std::string, float> albedoTint;
+	albedoTint.emplace("R", 1.0f);
+	albedoTint.emplace("G", 1.0f);
+	albedoTint.emplace("B", 1.0f);
+	albedoTint.emplace("A", 1.0f);
+	newMat["AlbedoTint"] = albedoTint;
+	newMat["AlbedoTexture"] = myAlbedoTexPath;
+	newMat["NormalTexture"] = myNormalTexPath;
+	newMat["MaterialTexture"] = myMaterialTexPath;
+
+	std::string name = "MAT_" + myMaterialName + ".json";
+	std::filesystem::path path = AssetManager::Get().GetContentRoot() / "Materials" / name;
+	std::ofstream outFile(path);
+	outFile << newMat;
+	outFile.close();
+
+	myLogs.emplace_back("[LOG] Exported " + name, path.string());
+}
+
+void ModelViewer::ExportPSO()
+{
+	nl::json newPSO;
+
+	newPSO["VertexType"] = std::string("Default");
+	newPSO["VertexShader"] = myVertexShaderPath;
+	newPSO["GeometryShader"] = myGeometryShaderPath;
+	newPSO["PixelShader"] = myPixelShaderPath;
+
+	std::string name = "PSO_" + myPSOName + ".json";
+	std::filesystem::path path = AssetManager::Get().GetContentRoot() / "EngineAssets/PSOs" / name;
+	std::ofstream outFile(path);
+	outFile << newPSO;
+	outFile.close();
+
+	myLogs.emplace_back("[LOG] Exported " + name, path.string());
+}
+
+void ModelViewer::SetupImguiStyle()
+{
+	std::filesystem::path fontPath = AssetManager::Get().GetContentRoot() / "Fonts/Roboto-Regular.ttf";
+	newFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 16.0f);
+	ImGui::GetIO().Fonts->Build();
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.Alpha = 1.0f;
+	style.WindowBorderSize = 0;
+	style.FrameRounding = 2.0f;
+	style.GrabRounding = 2.0f;
+	style.TabRounding = 2.0f;
+	style.FrameBorderSize = 0;
+	style.GrabMinSize = 8.0f;
+
+	ImVec4* colors = ImGui::GetStyle().Colors;
+	colors[ImGuiCol_Text] = ImVec4(0.32f, 1.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_TextDisabled] = ImVec4(0.00f, 0.56f, 0.00f, 1.00f);
+	colors[ImGuiCol_WindowBg] = ImVec4(0.05f, 0.12f, 0.05f, 1.00f);
+	colors[ImGuiCol_ChildBg] = ImVec4(0.00f, 0.17f, 0.00f, 0.00f);
+	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.18f, 0.08f, 0.94f);
+	colors[ImGuiCol_FrameBg] = ImVec4(0.20f, 0.34f, 0.19f, 1.00f);
+	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.34f, 0.47f, 0.20f, 1.00f);
+	colors[ImGuiCol_FrameBgActive] = ImVec4(0.34f, 0.60f, 0.23f, 1.00f);
+	colors[ImGuiCol_TitleBg] = ImVec4(0.08f, 0.30f, 0.15f, 1.00f);
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.29f, 0.49f, 0.31f, 1.00f);
+	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.10f, 0.16f, 0.08f, 1.00f);
+	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.09f, 1.00f);
+	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.02f, 0.20f, 0.02f, 0.53f);
+	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.24f, 0.48f, 0.27f, 1.00f);
+	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.18f, 0.60f, 0.30f, 1.00f);
+	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.30f, 0.63f, 0.22f, 1.00f);
+	colors[ImGuiCol_CheckMark] = ImVec4(0.33f, 1.00f, 0.32f, 1.00f);
+	colors[ImGuiCol_SliderGrab] = ImVec4(0.30f, 0.54f, 0.34f, 1.00f);
+	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.31f, 0.56f, 0.36f, 1.00f);
+	colors[ImGuiCol_Button] = ImVec4(0.23f, 0.35f, 0.24f, 1.00f);
+	colors[ImGuiCol_ButtonHovered] = ImVec4(0.31f, 0.53f, 0.44f, 1.00f);
+	colors[ImGuiCol_ButtonActive] = ImVec4(0.33f, 0.69f, 0.44f, 1.00f);
+	colors[ImGuiCol_Header] = ImVec4(0.15f, 0.36f, 0.16f, 1.00f);
+	colors[ImGuiCol_HeaderHovered] = ImVec4(0.36f, 0.56f, 0.35f, 1.00f);
+	colors[ImGuiCol_HeaderActive] = ImVec4(0.60f, 0.62f, 0.52f, 1.00f);
+	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.06f, 0.53f, 0.27f, 0.78f);
+	colors[ImGuiCol_SeparatorActive] = ImVec4(0.02f, 0.63f, 0.32f, 1.00f);
+	colors[ImGuiCol_ResizeGrip] = ImVec4(0.26f, 0.51f, 0.22f, 0.20f);
+	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.26f, 0.63f, 0.22f, 0.67f);
+	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.26f, 0.80f, 0.28f, 0.95f);
+	colors[ImGuiCol_TabHovered] = ImVec4(0.26f, 0.70f, 0.34f, 0.80f);
+	colors[ImGuiCol_Tab] = ImVec4(0.04f, 0.33f, 0.21f, 0.86f);
+	colors[ImGuiCol_TabSelected] = ImVec4(0.01f, 0.51f, 0.11f, 1.00f);
+	colors[ImGuiCol_TabSelectedOverline] = ImVec4(0.26f, 0.59f, 0.60f, 1.00f);
+	colors[ImGuiCol_TabDimmed] = ImVec4(0.07f, 0.20f, 0.09f, 0.97f);
+	colors[ImGuiCol_TabDimmedSelected] = ImVec4(0.14f, 0.33f, 0.15f, 1.00f);
+	colors[ImGuiCol_TabDimmedSelectedOverline] = ImVec4(0.39f, 0.54f, 0.18f, 1.00f);
+	colors[ImGuiCol_DockingPreview] = ImVec4(0.18f, 0.68f, 0.36f, 0.70f);
+	colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.06f, 0.31f, 0.10f, 1.00f);
+	colors[ImGuiCol_PlotLines] = ImVec4(0.31f, 0.65f, 0.37f, 1.00f);
 }
