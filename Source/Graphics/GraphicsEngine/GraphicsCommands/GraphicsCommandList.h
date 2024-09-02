@@ -21,7 +21,6 @@
 #include "Resource/SetGBufferAsResource.h"
 #include "ChangePipelineState.h"
 #include "SetDefaultRenderTarget.h"
-#include "SetDefaultRenderTargetNoDepth.h"
 #include "SetRenderTarget.h"
 #include "ConstantBuffer/UpdateFrameBuffer.h"
 #include "ConstantBuffer/UpdateLightBuffer.h"

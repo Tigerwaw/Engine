@@ -130,7 +130,7 @@ void ModelViewer::InitializeApplication()
 			{
 				DragQueryFile(hDrop, i, name, MAX_PATH);
 				std::filesystem::path filePath = name;
-
+				
 				AssetManager::Get().RegisterAsset(filePath);
 				std::filesystem::path assetPath = AssetManager::Get().MakeRelative(filePath);
 				if (assetPath == "")
@@ -240,7 +240,7 @@ void ModelViewer::InitializeApplication()
 			if (ImGui::Button("Add Cube Primitive"))
 			{
 				std::shared_ptr<GameObject> go = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model");
-				std::filesystem::path prim = "CubePrimitive";
+				std::filesystem::path prim = "SM_CubePrimitive";
 				SetModel(go, prim);
 				std::shared_ptr<Transform> transform = go->GetComponent<Transform>();
 				transform->SetScale(50.0f, 50.0f, 50.0f);
@@ -260,7 +260,7 @@ void ModelViewer::InitializeApplication()
 			if (ImGui::Button("Add Plane Primitive"))
 			{
 				std::shared_ptr<GameObject> go = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model");
-				std::filesystem::path prim = "PlanePrimitive";
+				std::filesystem::path prim = "SM_PlanePrimitive";
 				SetModel(go, prim);
 				std::shared_ptr<Transform> transform = go->GetComponent<Transform>();
 				transform->SetRotation(90.0f, -180.0f, 0);
@@ -539,8 +539,8 @@ void ModelViewer::UpdateApplication()
 
 void ModelViewer::ResetScene()
 {
-	ResetMaterial();
 	ResetPSO();
+	ResetMaterial();
 
 	std::shared_ptr<GameObject> go = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model");
 	ResetGameObject(go);
@@ -574,19 +574,20 @@ void ModelViewer::ResetGameObject(std::shared_ptr<GameObject> aGO)
 void ModelViewer::ResetMaterial()
 {
 	AssetManager& am = AssetManager::Get();
-	std::shared_ptr<Material> defaultMat = am.GetAsset<MaterialAsset>("DefaultMaterial")->material;
+	std::shared_ptr<Material> defaultMat = am.GetAsset<MaterialAsset>("MAT_DefaultMaterial")->material;
+	myMaterial->SetPSO(defaultMat->GetPSO());
 	myMaterial->MaterialSettings().albedoTint = { 1.0f, 1.0f, 1.0f, 1.0f };
-	myMaterial->SetAlbedoTexture(am.GetAsset<TextureAsset>("Default_C")->texture);
-	myMaterial->SetNormalTexture(am.GetAsset<TextureAsset>("Default_N")->texture);
-	myMaterial->SetMaterialTexture(am.GetAsset<TextureAsset>("Default_M")->texture);
+	myMaterial->SetAlbedoTexture(am.GetAsset<TextureAsset>("T_Default_C")->texture);
+	myMaterial->SetNormalTexture(am.GetAsset<TextureAsset>("T_Default_N")->texture);
+	myMaterial->SetMaterialTexture(am.GetAsset<TextureAsset>("T_Default_M")->texture);
 
-	myMaterialName = "DefaultMaterial";
+	myMaterialName = "MAT_DefaultMaterial";
 	myMaterialPath = "";
-	myAlbedoTexName = "Default_C";
+	myAlbedoTexName = "T_Default_C";
 	myAlbedoTexPath = "";
-	myNormalTexName = "Default_N";
+	myNormalTexName = "T_Default_N";
 	myNormalTexPath = "";
-	myMaterialTexName = "Default_M";
+	myMaterialTexName = "T_Default_M";
 	myMaterialTexPath = "";
 	myIsCustomMaterial = false;
 

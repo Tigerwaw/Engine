@@ -31,7 +31,8 @@ Renderer::~Renderer() = default;
 
 void Renderer::RenderScene(Scene& aScene)
 {
-	RenderDeferred(aScene);
+	RenderForward(aScene);
+	//RenderDeferred(aScene);
 }
 
 void Renderer::RenderForward(Scene& aScene)
@@ -108,20 +109,20 @@ void Renderer::RenderDeferred(Scene& aScene)
 	// Directional Light
 	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(126, aScene.myAmbientLight->GetComponent<AmbientLight>()->GetCubemap());
 	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_DeferredDirectionalLight")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetDefaultRenderTargetNoDepth>(true);
+	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(GraphicsEngine::Get().GetBackBuffer(), nullptr, true, false);
 	gfx.GetGraphicsCommandList().Enqueue<SetGBufferAsResource>();
 	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
 	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(100);
 
 	// Pointlights
 	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_DeferredPointlight")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetDefaultRenderTargetNoDepth>();
+	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(GraphicsEngine::Get().GetBackBuffer(), nullptr, false, false);
 	gfx.GetGraphicsCommandList().Enqueue<SetGBufferAsResource>();
 	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
 
 	// Spotlights
 	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_DeferredSpotlight")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetDefaultRenderTargetNoDepth>();
+	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(GraphicsEngine::Get().GetBackBuffer(), nullptr, false, false);
 	gfx.GetGraphicsCommandList().Enqueue<SetGBufferAsResource>();
 	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
 
@@ -545,22 +546,22 @@ void Renderer::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
 // TEMP
 void Renderer::Init()
 {
-	//myTestSprite = std::make_shared<Sprite>();
-	//myTestText = std::make_shared<Text>();
+	myTestText = std::make_shared<Text>();
+	myTestText->SetFont(AssetManager::Get().GetAsset<FontAsset>("Fonts/F_RobotoRegular.json")->font);
+	myTestText->SetPosition(CU::Vector2f(-500.0f, 700.0f));
+	myTestText->SetSize(5);
+	myTestText->SetTextContent("Test");
 
-	//myTestText->SetFont(AssetManager::Get().GetAsset<FontAsset>("Fonts/F_RobotoRegular.json")->font);
-	//myTestText->SetPosition(CU::Vector2f(-500.0f, 700.0f));
-	//myTestText->SetSize(5);
-	//myTestText->SetTextContent("Test");
+	myTestSprite = std::make_shared<Sprite>();
+	myTestSprite->SetTexture(AssetManager::Get().GetAsset<TextureAsset>("EngineAssets/Textures/Utility/T_perlin_C.dds")->texture);
+	myTestSprite->SetPosition(CU::Vector2f(500.0f, 200.0f));
+	myTestSprite->SetSize(CU::Vector2f(600.0f, 600.0f));
 }
 
 void Renderer::DrawTestUI()
 {
-	//myTestSprite->SetTexture(AssetManager::Get().GetAsset<TextureAsset>("EngineAssets/Textures/Utility/T_perlin_C.dds")->texture);
-	//myTestSprite->SetPosition(CU::Vector2f(500.0f, 500.0f));
-	//myTestSprite->SetSize(CU::Vector2f(600.0f, 600.0f));
-	//GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(GraphicsEngine::Get().GetBackBuffer(), nullptr, false, false);
-	//GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderSprite>(myTestSprite);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(GraphicsEngine::Get().GetBackBuffer(), nullptr, false, false);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderSprite>(myTestSprite);
 
-	//GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderText>(myTestText);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderText>(myTestText);
 }
