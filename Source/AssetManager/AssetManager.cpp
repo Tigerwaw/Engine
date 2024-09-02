@@ -464,70 +464,106 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
     }
     path.close();
 
-    std::string name;
-    std::vector<VertexElementDesc> inputLayoutDefinition;
-    unsigned vertexStride = 0;
-    std::wstring vsPath;
-    std::shared_ptr<Shader> vsShader;
-    std::shared_ptr<Shader> gsShader;
-    std::shared_ptr<Shader> psShader;
-    std::unordered_map<unsigned, std::string> samplers;
-    unsigned fillMode = 3;
-    unsigned cullMode = 3;
-    bool antiAliasedLine = false;
+    PSODescription psoDesc = {};
     
-    name = assetPath.stem().string();
+    psoDesc.name = assetPath.stem().string();
 
     if (data.contains("VertexType"))
     {
         if (data["VertexType"].get<std::string>() == "Default")
         {
-            inputLayoutDefinition = Vertex::InputLayoutDefinition;
-            vertexStride = sizeof(Vertex);
+            psoDesc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
+            psoDesc.vertexStride = sizeof(Vertex);
         }
         else if (data["VertexType"].get<std::string>() == "DebugLine")
         {
-            inputLayoutDefinition = DebugLineVertex::InputLayoutDefinition;
-            vertexStride = sizeof(DebugLineVertex);
+            psoDesc.inputLayoutDefinition = DebugLineVertex::InputLayoutDefinition;
+            psoDesc.vertexStride = sizeof(DebugLineVertex);
         }
         else if (data["VertexType"].get<std::string>() == "Text")
         {
-            inputLayoutDefinition = TextVertex::InputLayoutDefinition;
-            vertexStride = sizeof(TextVertex);
+            psoDesc.inputLayoutDefinition = TextVertex::InputLayoutDefinition;
+            psoDesc.vertexStride = sizeof(TextVertex);
         }
     }
 
     if (data.contains("VertexShader") && data["VertexShader"] != "")
     {
-        vsPath = (GetContentRoot() / GetAsset<ShaderAsset>(data["VertexShader"].get<std::string>())->path).wstring();
-        vsShader = GetAsset<ShaderAsset>(data["VertexShader"].get<std::string>())->shader;
+        psoDesc.vsPath = (GetContentRoot() / GetAsset<ShaderAsset>(data["VertexShader"].get<std::string>())->path).wstring();
+        psoDesc.vsShader = GetAsset<ShaderAsset>(data["VertexShader"].get<std::string>())->shader;
     }
 
     if (data.contains("GeometryShader") && data["GeometryShader"] != "")
     {
-        gsShader = GetAsset<ShaderAsset>(data["GeometryShader"].get<std::string>())->shader;
+        psoDesc.gsShader = GetAsset<ShaderAsset>(data["GeometryShader"].get<std::string>())->shader;
     }
 
     if (data.contains("PixelShader") && data["PixelShader"] != "")
     {
-        psShader = GetAsset<ShaderAsset>(data["PixelShader"].get<std::string>())->shader;
+        psoDesc.psShader = GetAsset<ShaderAsset>(data["PixelShader"].get<std::string>())->shader;
     }
 
     if (data.contains("RasterizerDesc"))
     {
         if (data["RasterizerDesc"].contains("FillMode"))
         {
-            fillMode = data["RasterizerDesc"]["FillMode"].get<unsigned>();
+            std::string fillMode = data["RasterizerDesc"]["FillMode"].get<std::string>();
+            if (fillMode == "Wireframe" || fillMode == "wireframe")
+            {
+                psoDesc.fillMode = 2;
+            }
+            else
+            {
+                psoDesc.fillMode = 3;
+            }
         }
 
         if (data["RasterizerDesc"].contains("CullMode"))
         {
-            cullMode = data["RasterizerDesc"]["CullMode"].get<unsigned>();
+            std::string cullMode = data["RasterizerDesc"]["CullMode"].get<std::string>();
+            if (cullMode == "None")
+            {
+                psoDesc.cullMode = 1;
+            }
+            else if (cullMode == "Front")
+            {
+                psoDesc.cullMode = 2;
+            }
+            else
+            {
+                psoDesc.cullMode = 3;
+            }
         }
 
         if (data["RasterizerDesc"].contains("AntialiasedLine"))
         {
-            antiAliasedLine = data["RasterizerDesc"]["AntialiasedLine"].get<bool>();
+            psoDesc.antiAliasedLine = data["RasterizerDesc"]["AntialiasedLine"].get<bool>();
+        }
+    }
+
+    if (data.contains("BlendStateDesc"))
+    {
+        if (data["BlendStateDesc"].contains("BlendMode"))
+        {
+            std::string blendMode = data["BlendStateDesc"]["BlendMode"].get<std::string>();
+            if (blendMode == "AlphaAdditive")
+            {
+                psoDesc.blendMode = BlendMode::AlphaAdditive;
+            }
+            else
+            {
+                psoDesc.blendMode = BlendMode::None;
+            }
+        }
+
+        if (data["BlendStateDesc"].contains("AlphaToCoverage"))
+        {
+            psoDesc.alphaToCoverage = data["BlendStateDesc"]["AlphaToCoverage"].get<bool>();
+        }
+
+        if (data["BlendStateDesc"].contains("IndependentBlend"))
+        {
+            psoDesc.independentBlend = data["BlendStateDesc"]["IndependentBlend"].get<bool>();
         }
     }
 
@@ -535,13 +571,12 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
     {
         for (auto& sampler : data["Samplers"].items())
         {
-            samplers.emplace(sampler.value().get<unsigned>(), sampler.key());
+            psoDesc.samplerList.emplace(sampler.value().get<unsigned>(), sampler.key());
         }
     }
     
     asset->pso = std::make_shared<PipelineStateObject>();
-    if (!GraphicsEngine::Get().CreatePSO(asset->pso, name, inputLayoutDefinition, vertexStride, vsPath,
-                                         vsShader, gsShader, psShader, &samplers, fillMode, cullMode, antiAliasedLine))
+    if (!GraphicsEngine::Get().CreatePSO(asset->pso, psoDesc))
     {
         LOG(LogAssetManager, Error, "Failed to create pso asset {}", asset->path.filename().string());
         return false;

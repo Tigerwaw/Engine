@@ -2,14 +2,5 @@
   "VertexType": "Default",
   "VertexShader": "SH_Mesh_VS.cso",
   "GeometryShader": "",
-  "PixelShader": "SH_DebugVertexNormals_PS.cso",
-  "RasterizerDesc":
-  {
-    "FillMode": 3,
-    "CullMode": 3,
-    "AntialiasedLine": false
-  },
-  "Samplers":
-  {
-  }
+  "PixelShader": "SH_DebugVertexNormals_PS.cso"
 }

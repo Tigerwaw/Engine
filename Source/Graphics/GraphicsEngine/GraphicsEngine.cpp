@@ -182,50 +182,79 @@ bool GraphicsEngine::LoadShader(std::filesystem::path aFilePath, Shader& outShad
 	return myRHI->LoadShaderFromFilePath(aFilePath.stem().string(), outShader, aFilePath.generic_wstring());
 }
 
-bool GraphicsEngine::CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, std::string aName, 
-							   std::vector<VertexElementDesc> aInputLayoutDefinition, unsigned aVertexStride, std::wstring aVSpath,
-							   std::shared_ptr<Shader> aVSshader, std::shared_ptr<Shader> aGSshader, std::shared_ptr<Shader> aPSshader,
-							   std::unordered_map<unsigned, std::string>* aSamplerList, 
-							   unsigned aFillMode, unsigned aCullMode, bool aAntiAliasedLine)
+bool GraphicsEngine::CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, PSODescription& aPSOdesc)
 {
-	aPSO->VertexStride = aVertexStride;
+	aPSO->VertexStride = aPSOdesc.vertexStride;
 
-	if (aVSpath != L"")
+	if (aPSOdesc.vsPath != L"")
 	{
-		if (!myRHI->CreateInputLayout(aPSO->InputLayout, aInputLayoutDefinition, aVSpath))
+		if (!myRHI->CreateInputLayout(aPSO->InputLayout, aPSOdesc.inputLayoutDefinition, aPSOdesc.vsPath))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to create PSO!");
 			return false;
 		}
 	}
 
-	aPSO->VertexShader = aVSshader;
-	aPSO->GeometryShader = aGSshader;
-	aPSO->PixelShader = aPSshader;
+	aPSO->VertexShader = aPSOdesc.vsShader;
+	aPSO->GeometryShader = aPSOdesc.gsShader;
+	aPSO->PixelShader = aPSOdesc.psShader;
 
-	if (!(aFillMode == 3 && aCullMode && aAntiAliasedLine == false))
+	if (!(aPSOdesc.fillMode == 3 && aPSOdesc.cullMode == 3 && aPSOdesc.antiAliasedLine == false))
 	{
 		D3D11_RASTERIZER_DESC rastDesc = {};
-		rastDesc.FillMode = static_cast<D3D11_FILL_MODE>(aFillMode);
-		rastDesc.CullMode = static_cast<D3D11_CULL_MODE>(aFillMode);
-		rastDesc.AntialiasedLineEnable = aAntiAliasedLine;
+		rastDesc.FillMode = static_cast<D3D11_FILL_MODE>(aPSOdesc.fillMode);
+		rastDesc.CullMode = static_cast<D3D11_CULL_MODE>(aPSOdesc.cullMode);
+		rastDesc.AntialiasedLineEnable = aPSOdesc.antiAliasedLine;
 
-		if (!myRHI->CreateRasterizerState(aName + "_Rasterizer", rastDesc, *aPSO))
+		if (!myRHI->CreateRasterizerState(aPSOdesc.name + "_Rasterizer", rastDesc, *aPSO))
 		{
-			LOG(LogGraphicsEngine, Error, "Failed to create PSO!");
+			LOG(LogGraphicsEngine, Error, "Failed to create rasterizer for PSO {}!", aPSOdesc.name);
 			return false;
 		}
 	}
 
-	if (aSamplerList)
+
+	if (aPSOdesc.blendMode != BlendMode::None)
 	{
-		for (auto& sampler : *aSamplerList)
+		CD3D11_BLEND_DESC blendDesc = {};
+		blendDesc.AlphaToCoverageEnable = aPSOdesc.alphaToCoverage;
+		blendDesc.IndependentBlendEnable = aPSOdesc.independentBlend;
+
+		D3D11_RENDER_TARGET_BLEND_DESC defaultRenderTargetBlendDesc = {};
+		defaultRenderTargetBlendDesc.BlendEnable = TRUE;
+		defaultRenderTargetBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+		if (aPSOdesc.blendMode == BlendMode::AlphaAdditive)
 		{
-			aPSO->SamplerStates[sampler.first] = myRHI->GetSamplerState(sampler.second);
+			defaultRenderTargetBlendDesc.SrcBlend = D3D11_BLEND_SRC_ALPHA;
+			defaultRenderTargetBlendDesc.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+			defaultRenderTargetBlendDesc.BlendOp = D3D11_BLEND_OP_ADD;
+
+			defaultRenderTargetBlendDesc.SrcBlendAlpha = D3D11_BLEND_INV_DEST_ALPHA;
+			defaultRenderTargetBlendDesc.DestBlendAlpha = D3D11_BLEND_ONE;
+			defaultRenderTargetBlendDesc.BlendOpAlpha = D3D11_BLEND_OP_ADD;
 		}
+
+		for (UINT i = 0; i < D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
+		{
+			blendDesc.RenderTarget[i] = defaultRenderTargetBlendDesc;
+		}
+
+		if (!myRHI->CreateBlendState(aPSOdesc.name + "_BlendState", blendDesc, *aPSO))
+		{
+			LOG(LogGraphicsEngine, Error, "Failed to create blend state for PSO {}!", aPSOdesc.name);
+			return false;
+		}
+
+		LOG(LogGraphicsEngine, Log, "Successfully created blend state for PSO {}!", aPSOdesc.name);
 	}
 
-	LOG(LogGraphicsEngine, Log, "Created PSO {}!", aName);
+	for (auto& sampler : aPSOdesc.samplerList)
+	{
+		aPSO->SamplerStates[sampler.first] = myRHI->GetSamplerState(sampler.second);
+	}
+
+	LOG(LogGraphicsEngine, Log, "Created PSO {}!", aPSOdesc.name);
 	return true;
 }
 

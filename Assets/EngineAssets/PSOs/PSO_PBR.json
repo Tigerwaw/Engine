@@ -3,12 +3,6 @@
   "VertexShader": "SH_Mesh_VS.cso",
   "GeometryShader": "",
   "PixelShader": "SH_PBRMesh_PS.cso",
-  "RasterizerDesc":
-  {
-    "FillMode": 3,
-    "CullMode": 3,
-    "AntialiasedLine": false
-  },
   "Samplers":
   {
     "LinearWrapSS": 0,

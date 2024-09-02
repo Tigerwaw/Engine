@@ -26,10 +26,14 @@ void ImGuiHandler::Initialize(HWND aMainWindowHandle)
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 
-	io.BackendFlags |= ImGuiBackendFlags_PlatformHasViewports;
-	io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;
+	if (!Engine::GetInstance().GetIsFullscreen())
+	{
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+
+		io.BackendFlags |= ImGuiBackendFlags_PlatformHasViewports;
+		io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;
+	}
 
 	ImGui::StyleColorsDark();
 
@@ -54,9 +58,6 @@ void ImGuiHandler::BeginFrame()
 	CU::Vector2f resolution = Engine::GetInstance().GetResolution();
 	io.DisplaySize = { resolution.x, resolution.y };
 	io.DisplayFramebufferScale = { 1.0f, 1.0f };
-	//CU::Vector2f mousePos = Engine::GetInstance().GetInputHandler().GetAnalogAction2D("MousePos");
-	//io.MousePos = { mousePos.x, mousePos.y };
-	//io.AddMousePosEvent(mousePos.x, mousePos.y);
 
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -72,11 +73,14 @@ void ImGuiHandler::Render()
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-	// Update and Render additional Platform Windows
-	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	if (!Engine::GetInstance().GetIsFullscreen())
 	{
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
+		// Update and Render additional Platform Windows
+		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+		}
 	}
 #endif
 }

@@ -88,6 +88,9 @@ public:
     void SetViewcull(bool aShouldViewcull) { myShouldViewcull = aShouldViewcull; }
     const bool GetShouldViewcull() const { return myShouldViewcull; }
 
+    void SetCastShadows(bool aCastShadows) { myCastShadows = aCastShadows; }
+    const bool GetCastShadows() const { return myCastShadows; }
+
     bool Serialize(nl::json& outJsonObject) override;
     bool Deserialize(nl::json& aJsonObject) override;
 
@@ -109,6 +112,7 @@ private:
     std::vector<std::shared_ptr<Material>> myMaterials;
     std::unordered_map<unsigned, unsigned> mySlotToIndex;
     bool myShouldViewcull = true;
+    bool myCastShadows = true;
 
     std::vector<AnimationLayer> myAnimationLayers;
     std::unordered_map<std::string, unsigned> myJointNameToLayerIndex;

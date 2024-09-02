@@ -1,6 +1,8 @@
 #include "Enginepch.h"
 #include "Application.h"
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 Application::Application()
 {
 }
@@ -24,11 +26,13 @@ void Application::Run()
     while (myIsRunning)
     {
 #if _DEBUG
-		//extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-		//if (ImGui_ImplWin32_WndProcHandler(msg.hwnd, msg.message, msg.wParam, msg.lParam))
-		//{
-		//	return;
-		//}
+		if (Engine::GetInstance().GetIsFullscreen())
+		{
+			if (ImGui_ImplWin32_WndProcHandler(msg.hwnd, msg.message, msg.wParam, msg.lParam))
+			{
+				return;
+			}
+		}
 #endif
 
 		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))

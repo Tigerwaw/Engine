@@ -29,6 +29,8 @@ public:
 
     void SetViewcull(bool aShouldViewcull) { myShouldViewcull = aShouldViewcull; }
     const bool GetShouldViewcull() const { return myShouldViewcull; }
+    void SetCastShadows(bool aCastShadows) { myCastShadows = aCastShadows; }
+    const bool GetCastShadows() const { return myCastShadows; }
 
     void SetCustomShaderData_1(CU::Vector3f aCustomShaderData) { myCustomShaderData_1 = aCustomShaderData; }
     void SetCustomShaderData_2(CU::Vector4f aCustomShaderData) { myCustomShaderData_2 = aCustomShaderData; }
@@ -43,6 +45,7 @@ protected:
     std::vector<std::shared_ptr<Material>> myMaterials;
     std::unordered_map<unsigned, unsigned> mySlotToIndex;
     bool myShouldViewcull = true;
+    bool myCastShadows = true;
 
     CU::Vector3f myCustomShaderData_1;
     CU::Vector4f myCustomShaderData_2;

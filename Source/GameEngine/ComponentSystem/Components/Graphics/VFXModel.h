@@ -31,6 +31,9 @@ public:
 	void SetWorldspaceSprite(bool aIsBillboard = false, bool aIsSpritesheet = false, CU::Vector2f aSpritesheetSize = CU::Vector2f());
 	void SetCustomShaderParams(CU::Vector4<float> aParams) { myCustomShaderParameters = aParams; }
 
+	void SetCastShadows(bool aCastShadows) { myCastShadows = aCastShadows; }
+	const bool GetCastShadows() const { return myCastShadows; }
+
 	CU::Vector4<float> GetCustomShaderParams() const { return myCustomShaderParameters; }
 
 	bool Serialize(nl::json& outJsonObject) override;
@@ -42,5 +45,6 @@ protected:
 	GameObjectEventType myEventTrigger = GameObjectEventType::None;
 	bool myIsBillboard = false;
 	CU::Vector4<float> myCustomShaderParameters;
+	bool myCastShadows = true;
 };
 

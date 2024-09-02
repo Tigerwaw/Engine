@@ -277,6 +277,11 @@ bool AnimatedModel::Deserialize(nl::json& aJsonObject)
         SetViewcull(aJsonObject["ShouldViewcull"].get<bool>());
     }
 
+    if (aJsonObject.contains("CastShadows"))
+    {
+        SetCastShadows(aJsonObject["CastShadows"].get<bool>());
+    }
+
     SetMesh(AssetManager::Get().GetAsset<MeshAsset>(aJsonObject["Model"].get<std::string>())->mesh);
 
     if (aJsonObject.contains("Materials"))

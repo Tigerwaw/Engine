@@ -3,11 +3,9 @@
   "VertexShader": "SH_Mesh_VS.cso",
   "GeometryShader": "",
   "PixelShader": "SH_VFXSpritesheet_PS.cso",
-  "RasterizerDesc":
+  "BlendStateDesc":
   {
-    "FillMode": 3,
-    "CullMode": 3,
-    "AntialiasedLine": false
+    "BlendMode": "AlphaAdditive"
   },
   "Samplers":
   {

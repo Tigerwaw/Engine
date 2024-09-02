@@ -50,6 +50,31 @@ enum class ConstantBufferType
 	SpriteBuffer
 };
 
+enum class BlendMode
+{
+	None,
+	AlphaAdditive,
+	COUNT
+};
+
+struct PSODescription
+{
+	std::string name;
+	std::vector<VertexElementDesc> inputLayoutDefinition;
+	unsigned vertexStride;
+	std::wstring vsPath;
+	std::shared_ptr<Shader> vsShader;
+	std::shared_ptr<Shader> gsShader;
+	std::shared_ptr<Shader> psShader;
+	std::unordered_map<unsigned, std::string> samplerList;
+	unsigned fillMode = 3;
+	unsigned cullMode = 3;
+	bool antiAliasedLine = false;
+	BlendMode blendMode = BlendMode::None;
+	bool alphaToCoverage = false;
+	bool independentBlend = false;
+};
+
 class GraphicsEngine
 {
 public:
@@ -80,11 +105,7 @@ public:
 	bool ClearTextureResource_VS(unsigned aSlot);
 
 	bool LoadShader(std::filesystem::path aFilePath, Shader& outShader);
-	bool CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, std::string aName, 
-				   std::vector<VertexElementDesc> aInputLayoutDefinition, unsigned aVertexStride, std::wstring aVSpath,
-				   std::shared_ptr<Shader> aVSshader, std::shared_ptr<Shader> aGSshader, std::shared_ptr<Shader> aPSshader,
-				   std::unordered_map<unsigned, std::string>* aSamplerList, 
-				   unsigned aFillMode = 3, unsigned aCullMode = 3, bool aAntiAliasedLine = false);
+	bool CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, PSODescription& aPSOdesc);
 	std::shared_ptr<PipelineStateObject> GetDefaultPSO() { return myDefaultPSO; }
 
 	bool CreateShadowMap(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture);

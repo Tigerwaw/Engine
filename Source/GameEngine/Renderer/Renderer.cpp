@@ -226,6 +226,10 @@ void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aRenderCa
 				{
 					UpdateBoundingBox(gameObject);
 				}
+				else
+				{
+					if (!model->GetCastShadows()) continue;
+				}
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model, aPSOoverride);
 			}
 		}
@@ -239,6 +243,11 @@ void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aRenderCa
 				{
 					UpdateBoundingBox(gameObject);
 				}
+				else
+				{
+					if (!animModel->GetCastShadows()) continue;
+				}
+
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel, aPSOoverride);
 			}
 		}
@@ -254,6 +263,8 @@ void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<PointLight> aPoin
 		std::shared_ptr<Model> model = gameObject->GetComponent<Model>();
 		if (model && model->GetActive())
 		{
+			if (!model->GetCastShadows()) continue;
+
 			if (aDisableViewCulling || !model->GetShouldViewcull() || IsInsideRadius(aPointLight, gameObject->GetComponent<Transform>(), model->GetBoundingBox()))
 			{
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model, aPSOoverride);
@@ -263,6 +274,8 @@ void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<PointLight> aPoin
 		std::shared_ptr<AnimatedModel> animModel = gameObject->GetComponent<AnimatedModel>();
 		if (animModel && animModel->GetActive())
 		{
+			if (!animModel->GetCastShadows()) continue;
+
 			if (aDisableViewCulling || !animModel->GetShouldViewcull() || IsInsideRadius(aPointLight, gameObject->GetComponent<Transform>(), animModel->GetBoundingBox()))
 			{
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel, aPSOoverride);
@@ -409,7 +422,7 @@ void Renderer::Init()
 	//myTestSprite = std::make_shared<Sprite>();
 	//myTestText = std::make_shared<Text>();
 
-	//myTestText->SetFont(AssetManager::Get().GetAsset<FontAsset>("Fonts/RobotoRegular.json")->font);
+	//myTestText->SetFont(AssetManager::Get().GetAsset<FontAsset>("Fonts/F_RobotoRegular.json")->font);
 	//myTestText->SetPosition(CU::Vector2f(-500.0f, 700.0f));
 	//myTestText->SetSize(5);
 	//myTestText->SetTextContent("Test");
@@ -417,11 +430,11 @@ void Renderer::Init()
 
 void Renderer::DrawTestUI()
 {
-	/*myTestSprite->SetTexture(AssetManager::Get().GetAsset<TextureAsset>("EngineAssets/Textures/Utility/perlin.dds")->texture);
-	myTestSprite->SetPosition(CU::Vector2f(500.0f, 500.0f));
-	myTestSprite->SetSize(CU::Vector2f(600.0f, 600.0f));
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(GraphicsEngine::Get().GetBackBuffer(), nullptr, false, false);
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderSprite>(myTestSprite);
+	//myTestSprite->SetTexture(AssetManager::Get().GetAsset<TextureAsset>("EngineAssets/Textures/Utility/T_perlin_C.dds")->texture);
+	//myTestSprite->SetPosition(CU::Vector2f(500.0f, 500.0f));
+	//myTestSprite->SetSize(CU::Vector2f(600.0f, 600.0f));
+	//GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(GraphicsEngine::Get().GetBackBuffer(), nullptr, false, false);
+	//GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderSprite>(myTestSprite);
 
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderText>(myTestText);*/
+	//GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderText>(myTestText);
 }

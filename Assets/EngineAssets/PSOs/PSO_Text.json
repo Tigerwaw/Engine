@@ -2,12 +2,6 @@
   "VertexType": "Text",
   "VertexShader": "SH_UI_Text_VS.cso",
   "PixelShader": "SH_UI_Text_PS.cso",
-  "RasterizerDesc":
-  {
-    "FillMode": 3,
-    "CullMode": 3,
-    "AntialiasedLine": false
-  },
   "Samplers":
   {
     "LinearWrapSS": 0

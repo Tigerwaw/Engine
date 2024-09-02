@@ -5,8 +5,8 @@
   "PixelShader": "SH_DebugObject_PS.cso",
   "RasterizerDesc":
   {
-    "FillMode": 3,
-    "CullMode": 1,
+    "FillMode": "Solid",
+    "CullMode": "None",
     "AntialiasedLine": true
   },
   "Samplers":

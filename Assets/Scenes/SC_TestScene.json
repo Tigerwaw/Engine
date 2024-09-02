@@ -450,11 +450,16 @@
         },
         {
           "Type": "VFXModel",
+          "CastShadows": false,
           "Lifetime": 1.0,
           "EventTrigger": 0,
           "IsBillboard": true,
           "IsSpritesheet": true,
-          "SpritesheetSize": [ 8.0, 4.0 ]
+          "SpritesheetSize":
+          [
+            8.0,
+            4.0
+          ]
         }
       ]
     }

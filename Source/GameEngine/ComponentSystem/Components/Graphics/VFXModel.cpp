@@ -38,6 +38,7 @@ void VFXModel::Update()
 	std::shared_ptr<Model> model = gameObject->GetComponent<Model>();
 	if (model)
 	{
+		model->SetCastShadows(myCastShadows);
 		model->SetCustomShaderData_2(myCustomShaderParameters);
 
 		if (myIsBillboard)
@@ -95,6 +96,11 @@ bool VFXModel::Deserialize(nl::json& aJsonObject)
 	{
 		SetLifetime(aJsonObject["Lifetime"].get<float>());
 	};
+
+	if (aJsonObject.contains("CastShadows"))
+	{
+		SetCastShadows(aJsonObject["CastShadows"].get<bool>());
+	}
 
 	if (aJsonObject.contains("EventTrigger"))
 	{
