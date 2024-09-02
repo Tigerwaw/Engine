@@ -99,18 +99,19 @@ bool AssetManager::Initialize(const std::filesystem::path& aContentRootPath, boo
 
 void AssetManager::RegisterEngineAssets()
 {
-    RegisterEngineTextureAsset("Default_C", BuiltIn_Default_C_ByteCode, sizeof(BuiltIn_Default_C_ByteCode));
-    RegisterEngineTextureAsset("Default_N", BuiltIn_Default_N_ByteCode, sizeof(BuiltIn_Default_N_ByteCode));
-    RegisterEngineTextureAsset("Default_M", BuiltIn_Default_M_ByteCode, sizeof(BuiltIn_Default_M_ByteCode));
-    RegisterEngineTextureAsset("Default_FX", BuiltIn_Default_FX_ByteCode, sizeof(BuiltIn_Default_FX_ByteCode));
+    RegisterEngineTextureAsset("T_Default_C", BuiltIn_Default_C_ByteCode, sizeof(BuiltIn_Default_C_ByteCode));
+    RegisterEngineTextureAsset("T_Default_N", BuiltIn_Default_N_ByteCode, sizeof(BuiltIn_Default_N_ByteCode));
+    RegisterEngineTextureAsset("T_Default_M", BuiltIn_Default_M_ByteCode, sizeof(BuiltIn_Default_M_ByteCode));
+    RegisterEngineTextureAsset("T_Default_FX", BuiltIn_Default_FX_ByteCode, sizeof(BuiltIn_Default_FX_ByteCode));
 
     std::shared_ptr<MaterialAsset> asset = std::make_shared<MaterialAsset>();
     asset->material = std::make_shared<Material>();
+    asset->material->SetPSO(GraphicsEngine::Get().GetDefaultPSO());
     asset->material->MaterialSettings().albedoTint = { 1.0f, 1.0f, 1.0f, 1.0f };
-    asset->material->SetAlbedoTexture(GetAsset<TextureAsset>("Default_C")->texture);
-    asset->material->SetNormalTexture(GetAsset<TextureAsset>("Default_N")->texture);
-    asset->material->SetMaterialTexture(GetAsset<TextureAsset>("Default_M")->texture);
-    asset->name = "DefaultMaterial";
+    asset->material->SetAlbedoTexture(GetAsset<TextureAsset>("T_Default_C")->texture);
+    asset->material->SetNormalTexture(GetAsset<TextureAsset>("T_Default_N")->texture);
+    asset->material->SetMaterialTexture(GetAsset<TextureAsset>("T_Default_M")->texture);
+    asset->name = "MAT_DefaultMaterial";
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered material asset {}", asset->name.string());
@@ -250,7 +251,7 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
     asset->mesh = std::make_shared<Mesh>(std::move(mesh));
     asset->path = assetPath;
     asset->name = assetPath.stem();
-    myAssets.emplace(assetPath, asset);
+    myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->path.filename().string());
     return true;
@@ -291,7 +292,7 @@ bool AssetManager::RegisterAnimationAsset(const std::filesystem::path& aPath)
     asset->animation = std::make_shared<Animation>(std::move(animation));
     asset->path = assetPath;
     asset->name = assetPath.stem();
-    myAssets.emplace(assetPath, asset);
+    myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered animation asset {}", asset->path.filename().string());
     return true;
@@ -308,10 +309,10 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
 
     std::shared_ptr<MaterialAsset> asset = std::make_shared<MaterialAsset>();
     asset->material = std::make_shared<Material>();
-    asset->material->SetAlbedoTexture(GetAsset<TextureAsset>("Default_C")->texture);
-    asset->material->SetNormalTexture(GetAsset<TextureAsset>("Default_N")->texture);
-    asset->material->SetMaterialTexture(GetAsset<TextureAsset>("Default_M")->texture);
     asset->material->SetPSO(GraphicsEngine::Get().GetDefaultPSO());
+    asset->material->SetAlbedoTexture(GetAsset<TextureAsset>("T_Default_C")->texture);
+    asset->material->SetNormalTexture(GetAsset<TextureAsset>("T_Default_N")->texture);
+    asset->material->SetMaterialTexture(GetAsset<TextureAsset>("T_Default_M")->texture);
 
     std::ifstream path(aPath);
     nl::json data = nl::json();
@@ -344,14 +345,15 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
     {
         bool textureExists = true;
         std::filesystem::path albedoPath = data["AlbedoTexture"].get<std::string>();
-        if (myAssets.find(albedoPath) == myAssets.end())
+        std::filesystem::path albedoName = albedoPath.stem();
+        if (myAssets.find(albedoName) == myAssets.end())
         {
             textureExists = RegisterTextureAsset(myContentRoot / albedoPath);
         }
 
         if (textureExists)
         {
-            asset->material->SetAlbedoTexture(GetAsset<TextureAsset>(albedoPath)->texture);
+            asset->material->SetAlbedoTexture(GetAsset<TextureAsset>(albedoName)->texture);
         }
     }
 
@@ -359,14 +361,15 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
     {
         bool textureExists = true;
         std::filesystem::path normalPath = data["NormalTexture"].get<std::string>();
-        if (myAssets.find(normalPath) == myAssets.end())
+        std::filesystem::path normalName = normalPath.stem();
+        if (myAssets.find(normalName) == myAssets.end())
         {
             textureExists = RegisterTextureAsset(myContentRoot / normalPath);
         }
 
         if (textureExists)
         {
-            asset->material->SetNormalTexture(GetAsset<TextureAsset>(normalPath)->texture);
+            asset->material->SetNormalTexture(GetAsset<TextureAsset>(normalName)->texture);
         }
     }
 
@@ -374,20 +377,21 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
     {
         bool textureExists = true;
         std::filesystem::path materialPath = data["MaterialTexture"].get<std::string>();
-        if (myAssets.find(materialPath) == myAssets.end())
+        std::filesystem::path materialName = materialPath.stem();
+        if (myAssets.find(materialName) == myAssets.end())
         {
             textureExists = RegisterTextureAsset(myContentRoot / materialPath);
         }
 
         if (textureExists)
         {
-            asset->material->SetMaterialTexture(GetAsset<TextureAsset>(materialPath)->texture);
+            asset->material->SetMaterialTexture(GetAsset<TextureAsset>(materialName)->texture);
         }
     }
 
     asset->path = assetPath;
     asset->name = assetPath.stem();
-    myAssets.emplace(assetPath, asset);
+    myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered material asset {}", asset->path.filename().string());
     return true;
@@ -410,7 +414,7 @@ bool AssetManager::RegisterTextureAsset(const std::filesystem::path& aPath)
     }
     asset->path = assetPath;
     asset->name = assetPath.stem();
-    myAssets.emplace(assetPath, asset);
+    myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered texture asset {}", asset->path.filename().string());
     return true;
@@ -434,7 +438,7 @@ bool AssetManager::RegisterShaderAsset(const std::filesystem::path& aPath)
 
     asset->path = assetPath;
     asset->name = assetPath.stem();
-    myAssets.emplace(assetPath.filename(), asset);
+    myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered shader asset {}", asset->path.filename().string());
     return true;
@@ -550,6 +554,10 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
             {
                 psoDesc.blendMode = BlendMode::AlphaAdditive;
             }
+            else if (blendMode == "Additive")
+            {
+                psoDesc.blendMode = BlendMode::Additive;
+            }
             else
             {
                 psoDesc.blendMode = BlendMode::None;
@@ -602,14 +610,17 @@ bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
     asset->font = std::make_shared<Font>();
 
     std::filesystem::path texturePath = assetPath;
-    texturePath = texturePath.replace_extension("dds");
-    if (!RegisterTextureAsset(myContentRoot / texturePath))
+    texturePath = texturePath.replace_filename("T" + texturePath.stem().string().substr(1) + ".dds");
+    if (myAssets.find(texturePath.stem()) == myAssets.end())
     {
-        LOG(LogAssetManager, Error, "Failed to create a font texture at path {}", asset->path.string());
-        return false;
+        if (!RegisterTextureAsset(myContentRoot / texturePath))
+        {
+            LOG(LogAssetManager, Error, "Failed to create a font texture at path {}", asset->path.string());
+            return false;
+        }
     }
 
-    asset->font->Texture = GetAsset<TextureAsset>(texturePath)->texture;
+    asset->font->Texture = GetAsset<TextureAsset>(texturePath.stem())->texture;
 
     std::ifstream path(aPath);
     nl::json data = nl::json();
@@ -674,7 +685,7 @@ bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
 
     asset->path = assetPath;
     asset->name = assetPath.stem();
-    myAssets.emplace(assetPath, asset);
+    myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered font asset {}", asset->path.filename().string());
     return true;
@@ -705,9 +716,9 @@ bool AssetManager::ValidateAsset(const std::filesystem::path& aPath)
     }
 
     std::filesystem::path assetPath = MakeRelative(aPath);
-    if (myAssets.find(assetPath) != myAssets.end())
+    if (myAssets.find(assetPath.stem()) != myAssets.end())
     {
-        LOG(LogAssetManager, Warning, "Asset at path '{}' is already registered!", aPath.string());
+        LOG(LogAssetManager, Warning, "Asset with name '{}' is already registered!", aPath.string());
         return false;
     }
 
@@ -751,7 +762,7 @@ bool AssetManager::RegisterEngineTextureAsset(std::string_view aName, const uint
         return false;
     }
     asset->name = aName;
-    myAssets.emplace(aName, asset);
+    myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered default texture asset {}", aName);
 
@@ -809,7 +820,7 @@ bool AssetManager::RegisterPlanePrimitive()
     
     std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
     asset->mesh = std::make_shared<Mesh>(std::move(plane));
-    asset->name = "PlanePrimitive";
+    asset->name = "SM_PlanePrimitive";
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
@@ -1000,7 +1011,7 @@ bool AssetManager::RegisterCubePrimitive()
 
     std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
     asset->mesh = std::make_shared<Mesh>(std::move(cube));
-    asset->name = "CubePrimitive";
+    asset->name = "SM_CubePrimitive";
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
@@ -1156,7 +1167,7 @@ bool AssetManager::RegisterRampPrimitive()
 
     std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
     asset->mesh = std::make_shared<Mesh>(std::move(ramp));
-    asset->name = "RampPrimitive";
+    asset->name = "SM_RampPrimitive";
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());

@@ -1,8 +1,8 @@
 {
   "VertexType": "DebugLine",
-  "VertexShader": "SH_DebugLine_VS.cso",
-  "GeometryShader": "SH_DebugLine_GS.cso",
-  "PixelShader": "SH_DebugObject_PS.cso",
+  "VertexShader": "SH_DebugLine_VS",
+  "GeometryShader": "SH_DebugLine_GS",
+  "PixelShader": "SH_DebugObject_PS",
   "RasterizerDesc":
   {
     "FillMode": "Solid",

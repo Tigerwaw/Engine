@@ -1,11 +1,11 @@
 {
   "VertexType": "Default",
-  "VertexShader": "SH_Mesh_VS",
+  "VertexShader": "SH_Quad_VS",
   "GeometryShader": "",
-  "PixelShader": "SH_VFXSpritesheet_PS",
+  "PixelShader": "SH_Deferred_Spotlight_PS",
   "BlendStateDesc":
   {
-    "BlendMode": "AlphaAdditive"
+    "BlendMode": "Additive"
   },
   "Samplers":
   {

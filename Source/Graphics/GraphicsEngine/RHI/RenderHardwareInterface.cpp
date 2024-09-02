@@ -1007,7 +1007,7 @@ bool RenderHardwareInterface::CreateLUT(std::string_view aName, unsigned aWidth,
 	}
 
 	std::shared_ptr<Shader> LUTshaderVS = std::make_shared<Shader>();
-	if (!LoadShaderFromFilePath("LUT_VS", *LUTshaderVS, Engine::GetInstance().GetContentRootPath() / L"EngineAssets/Shaders/SH_brdfLUT_VS.cso"))
+	if (!LoadShaderFromFilePath("LUT_VS", *LUTshaderVS, Engine::GetInstance().GetContentRootPath() / L"EngineAssets/Shaders/SH_Quad_VS.cso"))
 	{
 		LOG(LogRHI, Error, "Failed to load LUT vertex shader!");
 		return false;
@@ -1068,6 +1068,68 @@ void RenderHardwareInterface::SetRenderTarget(std::shared_ptr<Texture> aRenderTa
 
 	D3D11_VIEWPORT viewport = {};
 	if (!aRenderTarget && aDepthStencil)
+	{
+		viewport.TopLeftX = aDepthStencil->myViewport[0];
+		viewport.TopLeftY = aDepthStencil->myViewport[1];
+		viewport.Width = aDepthStencil->myViewport[2];
+		viewport.Height = aDepthStencil->myViewport[3];
+		viewport.MinDepth = aDepthStencil->myViewport[4];
+		viewport.MaxDepth = aDepthStencil->myViewport[5];
+	}
+	else
+	{
+		viewport.TopLeftX = myBackBuffer->myViewport[0];
+		viewport.TopLeftY = myBackBuffer->myViewport[1];
+		viewport.Width = myBackBuffer->myViewport[2];
+		viewport.Height = myBackBuffer->myViewport[3];
+		viewport.MinDepth = myBackBuffer->myViewport[4];
+		viewport.MaxDepth = myBackBuffer->myViewport[5];
+	}
+
+	myContext->RSSetViewports(1, &viewport);
+}
+
+void RenderHardwareInterface::SetRenderTargets(std::vector<std::shared_ptr<Texture>> aRenderTargets, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget, bool aClearDepthStencil)
+{
+	if (aClearRenderTarget)
+	{
+		for (auto& rt : aRenderTargets)
+		{
+			myContext->ClearRenderTargetView(rt->myRTV.Get(), rt->myClearColor.data());
+		}
+	}
+
+	if (aClearDepthStencil)
+	{
+		myContext->ClearDepthStencilView(aDepthStencil->myDSV.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	}
+
+	ID3D11RenderTargetView* RTVs[8];
+	
+	if (aRenderTargets.size() > 0)
+	{
+		for (size_t i = 0; i < aRenderTargets.size(); i++)
+		{
+			RTVs[i] = aRenderTargets[i]->myRTV.Get();
+		}
+	}
+
+	if (aRenderTargets.size() > 0 && aDepthStencil)
+	{
+		myContext->OMSetRenderTargets(static_cast<UINT>(aRenderTargets.size()), RTVs, aDepthStencil->myDSV.Get());
+	}
+	else if (aRenderTargets.size() > 0 && !aDepthStencil)
+	{
+		myContext->OMSetRenderTargets(static_cast<UINT>(aRenderTargets.size()), RTVs, nullptr);
+	}
+	else
+	{
+		ID3D11RenderTargetView* rtv[] = { nullptr };
+		myContext->OMSetRenderTargets(1, rtv, aDepthStencil->myDSV.Get());
+	}
+
+	D3D11_VIEWPORT viewport = {};
+	if (aRenderTargets.size() == 0 && aDepthStencil)
 	{
 		viewport.TopLeftX = aDepthStencil->myViewport[0];
 		viewport.TopLeftY = aDepthStencil->myViewport[1];

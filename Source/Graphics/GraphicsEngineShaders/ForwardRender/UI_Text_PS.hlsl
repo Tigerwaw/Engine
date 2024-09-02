@@ -1,5 +1,5 @@
-#include "Includes/DefaultShaderIncludes.hlsli"
-#include "Includes/Sprite_Includes.hlsli"
+#include "../Includes/DefaultShaderIncludes.hlsli"
+#include "../Includes/Sprite_Includes.hlsli"
 Texture2D FontTexture : register(t3);
 
 float median(float3 rgb)

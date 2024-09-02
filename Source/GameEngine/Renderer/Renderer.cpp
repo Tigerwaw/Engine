@@ -31,6 +31,11 @@ Renderer::~Renderer() = default;
 
 void Renderer::RenderScene(Scene& aScene)
 {
+	RenderDeferred(aScene);
+}
+
+void Renderer::RenderForward(Scene& aScene)
+{
 	GraphicsEngine& gfx = GraphicsEngine::Get();
 
 	if (gfx.RecalculateShadowFrustum)
@@ -69,18 +74,139 @@ void Renderer::RenderScene(Scene& aScene)
 
 	QueueDebugLines(aScene);
 
-	QueueClearTextureResources();
-
-	DrawTestUI();
-}
-
-void Renderer::QueueClearTextureResources()
-{
 	for (int i = 100; i < 110; i++)
 	{
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ClearTextureResource>(i);
 	}
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ClearTextureResource>(126);
+
+	DrawTestUI();
+}
+
+void Renderer::RenderDeferred(Scene& aScene)
+{
+	GraphicsEngine& gfx = GraphicsEngine::Get();
+
+	if (gfx.RecalculateShadowFrustum)
+	{
+		aScene.myDirectionalLight->GetComponent<DirectionalLight>()->RecalculateShadowFrustum(aScene.myMainCamera, myVisibleObjectsBB);
+		myVisibleObjectsBB.InitWithCenterAndExtents(CU::Vector3f(), CU::Vector3f());
+	}
+
+	QueueDirectionalLightShadows(aScene);
+	QueuePointLightShadows(aScene);
+	QueueSpotLightShadows(aScene);
+
+	// Deferred Objects
+	gfx.GetGraphicsCommandList().Enqueue<SetGBufferAsRenderTarget>();
+	gfx.GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(aScene.myMainCamera->GetComponent<Camera>());
+	RenderDeferredObjects(aScene);
+	
+	QueueUpdateLightBuffer(aScene);
+	QueueShadowmapTextureResources(aScene);
+
+	// Directional Light
+	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(126, aScene.myAmbientLight->GetComponent<AmbientLight>()->GetCubemap());
+	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_DeferredDirectionalLight")->pso);
+	gfx.GetGraphicsCommandList().Enqueue<SetDefaultRenderTargetNoDepth>(true);
+	gfx.GetGraphicsCommandList().Enqueue<SetGBufferAsResource>();
+	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
+	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(100);
+
+	// Pointlights
+	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_DeferredPointlight")->pso);
+	gfx.GetGraphicsCommandList().Enqueue<SetDefaultRenderTargetNoDepth>();
+	gfx.GetGraphicsCommandList().Enqueue<SetGBufferAsResource>();
+	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
+
+	// Spotlights
+	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_DeferredSpotlight")->pso);
+	gfx.GetGraphicsCommandList().Enqueue<SetDefaultRenderTargetNoDepth>();
+	gfx.GetGraphicsCommandList().Enqueue<SetGBufferAsResource>();
+	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
+
+	for (int i = 0; i < 4; i++)
+	{
+		gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(i);
+	}
+
+	for (int i = 100; i < 110; i++)
+	{
+		gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(i);
+	}
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ClearTextureResource>(126);
+
+	RenderForwardObjects(aScene);
+}
+
+void Renderer::RenderDeferredObjects(Scene& aScene, bool aDisableViewCulling)
+{
+	std::shared_ptr<Camera> renderCamera = aScene.myMainCamera->GetComponent<Camera>();
+
+	for (auto& gameObject : aScene.myGameObjects)
+	{
+		if (!gameObject->GetActive()) continue;
+
+		std::shared_ptr<Model> model = gameObject->GetComponent<Model>();
+		if (model && model->GetActive())
+		{
+			if (aDisableViewCulling || !model->GetShouldViewcull() || IsInsideFrustum(renderCamera, gameObject->GetComponent<Transform>(), model->GetBoundingBox()))
+			{
+				if (model->GetMaterialOnSlot(0)->GetPSO()->BlendState == nullptr)
+				{
+					UpdateBoundingBox(gameObject);
+					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model, AssetManager::Get().GetAsset<PSOAsset>("PSO_Deferred")->pso);
+				}
+			}
+		}
+
+		std::shared_ptr<AnimatedModel> animModel = gameObject->GetComponent<AnimatedModel>();
+		if (animModel && animModel->GetActive())
+		{
+			if (aDisableViewCulling || !animModel->GetShouldViewcull() || IsInsideFrustum(renderCamera, gameObject->GetComponent<Transform>(), animModel->GetBoundingBox()))
+			{
+				if (animModel->GetMaterialOnSlot(0)->GetPSO()->BlendState == nullptr)
+				{
+					UpdateBoundingBox(gameObject);
+					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel, AssetManager::Get().GetAsset<PSOAsset>("PSO_Deferred")->pso);
+				}
+			}
+		}
+	}
+}
+
+void Renderer::RenderForwardObjects(Scene& aScene, bool aDisableViewCulling)
+{
+	std::shared_ptr<Camera> renderCamera = aScene.myMainCamera->GetComponent<Camera>();
+
+	for (auto& gameObject : aScene.myGameObjects)
+	{
+		if (!gameObject->GetActive()) continue;
+
+		std::shared_ptr<Model> model = gameObject->GetComponent<Model>();
+		if (model && model->GetActive())
+		{
+			if (aDisableViewCulling || !model->GetShouldViewcull() || IsInsideFrustum(renderCamera, gameObject->GetComponent<Transform>(), model->GetBoundingBox()))
+			{
+				if (model->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr)
+				{
+					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model);
+				}
+			}
+		}
+
+		std::shared_ptr<AnimatedModel> animModel = gameObject->GetComponent<AnimatedModel>();
+		if (animModel && animModel->GetActive())
+		{
+			if (aDisableViewCulling || !animModel->GetShouldViewcull() || IsInsideFrustum(renderCamera, gameObject->GetComponent<Transform>(), animModel->GetBoundingBox()))
+			{
+				if (animModel->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr)
+				{
+					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel);
+				}
+			}
+		}
+	}
 }
 
 void Renderer::QueueShadowmapTextureResources(Scene& aScene)

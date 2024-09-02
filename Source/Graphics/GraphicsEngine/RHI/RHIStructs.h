@@ -19,6 +19,8 @@ typedef enum PIPELINE_STAGE
 
 enum class RHITextureFormat : unsigned
 {
+	R8G8B8A8_UNORM = 28,
+	R16G16B16A16_SNORM = 13,
 	R32G32B32A32_Float = 2,
 	R32G8X24_Typeless = 19,
 	D32_Float_S8X24_UINT = 20,

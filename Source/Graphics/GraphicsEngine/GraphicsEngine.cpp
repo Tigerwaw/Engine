@@ -19,6 +19,7 @@
 #include "GraphicsEngine/Objects/ConstantBuffers/SpriteBuffer.h"
 
 #include "GraphicsEngine/Objects/DynamicVertexBuffer.h"
+#include "Objects/GBuffer.h"
 #include "AssetManager/AssetManager.h"
 
 GraphicsEngine& GraphicsEngine::Get()
@@ -67,7 +68,7 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 		}
 
 		defaultPSO.PixelShader = std::make_shared<Shader>();
-		if (!myRHI->LoadShaderFromFilePath("Default_PS", *defaultPSO.PixelShader, root + L"EngineAssets/Shaders/SH_Unlit_PS.cso"))
+		if (!myRHI->LoadShaderFromFilePath("Default_PS", *defaultPSO.PixelShader, root + L"EngineAssets/Shaders/SH_PBRMesh_PS.cso"))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to load default pixel shader!");
 			return false;
@@ -83,6 +84,9 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	CreateConstantBuffers();
 	
 	myCommandList = std::make_unique<GraphicsCommandList>();
+	myGBuffer = std::make_unique<GBuffer>();
+	CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+	myGBuffer->CreateGBuffer(static_cast<unsigned>(resolution.x), static_cast<unsigned>(resolution.y));
 
 	LOG(LogGraphicsEngine, Log, "Initialized Graphics Engine!");
 	return true;
@@ -135,6 +139,11 @@ void GraphicsEngine::ChangePipelineState(const std::shared_ptr<PipelineStateObje
 {
 	myRHI->ChangePipelineState(*aNewPSO);
 	myCurrentPSO = aNewPSO;
+}
+
+bool GraphicsEngine::CreateTexture(std::string_view aName, unsigned aWidth, unsigned aHeight, RHITextureFormat aFormat, Texture& outTexture, bool aStaging, bool aShaderResource, bool aRenderTarget, bool aCpuAccessRead, bool aCpuAccessWrite) const
+{
+	return myRHI->CreateTexture(aName, aWidth, aHeight, aFormat, outTexture, aStaging, aShaderResource, aRenderTarget, aCpuAccessRead, aCpuAccessWrite);
 }
 
 bool GraphicsEngine::LoadTexture(std::string_view aName, const uint8_t* aTextureDataPtr, size_t aTextureDataSize, Texture& outTexture) const
@@ -234,6 +243,16 @@ bool GraphicsEngine::CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, PSODes
 			defaultRenderTargetBlendDesc.DestBlendAlpha = D3D11_BLEND_ONE;
 			defaultRenderTargetBlendDesc.BlendOpAlpha = D3D11_BLEND_OP_ADD;
 		}
+		else if (aPSOdesc.blendMode == BlendMode::Additive)
+		{
+			defaultRenderTargetBlendDesc.SrcBlend = D3D11_BLEND_SRC_ALPHA;
+			defaultRenderTargetBlendDesc.DestBlend = D3D11_BLEND_ONE;
+			defaultRenderTargetBlendDesc.BlendOp = D3D11_BLEND_OP_ADD;
+
+			defaultRenderTargetBlendDesc.SrcBlendAlpha = D3D11_BLEND_ONE;
+			defaultRenderTargetBlendDesc.DestBlendAlpha = D3D11_BLEND_ONE;
+			defaultRenderTargetBlendDesc.BlendOpAlpha = D3D11_BLEND_OP_MAX;
+		}
 
 		for (UINT i = 0; i < D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
 		{
@@ -271,6 +290,23 @@ bool GraphicsEngine::CreateShadowCubemap(std::string_view aName, unsigned aWidth
 void GraphicsEngine::SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget, bool aClearDepthStencil)
 {
 	myRHI->SetRenderTarget(aRenderTarget, aDepthStencil, aClearRenderTarget, aClearDepthStencil);
+}
+
+void GraphicsEngine::SetRenderTargets(std::vector<std::shared_ptr<Texture>> aRenderTargets, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget, bool aClearDepthStencil)
+{
+	myRHI->SetRenderTargets(aRenderTargets, aDepthStencil, aClearRenderTarget, aClearDepthStencil);
+}
+
+void GraphicsEngine::RenderQuad()
+{
+	SetTextureResource_PS(127, *myLUTtexture);
+
+	myRHI->SetPrimitiveTopology(Topology::TRIANGLESTRIP);
+	myRHI->SetVertexBuffer(nullptr, 0, 0);
+	myRHI->SetIndexBuffer(nullptr);
+	myRHI->SetInputLayout(nullptr);
+	myRHI->Draw(4);
+	ClearTextureResource_PS(127);
 }
 
 void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<Material>> aMaterialList, bool aOverrideMaterialPSO)

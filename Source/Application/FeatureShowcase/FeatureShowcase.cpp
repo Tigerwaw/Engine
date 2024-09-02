@@ -23,6 +23,15 @@ public:
     ~FeatureShowcase() {}
 
     void InitializeApplication() override;
+	void UpdateApplication() override;
+private:
+	int currentAnimation = 0;
+	std::vector<std::string> animationNames = {
+		"Idle",
+		"Walk",
+		"Run",
+		"Wave"
+	};
 };
 
 Application* CreateApplication()
@@ -53,6 +62,7 @@ void FeatureShowcase::InitializeApplication()
 	inputHandler.RegisterBinaryAction("D", Keys::D, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("LMB", Keys::MOUSELBUTTON, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("RMB", Keys::MOUSERBUTTON, GenericInput::ActionType::Held);
+	inputHandler.RegisterBinaryAction("SPACE", Keys::SPACE, GenericInput::ActionType::Clicked);
 	inputHandler.RegisterAnalog2DAction("MousePos", MouseMovement2D::MousePos);
 	inputHandler.RegisterAnalog2DAction("MouseNDCPos", MouseMovement2D::MousePosNDC);
 	inputHandler.RegisterAnalog2DAction("MouseDelta", MouseMovement2D::MousePosDelta);
@@ -568,4 +578,19 @@ void FeatureShowcase::InitializeApplication()
 			ImGui::End();
 #endif
 		});
+}
+
+void FeatureShowcase::UpdateApplication()
+{
+	if (Engine::GetInstance().GetInputHandler().GetBinaryAction("SPACE") && !Engine::GetInstance().GetInputHandler().GetBinaryAction("RMB"))
+	{
+		currentAnimation += 1;
+		if (currentAnimation >= animationNames.size())
+		{
+			currentAnimation = 0;
+		}
+
+		std::shared_ptr<AnimatedModel> tgaBroModel = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("TgaBro")->GetComponent<AnimatedModel>();
+		tgaBroModel->SetCurrentAnimationOnLayer(animationNames[currentAnimation], "", 0.5f);
+	}
 }

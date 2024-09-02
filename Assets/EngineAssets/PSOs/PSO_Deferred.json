@@ -2,5 +2,9 @@
   "VertexType": "Default",
   "VertexShader": "SH_Mesh_VS",
   "GeometryShader": "",
-  "PixelShader": "SH_DebugUVs_PS"
+  "PixelShader": "SH_Deferred_PS",
+  "Samplers":
+  {
+    "LinearWrapSS": 0
+  }
 }

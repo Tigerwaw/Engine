@@ -1,6 +1,7 @@
-#include "../Includes/BRDF_Functions.hlsli"
+#include "Includes/BRDF_Functions.hlsli"
+#include "Includes/DefaultShaderIncludes.hlsli"
 
-BRDF_VS_to_PS main(unsigned int aVertexIndex : SV_VertexID)
+Quad_VS_to_PS main(unsigned int aVertexIndex : SV_VertexID)
 {
     const float4 pos[4] =
     {
@@ -18,7 +19,7 @@ BRDF_VS_to_PS main(unsigned int aVertexIndex : SV_VertexID)
         float2(1.0f, 0.0f),
     };
 
-    BRDF_VS_to_PS returnValue;
+    Quad_VS_to_PS returnValue;
     returnValue.Position = pos[aVertexIndex];
     returnValue.UV = uv[aVertexIndex];
     return returnValue;

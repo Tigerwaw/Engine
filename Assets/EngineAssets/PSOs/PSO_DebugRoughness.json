@@ -1,8 +1,8 @@
 {
   "VertexType": "Default",
-  "VertexShader": "SH_Mesh_VS.cso",
+  "VertexShader": "SH_Mesh_VS",
   "GeometryShader": "",
-  "PixelShader": "SH_DebugRoughness_PS.cso",
+  "PixelShader": "SH_DebugRoughness_PS",
   "Samplers":
   {
     "LinearWrapSS": 0

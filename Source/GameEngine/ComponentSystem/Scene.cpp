@@ -47,6 +47,8 @@ void Scene::Update()
 			myActiveGameObjectAmount++;
 		}
 	}
+
+	SortGameObjects();
 }
 
 std::shared_ptr<GameObject> Scene::FindGameObjectByName(std::string aName)
@@ -134,6 +136,75 @@ void Scene::Destroy(std::shared_ptr<GameObject> aGameObject)
 	}
 
 	LOG(LogScene, Warning, "Could not find GameObject {} in scene!", aGameObject->GetName());
+}
+
+void Scene::SortGameObjects()
+{
+	CU::Vector3f camPos = myMainCamera->GetComponent<Transform>()->GetTranslation(true);
+
+	std::stable_sort(myGameObjects.begin(), myGameObjects.end(), [this, camPos](const std::shared_ptr<GameObject> lhs, const std::shared_ptr<GameObject> rhs)
+		{
+			std::shared_ptr<Model> model1 = lhs->GetComponent<Model>();
+			std::shared_ptr<Model> model2 = rhs->GetComponent<Model>();
+			std::shared_ptr<AnimatedModel> animModel1 = lhs->GetComponent<AnimatedModel>();
+			std::shared_ptr<AnimatedModel> animModel2 = rhs->GetComponent<AnimatedModel>();
+
+			bool hasBlendState1 = false;
+			bool hasBlendState2 = false;
+
+			if (model1)
+			{
+				hasBlendState1 = model1->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr;
+			}
+			else if (animModel1)
+			{
+				hasBlendState1 = animModel1->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr;
+			}
+
+			if (model2)
+			{
+				hasBlendState2 = model2->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr;
+			}
+			else if (animModel2)
+			{
+				hasBlendState2 = animModel2->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr;
+			}
+
+			if (hasBlendState1 && !hasBlendState2)
+			{
+				return false;
+			}
+			else if (!hasBlendState1 && hasBlendState2)
+			{
+				return true;
+			}
+			else if (hasBlendState1 && hasBlendState2)
+			{
+				std::shared_ptr<Transform> transform1 = lhs->GetComponent<Transform>();
+				std::shared_ptr<Transform> transform2 = rhs->GetComponent<Transform>();
+				if (transform1 && transform2)
+				{
+					float distTo1 = CU::Vector3f(camPos - transform1->GetTranslation(true)).LengthSqr();
+					float distTo2 = CU::Vector3f(camPos - transform2->GetTranslation(true)).LengthSqr();
+
+					return distTo1 > distTo2;
+				}
+			}
+			else
+			{
+				std::shared_ptr<Transform> transform1 = lhs->GetComponent<Transform>();
+				std::shared_ptr<Transform> transform2 = rhs->GetComponent<Transform>();
+				if (transform1 && transform2)
+				{
+					float distTo1 = CU::Vector3f(camPos - transform1->GetTranslation(true)).LengthSqr();
+					float distTo2 = CU::Vector3f(camPos - transform2->GetTranslation(true)).LengthSqr();
+
+					return distTo1 < distTo2;
+				}
+			}
+
+			return false;
+		});
 }
 
 void Scene::DestroyInternal(GameObject* aGameObject)

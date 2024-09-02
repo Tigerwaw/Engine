@@ -1,6 +1,6 @@
-#include "Includes/DefaultShaderIncludes.hlsli"
-#include "Includes/ConstantBuffers/AnimationBuffer.hlsli"
-#include "Includes/ConstantBuffers/ObjectBuffer.hlsli"
+#include "../Includes/DefaultShaderIncludes.hlsli"
+#include "../Includes/ConstantBuffers/AnimationBuffer.hlsli"
+#include "../Includes/ConstantBuffers/ObjectBuffer.hlsli"
 
 ShadowCube_VSout main(MeshVertex vertex)
 {

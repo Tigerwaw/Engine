@@ -16,6 +16,7 @@ class Sprite;
 class DynamicVertexBuffer;
 class GraphicsCommandList;
 struct GraphicsCommandBase;
+class GBuffer;
 
 struct ID3D11InputLayout;
 
@@ -54,6 +55,7 @@ enum class BlendMode
 {
 	None,
 	AlphaAdditive,
+	Additive,
 	COUNT
 };
 
@@ -97,6 +99,9 @@ public:
 
 	void ChangePipelineState(const std::shared_ptr<PipelineStateObject> aNewPSO);
 
+	bool CreateTexture(std::string_view aName, unsigned aWidth, unsigned aHeight,
+		RHITextureFormat aFormat, Texture& outTexture, bool aStaging, bool aShaderResource, bool aRenderTarget,
+		bool aCpuAccessRead, bool aCpuAccessWrite) const;
 	bool LoadTexture(std::string_view aName, const uint8_t* aTextureDataPtr, size_t aTextureDataSize, Texture& outTexture) const;
 	bool LoadTexture(std::filesystem::path& aFilePath, Texture& outTexture) const;
 	bool SetTextureResource_PS(unsigned aSlot, Texture& aTexture);
@@ -112,7 +117,9 @@ public:
 	bool CreateShadowCubemap(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture);
 
 	void SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
+	void SetRenderTargets(std::vector<std::shared_ptr<Texture>> aRenderTargets, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
 
+	void RenderQuad();
 	void RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<Material>> aMaterialList, bool aOverrideMaterialPSO = false);
 	void RenderSprite();
 	void RenderText(const Text& aText);
@@ -130,6 +137,7 @@ public:
 
 	std::shared_ptr<Texture> GetBackBuffer() { return myRHI->GetBackBuffer(); }
 	std::shared_ptr<Texture> GetDepthBuffer() { return myRHI->GetDepthBuffer(); }
+	GBuffer& GetGBuffer() { return *myGBuffer; }
 
 	GraphicsCommandList& GetGraphicsCommandList() const { return *myCommandList; }
 
@@ -174,6 +182,7 @@ private:
 
 	std::shared_ptr<Texture> myLUTtexture;
 	
+	std::unique_ptr<GBuffer> myGBuffer;
 	std::unique_ptr<GraphicsCommandList> myCommandList;
 
 	unsigned myDrawcallAmount = 0;

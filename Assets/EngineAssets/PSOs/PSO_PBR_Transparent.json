@@ -2,7 +2,7 @@
   "VertexType": "Default",
   "VertexShader": "SH_Mesh_VS",
   "GeometryShader": "",
-  "PixelShader": "SH_VFXSpritesheet_PS",
+  "PixelShader": "SH_PBRMesh_PS",
   "BlendStateDesc":
   {
     "BlendMode": "AlphaAdditive"

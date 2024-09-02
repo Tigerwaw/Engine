@@ -1,7 +1,7 @@
-#include "Includes/DefaultShaderIncludes.hlsli"
-#include "Includes/ConstantBuffers/AnimationBuffer.hlsli"
-#include "Includes/ConstantBuffers/ObjectBuffer.hlsli"
-#include "Includes/ConstantBuffers/FrameBuffer.hlsli"
+#include "../Includes/DefaultShaderIncludes.hlsli"
+#include "../Includes/ConstantBuffers/AnimationBuffer.hlsli"
+#include "../Includes/ConstantBuffers/ObjectBuffer.hlsli"
+#include "../Includes/ConstantBuffers/FrameBuffer.hlsli"
 
 MeshVStoPS main(MeshVertex vertex)
 {

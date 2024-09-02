@@ -1,5 +1,5 @@
-#include "Includes/DefaultShaderIncludes.hlsli"
-#include "Includes/Sprite_Includes.hlsli"
+#include "../Includes/DefaultShaderIncludes.hlsli"
+#include "../Includes/Sprite_Includes.hlsli"
 
 Text_VSout main(TextVertex input)
 {

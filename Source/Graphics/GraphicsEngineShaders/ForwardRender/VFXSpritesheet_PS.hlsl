@@ -1,8 +1,8 @@
-#include "Includes/DefaultShaderIncludes.hlsli"
-#include "Includes/ConstantBuffers/FrameBuffer.hlsli"
-#include "Includes/ConstantBuffers/LightBuffer.hlsli"
-#include "Includes/ConstantBuffers/MaterialBuffer.hlsli"
-#include "Includes/ConstantBuffers/ObjectBuffer.hlsli"
+#include "../Includes/DefaultShaderIncludes.hlsli"
+#include "../Includes/ConstantBuffers/FrameBuffer.hlsli"
+#include "../Includes/ConstantBuffers/LightBuffer.hlsli"
+#include "../Includes/ConstantBuffers/MaterialBuffer.hlsli"
+#include "../Includes/ConstantBuffers/ObjectBuffer.hlsli"
 
 float4 main(MeshVStoPS input) : SV_TARGET
 {

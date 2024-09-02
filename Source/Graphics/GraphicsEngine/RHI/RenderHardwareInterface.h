@@ -84,6 +84,7 @@ public:
 	bool CreateLUT(std::string_view aName, unsigned aWidth, unsigned aHeight, std::shared_ptr<Texture> outTexture);
 
 	void SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
+	void SetRenderTargets(std::vector<std::shared_ptr<Texture>> aRenderTargets, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
 
 	void BeginEvent(std::string_view aEvent) const;
 	void EndEvent() const;

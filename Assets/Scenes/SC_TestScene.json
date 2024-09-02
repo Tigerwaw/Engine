@@ -14,9 +14,9 @@
         {
           "Type": "Model",
           "ShouldViewcull": false,
-          "Model": "PlanePrimitive",
+          "Model": "SM_PlanePrimitive",
           "Materials": [
-            "DefaultMaterial"
+            "MAT_DefaultMaterial"
           ]
         }
       ]
@@ -34,9 +34,10 @@
         },
         {
           "Type": "Model",
-          "Model": "CubePrimitive",
-          "Materials": [
-            "DefaultMaterial"
+          "Model": "SM_CubePrimitive",
+          "Materials":
+          [
+            "MAT_DefaultMaterial"
           ]
         }
       ]
@@ -54,9 +55,9 @@
         },
         {
           "Type": "Model",
-          "Model": "CubePrimitive",
+          "Model": "SM_CubePrimitive",
           "Materials": [
-            "DefaultMaterial"
+            "MAT_DefaultMaterial"
           ]
         }
       ]
@@ -74,9 +75,10 @@
         },
         {
           "Type": "Model",
-          "Model": "RampPrimitive",
-          "Materials": [
-            "DefaultMaterial"
+          "Model": "SM_RampPrimitive",
+          "Materials":
+          [
+            "MAT_DefaultMaterial"
           ]
         }
       ]
@@ -181,8 +183,8 @@
               "Model": "Models/SM_TMA_Matball.fbx",
               "Materials":
               [
-                "Materials/MAT_MatballTwo.json",
-                "Materials/MAT_MatballOne.json"
+                "Materials/MAT_MatballOne_Transparent.json",
+                "Materials/MAT_MatballOne_Transparent.json"
               ]
             },
             {
@@ -442,7 +444,7 @@
         {
           "Type": "Model",
           "ShouldViewcull": true,
-          "Model": "PlanePrimitive",
+          "Model": "SM_PlanePrimitive",
           "Materials":
           [
             "Materials/MAT_ExplosionVFX.json"

@@ -1,6 +1,6 @@
-#include "Includes/DefaultShaderIncludes.hlsli"
-#include "Includes/ConstantBuffers/FrameBuffer.hlsli"
-#include "Includes/ConstantBuffers/ShadowBuffer.hlsli"
+#include "../Includes/DefaultShaderIncludes.hlsli"
+#include "../Includes/ConstantBuffers/FrameBuffer.hlsli"
+#include "../Includes/ConstantBuffers/ShadowBuffer.hlsli"
 
 [maxvertexcount(18)]
 void main(triangle ShadowCube_VSout input[3], inout TriangleStream<ShadowCube_GSout> output)

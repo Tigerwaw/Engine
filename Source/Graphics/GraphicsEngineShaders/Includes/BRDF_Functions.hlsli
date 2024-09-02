@@ -12,12 +12,6 @@ Texture2D BRDF_LUT_Texture : register(t127);
 
 SamplerState BRDF_LUT_Sampler : register(s14);
 
-struct BRDF_VS_to_PS
-{
-    float4 Position : SV_POSITION;
-    float2 UV : TEXCOORD;
-};
-
 float NormalDistributionFunction_GGX(float aRoughness, float aNdotH)
 {
     float a = aRoughness * aRoughness;

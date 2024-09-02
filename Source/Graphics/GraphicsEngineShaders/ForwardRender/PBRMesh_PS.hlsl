@@ -1,8 +1,8 @@
-#include "Includes/DefaultShaderIncludes.hlsli"
-#include "Includes/BRDF_Lights.hlsli"
-#include "Includes/ConstantBuffers/FrameBuffer.hlsli"
-#include "Includes/ConstantBuffers/LightBuffer.hlsli"
-#include "Includes/ConstantBuffers/MaterialBuffer.hlsli"
+#include "../Includes/DefaultShaderIncludes.hlsli"
+#include "../Includes/BRDF_Lights.hlsli"
+#include "../Includes/ConstantBuffers/FrameBuffer.hlsli"
+#include "../Includes/ConstantBuffers/LightBuffer.hlsli"
+#include "../Includes/ConstantBuffers/MaterialBuffer.hlsli"
 
 TextureCube EnvCubeMap : register(t126);
 
@@ -12,7 +12,7 @@ Texture2D ShadowMapSpot[4] : register(t105);
 
 float4 main(MeshVStoPS input) : SV_TARGET
 {
-    const float4 albedoMap = AlbedoTexture.Sample(DefaultSampler, input.TexCoord0.xy);
+    const float4 albedoMap = AlbedoTexture.Sample(DefaultSampler, input.TexCoord0.xy) * MB_AlbedoTint;
     const float2 normalMap = NormalTexture.Sample(DefaultSampler, input.TexCoord0.xy).rg;
     const float3 materialMap = MaterialTexture.Sample(DefaultSampler, input.TexCoord0.xy).rgb;
     

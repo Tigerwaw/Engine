@@ -53,9 +53,9 @@ inline std::shared_ptr<T> AssetManager::GetAsset(const std::filesystem::path& aP
 {
 	std::shared_ptr<T> asset = nullptr;
 
-	if (myAssets.contains(aPath))
+	if (myAssets.contains(aPath.stem()))
 	{
-		asset = std::dynamic_pointer_cast<T>(myAssets.at(aPath));
+		asset = std::dynamic_pointer_cast<T>(myAssets.at(aPath.stem()));
 	}
 	else
 	{

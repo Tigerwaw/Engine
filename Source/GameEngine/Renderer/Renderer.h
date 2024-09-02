@@ -23,7 +23,11 @@ public:
     // TEMP
     void Init();
 private:
-    void QueueClearTextureResources();
+    void RenderForward(Scene& aScene);
+    void RenderDeferred(Scene& aScene);
+    void RenderDeferredObjects(Scene& aScene, bool aDisableViewCulling = false);
+    void RenderForwardObjects(Scene& aScene, bool aDisableViewCulling = false);
+
     void QueueShadowmapTextureResources(Scene& aScene);
     void QueueUpdateLightBuffer(Scene& aScene);
     void QueueSpotLightShadows(Scene& aScene);
