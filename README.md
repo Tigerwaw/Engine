@@ -2,6 +2,7 @@
 
 ### Graphics Engine
 * Physically based lighting and shadowmapping (Ambient light, directional light, pointlights, and spotlights).
+* Deferred & forward rendering.
 * PCSS Shadows.
 * Adaptive directional light shadowcasting (Needs a bit of work).
 * Frustum-based viewculling for cameras (including directional lights and spotlights).
@@ -9,6 +10,7 @@
 * Different debug rendering modes (wireframe, normals, unlit, etc.).
 * Debug Drawer that supports line drawing (has functionality for drawing mesh bounding boxes, camera frustums, and colliders).
 * Simplified communication with graphics engine through render commands.
+* MSDF text.
 
 
 ### Game Engine
