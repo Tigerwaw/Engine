@@ -42,3 +42,8 @@ Lib/**
 *.pdb
 *.out
 *.app
+
+# Whitelist
+!Dependencies/**
+!ProjectCreator.exe
+!premake5.exe
