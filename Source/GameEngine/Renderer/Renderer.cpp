@@ -31,8 +31,14 @@ Renderer::~Renderer() = default;
 
 void Renderer::RenderScene(Scene& aScene)
 {
-	RenderForward(aScene);
-	//RenderDeferred(aScene);
+	if (GraphicsEngine::Get().GetCurrentDebugMode() != DebugMode::None)
+	{
+		RenderForward(aScene);
+	}
+	else
+	{
+		RenderDeferred(aScene);
+	}
 }
 
 void Renderer::RenderForward(Scene& aScene)
@@ -546,22 +552,22 @@ void Renderer::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
 // TEMP
 void Renderer::Init()
 {
-	myTestText = std::make_shared<Text>();
-	myTestText->SetFont(AssetManager::Get().GetAsset<FontAsset>("Fonts/F_RobotoRegular.json")->font);
-	myTestText->SetPosition(CU::Vector2f(-500.0f, 700.0f));
-	myTestText->SetSize(5);
-	myTestText->SetTextContent("Test");
+	//myTestSprite = std::make_shared<Sprite>();
+	//myTestText = std::make_shared<Text>();
 
-	myTestSprite = std::make_shared<Sprite>();
-	myTestSprite->SetTexture(AssetManager::Get().GetAsset<TextureAsset>("EngineAssets/Textures/Utility/T_perlin_C.dds")->texture);
-	myTestSprite->SetPosition(CU::Vector2f(500.0f, 200.0f));
-	myTestSprite->SetSize(CU::Vector2f(600.0f, 600.0f));
+	//myTestText->SetFont(AssetManager::Get().GetAsset<FontAsset>("Fonts/F_RobotoRegular.json")->font);
+	//myTestText->SetPosition(CU::Vector2f(-500.0f, 700.0f));
+	//myTestText->SetSize(5);
+	//myTestText->SetTextContent("Test");
 }
 
 void Renderer::DrawTestUI()
 {
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(GraphicsEngine::Get().GetBackBuffer(), nullptr, false, false);
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderSprite>(myTestSprite);
+	//myTestSprite->SetTexture(AssetManager::Get().GetAsset<TextureAsset>("EngineAssets/Textures/Utility/T_perlin_C.dds")->texture);
+	//myTestSprite->SetPosition(CU::Vector2f(500.0f, 500.0f));
+	//myTestSprite->SetSize(CU::Vector2f(600.0f, 600.0f));
+	//GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(GraphicsEngine::Get().GetBackBuffer(), nullptr, false, false);
+	//GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderSprite>(myTestSprite);
 
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderText>(myTestText);
+	//GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderText>(myTestText);
 }
