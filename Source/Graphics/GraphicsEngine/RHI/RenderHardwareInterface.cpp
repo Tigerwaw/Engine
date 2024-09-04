@@ -484,11 +484,9 @@ bool RenderHardwareInterface::CreateInputLayout(Microsoft::WRL::ComPtr<ID3D11Inp
 
 	if (!CreateInputLayout(outInputLayout, aInputLayoutDefinition, reinterpret_cast<const uint8_t*>(shaderBuffer->GetBufferPointer()), shaderBuffer->GetBufferSize()))
 	{
-		shaderBuffer->Release();
 		return false;
 	}
 
-	shaderBuffer->Release();
 	return true;
 }
 
@@ -564,11 +562,11 @@ bool RenderHardwareInterface::LoadShaderFromFilePath(std::string_view aName, Sha
 
 	if (!LoadShaderFromMemory(aName, outShader, reinterpret_cast<const uint8_t*>(shaderBuffer->GetBufferPointer()), shaderBuffer->GetBufferSize()))
 	{
-		shaderBuffer->Release();
+		//shaderBuffer->Release();
 		return false;
 	}
 	
-	shaderBuffer->Release();
+	//shaderBuffer->Release();
 	return true;
 }
 

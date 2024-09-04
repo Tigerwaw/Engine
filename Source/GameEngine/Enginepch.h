@@ -31,7 +31,7 @@ namespace nl = nlohmann;
 #include "fmod/fmod_studio.hpp"
 #include "fmod/fmod_common.h"
 
-#ifndef _RELEASE
+#ifndef _RETAIL
 #include "Logger/Logger.h"
 #endif
 
@@ -46,7 +46,7 @@ DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneHandler, SceneHandler, Verbose);
 DECLARE_LOG_CATEGORY_WITH_NAME(LogSceneLoader, SceneLoader, Verbose);
 DECLARE_LOG_CATEGORY_WITH_NAME(LogInputHandler, InputHandler, Verbose);
 DECLARE_LOG_CATEGORY_WITH_NAME(LogComponentSystem, ComponentSystem, Verbose);
-#elif _INTERNAL
+#elif _RELEASE
 DECLARE_LOG_CATEGORY_WITH_NAME(LogGameEngine, GameEngine, Warning);
 DECLARE_LOG_CATEGORY_WITH_NAME(LogApplication, Application, Warning);
 DECLARE_LOG_CATEGORY_WITH_NAME(LogAudioEngine, AudioEngine, Warning);

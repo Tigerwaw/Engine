@@ -14,7 +14,7 @@ project "ProjectCreator"
   debugdir "%{dirs.root}"
   targetdir ("%{dirs.root}")
 	targetname("%{prj.name}")
-	objdir ("%{dirs.temp}/" .. outputdir .. "/%{prj.name}")
+	objdir ("%{dirs.temp}/%{cfg.buildcfg}/%{prj.name}")
 
   files {
 		"%{dirs.utilities}/%{prj.name}/*.h",

@@ -453,6 +453,7 @@ void AnimatedModel::UpdatePose(AnimationLayer& aAnimLayer)
     for (size_t i = aAnimLayer.startJointID; i < skeleton.myJoints.size(); i++)
     {
         Mesh::Skeleton::Joint currentJoint = myMesh->GetSkeleton().myJoints[i];
+        if (aAnimLayer.currentState->animation->Frames.size() == 0) continue;
         aAnimLayer.currentPose[i] = aAnimLayer.currentState->animation->Frames[aAnimLayer.currentState->currentFrame].BoneTransforms[currentJoint.Name];
     }
 }

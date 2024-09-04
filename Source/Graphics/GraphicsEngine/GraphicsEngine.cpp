@@ -36,7 +36,7 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 
 	bool createDebugLayer = true;
 
-#ifdef _RELEASE
+#ifdef _RETAIL
 	createDebugLayer = false;
 #endif
 

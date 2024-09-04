@@ -3,7 +3,7 @@ include "../../../Premake/common.lua"
 workspace "TGPGameEngine"
   location "%{dirs.root}"
   architecture "x64"
-  configurations { "Debug", "Internal", "Release" }
+  configurations { "Debug", "Release", "Retail" }
 
 group "Utilities"
 project "Logger"
@@ -13,9 +13,9 @@ project "Logger"
   cppdialect "C++20"
 
   debugdir "%{dirs.bin}"
-  targetdir ("%{dirs.lib}" .. outputdir .. "/%{prj.name}")
+  targetdir ("%{dirs.lib}%{cfg.buildcfg}/%{prj.name}")
 	targetname("%{prj.name}_%{cfg.buildcfg}")
-	objdir ("%{dirs.temp}/" .. outputdir .. "/%{prj.name}")
+	objdir ("%{dirs.temp}/%{cfg.buildcfg}/%{prj.name}")
 
   files {
 		"%{dirs.utilities}/%{prj.name}/*.h",
@@ -33,11 +33,11 @@ project "Logger"
 		defines {"_DEBUG"}
 		runtime "Debug"
 		symbols "on"
-  filter "configurations:Internal"
-		defines "_INTERNAL"
+  filter "configurations:Release"
+		defines "_RELEASE"
 		runtime "Release"
 		optimize "on"
-  filter "configurations:Release"
-	  defines "_RELEASE"
+  filter "configurations:Retail"
+	  defines "_RETAIL"
 	  runtime "Release"
 	  optimize "on"

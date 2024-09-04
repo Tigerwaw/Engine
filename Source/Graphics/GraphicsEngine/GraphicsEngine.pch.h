@@ -19,14 +19,14 @@
 #include <nlohmann/json.hpp>
 namespace nl = nlohmann;
 
-#ifndef _RELEASE
+#ifndef _RETAIL
 #include "Logger/Logger.h"
 #endif
 
 #if _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(LogGraphicsEngine, GraphicsEngine, Verbose);
 DECLARE_LOG_CATEGORY_WITH_NAME(LogRHI, RHI, Verbose);
-#elif _INTERNAL
+#elif _RELEASE
 DECLARE_LOG_CATEGORY_WITH_NAME(LogGraphicsEngine, GraphicsEngine, Warning);
 DECLARE_LOG_CATEGORY_WITH_NAME(LogRHI, RHI, Warning);
 #else

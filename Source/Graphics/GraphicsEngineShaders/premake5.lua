@@ -3,7 +3,7 @@ include "../../../Premake/common.lua"
 workspace "TGPGameEngine"
   location "%{dirs.root}"
   architecture "x64"
-  configurations { "Debug", "Internal", "Release" }
+  configurations { "Debug", "Release", "Retail" }
 
 group "Engine"
 project "GraphicsEngineShaders"
@@ -13,7 +13,7 @@ project "GraphicsEngineShaders"
   cppdialect "C++20"
 
   targetdir ("%{dirs.shaders.absolute}")
-	objdir ("%{dirs.temp}/".. outputdir .."/%{prj.name}")
+	objdir ("%{dirs.temp}/%{cfg.buildcfg}/%{prj.name}")
 
   files {
 		"**.hlsl",

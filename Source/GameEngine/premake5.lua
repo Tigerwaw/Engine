@@ -3,7 +3,7 @@ include "../../Premake/common.lua"
 workspace "TGPGameEngine"
   location "%{dirs.root}"
   architecture "x64"
-  configurations { "Debug", "Internal", "Release" }
+  configurations { "Debug", "Release", "Retail" }
 
 group "Engine"
 project "GameEngine"
@@ -12,9 +12,9 @@ project "GameEngine"
   language "C++"
   cppdialect "C++20"
 
-  targetdir ("%{dirs.lib}" .. outputdir .. "/%{prj.name}")
+  targetdir ("%{dirs.lib}/%{cfg.buildcfg}/%{prj.name}")
 	targetname("%{prj.name}_%{cfg.buildcfg}")
-	objdir ("%{dirs.temp}/" .. outputdir .. "/%{prj.name}")
+	objdir ("%{dirs.temp}/%{cfg.buildcfg}/%{prj.name}")
 
   pchheader "Enginepch.h"
   pchsource "Enginepch.cpp"
@@ -47,11 +47,11 @@ project "GameEngine"
 		defines {"_DEBUG"}
 		runtime "Debug"
 		symbols "on"
-  filter "configurations:Internal"
-		defines "_INTERNAL"
+  filter "configurations:Release"
+		defines "_RELEASE"
 		runtime "Release"
 		optimize "on"
-  filter "configurations:Release"
-	  defines "_RELEASE"
+  filter "configurations:Retail"
+	  defines "_RETAIL"
 	  runtime "Release"
 	  optimize "on"

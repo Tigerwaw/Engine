@@ -3,7 +3,7 @@ include "common.lua"
 workspace "TGPGameEngine"
   location "%{dirs.root}"
   architecture "x64"
-  configurations { "Debug", "Internal", "Release" }
+  configurations { "Debug", "Release", "Retail" }
   startproject "ModelViewer"
 
 include (dirs.engine)

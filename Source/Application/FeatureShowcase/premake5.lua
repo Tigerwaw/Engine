@@ -3,7 +3,7 @@ include "../../../Premake/common.lua"
 workspace "TGPGameEngine"
   location "%{dirs.root}"
   architecture "x64"
-  configurations { "Debug", "Internal", "Release" }
+  configurations { "Debug", "Release", "Retail" }
 
 group "Applications"
 project "FeatureShowcase"
@@ -24,7 +24,7 @@ project "FeatureShowcase"
   debugdir "%{dirs.bin}/%{prj.name}"
   targetdir ("%{dirs.bin}/%{prj.name}")
 	targetname("%{prj.name}_%{cfg.buildcfg}")
-	objdir ("%{dirs.temp}/" .. outputdir .. "/%{prj.name}")
+	objdir ("%{dirs.temp}/%{cfg.buildcfg}/%{prj.name}")
 
   files {
 		"**.h",
@@ -75,13 +75,13 @@ project "FeatureShowcase"
 		runtime "Debug"
 		symbols "on"
     links { "fmodL_vc", "fmodstudioL_vc" }
-  filter "configurations:Internal"
-		defines "_INTERNAL"
+  filter "configurations:Release"
+		defines "_RELEASE"
 		runtime "Release"
 		optimize "on"
     links { "fmod_vc", "fmodstudio_vc" }
-  filter "configurations:Release"
-	  defines "_RELEASE"
+  filter "configurations:Retail"
+	  defines "_RETAIL"
 	  runtime "Release"
 	  optimize "on"
     links { "fmod_vc", "fmodstudio_vc" }

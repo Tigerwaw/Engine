@@ -13,7 +13,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
     UNREFERENCED_PARAMETER(nCmdShow);
 
-#ifdef _DEBUG
+#ifndef _RETAIL
 	// Redirect stdout and stderr to the console.
 	FILE* consoleOut;
 	FILE* consoleErr;

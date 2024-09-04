@@ -1,6 +1,6 @@
 #include "Enginepch.h"
 
-#ifndef _RELEASE
+#ifndef _RETAIL
 DEFINE_LOG_CATEGORY(LogGameEngine);
 DEFINE_LOG_CATEGORY(LogApplication);
 DEFINE_LOG_CATEGORY(LogAudioEngine);
