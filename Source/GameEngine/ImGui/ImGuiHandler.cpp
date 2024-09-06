@@ -19,7 +19,7 @@ void ImGuiHandler::Initialize(HWND aMainWindowHandle)
 {
 	aMainWindowHandle;
 
-#ifdef _DEBUG
+#ifndef _RETAIL
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
@@ -44,7 +44,7 @@ void ImGuiHandler::Initialize(HWND aMainWindowHandle)
 
 void ImGuiHandler::Destroy()
 {
-#ifdef _DEBUG
+#ifndef _RETAIL
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
@@ -53,7 +53,7 @@ void ImGuiHandler::Destroy()
 
 void ImGuiHandler::BeginFrame()
 {
-#ifdef _DEBUG
+#ifndef _RETAIL
 	ImGuiIO& io = ImGui::GetIO();
 	CU::Vector2f resolution = Engine::GetInstance().GetResolution();
 	io.DisplaySize = { resolution.x, resolution.y };
@@ -69,7 +69,7 @@ void ImGuiHandler::BeginFrame()
 
 void ImGuiHandler::Render()
 {
-#ifdef _DEBUG
+#ifndef _RETAIL
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 

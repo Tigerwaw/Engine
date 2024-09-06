@@ -1,87 +1,10 @@
-#include "GameEngine/Application/Application.h"
-#include "GameEngine/Application/EntryPoint.h"
-
+#include "ModelViewer.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
 #include "GameEngine/ComponentSystem/Components/Lights/AmbientLight.h"
 #include "GameEngine/ComponentSystem/Components/Lights/DirectionalLight.h"
-
-class ModelViewer : public Application
-{
-public:
-	ModelViewer() {}
-    ~ModelViewer() {}
-
-    void InitializeApplication() override;
-	void UpdateApplication() override;
-private:
-	void ResetScene();
-	void ResetGameObject(std::shared_ptr<GameObject> aGO);
-	void ResetMaterial();
-	void ResetPSO();
-	void SetModel(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath);
-	void SetAnimatedModel(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath);
-	void SetAnimation(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath);
-	void SetMaterial(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath);
-	void SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath);
-	void SetPSO(std::filesystem::path& aAssetPath);
-	void SetShader(std::filesystem::path& aAssetPath);
-
-	void ExportMaterial();
-	void ExportPSO();
-	void SetupImguiStyle();
-
-	struct Log
-	{
-		std::string message;
-		std::string tooltip;
-		CU::Vector3f color = { 1.0f, 1.0f, 1.0f };
-
-		Log(std::string aMessage, CU::Vector3f aColor = CU::Vector3f(1.0f, 1.0f, 1.0f))
-		{
-			message = aMessage;
-			color = aColor;
-		}
-
-		Log(std::string aMessage, std::string aTooltip)
-		{
-			message = aMessage;
-			tooltip = aTooltip;
-		}
-	};
-
-	std::vector<Log> myLogs;
-
-	std::shared_ptr<Material> myMaterial;
-	std::shared_ptr<PipelineStateObject> myPSO;
-	bool myIsCustomMaterial = false;
-
-	std::string myMeshName;
-	std::string myMeshPath;
-
-	std::string myMaterialName;
-	std::string myMaterialPath;
-	std::string myAlbedoTexName;
-	std::string myAlbedoTexPath;
-	std::string myNormalTexName;
-	std::string myNormalTexPath;
-	std::string myMaterialTexName;
-	std::string myMaterialTexPath;
-
-	std::string myPSOName;
-	std::string myPSOPath;
-	std::string myVertexShaderName;
-	std::string myVertexShaderPath;
-	std::string myGeometryShaderName;
-	std::string myGeometryShaderPath;
-	std::string myPixelShaderName;
-	std::string myPixelShaderPath;
-
-	ImFont* newFont;
-	unsigned currentDebugMode = 0;
-};
 
 Application* CreateApplication()
 {
@@ -147,40 +70,73 @@ void ModelViewer::InitializeApplication()
 					myLogs.emplace_back("[ERROR] Couldn't find game object!", CU::Vector3f(1.0f, 0, 0));
 				}
 
+				const std::string assetExt = assetPath.extension().string();
 				const std::string assetName = assetPath.filename().stem().string();
-				if (assetName.starts_with("SM"))
+				if (assetExt == ".fbx")
 				{
-					SetModel(go, assetPath);
+					if (assetName.starts_with("SM"))
+					{
+						SetModel(go, assetPath);
+					}
+					else if (assetName.starts_with("SK"))
+					{
+						SetAnimatedModel(go, assetPath);
+					}
+					else if (assetName.starts_with("A"))
+					{
+						SetAnimation(go, assetPath);
+					}
+					else
+					{
+						LOG(LogApplication, Error, "A file of type '.fbx' must be prefixed by 'SM_' or 'SK_'");
+						myLogs.emplace_back("[ERROR] A file of type '.fbx' must be prefixed by 'SM_' or 'SK_'", CU::Vector3f(1.0f, 0, 0));
+					}
 				}
-				else if (assetName.starts_with("SK"))
+				else if (assetExt == ".dds")
 				{
-					SetAnimatedModel(go, assetPath);
+					if (assetName.starts_with("T"))
+					{
+						SetTexture(go, assetPath);
+					}
+					else
+					{
+						LOG(LogApplication, Error, "A file of type '.dds' must be prefixed by 'T_'");
+						myLogs.emplace_back("[ERROR] A file of type '.dds' must be prefixed by 'T_'", CU::Vector3f(1.0f, 0, 0));
+					}
 				}
-				else if (assetName.starts_with("A"))
+				else if (assetExt == ".json")
 				{
-					SetAnimation(go, assetPath);
+					if (assetName.starts_with("MAT"))
+					{
+						SetMaterial(go, assetPath);
+					}
+					else if (assetName.starts_with("PSO"))
+					{
+						SetPSO(assetPath);
+					}
+					else
+					{
+						LOG(LogApplication, Error, "A file of type '.json' must be prefixed by 'MAT_' or 'PSO_'");
+						myLogs.emplace_back("[ERROR] A file of type '.json' must be prefixed by 'MAT_' or 'PSO_'", CU::Vector3f(1.0f, 0, 0));
+					}
 				}
-				else if (assetName.starts_with("MAT"))
+				else if (assetExt == ".cso")
 				{
-					SetMaterial(go, assetPath);
-				}
-				else if (assetName.starts_with("T"))
-				{
-					SetTexture(go, assetPath);
-				}
-				else if (assetName.starts_with("PSO"))
-				{
-					SetPSO(assetPath);
-				}
-				else if (assetName.starts_with("SH"))
-				{
-					myLogs.emplace_back("[ERROR] Modelviewer does not support loading in individual shaders currently!", CU::Vector3f(1.0f, 0, 0));
-					//SetShader(assetPath);
+					if (assetName.starts_with("SH"))
+					{
+						myLogs.emplace_back("[ERROR] Modelviewer does not support loading in individual shaders currently!", CU::Vector3f(1.0f, 0, 0));
+						//SetShader(assetPath);
+					}
+					else
+					{
+						LOG(LogApplication, Error, "A file of type '.cso' must be prefixed by 'SH_'");
+						myLogs.emplace_back("[ERROR] A file of type '.cso' must be prefixed by 'SH_'", CU::Vector3f(1.0f, 0, 0));
+					}
 				}
 				else
 				{
-					LOG(LogApplication, Error, "Can't load filetype {}", assetPath.extension().string().c_str());
-					myLogs.emplace_back("[ERROR] Can't load filetype " + assetPath.extension().string() + "!", CU::Vector3f(1.0f, 0, 0));
+					LOG(LogApplication, Error, "Can't load filetype {}", assetExt.c_str());
+					myLogs.emplace_back("[ERROR] Can't load filetype " + assetExt + "!", CU::Vector3f(1.0f, 0, 0));
 				}
 			}
 
@@ -189,7 +145,7 @@ void ModelViewer::InitializeApplication()
 
 	Engine::GetInstance().GetImGuiHandler().AddNewFunction([this]()
 		{
-#ifdef _DEBUG
+#ifndef _RETAIL
 			CU::Vector2f size(250.0f, 200.0f);
 			float offset = 15.0f;
 			CU::Vector2f windowPos = Engine::GetInstance().GetApplicationWindow().GetTopLeft();
@@ -199,8 +155,8 @@ void ModelViewer::InitializeApplication()
 			ImGui::SetNextWindowContentSize({ size.x, size.y });
 			ImGui::PushFont(newFont);
 
-			bool open = true;
-			ImGui::Begin("Modelviewer", &open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+			bool* open = NULL;
+			ImGui::Begin("Modelviewer", open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 
 			// Rendering
 			{
@@ -292,7 +248,7 @@ void ModelViewer::InitializeApplication()
 
 	Engine::GetInstance().GetImGuiHandler().AddNewFunction([this]()
 		{
-#ifdef _DEBUG
+#ifndef _RETAIL
 			CU::Vector2f size(250.0f, 440.0f);
 			float offset = 15.0f;
 			CU::Vector2f windowPos = Engine::GetInstance().GetApplicationWindow().GetTopLeft();
@@ -302,8 +258,8 @@ void ModelViewer::InitializeApplication()
 			ImGui::SetNextWindowPos({ windowPos.x, windowPos.y });
 			ImGui::SetNextWindowContentSize({ size.x, size.y });
 			ImGui::PushFont(newFont);
-			bool open = true;
-			ImGui::Begin("Lighting Settings", &open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+			bool* open = NULL;
+			ImGui::Begin("Lighting Settings", open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 			{
 				if (ImGui::BeginTabBar("Lights"))
 				{
@@ -362,15 +318,15 @@ void ModelViewer::InitializeApplication()
 
 	Engine::GetInstance().GetImGuiHandler().AddNewFunction([this]()
 		{
-#ifdef _DEBUG
+#ifndef _RETAIL
 			CU::Vector2f size(300.0f, 200.0f);
 			CU::Vector2f windowPos = Engine::GetInstance().GetApplicationWindow().GetTopRight();
 
 			ImGui::SetNextWindowPos({ windowPos.x, windowPos.y });
 			ImGui::SetNextWindowContentSize({ size.x, size.y });
 			ImGui::PushFont(newFont);
-			bool open = true;
-			ImGui::Begin("Log", &open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+			bool* open = NULL;
+			ImGui::Begin("Log", open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 			{
 				if (myLogs.size() > 0)
 				{
@@ -393,7 +349,7 @@ void ModelViewer::InitializeApplication()
 
 	Engine::GetInstance().GetImGuiHandler().AddNewFunction([this]()
 		{
-#ifdef _DEBUG
+#ifndef _RETAIL
 			CU::Vector2f size(300.0f, 440.0f);
 			CU::Vector2f windowPos = Engine::GetInstance().GetApplicationWindow().GetTopRight();
 			windowPos.y += 250.0f;
@@ -404,8 +360,8 @@ void ModelViewer::InitializeApplication()
 			ImGui::SetNextWindowPos({ windowPos.x, windowPos.y });
 			ImGui::SetNextWindowContentSize({ size.x, size.y });
 			ImGui::PushFont(newFont);
-			bool open = true;
-			ImGui::Begin("Model Settings", &open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+			bool* open = NULL;
+			ImGui::Begin("Model Settings", open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 			{
 				ImGui::Text(std::string("Mesh - " + myMeshName).c_str());
 				ImGui::SetItemTooltip(myMeshPath.c_str());
@@ -474,7 +430,7 @@ void ModelViewer::InitializeApplication()
 						ImGui::EndTabItem();
 					}
 
-					if (ImGui::BeginTabItem("PSO"))
+					/*if (ImGui::BeginTabItem("PSO"))
 					{
 						if (myIsCustomMaterial)
 						{
@@ -512,7 +468,7 @@ void ModelViewer::InitializeApplication()
 						ImGui::SetItemTooltip(myPixelShaderPath.c_str());
 
 						ImGui::EndTabItem();
-					}
+					}*/
 
 					ImGui::EndTabBar();
 				}
@@ -742,8 +698,8 @@ void ModelViewer::SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::p
 	}
 	else
 	{
-		LOG(LogApplication, Warning, "No recognized filename suffix detected!");
-		myLogs.emplace_back("[ERROR] No recognized filename suffix detected!", CU::Vector3f(1.0f, 0, 0));
+		LOG(LogApplication, Warning, "No recognized texture suffix detected!");
+		myLogs.emplace_back("[ERROR] No recognized texture suffix detected! (Hover for more info)", "A texture used in a material needs to be ended with _C for basecolor, _N for normal, or _M for a material texture", CU::Vector3f(1.0f, 0, 0));
 	}
 }
 
@@ -876,6 +832,7 @@ void ModelViewer::ExportPSO()
 
 void ModelViewer::SetupImguiStyle()
 {
+#ifndef _RETAIL
 	std::filesystem::path fontPath = AssetManager::Get().GetContentRoot() / "Fonts/Roboto-Regular.ttf";
 	newFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 16.0f);
 	ImGui::GetIO().Fonts->Build();
@@ -930,4 +887,5 @@ void ModelViewer::SetupImguiStyle()
 	colors[ImGuiCol_DockingPreview] = ImVec4(0.18f, 0.68f, 0.36f, 0.70f);
 	colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.06f, 0.31f, 0.10f, 1.00f);
 	colors[ImGuiCol_PlotLines] = ImVec4(0.31f, 0.65f, 0.37f, 1.00f);
+#endif
 }

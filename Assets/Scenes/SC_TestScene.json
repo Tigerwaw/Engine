@@ -108,6 +108,86 @@
       ]
     },
     {
+      "Name": "Chest2",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -700.0, 0.0, -900.0 ],
+          "Rotation": [ 0.0, 120.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "Models/SM_Chest.fbx",
+          "Materials": [
+            "Materials/MAT_Chest.json"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Chest3",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 200.0, 0.0, 800.0 ],
+          "Rotation": [ 0.0, -45.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "Models/SM_Chest.fbx",
+          "Materials": [
+            "Materials/MAT_Chest.json"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Chest4",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 2000.0, 0.0, -500.0 ],
+          "Rotation": [ 0.0, -15.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "Models/SM_Chest.fbx",
+          "Materials": [
+            "Materials/MAT_Chest.json"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Chest5",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -1000.0, 0.0, 600.0 ],
+          "Rotation": [ 0.0, 45.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "Models/SM_Chest.fbx",
+          "Materials": [
+            "Materials/MAT_Chest.json"
+          ]
+        }
+      ]
+    },
+    {
       "Name": "ColorChecker",
       "Active": true,
       "Static": false,

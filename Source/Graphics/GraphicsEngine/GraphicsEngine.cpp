@@ -92,7 +92,7 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	return true;
 }
 
-#ifdef _DEBUG
+#ifndef _RETAIL
 bool GraphicsEngine::InitializeImGui()
 {
 	return myRHI->InitializeImGui();

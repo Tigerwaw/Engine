@@ -83,7 +83,7 @@ public:
 	static GraphicsEngine& Get();
 
 	bool Initialize(HWND aWindowHandle);
-#ifdef _DEBUG
+#ifndef _RETAIL
 	bool InitializeImGui();
 #endif
 	void BeginFrame();

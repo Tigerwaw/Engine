@@ -39,6 +39,15 @@ void Renderer::RenderScene(Scene& aScene)
 	{
 		RenderDeferred(aScene);
 	}
+
+	if (GraphicsEngine::Get().DrawGizmos)
+	{
+		QueueDebugGizmos(aScene, aScene.myMainCamera->GetComponent<Camera>());
+	}
+
+	QueueDebugLines(aScene);
+
+	DrawTestUI();
 }
 
 void Renderer::RenderForward(Scene& aScene)
@@ -74,20 +83,11 @@ void Renderer::RenderForward(Scene& aScene)
 		QueueGameObjects(aScene, aScene.myMainCamera->GetComponent<Camera>());
 	}
 
-	if (gfx.DrawGizmos)
-	{
-		QueueDebugGizmos(aScene, aScene.myMainCamera->GetComponent<Camera>());
-	}
-
-	QueueDebugLines(aScene);
-
 	for (int i = 100; i < 110; i++)
 	{
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ClearTextureResource>(i);
 	}
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ClearTextureResource>(126);
-
-	DrawTestUI();
 }
 
 void Renderer::RenderDeferred(Scene& aScene)

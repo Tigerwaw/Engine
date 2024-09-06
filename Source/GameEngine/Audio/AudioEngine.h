@@ -41,7 +41,6 @@ public:
 private:
     bool LoadBankEvents(std::string aBankName);
     void UpdateListener();
-    std::string myContentRoot;
     FMOD::Studio::System* mySystem = nullptr;
     std::unordered_map<std::string, FMOD::Studio::Bank*> myBanks;
     std::unordered_map<BusType, FMOD::Studio::Bus*> myBuses;

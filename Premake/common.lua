@@ -29,7 +29,7 @@ engine_settings = os.realpath("ApplicationSettings.json")
 function default_settings(app_name)
 	return {
 		title = app_name,
-		assetsDir = path.getrelative(dirs.bin .. "/*/", dirs.root .. "Assets/"),
+		assetsDir = path.getrelative(dirs.bin .. "/*/", dirs.root .. "Assets/") .. "/",
 		resolution = { width=1920, height=1080 },
 		windowSize = { width=1920, height=1080 },
 		fullscreen = true,

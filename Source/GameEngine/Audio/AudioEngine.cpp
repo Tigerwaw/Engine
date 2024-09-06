@@ -21,7 +21,6 @@ void AudioEngine::Initialize()
         return;
     }
 
-    myContentRoot = Engine::GetInstance().GetContentRootPath().string() + "AudioBanks/";
     LOG(LogAudioEngine, Log, "Successfully initialized fmod system");
 }
 
@@ -104,7 +103,8 @@ bool AudioEngine::LoadBank(std::string aBankName)
     }
 
     FMOD::Studio::Bank* newBank = nullptr;
-    FMOD_RESULT result = mySystem->loadBankFile((myContentRoot + aBankName + ".bank").c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &newBank);
+    std::string name = Engine::GetInstance().GetContentRootPath().string() + "/AudioBanks/" + aBankName + ".bank";
+    FMOD_RESULT result = mySystem->loadBankFile((name).c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &newBank);
     if (result != FMOD_OK)
     {
         LOG(LogAudioEngine, Error, "Failed to load audio bank {}", aBankName);

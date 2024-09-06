@@ -7,7 +7,7 @@
 #include "DDSTextureLoader/DDSTextureLoader11.h"
 #include "StringHelpers.h"
 
-#if _DEBUG
+#ifndef _RETAIL
 #include "imgui/imgui.h"
 #include "imgui/backends/imgui_impl_win32.h"
 #include "imgui/backends/imgui_impl_dx11.h"
@@ -92,6 +92,24 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 		NULL,
 		&context
 	);
+
+	ComPtr<ID3D11Debug> deviceDebug;
+	device.As(&deviceDebug);
+	if (deviceDebug)
+	{
+		ComPtr<ID3D11InfoQueue> infoQueue;
+		deviceDebug->QueryInterface(IID_PPV_ARGS(&infoQueue));
+
+		D3D11_MESSAGE_ID mask[] =
+		{
+			D3D11_MESSAGE_ID_SETPRIVATEDATA_CHANGINGPARAMS
+		};
+
+		D3D11_INFO_QUEUE_FILTER filter{};
+		filter.DenyList.NumIDs = _countof(mask);
+		filter.DenyList.pIDList = mask;
+		infoQueue->AddStorageFilterEntries(&filter);
+	}
 
 	if (FAILED(result))
 	{
@@ -204,7 +222,7 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 	return true;
 }
 
-#ifdef _DEBUG
+#ifndef _RETAIL
 bool RenderHardwareInterface::InitializeImGui()
 {
 	return ImGui_ImplDX11_Init(myDevice.Get(), myContext.Get());

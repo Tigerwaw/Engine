@@ -25,7 +25,7 @@ void Application::Run()
 
     while (myIsRunning)
     {
-#if _DEBUG
+#ifndef _RETAIL
 		if (Engine::GetInstance().GetIsFullscreen())
 		{
 			if (ImGui_ImplWin32_WndProcHandler(msg.hwnd, msg.message, msg.wParam, msg.lParam))
@@ -109,7 +109,7 @@ bool Application::InitializeEngine()
 
 	AssetManager::Get().Initialize(engine.GetContentRootPath(), engine.GetAutoRegisterAssets());
 
-#ifdef _DEBUG
+#ifndef _RETAIL
 	Engine::GetInstance().GetImGuiHandler().Initialize(myWindow->GetWindowHandle());
 	GraphicsEngine::Get().InitializeImGui();
 #endif

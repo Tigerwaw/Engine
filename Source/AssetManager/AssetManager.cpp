@@ -265,31 +265,28 @@ bool AssetManager::RegisterAnimationAsset(const std::filesystem::path& aPath)
     const std::string ext = assetPath.extension().string();
     if (!ext.ends_with("fbx")) return false;
 
-    //TGA::FBX::Animation tgaAnimation;
-    //TGA::FBX::Importer::LoadAnimation(aPath, tgaAnimation);
+    TGA::FBX::Animation tgaAnimation;
+    TGA::FBX::Importer::LoadAnimation(aPath, tgaAnimation);
 
-    //Animation animation;
-    //animation.Duration = static_cast<float>(tgaAnimation.Duration);
-    //animation.FramesPerSecond = tgaAnimation.FramesPerSecond;
     Animation animation;
-    animation.Duration = static_cast<float>(1);
-    animation.FramesPerSecond = 2;
+    animation.Duration = static_cast<float>(tgaAnimation.Duration);
+    animation.FramesPerSecond = tgaAnimation.FramesPerSecond;
 
-    //for (auto& tgaAnimFrame : tgaAnimation.Frames)
-    //{
-    //    Animation::Frame frame;
-    //    for (auto& tgaAnimFrameJoint : tgaAnimFrame.LocalTransforms)
-    //    {
-    //        auto& matrix = tgaAnimFrameJoint.second.Data;
-    //        CommonUtilities::Matrix4x4<float> jointTransform = { matrix[0], matrix[1], matrix[2], matrix[3],
-    //                                                             matrix[4], matrix[5], matrix[6], matrix[7],
-    //                                                             matrix[8], matrix[9], matrix[10], matrix[11],
-    //                                                             matrix[12], matrix[13], matrix[14], matrix[15] };
-    //        frame.BoneTransforms.emplace(tgaAnimFrameJoint.first, jointTransform);
-    //    }
+    for (TGA::FBX::Animation::Frame tgaAnimFrame : tgaAnimation.Frames)
+    {
+        Animation::Frame frame;
+        for (auto& tgaAnimFrameJoint : tgaAnimFrame.LocalTransforms)
+        {
+            auto& matrix = tgaAnimFrameJoint.second.Data;
+            CommonUtilities::Matrix4x4<float> jointTransform = { matrix[0], matrix[1], matrix[2], matrix[3],
+                                                                 matrix[4], matrix[5], matrix[6], matrix[7],
+                                                                 matrix[8], matrix[9], matrix[10], matrix[11],
+                                                                 matrix[12], matrix[13], matrix[14], matrix[15] };
+            frame.BoneTransforms.emplace(tgaAnimFrameJoint.first, jointTransform);
+        }
 
-    //    animation.Frames.emplace_back(frame);
-    //}
+        animation.Frames.emplace_back(frame);
+    }
 
     std::shared_ptr<AnimationAsset> asset = std::make_shared<AnimationAsset>();
     asset->animation = std::make_shared<Animation>(std::move(animation));

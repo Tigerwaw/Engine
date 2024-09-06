@@ -24,7 +24,7 @@ public:
 	RenderHardwareInterface();
 	~RenderHardwareInterface();
 	bool Initialize(HWND aWindowHandle, bool aEnableDebug);
-#ifdef _DEBUG
+#ifndef _RETAIL
 	bool InitializeImGui();
 #endif
 	void Present() const;
