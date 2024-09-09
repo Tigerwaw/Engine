@@ -12,7 +12,9 @@ project "GraphicsEngineShaders"
   language "C++"
   cppdialect "C++20"
 
-  targetdir ("%{dirs.shaders.absolute}")
+  outputdir = path.getrelative(dirs.graphicsengineshaders, dirs.shaders.absolute)
+
+  targetdir (outputdir)
 	objdir ("%{dirs.temp}/%{cfg.buildcfg}/%{prj.name}")
 
   files {
@@ -24,7 +26,7 @@ project "GraphicsEngineShaders"
 
 	filter("files:**.hlsl")
 		flags("ExcludeFromBuild")
-		shaderobjectfileoutput(dirs.shaders.relative .."/SH_%{file.basename}.cso")
+		shaderobjectfileoutput(outputdir .."/SH_%{file.basename}.cso")
 
 	filter("files:**VS.hlsl")
 		removeflags("ExcludeFromBuild")

@@ -11,7 +11,7 @@ RenderDebugLines::RenderDebugLines(std::vector<DebugLineVertex> aLineVertices, s
 }
 
 void RenderDebugLines::Execute()
-{	
+{
 	GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("PSO_DebugLine")->pso);
 	GraphicsEngine::Get().UpdateDynamicVertexBuffer(myLineVertices, *myLineBuffer);
 	GraphicsEngine::Get().RenderDebugLines(*myLineBuffer, static_cast<unsigned>(myLineVertices.size()));

@@ -410,7 +410,8 @@
         },
         {
           "Type": "AmbientLight",
-          "Cubemap": "Textures/Cubemaps/T_Skansen_Cube.dds"
+          "Cubemap": "Textures/Cubemaps/T_Skansen_Cube.dds",
+          "Intensity": 0.2
         }
       ]
     },

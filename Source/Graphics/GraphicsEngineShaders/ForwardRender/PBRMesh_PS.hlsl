@@ -61,10 +61,10 @@ float4 main(MeshVStoPS input) : SV_TARGET
         spotLightRadiance += BRDF_SpotLight(LB_SpotLights[sIndex], FB_ViewPosition.xyz, input.WorldPos, pixelNormal, diffuseColor, specularColor, roughness, ShadowMapSpot[sIndex]);
     }
     
-    float3 radiance = ambientLight + saturate(directionalLightRadiance + pointLightRadiance + spotLightRadiance);
+    float3 radiance = ambientLight + directionalLightRadiance + pointLightRadiance + spotLightRadiance;
     
     float4 color = 1;
-    color.rgb = saturate(radiance);
+    color.rgb = radiance;
     color.a = albedoMap.a;
     
     return color;

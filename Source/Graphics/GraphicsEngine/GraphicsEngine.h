@@ -137,6 +137,7 @@ public:
 
 	std::shared_ptr<Texture> GetBackBuffer() { return myRHI->GetBackBuffer(); }
 	std::shared_ptr<Texture> GetDepthBuffer() { return myRHI->GetDepthBuffer(); }
+	std::shared_ptr<Texture> GetIntermediateBuffer() { return myRHI->GetIntermediateBuffer(); }
 	GBuffer& GetGBuffer() { return *myGBuffer; }
 
 	GraphicsCommandList& GetGraphicsCommandList() const { return *myCommandList; }

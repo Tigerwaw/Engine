@@ -40,13 +40,6 @@ void Renderer::RenderScene(Scene& aScene)
 		RenderDeferred(aScene);
 	}
 
-	if (GraphicsEngine::Get().DrawGizmos)
-	{
-		QueueDebugGizmos(aScene, aScene.myMainCamera->GetComponent<Camera>());
-	}
-
-	QueueDebugLines(aScene);
-
 	DrawTestUI();
 }
 
@@ -75,7 +68,7 @@ void Renderer::RenderForward(Scene& aScene)
 
 	if (gfx.GetCurrentDebugMode() != DebugMode::None)
 	{
-		std::shared_ptr<PipelineStateObject> pso = AssetManager::Get().GetAsset<PSOAsset>(GraphicsEngine::Get().DebugModeNames[static_cast<int>(GraphicsEngine::Get().GetCurrentDebugMode())])->pso;
+		std::shared_ptr<PipelineStateObject> pso = AssetManager::Get().GetAsset<PSOAsset>(gfx.DebugModeNames[static_cast<int>(gfx.GetCurrentDebugMode())])->pso;
 		QueueGameObjects(aScene, aScene.myMainCamera->GetComponent<Camera>(), false, pso);
 	}
 	else
@@ -85,9 +78,25 @@ void Renderer::RenderForward(Scene& aScene)
 
 	for (int i = 100; i < 110; i++)
 	{
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ClearTextureResource>(i);
+		gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(i);
 	}
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ClearTextureResource>(126);
+	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(126);
+
+	if (GraphicsEngine::Get().DrawGizmos)
+	{
+		QueueDebugGizmos(aScene, aScene.myMainCamera->GetComponent<Camera>());
+	}
+
+	QueueDebugLines(aScene);
+	Engine::GetInstance().GetDebugDrawer().DrawObjects();
+
+	// Tonemapping
+	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_TonemapUE")->pso);
+	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetBackBuffer(), gfx.GetDepthBuffer(), true, true);
+	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(10, gfx.GetIntermediateBuffer());
+	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
+
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ClearTextureResource>(10);
 }
 
 void Renderer::RenderDeferred(Scene& aScene)
@@ -115,20 +124,20 @@ void Renderer::RenderDeferred(Scene& aScene)
 	// Directional Light
 	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(126, aScene.myAmbientLight->GetComponent<AmbientLight>()->GetCubemap());
 	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_DeferredDirectionalLight")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(GraphicsEngine::Get().GetBackBuffer(), nullptr, true, false);
+	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetIntermediateBuffer(), nullptr, true, false);
 	gfx.GetGraphicsCommandList().Enqueue<SetGBufferAsResource>();
 	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
 	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(100);
 
 	// Pointlights
 	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_DeferredPointlight")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(GraphicsEngine::Get().GetBackBuffer(), nullptr, false, false);
+	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetIntermediateBuffer(), nullptr, false, false);
 	gfx.GetGraphicsCommandList().Enqueue<SetGBufferAsResource>();
 	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
 
 	// Spotlights
 	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_DeferredSpotlight")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(GraphicsEngine::Get().GetBackBuffer(), nullptr, false, false);
+	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetIntermediateBuffer(), nullptr, false, false);
 	gfx.GetGraphicsCommandList().Enqueue<SetGBufferAsResource>();
 	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
 
@@ -142,8 +151,24 @@ void Renderer::RenderDeferred(Scene& aScene)
 		gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(i);
 	}
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ClearTextureResource>(126);
-
+	
+	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetIntermediateBuffer(), gfx.GetDepthBuffer(), false, false);
 	RenderForwardObjects(aScene);
+	if (GraphicsEngine::Get().DrawGizmos)
+	{
+		QueueDebugGizmos(aScene, aScene.myMainCamera->GetComponent<Camera>());
+	}
+
+	QueueDebugLines(aScene);
+	Engine::GetInstance().GetDebugDrawer().DrawObjects();
+
+	// Tonemapping
+	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_TonemapUE")->pso);
+	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetBackBuffer(), gfx.GetDepthBuffer(), true, true);
+	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(10, gfx.GetIntermediateBuffer());
+	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
+
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ClearTextureResource>(10);
 }
 
 void Renderer::RenderDeferredObjects(Scene& aScene, bool aDisableViewCulling)

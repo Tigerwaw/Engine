@@ -92,6 +92,7 @@ public:
 
 	FORCEINLINE std::shared_ptr<Texture> GetBackBuffer() { return myBackBuffer; }
 	FORCEINLINE std::shared_ptr<Texture> GetDepthBuffer() { return myDepthBuffer; }
+	FORCEINLINE std::shared_ptr<Texture> GetIntermediateBuffer() { return myIntermediateBuffer; }
 
 private:
 	bool CreateVertexBufferInternal(std::string_view aName, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer, const uint8_t* aVertexDataPointer, size_t aNumVertices, size_t aVertexSize, bool aIsDynamic = false) const;
@@ -107,6 +108,7 @@ private:
 
 	std::shared_ptr<Texture> myBackBuffer;
 	std::shared_ptr<Texture> myDepthBuffer;
+	std::shared_ptr<Texture> myIntermediateBuffer;
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D11SamplerState>> mySamplerStates;
 };
 

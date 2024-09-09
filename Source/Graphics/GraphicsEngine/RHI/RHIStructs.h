@@ -24,6 +24,7 @@ enum class RHITextureFormat : unsigned
 	R32G32B32A32_Float = 2,
 	R32G8X24_Typeless = 19,
 	D32_Float_S8X24_UINT = 20,
+	R16G16B16A16_FLOAT = 10,
 	R32_Float_X8X24_Typeless = 21,
 	R16G16_Float = 34,
 	R32_Typeless = 39,

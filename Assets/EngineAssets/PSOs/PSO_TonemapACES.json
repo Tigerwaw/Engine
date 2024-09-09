@@ -1,0 +1,14 @@
+{
+  "VertexType": "Default",
+  "VertexShader": "SH_Quad_VS",
+  "GeometryShader": "",
+  "PixelShader": "SH_PP_TonemapACES_PS",
+  "BlendStateDesc":
+  {
+    "BlendMode": "Additive"
+  },
+  "Samplers":
+  {
+    "LinearWrapSS": 0
+  }
+}

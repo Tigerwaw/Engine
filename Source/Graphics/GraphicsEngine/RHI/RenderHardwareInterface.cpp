@@ -217,6 +217,9 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 
 	CreateDefaultSamplerStates();
 
+	myIntermediateBuffer = std::make_shared<Texture>();
+	CreateTexture("IntermediateBuffer", static_cast<unsigned>(clientWidth), static_cast<unsigned>(clientHeight), RHITextureFormat::R16G16B16A16_FLOAT, *myIntermediateBuffer, false, true, true, false, false);
+
 	LOG(LogRHI, Log, "RHI Initialized!");
 
 	return true;

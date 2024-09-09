@@ -22,7 +22,7 @@ float4 main(Quad_VS_to_PS input) : SV_TARGET
     float3 ambientLight = BRDF_AmbientLighting(FB_ViewPosition.xyz, diffuseColor, specularColor, worldNormal, worldPos.rgb, roughness, ambientOcclusion, EnvCubeMap, LB_AmbientLight.Color, LB_AmbientLight.Intensity);
     float3 directionalLightRadiance = BRDF_DirectionalLight(LB_DirLight, FB_ViewPosition.xyz, worldPos, worldNormal, diffuseColor, specularColor, roughness, ShadowMapDir);
     
-    float3 radiance = saturate(ambientLight + directionalLightRadiance);
+    float3 radiance = ambientLight + directionalLightRadiance;
     
     return float4(radiance, 1.0f);
 }

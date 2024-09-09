@@ -19,7 +19,6 @@ void Engine::Update()
     myInputHandler->UpdateInput();
     myAudioEngine->Update();
     mySceneHandler->RenderActiveScene();
-    myDebugDrawer->DrawObjects();
 }
 
 WindowsEventHandler& Engine::GetWindowsEventHandler()

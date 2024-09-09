@@ -52,6 +52,11 @@ bool AmbientLight::Serialize(nl::json& outJsonObject)
 
 bool AmbientLight::Deserialize(nl::json& aJsonObject)
 {
+	if (aJsonObject.contains("Intensity"))
+	{
+		SetIntensity(aJsonObject["Intensity"].get<float>());
+	}
+
 	if (aJsonObject.contains("Cubemap"))
 	{
 		SetCubemap(AssetManager::Get().GetAsset<TextureAsset>(aJsonObject["Cubemap"].get<std::string>())->texture);
