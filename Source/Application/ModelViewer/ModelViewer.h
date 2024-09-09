@@ -80,4 +80,5 @@ private:
 
 	ImFont* newFont;
 	unsigned currentDebugMode = 0;
+	unsigned currentTonemapper = 0;
 };

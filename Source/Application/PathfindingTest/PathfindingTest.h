@@ -8,4 +8,5 @@ public:
     ~PathfindingTest() {}
 
     void InitializeApplication() override;
+    void UpdateApplication() override;
 };

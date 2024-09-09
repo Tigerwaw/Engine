@@ -65,6 +65,7 @@ void Application::Run()
 		Engine::GetInstance().GetImGuiHandler().BeginFrame();
 		GraphicsEngine::Get().BeginFrame();
 		Engine::GetInstance().GetImGuiHandler().Update();
+		Engine::GetInstance().GetDebugDrawer().ClearObjects();
 		UpdateApplication();
 		Engine::GetInstance().Update();
 		GraphicsEngine::Get().RenderFrame();
@@ -94,11 +95,11 @@ bool Application::InitializeEngine()
 	myEventHandler = std::make_unique<WindowsEventHandler>();
 
 	Engine& engine = Engine::GetInstance();
-	std::string title = Engine::GetInstance().GetApplicationTitle();
-	CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
-	bool fullscreen = Engine::GetInstance().GetIsFullscreen();
-	bool borderless = Engine::GetInstance().GetIsBorderless();
-	bool allowDropFiles = Engine::GetInstance().GetAllowDropFiles();
+	std::string title = engine.GetApplicationTitle();
+	CU::Vector2f windowSize = engine.GetWindowSize();
+	bool fullscreen = engine.GetIsFullscreen();
+	bool borderless = engine.GetIsBorderless();
+	bool allowDropFiles = engine.GetAllowDropFiles();
 	myWindow->InitializeWindow(title, windowSize, fullscreen, borderless, allowDropFiles);
 
 	engine.SetApplicationInstance(this);

@@ -40,6 +40,14 @@ enum class DebugMode
 	COUNT
 };
 
+enum class Tonemapper
+{
+	ACES,
+	UE,
+	Lottes,
+	COUNT
+};
+
 enum class ConstantBufferType
 {
 	ObjectBuffer,
@@ -143,8 +151,11 @@ public:
 	GraphicsCommandList& GetGraphicsCommandList() const { return *myCommandList; }
 
 	const unsigned GetDrawcallAmount() const { return myLastFrameDrawcallAmount; }
-	const DebugMode GetCurrentDebugMode() const { return myCurrentDebugMode; }
 	void SetDebugMode(DebugMode aDebugMode) { myCurrentDebugMode = aDebugMode; }
+	const DebugMode GetCurrentDebugMode() const { return myCurrentDebugMode; }
+
+	void SetTonemapper(Tonemapper aTonemapper) { myTonemapper = aTonemapper; }
+	const Tonemapper GetTonemapper() const { return myTonemapper; }
 
 	std::vector<std::string> DebugModeNames = {
 		"None",
@@ -160,6 +171,12 @@ public:
 		"PSO_DebugTextureNormals",
 		"PSO_DebugUVs",
 		"PSO_DebugVertexColor"
+	};
+	
+	std::vector<std::string> TonemapperNames = {
+		"PSO_TonemapACES",
+		"PSO_TonemapUE",
+		"PSO_TonemapLottes"
 	};
 
 	bool DrawGizmos = false;
@@ -188,6 +205,7 @@ private:
 
 	unsigned myDrawcallAmount = 0;
 	unsigned myLastFrameDrawcallAmount = 0;
+	Tonemapper myTonemapper = Tonemapper::UE;
 	DebugMode myCurrentDebugMode = DebugMode::None;
 };
 

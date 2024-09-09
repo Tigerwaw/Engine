@@ -171,7 +171,7 @@ namespace CommonUtilities
 		planeVector.push_back(Plane<T>(aAABB.GetMax(), Vector3<T>(0, 1, 0)));
 		planeVector.push_back(Plane<T>(aAABB.GetMax(), Vector3<T>(0, 0, 1)));
 
-		for each (Plane<T> plane in planeVector)
+		for (auto& plane : planeVector)
 		{
 			Vector3<T> intersectionPoint;
 			if (IntersectionPlaneRay(plane, aRay, intersectionPoint))
@@ -187,22 +187,22 @@ namespace CommonUtilities
 	}
 
 	template <class T>
-	bool IntersectionAABBRay(const AABB3D<T>& aAABB, const Ray<T>& aRay, Vector3<T>& outIntersectionPoint = Vector3<T>())
+	bool IntersectionAABBRay(const AABB3D<T>& aAABB, const Ray<T>& aRay, Vector3<T>& outIntersectionPoint)
 	{
 		std::vector<Plane<T>> planeVector;
 
-		planeVector.push_back(Plane<T>(aAABB.GetMin(), Vector3<T>(-1, 0, 0)));
-		planeVector.push_back(Plane<T>(aAABB.GetMin(), Vector3<T>(0, -1, 0)));
-		planeVector.push_back(Plane<T>(aAABB.GetMin(), Vector3<T>(0, 0, -1)));
-		planeVector.push_back(Plane<T>(aAABB.GetMax(), Vector3<T>(1, 0, 0)));
-		planeVector.push_back(Plane<T>(aAABB.GetMax(), Vector3<T>(0, 1, 0)));
-		planeVector.push_back(Plane<T>(aAABB.GetMax(), Vector3<T>(0, 0, 1)));
+		planeVector.emplace_back(Plane<T>(aAABB.GetMin(), Vector3<T>(-1, 0, 0)));
+		planeVector.emplace_back(Plane<T>(aAABB.GetMin(), Vector3<T>(0, -1, 0)));
+		planeVector.emplace_back(Plane<T>(aAABB.GetMin(), Vector3<T>(0, 0, -1)));
+		planeVector.emplace_back(Plane<T>(aAABB.GetMax(), Vector3<T>(1, 0, 0)));
+		planeVector.emplace_back(Plane<T>(aAABB.GetMax(), Vector3<T>(0, 1, 0)));
+		planeVector.emplace_back(Plane<T>(aAABB.GetMax(), Vector3<T>(0, 0, 1)));
 
 		Vector3<T> closestIntersectionPoint;
 		float closestDistanceSqr = FLT_MAX;
 		bool hit = false;
 
-		for each (Plane<T> plane in planeVector)
+		for (auto& plane : planeVector)
 		{
 			Vector3<T> intersectionPoint;
 			if (IntersectionPlaneRay(plane, aRay, intersectionPoint))

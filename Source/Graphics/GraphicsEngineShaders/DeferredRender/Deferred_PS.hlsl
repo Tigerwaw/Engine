@@ -7,13 +7,14 @@ GBufferOutput main(MeshVStoPS input)
     GBufferOutput output;
     
     const float4 albedoMap = AlbedoTexture.Sample(DefaultSampler, input.TexCoord0.xy);
-    const float2 normalMap = NormalTexture.Sample(DefaultSampler, input.TexCoord0.xy).rg;
-    const float3 materialMap = MaterialTexture.Sample(DefaultSampler, input.TexCoord0.xy).rgb;
     
     if (albedoMap.a < 0.01)
     {
         discard;
     }
+    
+    const float2 normalMap = NormalTexture.Sample(DefaultSampler, input.TexCoord0.xy).rg;
+    const float3 materialMap = MaterialTexture.Sample(DefaultSampler, input.TexCoord0.xy).rgb;
    
     // NORMALS
     float3 calculatedNormals;

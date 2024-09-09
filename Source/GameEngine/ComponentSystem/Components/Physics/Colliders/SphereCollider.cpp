@@ -30,6 +30,15 @@ bool SphereCollider::TestCollision(const SphereCollider* aCollider) const
     return CU::IntersectionBetweenSpheres(GetSphere(), otherSphereInMySpace);
 }
 
+bool SphereCollider::TestCollision(const CU::Ray<float> aRay, CU::Vector3f& outHitPoint) const
+{
+    std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
+    CU::Ray<float> rayInMySpace = aRay.GetRayinNewSpace(transform->GetWorldMatrix().GetFastInverse());
+    
+    outHitPoint;
+    return CU::IntersectionSphereRay(mySphere, rayInMySpace);
+}
+
 const CU::Sphere<float>& SphereCollider::GetSphere() const
 {
     return mySphere;

@@ -36,6 +36,15 @@ bool BoxCollider::TestCollision(const SphereCollider* aCollider) const
     return CU::IntersectionSphereAABB(sphereInMySpace, GetAABB(), intersectionPoint);
 }
 
+bool BoxCollider::TestCollision(const CU::Ray<float> aRay, CU::Vector3f& outHitPoint) const
+{
+    std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
+    CU::Ray<float> rayInMySpace = aRay.GetRayinNewSpace(transform->GetWorldMatrix().GetFastInverse());
+
+    outHitPoint;
+    return CU::IntersectionAABBRay(myAABB, rayInMySpace);
+}
+
 const CU::AABB3D<float>& BoxCollider::GetAABB() const
 {
     return myAABB;

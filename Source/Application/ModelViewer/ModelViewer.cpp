@@ -35,6 +35,7 @@ void ModelViewer::InitializeApplication()
 	inputHandler.RegisterBinaryAction("S", Keys::S, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("D", Keys::D, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("F6", Keys::F6, GenericInput::ActionType::Clicked);
+	inputHandler.RegisterBinaryAction("F7", Keys::F7, GenericInput::ActionType::Clicked);
 	inputHandler.RegisterBinaryAction("LMB", Keys::MOUSELBUTTON, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("RMB", Keys::MOUSERBUTTON, GenericInput::ActionType::Held);
 	inputHandler.RegisterAnalog2DAction("MousePos", MouseMovement2D::MousePos);
@@ -146,7 +147,7 @@ void ModelViewer::InitializeApplication()
 	Engine::GetInstance().GetImGuiHandler().AddNewFunction([this]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f size(250.0f, 200.0f);
+			CU::Vector2f size(250.0f, 220.0f);
 			float offset = 15.0f;
 			CU::Vector2f windowPos = Engine::GetInstance().GetApplicationWindow().GetTopLeft();
 			windowPos.x -= size.x + offset;
@@ -176,6 +177,18 @@ void ModelViewer::InitializeApplication()
 					if (ImGui::Selectable("Texture Normals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugTextureNormals);
 					if (ImGui::Selectable("UV0")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugUVs);
 					if (ImGui::Selectable("Vertex Color 0")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugVertexColor);
+					ImGui::EndCombo();
+				}
+			}
+
+			// Tonemapping
+			{
+				ImGui::Text("Tonemapper");
+				if (ImGui::BeginCombo("##TonemapperDropdown", GraphicsEngine::Get().TonemapperNames[static_cast<int>(GraphicsEngine::Get().GetTonemapper())].c_str()))
+				{
+					if (ImGui::Selectable("ACES")) GraphicsEngine::Get().SetTonemapper(Tonemapper::ACES);
+					if (ImGui::Selectable("UE")) GraphicsEngine::Get().SetTonemapper(Tonemapper::UE);
+					if (ImGui::Selectable("Lottes")) GraphicsEngine::Get().SetTonemapper(Tonemapper::Lottes);
 					ImGui::EndCombo();
 				}
 			}
@@ -253,7 +266,7 @@ void ModelViewer::InitializeApplication()
 			float offset = 15.0f;
 			CU::Vector2f windowPos = Engine::GetInstance().GetApplicationWindow().GetTopLeft();
 			windowPos.x -= size.x + offset;
-			windowPos.y += 250.0f;
+			windowPos.y += 270.0f;
 
 			ImGui::SetNextWindowPos({ windowPos.x, windowPos.y });
 			ImGui::SetNextWindowContentSize({ size.x, size.y });
@@ -490,6 +503,17 @@ void ModelViewer::UpdateApplication()
 		}
 
 		GraphicsEngine::Get().SetDebugMode(static_cast<DebugMode>(currentDebugMode));
+	}
+
+	if (Engine::GetInstance().GetInputHandler().GetBinaryAction("F7"))
+	{
+		currentTonemapper += 1;
+		if (currentTonemapper >= static_cast<unsigned>(Tonemapper::COUNT))
+		{
+			currentTonemapper = 0;
+		}
+
+		GraphicsEngine::Get().SetTonemapper(static_cast<Tonemapper>(currentTonemapper));
 	}
 }
 

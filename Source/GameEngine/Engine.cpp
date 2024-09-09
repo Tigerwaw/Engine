@@ -12,7 +12,6 @@
 
 void Engine::Update()
 {
-    myDebugDrawer->ClearObjects();
     myTimer->Update();
 
     mySceneHandler->UpdateActiveScene();

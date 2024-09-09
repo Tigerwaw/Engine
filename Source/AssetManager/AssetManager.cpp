@@ -272,7 +272,7 @@ bool AssetManager::RegisterAnimationAsset(const std::filesystem::path& aPath)
     animation.Duration = static_cast<float>(tgaAnimation.Duration);
     animation.FramesPerSecond = tgaAnimation.FramesPerSecond;
 
-    for (TGA::FBX::Animation::Frame tgaAnimFrame : tgaAnimation.Frames)
+    for (auto& tgaAnimFrame : tgaAnimation.Frames)
     {
         Animation::Frame frame;
         for (auto& tgaAnimFrameJoint : tgaAnimFrame.LocalTransforms)

@@ -109,6 +109,11 @@ void SceneHandler::Destroy(std::shared_ptr<GameObject> aGameObject)
     myActiveScene->Destroy(aGameObject);
 }
 
+bool SceneHandler::Raycast(CU::Vector3f aOrigin, CU::Vector3f aDirection, CU::Vector3f& aHitPoint)
+{
+    return myCollisionHandler->Raycast(*myActiveScene, aOrigin, aDirection, aHitPoint);
+}
+
 const unsigned SceneHandler::GetObjectAmount() const
 {
     if (!myActiveScene)

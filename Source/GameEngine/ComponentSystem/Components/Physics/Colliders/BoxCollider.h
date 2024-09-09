@@ -13,6 +13,7 @@ public:
     bool TestCollision(const Collider* aCollider) const override;
     bool TestCollision(const BoxCollider* aCollider) const override;
     bool TestCollision(const SphereCollider* aCollider) const override;
+    bool TestCollision(const CU::Ray<float> aRay, CU::Vector3f& outHitPoint) const override;
 
     const CU::AABB3D<float>& GetAABB() const;
 

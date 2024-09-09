@@ -32,6 +32,9 @@ private:
 		"Run",
 		"Wave"
 	};
+
+	unsigned currentDebugMode = 0;
+	unsigned currentTonemapper = 1;
 };
 
 Application* CreateApplication()
@@ -63,6 +66,8 @@ void FeatureShowcase::InitializeApplication()
 	inputHandler.RegisterBinaryAction("LMB", Keys::MOUSELBUTTON, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("RMB", Keys::MOUSERBUTTON, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("SPACE", Keys::SPACE, GenericInput::ActionType::Clicked);
+	inputHandler.RegisterBinaryAction("F6", Keys::F6, GenericInput::ActionType::Clicked);
+	inputHandler.RegisterBinaryAction("F7", Keys::F7, GenericInput::ActionType::Clicked);
 	inputHandler.RegisterAnalog2DAction("MousePos", MouseMovement2D::MousePos);
 	inputHandler.RegisterAnalog2DAction("MouseNDCPos", MouseMovement2D::MousePosNDC);
 	inputHandler.RegisterAnalog2DAction("MouseDelta", MouseMovement2D::MousePosDelta);
@@ -94,7 +99,7 @@ void FeatureShowcase::InitializeApplication()
 #ifdef _DEBUG
 			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
 			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.02f * resolution.y });
-			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.25f * resolution.y });
+			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.3f * resolution.y });
 			bool open = true;
 			ImGui::Begin("FeatureShowcase", &open, ImGuiWindowFlags_NoSavedSettings);
 
@@ -110,12 +115,30 @@ void FeatureShowcase::InitializeApplication()
 				if (ImGui::BeginCombo("##RenderModeDropdown", GraphicsEngine::Get().DebugModeNames[static_cast<int>(GraphicsEngine::Get().GetCurrentDebugMode())].c_str()))
 				{
 					if (ImGui::Selectable("None")) GraphicsEngine::Get().SetDebugMode(DebugMode::None);
-					if (ImGui::Selectable("Unlit")) GraphicsEngine::Get().SetDebugMode(DebugMode::Unlit);
+					if (ImGui::Selectable("Albedo")) GraphicsEngine::Get().SetDebugMode(DebugMode::Unlit);
+					if (ImGui::Selectable("Ambient Occlusion")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugAO);
+					if (ImGui::Selectable("Roughness")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugRoughness);
+					if (ImGui::Selectable("Metallic")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugMetallic);
 					if (ImGui::Selectable("Wireframe")) GraphicsEngine::Get().SetDebugMode(DebugMode::Wireframe);
-					if (ImGui::Selectable("DebugVertexNormals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugVertexNormals);
-					if (ImGui::Selectable("DebugPixelNormals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugPixelNormals);
-					if (ImGui::Selectable("DebugTextureNormals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugTextureNormals);
-					if (ImGui::Selectable("DebugUVs")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugUVs);
+					if (ImGui::Selectable("Vertex Normals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugVertexNormals);
+					if (ImGui::Selectable("Vertex Tangents")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugVertexTangents);
+					if (ImGui::Selectable("Vertex Binormals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugVertexBinormals);
+					if (ImGui::Selectable("Pixel Normals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugPixelNormals);
+					if (ImGui::Selectable("Texture Normals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugTextureNormals);
+					if (ImGui::Selectable("UV0")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugUVs);
+					if (ImGui::Selectable("Vertex Color 0")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugVertexColor);
+					ImGui::EndCombo();
+				}
+			}
+
+			// Tonemapping
+			{
+				ImGui::Text("Tonemapper");
+				if (ImGui::BeginCombo("##TonemapperDropdown", GraphicsEngine::Get().TonemapperNames[static_cast<int>(GraphicsEngine::Get().GetTonemapper())].c_str()))
+				{
+					if (ImGui::Selectable("ACES")) GraphicsEngine::Get().SetTonemapper(Tonemapper::ACES);
+					if (ImGui::Selectable("UE")) GraphicsEngine::Get().SetTonemapper(Tonemapper::UE);
+					if (ImGui::Selectable("Lottes")) GraphicsEngine::Get().SetTonemapper(Tonemapper::Lottes);
 					ImGui::EndCombo();
 				}
 			}
@@ -165,7 +188,7 @@ void FeatureShowcase::InitializeApplication()
 		{
 #ifdef _DEBUG
 			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
-			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.3f * resolution.y });
+			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.35f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.65f * resolution.y });
 			bool open = true;
 			ImGui::Begin("Lighting Settings", &open, ImGuiWindowFlags_NoSavedSettings);
@@ -592,5 +615,27 @@ void FeatureShowcase::UpdateApplication()
 
 		std::shared_ptr<AnimatedModel> tgaBroModel = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("TgaBro")->GetComponent<AnimatedModel>();
 		tgaBroModel->SetCurrentAnimationOnLayer(animationNames[currentAnimation], "", 0.5f);
+	}
+
+	if (Engine::GetInstance().GetInputHandler().GetBinaryAction("F6"))
+	{
+		currentDebugMode += 1;
+		if (currentDebugMode >= static_cast<unsigned>(DebugMode::COUNT))
+		{
+			currentDebugMode = 0;
+		}
+
+		GraphicsEngine::Get().SetDebugMode(static_cast<DebugMode>(currentDebugMode));
+	}
+
+	if (Engine::GetInstance().GetInputHandler().GetBinaryAction("F7"))
+	{
+		currentTonemapper += 1;
+		if (currentTonemapper >= static_cast<unsigned>(Tonemapper::COUNT))
+		{
+			currentTonemapper = 0;
+		}
+
+		GraphicsEngine::Get().SetTonemapper(static_cast<Tonemapper>(currentTonemapper));
 	}
 }

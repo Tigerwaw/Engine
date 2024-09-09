@@ -269,6 +269,8 @@ void RenderHardwareInterface::SetResolution(float aNewWidth, float aNewHeight)
 
 	myBackBuffer->myViewport = { 0, 0, aNewWidth, aNewHeight, 0, 1 };
 
+	CreateTexture("IntermediateBuffer", static_cast<unsigned>(aNewWidth), static_cast<unsigned>(aNewHeight), RHITextureFormat::R16G16B16A16_FLOAT, *myIntermediateBuffer, false, true, true, false, false);
+
 	D3D11_VIEWPORT viewport = {};
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;

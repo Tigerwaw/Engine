@@ -1,5 +1,5 @@
 #pragma once
-#include "Math/Vector3.hpp"
+#include "Math/Vector.hpp"
 
 namespace CommonUtilities
 {
@@ -12,6 +12,7 @@ namespace CommonUtilities
 		Ray<T>(const Vector3<T>& aOrigin, const Vector3<T>& aDirection);
 		void InitWith2Points(const Vector3<T>& aOrigin, const Vector3<T>& aPoint);
 		void InitWithOriginAndDirection(const Vector3<T>& aOrigin, const Vector3<T>& aDirection);
+		Ray<T> GetRayinNewSpace(const Matrix4x4<T>& aMatrix) const;
 		const Vector3<T> GetDirection() const;
 		const Vector3<T> GetPoint() const;
 	private:
@@ -53,6 +54,15 @@ namespace CommonUtilities
 	{
 		myPoint = aOrigin;
 		myDirection = aDirection.GetNormalized();
+	}
+
+	template<class T>
+	inline Ray<T> Ray<T>::GetRayinNewSpace(const Matrix4x4<T>& aMatrix) const
+	{
+		Vector3f newOrigin = ToVector3<T>(ToVector4<T>(myPoint, static_cast<T>(1.0)) * aMatrix);
+		Vector3f newDirection = ToVector3<T>(ToVector4<T>(myDirection, 0) * aMatrix);
+
+		return Ray<T>(newOrigin, newDirection);
 	}
 
 	template <class T>
