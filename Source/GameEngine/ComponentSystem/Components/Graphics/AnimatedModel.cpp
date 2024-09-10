@@ -206,6 +206,19 @@ std::string AnimatedModel::GetCurrentAnimationNameOnLayer(std::string aStartJoin
     return GetCurrentAnimationNameOnLayer(myJointNameToLayerIndex.at(aStartJoint));
 }
 
+std::vector<std::shared_ptr<AnimatedModel::AnimationState>> AnimatedModel::GetAnimationStatesOnLayer(unsigned aLayerIndex)
+{
+    std::vector<std::shared_ptr<AnimatedModel::AnimationState>> animationStates;
+    if (!ValidateLayerIndex(aLayerIndex)) return animationStates;
+
+    for (auto& animState : myAnimationLayers[aLayerIndex].myAnimationStates)
+    {
+        animationStates.emplace_back(animState.second);
+    }
+
+    return animationStates;
+}
+
 void AnimatedModel::PlayAnimation()
 {
     for (auto& layer : myAnimationLayers)

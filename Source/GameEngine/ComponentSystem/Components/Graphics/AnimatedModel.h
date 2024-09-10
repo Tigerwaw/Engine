@@ -83,6 +83,8 @@ public:
     std::string GetCurrentAnimationNameOnLayer(unsigned aLayerIndex = 0);
     std::string GetCurrentAnimationNameOnLayer(std::string aStartJoint = "");
 
+    std::vector<std::shared_ptr<AnimatedModel::AnimationState>> GetAnimationStatesOnLayer(unsigned aLayerIndex = 0);
+
     std::array<CU::Matrix4x4f, 128> GetCurrentPose() { return myJointTransforms; }
 
     void SetViewcull(bool aShouldViewcull) { myShouldViewcull = aShouldViewcull; }

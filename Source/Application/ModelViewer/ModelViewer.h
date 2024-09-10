@@ -81,4 +81,33 @@ private:
 	ImFont* newFont;
 	unsigned currentDebugMode = 0;
 	unsigned currentTonemapper = 0;
+	float currentBlendtime = 0.5f;
+
+	std::vector<std::string> debugModeNames = {
+	"None",
+	"Albedo",
+	"Ambient Occlusion",
+	"Roughness",
+	"Metallic",
+	"Wireframe",
+	"Vertex Normals",
+	"Vertex Tangents",
+	"Vertex Binormals",
+	"Pixel Normals",
+	"Texture Normals",
+	"UV0",
+	"VertexColor"
+	};
+
+	std::vector<std::string> tonemapperNames = {
+		"Unreal Engine",
+		"ACES",
+		"Lottes"
+	};
+
+	CU::Vector3f cameraStartingPos;
+	CU::Vector3f cameraStartingRot;
+	CU::Vector3f dLightStartingRot;
+	float dLightStartIntensity;
+	float aLightStartIntensity;
 };

@@ -8,6 +8,7 @@ class Material
 {
 public:
 	Material();
+	std::shared_ptr<Material> CreateInstance() const;
 	MaterialBuffer& MaterialSettings() { return myMaterialSettings; }
 	std::shared_ptr<PipelineStateObject> GetPSO() { return myPSO; }
 	Texture& GetAlbedoTexture() { return *myAlbedoTexture; }

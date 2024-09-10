@@ -42,8 +42,8 @@ enum class DebugMode
 
 enum class Tonemapper
 {
-	ACES,
 	UE,
+	ACES,
 	Lottes,
 	COUNT
 };
@@ -174,8 +174,8 @@ public:
 	};
 	
 	std::vector<std::string> TonemapperNames = {
-		"PSO_TonemapACES",
 		"PSO_TonemapUE",
+		"PSO_TonemapACES",
 		"PSO_TonemapLottes"
 	};
 

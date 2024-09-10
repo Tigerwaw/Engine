@@ -23,6 +23,16 @@ void ModelViewer::InitializeApplication()
 	newGO->AddComponent<Transform>(CU::Vector3f(0, 0, 0), CU::Vector3f(0, -180.0f, 0));
 	Engine::GetInstance().GetSceneHandler().Instantiate(newGO);
 
+	std::shared_ptr<Transform> camTransform = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("MainCamera")->GetComponent<Transform>();
+	cameraStartingPos = camTransform->GetTranslation();
+	cameraStartingRot = camTransform->GetRotation();
+
+	aLightStartIntensity = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("A_Light")->GetComponent<AmbientLight>()->GetIntensity();
+
+	std::shared_ptr<GameObject> dLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light");
+	dLightStartingRot = dLight->GetComponent<Transform>()->GetRotation();
+	dLightStartIntensity = dLight->GetComponent<DirectionalLight>()->GetIntensity();
+
 	myMaterial = std::make_shared<Material>();
 	myPSO = std::make_shared<PipelineStateObject>();
 	ResetMaterial();
@@ -162,36 +172,34 @@ void ModelViewer::InitializeApplication()
 			// Rendering
 			{
 				ImGui::Text("Rendering Mode");
-				if (ImGui::BeginCombo("##RenderModeDropdown", GraphicsEngine::Get().DebugModeNames[static_cast<int>(GraphicsEngine::Get().GetCurrentDebugMode())].c_str()))
+				if (ImGui::BeginCombo("##RenderModeDropdown", debugModeNames[static_cast<int>(GraphicsEngine::Get().GetCurrentDebugMode())].c_str()))
 				{
-					if (ImGui::Selectable("None")) GraphicsEngine::Get().SetDebugMode(DebugMode::None);
-					if (ImGui::Selectable("Albedo")) GraphicsEngine::Get().SetDebugMode(DebugMode::Unlit);
-					if (ImGui::Selectable("Ambient Occlusion")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugAO);
-					if (ImGui::Selectable("Roughness")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugRoughness);
-					if (ImGui::Selectable("Metallic")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugMetallic);
-					if (ImGui::Selectable("Wireframe")) GraphicsEngine::Get().SetDebugMode(DebugMode::Wireframe);
-					if (ImGui::Selectable("Vertex Normals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugVertexNormals);
-					if (ImGui::Selectable("Vertex Tangents")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugVertexTangents);
-					if (ImGui::Selectable("Vertex Binormals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugVertexBinormals);
-					if (ImGui::Selectable("Pixel Normals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugPixelNormals);
-					if (ImGui::Selectable("Texture Normals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugTextureNormals);
-					if (ImGui::Selectable("UV0")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugUVs);
-					if (ImGui::Selectable("Vertex Color 0")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugVertexColor);
+					for (unsigned i = 0; i < static_cast<unsigned>(DebugMode::COUNT); i++)
+					{
+						if (ImGui::Selectable(debugModeNames[i].c_str())) GraphicsEngine::Get().SetDebugMode(static_cast<DebugMode>(i));
+					}
+
 					ImGui::EndCombo();
 				}
 			}
 
+			currentDebugMode = static_cast<unsigned>(GraphicsEngine::Get().GetCurrentDebugMode());
+
 			// Tonemapping
 			{
 				ImGui::Text("Tonemapper");
-				if (ImGui::BeginCombo("##TonemapperDropdown", GraphicsEngine::Get().TonemapperNames[static_cast<int>(GraphicsEngine::Get().GetTonemapper())].c_str()))
+				if (ImGui::BeginCombo("##TonemapperDropdown", tonemapperNames[static_cast<int>(GraphicsEngine::Get().GetTonemapper())].c_str()))
 				{
-					if (ImGui::Selectable("ACES")) GraphicsEngine::Get().SetTonemapper(Tonemapper::ACES);
-					if (ImGui::Selectable("UE")) GraphicsEngine::Get().SetTonemapper(Tonemapper::UE);
-					if (ImGui::Selectable("Lottes")) GraphicsEngine::Get().SetTonemapper(Tonemapper::Lottes);
+					for (unsigned i = 0; i < static_cast<unsigned>(Tonemapper::COUNT); i++)
+					{
+						if (ImGui::Selectable(tonemapperNames[i].c_str())) GraphicsEngine::Get().SetTonemapper(static_cast<Tonemapper>(i));
+					}
+
 					ImGui::EndCombo();
 				}
 			}
+
+			currentTonemapper = static_cast<unsigned>(GraphicsEngine::Get().GetTonemapper());
 
 			ImGui::Separator();
 
@@ -206,7 +214,7 @@ void ModelViewer::InitializeApplication()
 				go->SetActive(!go->GetActive());
 			};
 
-			if (ImGui::Button("Add Cube Primitive"))
+			if (ImGui::Button("Set Cube Primitive"))
 			{
 				std::shared_ptr<GameObject> go = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model");
 				std::filesystem::path prim = "SM_CubePrimitive";
@@ -216,7 +224,7 @@ void ModelViewer::InitializeApplication()
 				transform->SetTranslation(0, 100.0f, 0);
 			};
 
-			if (ImGui::Button("Add Sphere Primitive"))
+			if (ImGui::Button("Set Sphere Primitive"))
 			{
 				std::shared_ptr<GameObject> go = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model");
 				std::filesystem::path prim = "EngineAssets/Models/SM_Sphere.fbx";
@@ -226,7 +234,7 @@ void ModelViewer::InitializeApplication()
 				transform->SetScale(50.0f, 50.0f, 50.0f);
 			};
 
-			if (ImGui::Button("Add Plane Primitive"))
+			if (ImGui::Button("Set Plane Primitive"))
 			{
 				std::shared_ptr<GameObject> go = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model");
 				std::filesystem::path prim = "SM_PlanePrimitive";
@@ -236,23 +244,6 @@ void ModelViewer::InitializeApplication()
 				transform->SetScale(50.0f, 50.0f, 50.0f);
 				transform->SetTranslation(0, 100.0f, 0);
 			}
-
-			// Animation
-			//{
-			//	ImGui::Text("Animations");
-			//	std::shared_ptr<AnimatedModel> animModel = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model")->GetComponent<AnimatedModel>();
-			//	if (animModel)
-			//	{
-			//		if (ImGui::BeginCombo("##AnimationDropdown", animModel->GetCurrentAnimationNameOnLayer(0).c_str()))
-			//		{
-			//			if (ImGui::Selectable("Idle")) animModel->SetCurrentAnimationOnLayer("Idle", "", 0.5f);
-			//			if (ImGui::Selectable("Walk")) animModel->SetCurrentAnimationOnLayer("Walk", "", 0.5f);;
-			//			if (ImGui::Selectable("Run")) animModel->SetCurrentAnimationOnLayer("Run", "", 0.5f);;
-			//			if (ImGui::Selectable("Wave")) animModel->SetCurrentAnimationOnLayer("Wave", "", 0.5f);;
-			//			ImGui::EndCombo();
-			//		}
-			//	}
-			//}
 
 			ImGui::End();
 			ImGui::PopFont();
@@ -310,14 +301,40 @@ void ModelViewer::InitializeApplication()
 						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
 						if (ImGui::ColorPicker3("##DirectionalColor", color, flags)) dLight->SetColor({ color[0], color[1], color[2] });
 						ImGui::Spacing();
-
+						
 						std::shared_ptr<GameObject> dLightParent = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light_Parent");
 						std::shared_ptr<Transform> dlptransform = dLightParent->GetComponent<Transform>();
-						CU::Vector3f rotation = dlptransform->GetRotation();
-						float rot[3] = { rotation.x, rotation.y, rotation.z };
+						std::shared_ptr<Transform> dlightTransform = directionalLight->GetComponent<Transform>();
+						CU::Vector3f dlpRot = dlptransform->GetRotation();
+						CU::Vector3f dlightRot = dlightTransform->GetRotation();
 						ImGui::Text("Rotation");
-						if (ImGui::DragFloat3("##DLightRot", rot)) dlptransform->SetRotation(rot[0], rot[1], rot[2]);
+						ImGui::Text("Pitch:");
+						ImGui::SameLine();
+						if (ImGui::DragFloat("##DLightRotX", &dlightRot.x, 1.0f, 0, 90.0f)) dlightTransform->SetRotation(dlightRot);
+						ImGui::Text("Yaw:");
+						ImGui::SameLine();
+						if (ImGui::DragFloat("##DLightRotY", &dlpRot.y, 1.0f, 0, 360.0f, "%.3f", ImGuiSliderFlags_WrapAround)) dlptransform->SetRotation(dlpRot);
 						ImGui::EndTabItem();
+					}
+
+					std::shared_ptr<AnimatedModel> animModel = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model")->GetComponent<AnimatedModel>();
+					if (animModel)
+					{
+						if (ImGui::BeginTabItem("Animations"))
+						{
+							ImGui::SliderFloat("Blendtime", &currentBlendtime, 0, 5.0f);
+
+							if (animModel->GetCurrentAnimationNameOnLayer(0) != "")
+							{
+								std::vector<std::shared_ptr<AnimatedModel::AnimationState>> states = animModel->GetAnimationStatesOnLayer(0);
+								for (auto& state : states)
+								{
+									if (ImGui::Button(state->name.c_str())) animModel->SetCurrentAnimationOnLayer(state->name.c_str(), "", currentBlendtime);
+								}
+							}
+
+							ImGui::EndTabItem();
+						}
 					}
 
 					ImGui::EndTabBar();
@@ -413,7 +430,10 @@ void ModelViewer::InitializeApplication()
 
 						ImGui::Text(std::string("Albedo Texture - " + myAlbedoTexName).c_str());
 						ImGui::SetItemTooltip(myAlbedoTexPath.c_str());
-						ImGui::Image((void*)myMaterial->GetAlbedoTexture().GetSRV(), { textureSize.x, textureSize.y });
+						if (ImGui::ImageButton("##AlbedoTex", (void*)myMaterial->GetAlbedoTexture().GetSRV(), {textureSize.x, textureSize.y}))
+						{
+							myMaterial->SetAlbedoTexture(AssetManager::Get().GetAsset<TextureAsset>("T_Default_C")->texture);
+						}
 						if (ImGui::BeginItemTooltip())
 						{
 							ImGui::Image((void*)myMaterial->GetAlbedoTexture().GetSRV(), { textureHoverSize.x, textureHoverSize.y });
@@ -423,7 +443,10 @@ void ModelViewer::InitializeApplication()
 
 						ImGui::Text(std::string("Normal Texture - " + myNormalTexName).c_str());
 						ImGui::SetItemTooltip(myNormalTexPath.c_str());
-						ImGui::Image((void*)myMaterial->GetNormalTexture().GetSRV(), { textureSize.x, textureSize.y });
+						if (ImGui::ImageButton("##NormalTex", (void*)myMaterial->GetNormalTexture().GetSRV(), { textureSize.x, textureSize.y }))
+						{
+							myMaterial->SetNormalTexture(AssetManager::Get().GetAsset<TextureAsset>("T_Default_N")->texture);
+						}
 						if (ImGui::BeginItemTooltip())
 						{
 							ImGui::Image((void*)myMaterial->GetNormalTexture().GetSRV(), { textureHoverSize.x, textureHoverSize.y });
@@ -433,7 +456,10 @@ void ModelViewer::InitializeApplication()
 
 						ImGui::Text(std::string("Material Texture - " + myMaterialTexName).c_str());
 						ImGui::SetItemTooltip(myMaterialTexPath.c_str());
-						ImGui::Image((void*)myMaterial->GetMaterialTexture().GetSRV(), { textureSize.x, textureSize.y });
+						if (ImGui::ImageButton("##MaterialTex", (void*)myMaterial->GetMaterialTexture().GetSRV(), { textureSize.x, textureSize.y }))
+						{
+							myMaterial->SetMaterialTexture(AssetManager::Get().GetAsset<TextureAsset>("T_Default_M")->texture);
+						}
 						if (ImGui::BeginItemTooltip())
 						{
 							ImGui::Image((void*)myMaterial->GetMaterialTexture().GetSRV(), { textureHoverSize.x, textureHoverSize.y });
@@ -519,15 +545,40 @@ void ModelViewer::UpdateApplication()
 
 void ModelViewer::ResetScene()
 {
+	Engine& engine = Engine::GetInstance();
+
 	ResetPSO();
 	ResetMaterial();
 
-	std::shared_ptr<GameObject> go = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model");
+	std::shared_ptr<GameObject> go = engine.GetSceneHandler().FindGameObjectByName("Model");
 	ResetGameObject(go);
 
-	std::shared_ptr<GameObject> dLightParent = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light_Parent");
-	std::shared_ptr<Transform> dLightTransform = dLightParent->GetComponent<Transform>();
-	dLightTransform->SetRotation(0, 0, 0);
+	std::shared_ptr<GameObject> aLight = engine.GetSceneHandler().FindGameObjectByName("A_Light");
+	std::shared_ptr<AmbientLight> aLightComp = aLight->GetComponent<AmbientLight>();
+	aLightComp->SetColor(CU::Vector3f(1.0f, 1.0f, 1.0f));
+	aLightComp->SetIntensity(aLightStartIntensity);
+	aLight->SetActive(true);
+
+	engine.GetSceneHandler().FindGameObjectByName("D_Light_Parent")->GetComponent<Transform>()->SetRotation(0, 0, 0);
+
+	std::shared_ptr<GameObject> dLight = engine.GetSceneHandler().FindGameObjectByName("D_Light");
+	std::shared_ptr<DirectionalLight> dLightComp = dLight->GetComponent<DirectionalLight>();
+	dLightComp->SetColor(CU::Vector3f(1.0f, 1.0f, 1.0f));
+	dLightComp->SetIntensity(dLightStartIntensity);
+	dLight->GetComponent<Transform>()->SetRotation(dLightStartingRot);
+	dLight->SetActive(true);
+
+	std::shared_ptr<Transform> camTransform = engine.GetSceneHandler().FindGameObjectByName("MainCamera")->GetComponent<Transform>();
+	camTransform->SetTranslation(cameraStartingPos);
+	camTransform->SetRotation(cameraStartingRot);
+
+	currentDebugMode = 0;
+	GraphicsEngine::Get().SetDebugMode(DebugMode::None);
+	currentTonemapper = 0;
+	GraphicsEngine::Get().SetTonemapper(Tonemapper::UE);
+	currentBlendtime = 0.5f;
+
+	engine.GetSceneHandler().FindGameObjectByName("Plane")->SetActive(true);
 
 	myLogs.clear();
 	myLogs.emplace_back("[LOG] Reset Scene");
@@ -618,7 +669,7 @@ void ModelViewer::SetAnimation(std::shared_ptr<GameObject> aGO, std::filesystem:
 	if (!animModel)
 	{
 		LOG(LogApplication, Warning, "The currently loaded model does not support animations!");
-		myLogs.emplace_back("[ERROR] The currently loaded model does not support animations!");
+		myLogs.emplace_back("[ERROR] The currently loaded model does not support animations!", CU::Vector3f(1.0f, 0, 0));
 		return;
 	}
 
@@ -631,7 +682,7 @@ void ModelViewer::SetAnimation(std::shared_ptr<GameObject> aGO, std::filesystem:
 
 void ModelViewer::SetMaterial(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath)
 {
-	myMaterial = AssetManager::Get().GetAsset<MaterialAsset>(aAssetPath)->material;
+	myMaterial = AssetManager::Get().GetAsset<MaterialAsset>(aAssetPath)->material->CreateInstance();
 	std::string assetName = aAssetPath.filename().stem().string();
 	myMaterialName = assetName;
 	myMaterialPath = aAssetPath.string();

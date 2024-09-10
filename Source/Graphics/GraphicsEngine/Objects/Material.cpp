@@ -9,3 +9,15 @@ Material::Material()
 	myNormalTexture = std::make_shared<Texture>();
 	myMaterialTexture = std::make_shared<Texture>();
 }
+
+std::shared_ptr<Material> Material::CreateInstance() const
+{
+	std::shared_ptr<Material> instance = std::make_shared<Material>();
+	instance->myPSO = myPSO;
+	instance->myMaterialSettings = myMaterialSettings;
+	instance->myAlbedoTexture = myAlbedoTexture;
+	instance->myNormalTexture = myNormalTexture;
+	instance->myMaterialTexture = myMaterialTexture;
+
+	return instance;
+}
