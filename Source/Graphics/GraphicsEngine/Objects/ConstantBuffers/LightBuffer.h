@@ -21,8 +21,8 @@ struct LightBuffer
 		int CastShadows = false;	// 4 bytes
 		float MinBias = 0.0001f;	// 4 bytes
 		float MaxBias = 0.0005f;	// 4 bytes
-		float LightSize = 1.0;		// 4 bytes
-		float NearPlane;			// 4 bytes
+		float LightSize = 1.0f;		// 4 bytes
+		float NearPlane = 1.0f;		// 4 bytes
 		CU::Vector2f FrustumSize;	// 8 bytes
 		CU::Vector2f Padding;		// 8 bytes
 
@@ -38,8 +38,8 @@ struct LightBuffer
 		int CastShadows = false;	// 4 bytes
 		float MinBias = 0.0001f;	// 4 bytes
 		float MaxBias = 0.0003f;	// 4 bytes
-		float LightSize = 1.0;		// 4 bytes
-		float NearPlane;			// 4 bytes
+		float LightSize = 1.0f;		// 4 bytes
+		float NearPlane = 1.0f;		// 4 bytes
 		CU::Vector2f FrustumSize;	// 8 bytes
 		CU::Vector2f Padding;		// 8 bytes
 
@@ -56,8 +56,8 @@ struct LightBuffer
 		float ConeAngle = 0.707f;	// 4 bytes
 		float MinBias = 0.0001f;	// 4 bytes
 		float MaxBias = 0.0005f;	// 4 bytes
-		float LightSize = 1.0;		// 4 bytes
-		float NearPlane;			// 4 bytes
+		float LightSize = 1.0f;		// 4 bytes
+		float NearPlane = 1.0f;		// 4 bytes
 		CU::Vector2f FrustumSize;	// 8 bytes
 		CU::Vector2f Padding;		// 8 bytes
 

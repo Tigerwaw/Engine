@@ -25,7 +25,7 @@ public:
 		struct Joint
 		{
 			CU::Matrix4x4<float> BindPoseInverse;
-			int Parent;
+			int Parent = 0;
 			std::vector<unsigned> Children;
 			std::string Name;
 		};

@@ -8,7 +8,7 @@ namespace CU = CommonUtilities;
 struct SpriteBuffer
 {
 	CU::Matrix4x4f Matrix;				// 64
-	float CurrentFrame;					// 4
+	float CurrentFrame = 0;				// 4
 	CU::Vector2f SpriteSheetDimensions;	// 8
-	float Padding;						// 4
+	float Padding = 0;					// 4
 };

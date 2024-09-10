@@ -72,14 +72,14 @@ private:
     std::unique_ptr<AudioEngine> myAudioEngine;
     std::unique_ptr<ImGuiHandler> myImGuiHandler;
 
-    Application* myApplicationInstance;
+    Application* myApplicationInstance = nullptr;
 
     std::string myTitle;
     std::filesystem::path myContentRoot;
     CU::Vector2f myResolution;
     CU::Vector2f myWindowSize;
-    bool myIsFullscreen;
-    bool myIsBorderless;
-    bool myAllowDropFiles;
-    bool myAutoRegisterAssets;
+    bool myIsFullscreen = true;
+    bool myIsBorderless = true;
+    bool myAllowDropFiles = false;
+    bool myAutoRegisterAssets = true;
 };

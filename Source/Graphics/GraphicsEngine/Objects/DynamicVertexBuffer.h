@@ -19,7 +19,7 @@ public:
     const size_t GetMaxVertexCount() const { return myMaxVertexCount; }
 private:
     Microsoft::WRL::ComPtr<ID3D11Buffer> myVertexBuffer;
-    size_t myMaxVertexCount;
+    size_t myMaxVertexCount = 0;
 };
 
 template<typename VertexType>

@@ -272,7 +272,7 @@ namespace CommonUtilities
 	template<class T>
 	bool IntersectionBetweenPlaneVolumeAABB(const PlaneVolume<T>& aPlaneVolume, const AABB3D<T> aBoundingBox)
 	{
-		for (Plane<T> plane : aPlaneVolume.GetPlanes())
+		for (const Plane<T>& plane : aPlaneVolume.GetPlanes())
 		{
 			int cornersInPlane = 0;
 

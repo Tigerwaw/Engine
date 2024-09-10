@@ -26,9 +26,9 @@ private:
 	std::array<float, 4> myClearColor = { 0, 0, 0, 0 };
 	std::array<float, 6> myViewport = { 0, 0, 0, 0, 0, 0 };
 
-	UINT myArraySize;
+	UINT myArraySize = 0;
 	D3D11_USAGE myUsage;
-	UINT myBindFlags;
-	UINT myCPUAccessFlags;
+	UINT myBindFlags = 0;
+	UINT myCPUAccessFlags = 0;
 };
 

@@ -11,21 +11,21 @@ struct Font
 
 	struct Atlas
 	{
-		int Size;
-		int Width;
-		int Height;
-		float EmSize;
-		float LineHeight;
-		float Ascender;
-		float Descender;
-		float UnderlineY;
-		float UnderlineThickness;
+		int Size = 0;
+		int Width = 0;
+		int Height = 0;
+		float EmSize = 0;
+		float LineHeight = 0;
+		float Ascender = 0;
+		float Descender = 0;
+		float UnderlineY = 0;
+		float UnderlineThickness = 0;
 	} Atlas;
 
 	struct Glyph
 	{
-		char Character;
-		float Advance;
+		char Character = 'x';
+		float Advance = 0;
 		CU::Vector4f PlaneBounds;
 		CU::Vector4f UVBounds;
 	};

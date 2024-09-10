@@ -38,7 +38,7 @@ float3 Tonemap_Lottes(float3 aColor)
 		(pow(hdrMax, a * d) * pow(midIn, a) - pow(hdrMax, a) * pow(midIn, a * d) * midOut) /
 		((pow(hdrMax, a * d) - pow(midIn, a * d)) * midOut);
 
-	return pow(aColor, a) / (pow(aColor, a * d) * b + c);
+	return pow(abs(aColor), a) / (pow(abs(aColor), a * d) * b + c);
 }
 
 float3 LinearToGamma(float3 aColor)

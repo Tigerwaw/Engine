@@ -10,6 +10,6 @@ struct Animation
 	};
 
 	std::vector<Frame> Frames;
-	float Duration;
-	float FramesPerSecond;
+	float Duration = 0;
+	float FramesPerSecond = 0;
 };
