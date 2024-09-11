@@ -323,7 +323,8 @@ namespace TGA
 				// looping.
 				std::unordered_map<std::string, bool> TriggeredEvents;
 
-				std::unordered_map<std::string, Matrix> SocketTransforms;
+				std::unordered_map<std::string, Matrix> GlobalSocketTransforms;
+				std::unordered_map<std::string, Matrix> LocalSocketTransforms;
 			};
 
 			FileInfo FileInfo;

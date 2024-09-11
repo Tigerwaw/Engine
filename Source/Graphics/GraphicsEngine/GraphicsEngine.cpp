@@ -34,10 +34,10 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 
 	LOG(LogGraphicsEngine, Log, "Initializing Graphics Engine...");
 
-	bool createDebugLayer = true;
+	bool createDebugLayer = false;
 
-#ifdef _RETAIL
-	createDebugLayer = false;
+#ifdef _DEBUG
+	createDebugLayer = true;
 #endif
 
 	if (!myRHI->Initialize(aWindowHandle, createDebugLayer))

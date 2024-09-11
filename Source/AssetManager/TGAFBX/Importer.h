@@ -41,6 +41,16 @@ namespace TGA
 			 */
 			static FbxImportStatus LoadAnimation(const std::filesystem::path& aFilePath, Animation& outAnimation);
 
+			
+			/**
+			 * Attempts to load a FBX skeleton into the provided Mesh structure.
+			 * Please note that since this is a separate Skeleton no skinning data will exist!
+			 * @param aFilePath The path of the FBX file to load, in UTF-8 format.
+			 * @param outSkeleton The skeleton data read from the file.
+			 * @returns True if the skeleton was successfully loaded, otherwise false.
+			 */
+			static FbxImportStatus LoadSkeleton(const std::filesystem::path& aFilePath, Skeleton& outSkeleton);
+
 			/**
 			 * Attempts to load an FBX file exported by the TGA Unreal Plugin navmesh exporter. May work with other exports as well.
 			 * Will ignore all data except the control points and indices in the mesh.
@@ -50,7 +60,7 @@ namespace TGA
 			 */
 			static FbxImportStatus LoadNavMesh(const std::filesystem::path& aFilePath, NavMesh& outNavMesh, bool aShouldTriangulate = false);
 
-			static std::string GetLastSDKError();
+			static std::string_view GetLastSDKError();
 		};
 
 	}
