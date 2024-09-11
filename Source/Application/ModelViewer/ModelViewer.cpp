@@ -85,15 +85,15 @@ void ModelViewer::InitializeApplication()
 				const std::string assetName = assetPath.filename().stem().string();
 				if (assetExt == ".fbx")
 				{
-					if (assetName.starts_with("SM"))
+					if (assetName.starts_with("SM") || assetName.starts_with("sm"))
 					{
 						SetModel(go, assetPath);
 					}
-					else if (assetName.starts_with("SK"))
+					else if (assetName.starts_with("SK") || assetName.starts_with("sk"))
 					{
 						SetAnimatedModel(go, assetPath);
 					}
-					else if (assetName.starts_with("A"))
+					else if (assetName.starts_with("A") || assetName.starts_with("a"))
 					{
 						SetAnimation(go, assetPath);
 					}
@@ -117,11 +117,11 @@ void ModelViewer::InitializeApplication()
 				}
 				else if (assetExt == ".json")
 				{
-					if (assetName.starts_with("MAT"))
+					if (assetName.starts_with("MAT") || assetName.starts_with("mat"))
 					{
 						SetMaterial(go, assetPath);
 					}
-					else if (assetName.starts_with("PSO"))
+					else if (assetName.starts_with("PSO") || assetName.starts_with("pso"))
 					{
 						SetPSO(assetPath);
 					}
@@ -133,7 +133,7 @@ void ModelViewer::InitializeApplication()
 				}
 				else if (assetExt == ".cso")
 				{
-					if (assetName.starts_with("SH"))
+					if (assetName.starts_with("SH") || assetName.starts_with("sh"))
 					{
 						myLogs.emplace_back("[ERROR] Modelviewer does not support loading in individual shaders currently!", CU::Vector3f(1.0f, 0, 0));
 						//SetShader(assetPath);

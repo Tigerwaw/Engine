@@ -34,35 +34,36 @@ bool AssetManager::UnregisterAsset(const std::shared_ptr<Asset> aAsset)
     return UnregisterAsset(aAsset->path);
 }
 
+// Handle case sensitivity betterer
 bool AssetManager::RegisterAsset(const std::filesystem::path& aPath)
 {
     std::filesystem::path assetPath = MakeRelative(aPath);
     const std::string name = assetPath.filename().string();
-    if (name.starts_with("SM") || name.starts_with("SK"))
+    if (name.starts_with("SM") || name.starts_with("sm") || name.starts_with("SK") || name.starts_with("sk"))
     {
         return RegisterMeshAsset(aPath);
     }
-    else if (name.starts_with("A"))
+    else if (name.starts_with("A") || name.starts_with("a"))
     {
         return RegisterAnimationAsset(aPath);
     }
-    else if (name.starts_with("MAT"))
+    else if (name.starts_with("MAT") || name.starts_with("mat"))
     {
         return RegisterMaterialAsset(aPath);
     }
-    else if (name.starts_with("T"))
+    else if (name.starts_with("T") || name.starts_with("t"))
     {
         return RegisterTextureAsset(aPath);
     }
-    else if (name.starts_with("SH"))
+    else if (name.starts_with("SH") || name.starts_with("sh"))
     {
         return RegisterShaderAsset(aPath);
     }
-    else if (name.starts_with("PSO"))
+    else if (name.starts_with("PSO") || name.starts_with("pso"))
     {
         return RegisterPSOAsset(aPath);
     }
-    else if (name.starts_with("F"))
+    else if (name.starts_with("F") || name.starts_with("f"))
     {
         return RegisterFontAsset(aPath);
     }
