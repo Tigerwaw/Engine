@@ -219,6 +219,21 @@ std::vector<std::shared_ptr<AnimatedModel::AnimationState>> AnimatedModel::GetAn
     return animationStates;
 }
 
+const bool AnimatedModel::IsLayerCurrentlyBlending(unsigned aLayerIndex) const
+{
+    if (!ValidateLayerIndex(aLayerIndex)) return false;
+
+    return myAnimationLayers[aLayerIndex].isBlending;
+}
+
+const float AnimatedModel::GetCurrentBlendFactorOnLayer(unsigned aLayerIndex) const
+{
+    if (!ValidateLayerIndex(aLayerIndex)) return 0;
+    float blendFactor = myAnimationLayers[aLayerIndex].currentBlendTime / myAnimationLayers[aLayerIndex].maxBlendTime;
+
+    return blendFactor;
+}
+
 void AnimatedModel::PlayAnimation()
 {
     for (auto& layer : myAnimationLayers)

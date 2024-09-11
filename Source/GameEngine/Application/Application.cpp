@@ -109,6 +109,7 @@ bool Application::InitializeEngine()
 	GraphicsEngine::Get().SetResolution(resolution.x, resolution.y);
 
 	AssetManager::Get().Initialize(engine.GetContentRootPath(), engine.GetAutoRegisterAssets());
+	Engine::GetInstance().GetAudioEngine().Initialize();
 
 #ifndef _RETAIL
 	Engine::GetInstance().GetImGuiHandler().Initialize(myWindow->GetWindowHandle());

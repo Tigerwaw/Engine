@@ -85,6 +85,9 @@ public:
 
     std::vector<std::shared_ptr<AnimatedModel::AnimationState>> GetAnimationStatesOnLayer(unsigned aLayerIndex = 0);
 
+    const bool IsLayerCurrentlyBlending(unsigned aLayerIndex = 0) const;
+    const float GetCurrentBlendFactorOnLayer(unsigned aLayerIndex = 0) const;
+
     std::array<CU::Matrix4x4f, 128> GetCurrentPose() { return myJointTransforms; }
 
     void SetViewcull(bool aShouldViewcull) { myShouldViewcull = aShouldViewcull; }

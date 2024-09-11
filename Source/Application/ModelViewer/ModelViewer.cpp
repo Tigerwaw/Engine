@@ -154,6 +154,7 @@ void ModelViewer::InitializeApplication()
 			DragFinish(hDrop);
 		});
 
+
 	Engine::GetInstance().GetImGuiHandler().AddNewFunction([this]()
 		{
 #ifndef _RETAIL
@@ -167,7 +168,7 @@ void ModelViewer::InitializeApplication()
 			ImGui::PushFont(newFont);
 
 			bool* open = NULL;
-			ImGui::Begin("Modelviewer", open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+			ImGui::Begin("Modelviewer", open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
 
 			// Rendering
 			{
@@ -263,7 +264,7 @@ void ModelViewer::InitializeApplication()
 			ImGui::SetNextWindowContentSize({ size.x, size.y });
 			ImGui::PushFont(newFont);
 			bool* open = NULL;
-			ImGui::Begin("Lighting Settings", open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+			ImGui::Begin("Lighting Settings", open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
 			{
 				if (ImGui::BeginTabBar("Lights"))
 				{
@@ -280,7 +281,7 @@ void ModelViewer::InitializeApplication()
 						ImGui::Spacing();
 						float color[3] = { aLight->GetColor().x, aLight->GetColor().y, aLight->GetColor().z };
 						ImGui::Text("Color");
-						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
+						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
 						if (ImGui::ColorPicker3("##AmbientColor", color, flags)) aLight->SetColor({ color[0], color[1], color[2] });
 						ImGui::EndTabItem();
 					}
@@ -298,7 +299,7 @@ void ModelViewer::InitializeApplication()
 						ImGui::Spacing();
 						float color[3] = { dLight->GetColor().x, dLight->GetColor().y, dLight->GetColor().z };
 						ImGui::Text("Color");
-						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
+						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
 						if (ImGui::ColorPicker3("##DirectionalColor", color, flags)) dLight->SetColor({ color[0], color[1], color[2] });
 						ImGui::Spacing();
 						
@@ -310,27 +311,65 @@ void ModelViewer::InitializeApplication()
 						ImGui::Text("Rotation");
 						ImGui::Text("Pitch:");
 						ImGui::SameLine();
-						if (ImGui::DragFloat("##DLightRotX", &dlightRot.x, 1.0f, 0, 90.0f)) dlightTransform->SetRotation(dlightRot);
+						if (ImGui::SliderFloat("##DLightRotX", &dlightRot.x, 0, 90.0f, "%.0f")) dlightTransform->SetRotation(dlightRot);
 						ImGui::Text("Yaw:");
 						ImGui::SameLine();
-						if (ImGui::DragFloat("##DLightRotY", &dlpRot.y, 1.0f, 0, 360.0f, "%.3f", ImGuiSliderFlags_WrapAround)) dlptransform->SetRotation(dlpRot);
+						if (ImGui::SliderFloat("##DLightRotY", &dlpRot.y, 0, 360.0f, "%.0f")) dlptransform->SetRotation(dlpRot);
 						ImGui::EndTabItem();
 					}
 
 					std::shared_ptr<AnimatedModel> animModel = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model")->GetComponent<AnimatedModel>();
 					if (animModel)
 					{
-						if (ImGui::BeginTabItem("Animations"))
+						if (ImGui::BeginTabItem("Animations", 0, switchToAnimationTab ? ImGuiTabItemFlags_SetSelected : 0))
 						{
 							ImGui::SliderFloat("Blendtime", &currentBlendtime, 0, 5.0f);
 
-							if (animModel->GetCurrentAnimationNameOnLayer(0) != "")
+							ImVec4 buttonColor = ImGui::GetStyle().Colors[ImGuiCol_Button];
+							ImVec4 hoveredButtonColor = ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered];
+							CU::Vector3f buttonColorCU = { buttonColor.x, buttonColor.y, buttonColor.z };
+							CU::Vector3f hoveredButtonColorCU = { hoveredButtonColor.x, hoveredButtonColor.y, hoveredButtonColor.z };
+
+							std::vector<std::shared_ptr<AnimatedModel::AnimationState>> states = animModel->GetAnimationStatesOnLayer(0);
+							for (auto& state : states)
 							{
-								std::vector<std::shared_ptr<AnimatedModel::AnimationState>> states = animModel->GetAnimationStatesOnLayer(0);
-								for (auto& state : states)
+								ImVec4 selectedAnimColor = buttonColor;
+								
+								if (state->name == currentAnimName)
 								{
-									if (ImGui::Button(state->name.c_str())) animModel->SetCurrentAnimationOnLayer(state->name.c_str(), "", currentBlendtime);
+									selectedAnimColor = hoveredButtonColor;
+
+									if (animModel->IsLayerCurrentlyBlending(0))
+									{
+										float blendFactor = animModel->GetCurrentBlendFactorOnLayer(0);
+
+										CU::Vector3f lerpedColor = CU::Vector3f::Lerp(buttonColorCU, hoveredButtonColorCU, blendFactor);
+
+										selectedAnimColor = { lerpedColor.x, lerpedColor.y, lerpedColor.z, 1.0f };
+									}
 								}
+								else if (state->name == previousAnimName)
+								{
+									selectedAnimColor = buttonColor;
+
+									if (animModel->IsLayerCurrentlyBlending(0))
+									{
+										float blendFactor = animModel->GetCurrentBlendFactorOnLayer(0);
+
+										CU::Vector3f lerpedColor = CU::Vector3f::Lerp(buttonColorCU, hoveredButtonColorCU, 1 - blendFactor);
+
+										selectedAnimColor = { lerpedColor.x, lerpedColor.y, lerpedColor.z, 1.0f };
+									}
+								}
+
+								ImGui::PushStyleColor(ImGuiCol_Button, selectedAnimColor);
+								if (ImGui::Button(state->name.c_str()))
+								{
+									previousAnimName = currentAnimName;
+									currentAnimName = state->name;
+									animModel->SetCurrentAnimationOnLayer(state->name.c_str(), "", currentBlendtime);
+								}
+								ImGui::PopStyleColor();
 							}
 
 							ImGui::EndTabItem();
@@ -356,7 +395,7 @@ void ModelViewer::InitializeApplication()
 			ImGui::SetNextWindowContentSize({ size.x, size.y });
 			ImGui::PushFont(newFont);
 			bool* open = NULL;
-			ImGui::Begin("Log", open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+			ImGui::Begin("Log", open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
 			{
 				if (myLogs.size() > 0)
 				{
@@ -391,7 +430,7 @@ void ModelViewer::InitializeApplication()
 			ImGui::SetNextWindowContentSize({ size.x, size.y });
 			ImGui::PushFont(newFont);
 			bool* open = NULL;
-			ImGui::Begin("Model Settings", open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+			ImGui::Begin("Model Settings", open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
 			{
 				ImGui::Text(std::string("Mesh - " + myMeshName).c_str());
 				ImGui::SetItemTooltip(myMeshPath.c_str());
@@ -430,40 +469,46 @@ void ModelViewer::InitializeApplication()
 
 						ImGui::Text(std::string("Albedo Texture - " + myAlbedoTexName).c_str());
 						ImGui::SetItemTooltip(myAlbedoTexPath.c_str());
-						if (ImGui::ImageButton("##AlbedoTex", (void*)myMaterial->GetAlbedoTexture().GetSRV(), {textureSize.x, textureSize.y}))
-						{
-							myMaterial->SetAlbedoTexture(AssetManager::Get().GetAsset<TextureAsset>("T_Default_C")->texture);
-						}
+						ImGui::Image((void*)myMaterial->GetAlbedoTexture().GetSRV(), { textureSize.x, textureSize.y });
 						if (ImGui::BeginItemTooltip())
 						{
 							ImGui::Image((void*)myMaterial->GetAlbedoTexture().GetSRV(), { textureHoverSize.x, textureHoverSize.y });
 							ImGui::EndTooltip();
 						}
+						ImGui::SameLine();
+						if (ImGui::Button("Remove##Albedo"))
+						{
+							myMaterial->SetAlbedoTexture(AssetManager::Get().GetAsset<TextureAsset>("T_Default_C")->texture);
+						}
 						ImGui::Spacing();
 
 						ImGui::Text(std::string("Normal Texture - " + myNormalTexName).c_str());
 						ImGui::SetItemTooltip(myNormalTexPath.c_str());
-						if (ImGui::ImageButton("##NormalTex", (void*)myMaterial->GetNormalTexture().GetSRV(), { textureSize.x, textureSize.y }))
-						{
-							myMaterial->SetNormalTexture(AssetManager::Get().GetAsset<TextureAsset>("T_Default_N")->texture);
-						}
+						ImGui::Image((void*)myMaterial->GetNormalTexture().GetSRV(), { textureSize.x, textureSize.y });
 						if (ImGui::BeginItemTooltip())
 						{
 							ImGui::Image((void*)myMaterial->GetNormalTexture().GetSRV(), { textureHoverSize.x, textureHoverSize.y });
 							ImGui::EndTooltip();
 						}
+						ImGui::SameLine();
+						if (ImGui::Button("Remove##Normal"))
+						{
+							myMaterial->SetNormalTexture(AssetManager::Get().GetAsset<TextureAsset>("T_Default_N")->texture);
+						}
 						ImGui::Spacing();
 
 						ImGui::Text(std::string("Material Texture - " + myMaterialTexName).c_str());
 						ImGui::SetItemTooltip(myMaterialTexPath.c_str());
-						if (ImGui::ImageButton("##MaterialTex", (void*)myMaterial->GetMaterialTexture().GetSRV(), { textureSize.x, textureSize.y }))
-						{
-							myMaterial->SetMaterialTexture(AssetManager::Get().GetAsset<TextureAsset>("T_Default_M")->texture);
-						}
+						ImGui::Image((void*)myMaterial->GetMaterialTexture().GetSRV(), { textureSize.x, textureSize.y });
 						if (ImGui::BeginItemTooltip())
 						{
 							ImGui::Image((void*)myMaterial->GetMaterialTexture().GetSRV(), { textureHoverSize.x, textureHoverSize.y });
 							ImGui::EndTooltip();
+						}
+						ImGui::SameLine();
+						if (ImGui::Button("Remove##Material"))
+						{
+							myMaterial->SetMaterialTexture(AssetManager::Get().GetAsset<TextureAsset>("T_Default_M")->texture);
 						}
 
 						ImGui::EndTabItem();
@@ -520,6 +565,8 @@ void ModelViewer::InitializeApplication()
 
 void ModelViewer::UpdateApplication()
 {
+	switchToAnimationTab = false;
+
 	if (Engine::GetInstance().GetInputHandler().GetBinaryAction("F6"))
 	{
 		currentDebugMode += 1;
@@ -673,11 +720,13 @@ void ModelViewer::SetAnimation(std::shared_ptr<GameObject> aGO, std::filesystem:
 		return;
 	}
 
+	switchToAnimationTab = true;
+
 	std::string animName = aAssetPath.filename().stem().string();
 	animModel->AddAnimationToLayer(animName, AssetManager::Get().GetAsset<AnimationAsset>(aAssetPath)->animation, "", true);
 	animModel->SetCurrentAnimationOnLayer(animName, "", 0, 0);
 	animModel->PlayAnimation();
-	myLogs.emplace_back("[LOG] Playing animation " + aAssetPath.filename().stem().string());
+	myLogs.emplace_back("[LOG] Added animation " + aAssetPath.filename().stem().string());
 }
 
 void ModelViewer::SetMaterial(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath)

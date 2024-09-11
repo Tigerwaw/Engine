@@ -46,7 +46,6 @@ Application* CreateApplication()
 void FeatureShowcase::InitializeApplication()
 {
 	Engine::GetInstance().GetInputHandler().SetControllerDeadZone(0.1f, 0.06f);
-	Engine::GetInstance().GetAudioEngine().Initialize();
 	Engine::GetInstance().GetAudioEngine().LoadBank("Master");
 	Engine::GetInstance().GetAudioEngine().LoadBank("Master.strings");
 	Engine::GetInstance().GetAudioEngine().LoadBank("Test");

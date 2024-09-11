@@ -108,6 +108,10 @@ private:
 	CU::Vector3f cameraStartingPos;
 	CU::Vector3f cameraStartingRot;
 	CU::Vector3f dLightStartingRot;
-	float dLightStartIntensity;
-	float aLightStartIntensity;
+	float dLightStartIntensity = 0;
+	float aLightStartIntensity = 0;
+	bool switchToAnimationTab = false;
+
+	std::string currentAnimName;
+	std::string previousAnimName;
 };
