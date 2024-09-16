@@ -8,6 +8,7 @@ SetGBufferAsResource::SetGBufferAsResource()
 	GBuffer& gBuffer = GraphicsEngine::Get().GetGBuffer();
 	myAlbedo = gBuffer.GetAlbedo();
 	myMaterial = gBuffer.GetMaterial();
+	myEffects = gBuffer.GetEffects();
 	myWorldNormal = gBuffer.GetWorldNormal();
 	myWorldPosition = gBuffer.GetWorldPosition();
 }
@@ -16,14 +17,16 @@ void SetGBufferAsResource::Execute()
 {
 	GraphicsEngine::Get().SetTextureResource_PS(0, *myAlbedo);
 	GraphicsEngine::Get().SetTextureResource_PS(1, *myMaterial);
-	GraphicsEngine::Get().SetTextureResource_PS(2, *myWorldNormal);
-	GraphicsEngine::Get().SetTextureResource_PS(3, *myWorldPosition);
+	GraphicsEngine::Get().SetTextureResource_PS(2, *myEffects);
+	GraphicsEngine::Get().SetTextureResource_PS(3, *myWorldNormal);
+	GraphicsEngine::Get().SetTextureResource_PS(4, *myWorldPosition);
 }
 
 void SetGBufferAsResource::Destroy()
 {
 	myAlbedo = nullptr;
 	myMaterial = nullptr;
+	myEffects = nullptr;
 	myWorldNormal = nullptr;
 	myWorldPosition = nullptr;
 }

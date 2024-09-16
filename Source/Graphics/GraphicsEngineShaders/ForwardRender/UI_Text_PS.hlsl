@@ -1,6 +1,6 @@
 #include "../Includes/DefaultShaderIncludes.hlsli"
 #include "../Includes/Sprite_Includes.hlsli"
-Texture2D FontTexture : register(t3);
+Texture2D FontTexture : register(t30);
 
 float median(float3 rgb)
 {

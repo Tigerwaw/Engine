@@ -5,7 +5,7 @@
   "PixelShader": "SH_PBRMesh_PS",
   "BlendStateDesc":
   {
-    "BlendMode": "AlphaAdditive"
+    "BlendMode": "Alpha"
   },
   "Samplers":
   {

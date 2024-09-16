@@ -13,13 +13,17 @@ Texture2D ShadowMapSpot[4] : register(t105);
 float4 main(MeshVStoPS input) : SV_TARGET
 {
     const float4 albedoMap = AlbedoTexture.Sample(DefaultSampler, input.TexCoord0.xy) * MB_AlbedoTint;
-    const float2 normalMap = NormalTexture.Sample(DefaultSampler, input.TexCoord0.xy).rg;
-    const float3 materialMap = MaterialTexture.Sample(DefaultSampler, input.TexCoord0.xy).rgb;
     
     if (albedoMap.a < 0.01)
     {
         discard;
     }
+    
+    const float2 normalMap = NormalTexture.Sample(DefaultSampler, input.TexCoord0.xy).rg;
+    const float3 materialMap = MaterialTexture.Sample(DefaultSampler, input.TexCoord0.xy).rgb;
+    const float4 effectsMap = EffectsTexture.Sample(DefaultSampler, input.TexCoord0.xy);
+    
+    float3 emission = albedoMap.rgb * effectsMap.r * MB_EmissiveStrength;
    
     // NORMALS
     float3 calculatedNormals;

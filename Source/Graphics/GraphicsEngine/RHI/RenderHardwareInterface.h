@@ -92,7 +92,12 @@ public:
 
 	FORCEINLINE std::shared_ptr<Texture> GetBackBuffer() { return myBackBuffer; }
 	FORCEINLINE std::shared_ptr<Texture> GetDepthBuffer() { return myDepthBuffer; }
-	FORCEINLINE std::shared_ptr<Texture> GetIntermediateBuffer() { return myIntermediateBuffer; }
+	FORCEINLINE std::shared_ptr<Texture> GetIntermediateHDRBuffer() { return myIntermediateHDRBuffer; }
+	FORCEINLINE std::shared_ptr<Texture> GetIntermediateLDRBuffer() { return myIntermediateLDRBuffer; }
+	FORCEINLINE std::shared_ptr<Texture> GetLuminanceBuffer() { return myLuminanceBuffer; }
+	FORCEINLINE std::shared_ptr<Texture> GetHalfScreenBuffer() { return myHalfScreenBuffer; }
+	FORCEINLINE std::shared_ptr<Texture> GetQuarterScreenBufferA() { return myQuarterScreenBufferA; }
+	FORCEINLINE std::shared_ptr<Texture> GetQuarterScreenBufferB() { return myQuarterScreenBufferB; }
 
 private:
 	bool CreateVertexBufferInternal(std::string_view aName, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer, const uint8_t* aVertexDataPointer, size_t aNumVertices, size_t aVertexSize, bool aIsDynamic = false) const;
@@ -108,7 +113,12 @@ private:
 
 	std::shared_ptr<Texture> myBackBuffer;
 	std::shared_ptr<Texture> myDepthBuffer;
-	std::shared_ptr<Texture> myIntermediateBuffer;
+	std::shared_ptr<Texture> myIntermediateHDRBuffer;
+	std::shared_ptr<Texture> myIntermediateLDRBuffer;
+	std::shared_ptr<Texture> myLuminanceBuffer;
+	std::shared_ptr<Texture> myHalfScreenBuffer;
+	std::shared_ptr<Texture> myQuarterScreenBufferA;
+	std::shared_ptr<Texture> myQuarterScreenBufferB;
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D11SamplerState>> mySamplerStates;
 };
 

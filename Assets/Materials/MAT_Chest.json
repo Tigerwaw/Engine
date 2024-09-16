@@ -1,13 +1,14 @@
 {
   "PSO": "PSO_PBR",
-  "AlbedoTint":
-  {
+  "AlbedoTint": {
     "R": 1.0,
     "G": 1.0,
     "B": 1.0,
     "A": 1.0
   },
+  "EmissiveStrength": 1.0,
   "AlbedoTexture": "Textures/Chest/T_Chest_C.dds",
   "NormalTexture": "Textures/Chest/T_Chest_N.dds",
-  "MaterialTexture": "Textures/Chest/T_Chest_M.dds"
+  "MaterialTexture": "Textures/Chest/T_Chest_M.dds",
+  "EffectsTexture": "Textures/Chest/T_Chest_FX.dds"
 }

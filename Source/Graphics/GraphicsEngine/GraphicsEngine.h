@@ -29,6 +29,7 @@ enum class DebugMode
 	DebugAO,
 	DebugRoughness,
 	DebugMetallic,
+	DebugFX,
 	Wireframe,
 	DebugVertexNormals,
 	DebugVertexTangents,
@@ -48,6 +49,21 @@ enum class Tonemapper
 	COUNT
 };
 
+enum class Luminance
+{
+	RandomGain,
+	Contrast,
+	ReductionAndGain,
+	Fade
+};
+
+enum class Bloom
+{
+	Additive,
+	ScaledToScene,
+	ScaledToLuminance
+};
+
 enum class ConstantBufferType
 {
 	ObjectBuffer,
@@ -62,7 +78,7 @@ enum class ConstantBufferType
 enum class BlendMode
 {
 	None,
-	AlphaAdditive,
+	Alpha,
 	Additive,
 	COUNT
 };
@@ -145,7 +161,12 @@ public:
 
 	std::shared_ptr<Texture> GetBackBuffer() { return myRHI->GetBackBuffer(); }
 	std::shared_ptr<Texture> GetDepthBuffer() { return myRHI->GetDepthBuffer(); }
-	std::shared_ptr<Texture> GetIntermediateBuffer() { return myRHI->GetIntermediateBuffer(); }
+	std::shared_ptr<Texture> GetIntermediateHDRBuffer() { return myRHI->GetIntermediateHDRBuffer(); }
+	std::shared_ptr<Texture> GetIntermediateLDRBuffer() { return myRHI->GetIntermediateLDRBuffer(); }
+	std::shared_ptr<Texture> GetLuminanceBuffer() { return myRHI->GetLuminanceBuffer(); }
+	std::shared_ptr<Texture> GetHalfScreenBuffer() { return myRHI->GetHalfScreenBuffer(); }
+	std::shared_ptr<Texture> GetQuarterScreenBufferA() { return myRHI->GetQuarterScreenBufferA(); }
+	std::shared_ptr<Texture> GetQuarterScreenBufferB() { return myRHI->GetQuarterScreenBufferB(); }
 	GBuffer& GetGBuffer() { return *myGBuffer; }
 
 	GraphicsCommandList& GetGraphicsCommandList() const { return *myCommandList; }
@@ -163,6 +184,7 @@ public:
 		"PSO_DebugAO",
 		"PSO_DebugRoughness",
 		"PSO_DebugMetallic",
+		"PSO_DebugFX",
 		"PSO_Wireframe",
 		"PSO_DebugVertexNormals",
 		"PSO_DebugVertexTangents",

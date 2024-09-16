@@ -7,23 +7,26 @@ class Texture;
 class Material
 {
 public:
+	enum class TextureType
+	{
+		Albedo,
+		Normal,
+		Material,
+		Effects
+	};
+
 	Material();
 	std::shared_ptr<Material> CreateInstance() const;
 	MaterialBuffer& MaterialSettings() { return myMaterialSettings; }
-	std::shared_ptr<PipelineStateObject> GetPSO() { return myPSO; }
-	Texture& GetAlbedoTexture() { return *myAlbedoTexture; }
-	Texture& GetNormalTexture() { return *myNormalTexture; }
-	Texture& GetMaterialTexture() { return *myMaterialTexture; }
 
 	void SetPSO(std::shared_ptr<PipelineStateObject> aPSO) { myPSO = aPSO; }
-	void SetAlbedoTexture(std::shared_ptr<Texture> aTexture) { myAlbedoTexture = aTexture; }
-	void SetNormalTexture(std::shared_ptr<Texture> aTexture) { myNormalTexture = aTexture; }
-	void SetMaterialTexture(std::shared_ptr<Texture> aTexture) { myMaterialTexture = aTexture; }
+	std::shared_ptr<PipelineStateObject> GetPSO() { return myPSO; }
+
+	void SetTexture(TextureType aTextureType, std::shared_ptr<Texture> aTexture);
+	Texture& GetTexture(TextureType aTextureType);
 
 private:
 	MaterialBuffer myMaterialSettings;
 	std::shared_ptr<PipelineStateObject> myPSO;
-	std::shared_ptr<Texture> myAlbedoTexture;
-	std::shared_ptr<Texture> myNormalTexture;
-	std::shared_ptr<Texture> myMaterialTexture;
+	std::unordered_map<TextureType, std::shared_ptr<Texture>> myTextures;
 };

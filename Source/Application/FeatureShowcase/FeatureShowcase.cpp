@@ -95,7 +95,7 @@ void FeatureShowcase::InitializeApplication()
 	
 	Engine::GetInstance().GetImGuiHandler().AddNewFunction([]()
 		{
-#ifdef _DEBUG
+#ifndef _RETAIL
 			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
 			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.02f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.3f * resolution.y });
@@ -113,19 +113,10 @@ void FeatureShowcase::InitializeApplication()
 				ImGui::Text("Rendering Mode");
 				if (ImGui::BeginCombo("##RenderModeDropdown", GraphicsEngine::Get().DebugModeNames[static_cast<int>(GraphicsEngine::Get().GetCurrentDebugMode())].c_str()))
 				{
-					if (ImGui::Selectable("None")) GraphicsEngine::Get().SetDebugMode(DebugMode::None);
-					if (ImGui::Selectable("Albedo")) GraphicsEngine::Get().SetDebugMode(DebugMode::Unlit);
-					if (ImGui::Selectable("Ambient Occlusion")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugAO);
-					if (ImGui::Selectable("Roughness")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugRoughness);
-					if (ImGui::Selectable("Metallic")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugMetallic);
-					if (ImGui::Selectable("Wireframe")) GraphicsEngine::Get().SetDebugMode(DebugMode::Wireframe);
-					if (ImGui::Selectable("Vertex Normals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugVertexNormals);
-					if (ImGui::Selectable("Vertex Tangents")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugVertexTangents);
-					if (ImGui::Selectable("Vertex Binormals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugVertexBinormals);
-					if (ImGui::Selectable("Pixel Normals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugPixelNormals);
-					if (ImGui::Selectable("Texture Normals")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugTextureNormals);
-					if (ImGui::Selectable("UV0")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugUVs);
-					if (ImGui::Selectable("Vertex Color 0")) GraphicsEngine::Get().SetDebugMode(DebugMode::DebugVertexColor);
+					for (unsigned i = 0; i < static_cast<unsigned>(DebugMode::COUNT); i++)
+					{
+						if (ImGui::Selectable(GraphicsEngine::Get().DebugModeNames[i].c_str())) GraphicsEngine::Get().SetDebugMode(static_cast<DebugMode>(i));
+					}
 					ImGui::EndCombo();
 				}
 			}
@@ -185,149 +176,154 @@ void FeatureShowcase::InitializeApplication()
 
 	Engine::GetInstance().GetImGuiHandler().AddNewFunction([]()
 		{
-#ifdef _DEBUG
+#ifndef _RETAIL
 			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
 			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.35f * resolution.y });
-			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.65f * resolution.y });
+			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.6f * resolution.y });
 			bool open = true;
 			ImGui::Begin("Lighting Settings", &open, ImGuiWindowFlags_NoSavedSettings);
 			{
-				std::shared_ptr<GameObject> ambientLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("A_Light");
-				bool active = ambientLight->GetActive();
-				if (ImGui::Checkbox("##AmbLightCheck", &active)) ambientLight->SetActive(active);
-				ImGui::SameLine();
-				if (ImGui::CollapsingHeader("Ambient Light"))
+				if (ImGui::BeginTabBar("Lights"))
 				{
-					std::shared_ptr<AmbientLight> aLight = ambientLight->GetComponent<AmbientLight>();
-					float intensity = aLight->GetIntensity();
-					ImGui::Text("Intensity");
-					if (ImGui::SliderFloat("##AmbientIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) aLight->SetIntensity(intensity);
-					ImGui::Spacing();
-					float color[3] = { aLight->GetColor().x, aLight->GetColor().y, aLight->GetColor().z };
-					ImGui::Text("Color");
-					if (ImGui::ColorPicker3("##AmbientColor", color)) aLight->SetColor({ color[0], color[1], color[2] });
-					ImGui::Separator();
+					if (ImGui::BeginTabItem("Ambient Light"))
+					{
+						std::shared_ptr<GameObject> ambientLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("A_Light");
+						bool active = ambientLight->GetActive();
+						if (ImGui::Checkbox("Set Active##Ambient", &active)) ambientLight->SetActive(active);
+
+						std::shared_ptr<AmbientLight> aLight = ambientLight->GetComponent<AmbientLight>();
+						float intensity = aLight->GetIntensity();
+						ImGui::Text("Intensity");
+						if (ImGui::SliderFloat("##AmbientIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) aLight->SetIntensity(intensity);
+						ImGui::Spacing();
+						float color[3] = { aLight->GetColor().x, aLight->GetColor().y, aLight->GetColor().z };
+						ImGui::Text("Color");
+						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
+						if (ImGui::ColorPicker3("##AmbientColor", color, flags)) aLight->SetColor({ color[0], color[1], color[2] });
+						ImGui::EndTabItem();
+					}
+
+					if (ImGui::BeginTabItem("Directional Light"))
+					{
+						std::shared_ptr<GameObject> directionalLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light");
+						bool active = directionalLight->GetActive();
+						if (ImGui::Checkbox("Set Active##Directional", &active)) directionalLight->SetActive(active);
+
+						std::shared_ptr<DirectionalLight> dLight = directionalLight->GetComponent<DirectionalLight>();
+						float intensity = dLight->GetIntensity();
+						ImGui::Text("Intensity");
+						if (ImGui::SliderFloat("##DirectionalIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) dLight->SetIntensity(intensity);
+						ImGui::Spacing();
+						float minBias = dLight->GetMinShadowBias();
+						float maxBias = dLight->GetMaxShadowBias();
+						float lightSize = dLight->GetLightSize();
+						ImGui::Text("Shadow Min Bias");
+						if (ImGui::SliderFloat("##DirectionalMinBias", &minBias, 0, 0.001f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
+						ImGui::Text("Shadow Max Bias");
+						if (ImGui::SliderFloat("##DirectionalMaxBias", &maxBias, 0, 0.1f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
+						ImGui::Text("Light Size");
+						if (ImGui::SliderFloat("##DirectionalSize", &lightSize, 0, 2000.0f)) dLight->SetLightSize(lightSize);
+						ImGui::Spacing();
+						float color[3] = { dLight->GetColor().x, dLight->GetColor().y, dLight->GetColor().z };
+						ImGui::Text("Color");
+						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
+						if (ImGui::ColorPicker3("##DirectionalColor", color, flags)) dLight->SetColor({ color[0], color[1], color[2] });
+						ImGui::EndTabItem();
+					}
+
+					if (ImGui::BeginTabItem("Pointlight"))
+					{
+						std::shared_ptr<GameObject> pointLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("P_Light");
+						bool active = pointLight->GetActive();
+						if (ImGui::Checkbox("Set Active##Point", &active))  pointLight->SetActive(active);
+
+						std::shared_ptr<PointLight> pLight = pointLight->GetComponent<PointLight>();
+						float value = pLight->GetIntensity();
+						ImGui::Text("Intensity");
+						if (ImGui::SliderFloat("##PointIntensity", &value, 0, 500000.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) pLight->SetIntensity(value);
+
+						ImGui::Spacing();
+
+						float minBias = pLight->GetMinShadowBias();
+						float maxBias = pLight->GetMaxShadowBias();
+						float lightSize = pLight->GetLightSize();
+						ImGui::Text("Shadow Min Bias");
+						if (ImGui::SliderFloat("##PointMinBias", &minBias, 0, 0.001f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
+						ImGui::Text("Shadow Max Bias");
+						if (ImGui::SliderFloat("##PointMaxBias", &maxBias, 0, 0.01f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
+						ImGui::Text("Light Size");
+						if (ImGui::SliderFloat("##PointSize", &lightSize, 0, 10000.0f)) pLight->SetLightSize(lightSize);
+						ImGui::Spacing();
+
+						float color[3] = { pLight->GetColor().x, pLight->GetColor().y, pLight->GetColor().z };
+						ImGui::Text("Color");
+						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
+						if (ImGui::ColorPicker3("##PointColor", color, flags)) pLight->SetColor({ color[0], color[1], color[2] });
+
+						ImGui::Spacing();
+
+						float pos[3] = { pLight->GetPosition().x, pLight->GetPosition().y, pLight->GetPosition().z };
+						ImGui::Text("Position");
+						if (ImGui::DragFloat3("##PLightPos", pos)) pLight->gameObject->GetComponent<Transform>()->SetTranslation(pos[0], pos[1], pos[2]);
+						ImGui::EndTabItem();
+					}
+
+					if (ImGui::BeginTabItem("Spotlight"))
+					{
+						std::shared_ptr<GameObject> spotLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("S_Light");
+						bool active = spotLight->GetActive();
+						if (ImGui::Checkbox("Set Active##Spot", &active)) spotLight->SetActive(active);
+
+						std::shared_ptr<SpotLight> sLight = spotLight->GetComponent<SpotLight>();
+						float intensity = sLight->GetIntensity();
+						ImGui::Text("Intensity");
+						if (ImGui::SliderFloat("##SpotIntensity", &intensity, 0, 1000000.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) sLight->SetIntensity(intensity);
+						ImGui::Spacing();
+						float angle = sLight->GetConeAngleDegrees();
+						ImGui::Text("Focus");
+						if (ImGui::SliderFloat("##SpotConeAngle", &angle, 600.0f, 50000.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) sLight->SetConeAngle(angle);
+						ImGui::Spacing();
+
+						float minBias = sLight->GetMinShadowBias();
+						float maxBias = sLight->GetMaxShadowBias();
+						float lightSize = sLight->GetLightSize();
+						ImGui::Text("Shadow Min Bias");
+						if (ImGui::SliderFloat("##SpotMinBias", &minBias, 0, 0.001f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
+						ImGui::Text("Shadow Max Bias");
+						if (ImGui::SliderFloat("##SpotMaxBias", &maxBias, 0, 0.1f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
+						ImGui::Text("Light Size");
+						if (ImGui::SliderFloat("##SpotSize", &lightSize, 0, 10.0f)) sLight->SetLightSize(lightSize);
+						ImGui::Spacing();
+
+						float color[3] = { sLight->GetColor().x, sLight->GetColor().y, sLight->GetColor().z };
+						ImGui::Text("Color");
+						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
+						if (ImGui::ColorPicker3("##SpotColor", color, flags)) sLight->SetColor({ color[0], color[1], color[2] });
+
+						ImGui::Spacing();
+
+						float pos[3] = { sLight->GetPosition().x, sLight->GetPosition().y, sLight->GetPosition().z };
+						ImGui::Text("Position");
+						if (ImGui::DragFloat3("##SLightPos", pos)) sLight->gameObject->GetComponent<Transform>()->SetTranslation(pos[0], pos[1], pos[2]);
+						CU::Vector3f rotation = sLight->gameObject->GetComponent<Transform>()->GetRotation();
+						float rot[3] = { rotation.x, rotation.y, rotation.z };
+						ImGui::Text("Rotation");
+						if (ImGui::DragFloat3("##SLightRot", rot)) sLight->gameObject->GetComponent<Transform>()->SetRotation(rot[0], rot[1], rot[2]);
+						ImGui::EndTabItem();
+							
+					}
+
+					ImGui::EndTabBar();
 				}
+				
+				ImGui::End();
 			}
-			ImGui::Spacing();
-			{
-				std::shared_ptr<GameObject> directionalLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light");
-				bool active = directionalLight->GetActive();
-				if (ImGui::Checkbox("##DLightCheck", &active)) directionalLight->SetActive(active);
-				ImGui::SameLine();
-				if (ImGui::CollapsingHeader("Directional Light"))
-				{
-					std::shared_ptr<DirectionalLight> dLight = directionalLight->GetComponent<DirectionalLight>();
-					float intensity = dLight->GetIntensity();
-					ImGui::Text("Intensity");
-					if (ImGui::SliderFloat("##DirectionalIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) dLight->SetIntensity(intensity);
-					ImGui::Spacing();
-					float minBias = dLight->GetMinShadowBias();
-					float maxBias = dLight->GetMaxShadowBias();
-					float lightSize = dLight->GetLightSize();
-					ImGui::Text("Shadow Min Bias");
-					if (ImGui::SliderFloat("##DirectionalMinBias", &minBias, 0, 0.001f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
-					ImGui::Text("Shadow Max Bias");
-					if (ImGui::SliderFloat("##DirectionalMaxBias", &maxBias, 0, 0.1f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
-					ImGui::Text("Light Size");
-					if (ImGui::SliderFloat("##DirectionalSize", &lightSize, 0, 2000.0f)) dLight->SetLightSize(lightSize);
-					ImGui::Spacing();
-					float color[3] = { dLight->GetColor().x, dLight->GetColor().y, dLight->GetColor().z };
-					ImGui::Text("Color");
-					if (ImGui::ColorPicker3("##DirectionalColor", color)) dLight->SetColor({ color[0], color[1], color[2] });
-				}
-			}
-
-			ImGui::Spacing();
-			{
-				std::shared_ptr<GameObject> pointLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("P_Light");
-				bool active = pointLight->GetActive();
-				if (ImGui::Checkbox("##PLightCheck", &active))  pointLight->SetActive(active);
-				ImGui::SameLine();
-				if (ImGui::CollapsingHeader("Pointlight"))
-				{
-					std::shared_ptr<PointLight> pLight = pointLight->GetComponent<PointLight>();
-					float value = pLight->GetIntensity();
-					ImGui::Text("Intensity");
-					if (ImGui::SliderFloat("##PointIntensity", &value, 0, 500000.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) pLight->SetIntensity(value);
-
-					ImGui::Spacing();
-
-					float minBias = pLight->GetMinShadowBias();
-					float maxBias = pLight->GetMaxShadowBias();
-					float lightSize = pLight->GetLightSize();
-					ImGui::Text("Shadow Min Bias");
-					if (ImGui::SliderFloat("##PointMinBias", &minBias, 0, 0.001f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
-					ImGui::Text("Shadow Max Bias");
-					if (ImGui::SliderFloat("##PointMaxBias", &maxBias, 0, 0.01f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
-					ImGui::Text("Light Size");
-					if (ImGui::SliderFloat("##PointSize", &lightSize, 0, 10000.0f)) pLight->SetLightSize(lightSize);
-					ImGui::Spacing();
-
-					float color[3] = { pLight->GetColor().x, pLight->GetColor().y, pLight->GetColor().z };
-					ImGui::Text("Color");
-					if (ImGui::ColorPicker3("##PointColor", color)) pLight->SetColor({ color[0], color[1], color[2] });
-
-					ImGui::Spacing();
-
-					float pos[3] = { pLight->GetPosition().x, pLight->GetPosition().y, pLight->GetPosition().z };
-					ImGui::Text("Position");
-					if (ImGui::DragFloat3("##PLightPos", pos)) pLight->gameObject->GetComponent<Transform>()->SetTranslation(pos[0], pos[1], pos[2]);
-				}
-			}
-
-			ImGui::Spacing();
-			{
-				std::shared_ptr<GameObject> spotLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("S_Light");
-				bool active = spotLight->GetActive();
-				if (ImGui::Checkbox("##SLightCheck", &active)) spotLight->SetActive(active);
-				ImGui::SameLine();
-				if (ImGui::CollapsingHeader("Spotlight"))
-				{
-					std::shared_ptr<SpotLight> sLight = spotLight->GetComponent<SpotLight>();
-					float intensity = sLight->GetIntensity();
-					ImGui::Text("Intensity");
-					if (ImGui::SliderFloat("##SpotIntensity", &intensity, 0, 1000000.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) sLight->SetIntensity(intensity);
-					ImGui::Spacing();
-					float angle = sLight->GetConeAngleDegrees();
-					ImGui::Text("Focus");
-					if (ImGui::SliderFloat("##SpotConeAngle", &angle, 600.0f, 50000.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) sLight->SetConeAngle(angle);
-					ImGui::Spacing();
-
-					float minBias = sLight->GetMinShadowBias();
-					float maxBias = sLight->GetMaxShadowBias();
-					float lightSize = sLight->GetLightSize();
-					ImGui::Text("Shadow Min Bias");
-					if (ImGui::SliderFloat("##SpotMinBias", &minBias, 0, 0.001f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
-					ImGui::Text("Shadow Max Bias");
-					if (ImGui::SliderFloat("##SpotMaxBias", &maxBias, 0, 0.1f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
-					ImGui::Text("Light Size");
-					if (ImGui::SliderFloat("##SpotSize", &lightSize, 0, 10.0f)) sLight->SetLightSize(lightSize);
-					ImGui::Spacing();
-
-					float color[3] = { sLight->GetColor().x, sLight->GetColor().y, sLight->GetColor().z };
-					ImGui::Text("Color");
-					if (ImGui::ColorPicker3("##SpotColor", color)) sLight->SetColor({ color[0], color[1], color[2] });
-
-					ImGui::Spacing();
-
-					float pos[3] = { sLight->GetPosition().x, sLight->GetPosition().y, sLight->GetPosition().z };
-					ImGui::Text("Position");
-					if (ImGui::DragFloat3("##SLightPos", pos)) sLight->gameObject->GetComponent<Transform>()->SetTranslation(pos[0], pos[1], pos[2]);
-					CU::Vector3f rotation = sLight->gameObject->GetComponent<Transform>()->GetRotation();
-					float rot[3] = { rotation.x, rotation.y, rotation.z };
-					ImGui::Text("Rotation");
-					if (ImGui::DragFloat3("##SLightRot", rot)) sLight->gameObject->GetComponent<Transform>()->SetRotation(rot[0], rot[1], rot[2]);
-				}
-			}
-
-			ImGui::End();
 #endif
 		});
 
 	Engine::GetInstance().GetImGuiHandler().AddNewFunction([]()
 		{
-#ifdef _DEBUG
+#ifndef _RETAIL
 			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
 			ImGui::SetNextWindowPos({ 0.18f * resolution.x, 0.02f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.2f * resolution.y });
@@ -428,7 +424,7 @@ void FeatureShowcase::InitializeApplication()
 
 	Engine::GetInstance().GetImGuiHandler().AddNewFunction([]()
 		{
-#ifdef _DEBUG
+#ifndef _RETAIL
 			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
 			ImGui::SetNextWindowPos({ 0.85f * resolution.x, 0.02f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.24f * resolution.x, 0.26f * resolution.y });
@@ -557,9 +553,9 @@ void FeatureShowcase::InitializeApplication()
 #endif
 		});
 
-	Engine::GetInstance().GetImGuiHandler().AddNewFunction([]()
+	/*Engine::GetInstance().GetImGuiHandler().AddNewFunction([]()
 		{
-#ifdef _DEBUG
+#ifndef _RETAIL
 			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
 			ImGui::SetNextWindowPos({ 0.85f * resolution.x, 0.32f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.24f * resolution.x, 0.24f * resolution.y });
@@ -599,7 +595,7 @@ void FeatureShowcase::InitializeApplication()
 
 			ImGui::End();
 #endif
-		});
+		});*/
 }
 
 void FeatureShowcase::UpdateApplication()

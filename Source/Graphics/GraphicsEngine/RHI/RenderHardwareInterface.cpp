@@ -217,8 +217,18 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 
 	CreateDefaultSamplerStates();
 
-	myIntermediateBuffer = std::make_shared<Texture>();
-	CreateTexture("IntermediateBuffer", static_cast<unsigned>(clientWidth), static_cast<unsigned>(clientHeight), RHITextureFormat::R16G16B16A16_FLOAT, *myIntermediateBuffer, false, true, true, false, false);
+	myIntermediateHDRBuffer = std::make_shared<Texture>();
+	CreateTexture("IntermediateHDRBuffer", static_cast<unsigned>(clientWidth), static_cast<unsigned>(clientHeight), RHITextureFormat::R16G16B16A16_FLOAT, *myIntermediateHDRBuffer, false, true, true, false, false);
+	myIntermediateLDRBuffer = std::make_shared<Texture>();
+	CreateTexture("IntermediateLDRBuffer", static_cast<unsigned>(clientWidth), static_cast<unsigned>(clientHeight), RHITextureFormat::R8G8B8A8_UNORM, *myIntermediateLDRBuffer, false, true, true, false, false);
+	myLuminanceBuffer = std::make_shared<Texture>();
+	CreateTexture("LuminanceBuffer", static_cast<unsigned>(clientWidth), static_cast<unsigned>(clientHeight), RHITextureFormat::R8G8B8A8_UNORM, *myLuminanceBuffer, false, true, true, false, false);
+	myHalfScreenBuffer = std::make_shared<Texture>();
+	CreateTexture("HalfScreenBuffer", static_cast<unsigned>(clientWidth * 0.5f), static_cast<unsigned>(clientHeight * 0.5f), RHITextureFormat::R8G8B8A8_UNORM, *myHalfScreenBuffer, false, true, true, false, false);
+	myQuarterScreenBufferA = std::make_shared<Texture>();
+	CreateTexture("QuarterScreenBufferA", static_cast<unsigned>(clientWidth * 0.25f), static_cast<unsigned>(clientHeight * 0.25f), RHITextureFormat::R8G8B8A8_UNORM, *myQuarterScreenBufferA, false, true, true, false, false);
+	myQuarterScreenBufferB = std::make_shared<Texture>();
+	CreateTexture("QuarterScreenBufferB", static_cast<unsigned>(clientWidth * 0.25f), static_cast<unsigned>(clientHeight * 0.25f), RHITextureFormat::R8G8B8A8_UNORM, *myQuarterScreenBufferB, false, true, true, false, false);
 
 	LOG(LogRHI, Log, "RHI Initialized!");
 
@@ -269,7 +279,12 @@ void RenderHardwareInterface::SetResolution(float aNewWidth, float aNewHeight)
 
 	myBackBuffer->myViewport = { 0, 0, aNewWidth, aNewHeight, 0, 1 };
 
-	CreateTexture("IntermediateBuffer", static_cast<unsigned>(aNewWidth), static_cast<unsigned>(aNewHeight), RHITextureFormat::R16G16B16A16_FLOAT, *myIntermediateBuffer, false, true, true, false, false);
+	CreateTexture("IntermediateHDRBuffer", static_cast<unsigned>(aNewWidth), static_cast<unsigned>(aNewHeight), RHITextureFormat::R16G16B16A16_FLOAT, *myIntermediateHDRBuffer, false, true, true, false, false);
+	CreateTexture("IntermediateLDRBuffer", static_cast<unsigned>(aNewWidth), static_cast<unsigned>(aNewHeight), RHITextureFormat::R8G8B8A8_UNORM, *myIntermediateLDRBuffer, false, true, true, false, false);
+	CreateTexture("LuminanceBuffer", static_cast<unsigned>(aNewWidth), static_cast<unsigned>(aNewHeight), RHITextureFormat::R8G8B8A8_UNORM, *myLuminanceBuffer, false, true, true, false, false);
+	CreateTexture("HalfScreenBuffer", static_cast<unsigned>(aNewWidth * 0.5f), static_cast<unsigned>(aNewHeight * 0.5f), RHITextureFormat::R8G8B8A8_UNORM, *myHalfScreenBuffer, false, true, true, false, false);
+	CreateTexture("QuarterScreenBufferA", static_cast<unsigned>(aNewWidth * 0.25f), static_cast<unsigned>(aNewHeight * 0.25f), RHITextureFormat::R8G8B8A8_UNORM, *myQuarterScreenBufferA, false, true, true, false, false);
+	CreateTexture("QuarterScreenBufferB", static_cast<unsigned>(aNewWidth * 0.25f), static_cast<unsigned>(aNewHeight * 0.25f), RHITextureFormat::R8G8B8A8_UNORM, *myQuarterScreenBufferB, false, true, true, false, false);
 
 	D3D11_VIEWPORT viewport = {};
 	viewport.TopLeftX = 0;
@@ -1099,12 +1114,12 @@ void RenderHardwareInterface::SetRenderTarget(std::shared_ptr<Texture> aRenderTa
 	}
 	else
 	{
-		viewport.TopLeftX = myBackBuffer->myViewport[0];
-		viewport.TopLeftY = myBackBuffer->myViewport[1];
-		viewport.Width = myBackBuffer->myViewport[2];
-		viewport.Height = myBackBuffer->myViewport[3];
-		viewport.MinDepth = myBackBuffer->myViewport[4];
-		viewport.MaxDepth = myBackBuffer->myViewport[5];
+		viewport.TopLeftX = aRenderTarget->myViewport[0];
+		viewport.TopLeftY = aRenderTarget->myViewport[1];
+		viewport.Width = aRenderTarget->myViewport[2];
+		viewport.Height = aRenderTarget->myViewport[3];
+		viewport.MinDepth = aRenderTarget->myViewport[4];
+		viewport.MaxDepth = aRenderTarget->myViewport[5];
 	}
 
 	myContext->RSSetViewports(1, &viewport);
@@ -1161,12 +1176,12 @@ void RenderHardwareInterface::SetRenderTargets(std::vector<std::shared_ptr<Textu
 	}
 	else
 	{
-		viewport.TopLeftX = myBackBuffer->myViewport[0];
-		viewport.TopLeftY = myBackBuffer->myViewport[1];
-		viewport.Width = myBackBuffer->myViewport[2];
-		viewport.Height = myBackBuffer->myViewport[3];
-		viewport.MinDepth = myBackBuffer->myViewport[4];
-		viewport.MaxDepth = myBackBuffer->myViewport[5];
+		viewport.TopLeftX = aRenderTargets[0]->myViewport[0];
+		viewport.TopLeftY = aRenderTargets[0]->myViewport[1];
+		viewport.Width = aRenderTargets[0]->myViewport[2];
+		viewport.Height = aRenderTargets[0]->myViewport[3];
+		viewport.MinDepth = aRenderTargets[0]->myViewport[4];
+		viewport.MaxDepth = aRenderTargets[0]->myViewport[5];
 	}
 
 	myContext->RSSetViewports(1, &viewport);

@@ -30,7 +30,7 @@ void RenderSpritesheet::Execute()
     if (material)
     {
         GraphicsEngine::Get().ChangePipelineState(material->GetPSO());
-        GraphicsEngine::Get().SetTextureResource_PS(0, material->GetAlbedoTexture());
+        GraphicsEngine::Get().SetTextureResource_PS(0, material->GetTexture(Material::TextureType::Albedo));
         GraphicsEngine::Get().RenderSprite();
         GraphicsEngine::Get().ClearTextureResource_PS(0);
     }

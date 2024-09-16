@@ -5,7 +5,7 @@
   "PixelShader": "SH_VFXSpritesheet_PS",
   "BlendStateDesc":
   {
-    "BlendMode": "AlphaAdditive"
+    "BlendMode": "Alpha"
   },
   "Samplers":
   {

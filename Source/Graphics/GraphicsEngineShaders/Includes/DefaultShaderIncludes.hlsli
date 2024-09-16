@@ -6,8 +6,10 @@
 Texture2D AlbedoTexture : register(t0);
 Texture2D NormalTexture : register(t1);
 Texture2D MaterialTexture : register(t2);
+Texture2D EffectsTexture : register(t3);
 
 SamplerState DefaultSampler : register(s0);
+SamplerState DefaultClampSampler : register(s1);
 SamplerComparisonState ShadowCmpSampler : register(s15);
 
 struct MeshVertex
@@ -137,6 +139,15 @@ static const float2 PoissonDisk[64] =
     float2(-0.545396, 0.538133),
     float2(-0.178564, -0.596057)
 };
+
+static const float GaussianKernel[5] = 
+    { 
+        0.06136f, 
+        0.24477f, 
+        0.38774f, 
+        0.24477f, 
+        0.06136 
+    };
 
 float RandomNumber(float4 seed)
 {

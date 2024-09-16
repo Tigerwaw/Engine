@@ -15,6 +15,10 @@ GBufferOutput main(MeshVStoPS input)
     
     const float2 normalMap = NormalTexture.Sample(DefaultSampler, input.TexCoord0.xy).rg;
     const float3 materialMap = MaterialTexture.Sample(DefaultSampler, input.TexCoord0.xy).rgb;
+    const float4 effectsMap = EffectsTexture.Sample(DefaultSampler, input.TexCoord0.xy);
+    
+    float4 adjustedEffects = effectsMap;
+    adjustedEffects.r *= MB_EmissiveStrength;
    
     // NORMALS
     float3 calculatedNormals;
@@ -32,6 +36,7 @@ GBufferOutput main(MeshVStoPS input)
     
     output.Albedo = albedoMap * MB_AlbedoTint;
     output.Material = float4(materialMap.rgb, 0);
+    output.Effects = adjustedEffects;
     output.WorldNormal = float4(pixelNormal.rgb, 0);
     output.WorldPosition = input.WorldPos;
     

@@ -2,9 +2,11 @@
   "VertexType": "Default",
   "VertexShader": "SH_Quad_VS",
   "GeometryShader": "",
-  "PixelShader": "SH_PP_TonemapUE_PS",
-  "Samplers":
-  {
+  "PixelShader": "SH_PP_Bloom_PS",
+  "BlendStateDesc": {
+    "BlendMode": "Alpha"
+  },
+  "Samplers": {
     "LinearWrapSS": 0
   }
 }

@@ -8,6 +8,8 @@ void GBuffer::CreateGBuffer(unsigned aWidth, unsigned aHeight)
 	GraphicsEngine::Get().CreateTexture("GBuffer_Albedo", aWidth, aHeight, RHITextureFormat::R8G8B8A8_UNORM, *myAlbedo, false, true, true, false, false);
 	myMaterial = std::make_shared<Texture>();
 	GraphicsEngine::Get().CreateTexture("GBuffer_Material", aWidth, aHeight, RHITextureFormat::R8G8B8A8_UNORM, *myMaterial, false, true, true, false, false);
+	myEffects = std::make_shared<Texture>();
+	GraphicsEngine::Get().CreateTexture("GBuffer_Effects", aWidth, aHeight, RHITextureFormat::R8G8B8A8_UNORM, *myEffects, false, true, true, false, false);
 	myWorldNormal = std::make_shared<Texture>();
 	GraphicsEngine::Get().CreateTexture("GBuffer_WorldNormal", aWidth, aHeight, RHITextureFormat::R16G16B16A16_SNORM, *myWorldNormal, false, true, true, false, false);
 	myWorldPosition = std::make_shared<Texture>();

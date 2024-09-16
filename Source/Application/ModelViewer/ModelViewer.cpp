@@ -469,46 +469,61 @@ void ModelViewer::InitializeApplication()
 
 						ImGui::Text(std::string("Albedo Texture - " + myAlbedoTexName).c_str());
 						ImGui::SetItemTooltip(myAlbedoTexPath.c_str());
-						ImGui::Image((void*)myMaterial->GetAlbedoTexture().GetSRV(), { textureSize.x, textureSize.y });
+						ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Albedo).GetSRV(), { textureSize.x, textureSize.y });
 						if (ImGui::BeginItemTooltip())
 						{
-							ImGui::Image((void*)myMaterial->GetAlbedoTexture().GetSRV(), { textureHoverSize.x, textureHoverSize.y });
+							ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Albedo).GetSRV(), { textureHoverSize.x, textureHoverSize.y });
 							ImGui::EndTooltip();
 						}
 						ImGui::SameLine();
 						if (ImGui::Button("Remove##Albedo"))
 						{
-							myMaterial->SetAlbedoTexture(AssetManager::Get().GetAsset<TextureAsset>("T_Default_C")->texture);
+							myMaterial->SetTexture(Material::TextureType::Albedo, AssetManager::Get().GetAsset<TextureAsset>("T_Default_C")->texture);
 						}
 						ImGui::Spacing();
 
 						ImGui::Text(std::string("Normal Texture - " + myNormalTexName).c_str());
 						ImGui::SetItemTooltip(myNormalTexPath.c_str());
-						ImGui::Image((void*)myMaterial->GetNormalTexture().GetSRV(), { textureSize.x, textureSize.y });
+						ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Normal).GetSRV(), { textureSize.x, textureSize.y });
 						if (ImGui::BeginItemTooltip())
 						{
-							ImGui::Image((void*)myMaterial->GetNormalTexture().GetSRV(), { textureHoverSize.x, textureHoverSize.y });
+							ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Normal).GetSRV(), { textureHoverSize.x, textureHoverSize.y });
 							ImGui::EndTooltip();
 						}
 						ImGui::SameLine();
 						if (ImGui::Button("Remove##Normal"))
 						{
-							myMaterial->SetNormalTexture(AssetManager::Get().GetAsset<TextureAsset>("T_Default_N")->texture);
+							myMaterial->SetTexture(Material::TextureType::Normal, AssetManager::Get().GetAsset<TextureAsset>("T_Default_N")->texture);
 						}
 						ImGui::Spacing();
 
 						ImGui::Text(std::string("Material Texture - " + myMaterialTexName).c_str());
 						ImGui::SetItemTooltip(myMaterialTexPath.c_str());
-						ImGui::Image((void*)myMaterial->GetMaterialTexture().GetSRV(), { textureSize.x, textureSize.y });
+						ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Material).GetSRV(), { textureSize.x, textureSize.y });
 						if (ImGui::BeginItemTooltip())
 						{
-							ImGui::Image((void*)myMaterial->GetMaterialTexture().GetSRV(), { textureHoverSize.x, textureHoverSize.y });
+							ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Material).GetSRV(), { textureHoverSize.x, textureHoverSize.y });
 							ImGui::EndTooltip();
 						}
 						ImGui::SameLine();
 						if (ImGui::Button("Remove##Material"))
 						{
-							myMaterial->SetMaterialTexture(AssetManager::Get().GetAsset<TextureAsset>("T_Default_M")->texture);
+							myMaterial->SetTexture(Material::TextureType::Material, AssetManager::Get().GetAsset<TextureAsset>("T_Default_M")->texture);
+						}
+						ImGui::Spacing();
+
+						ImGui::Text(std::string("Effect Texture - " + myEffectsTexName).c_str());
+						ImGui::SetItemTooltip(myEffectsTexPath.c_str());
+						ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Effects).GetSRV(), { textureSize.x, textureSize.y });
+						if (ImGui::BeginItemTooltip())
+						{
+							ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Effects).GetSRV(), { textureHoverSize.x, textureHoverSize.y });
+							ImGui::EndTooltip();
+						}
+						ImGui::SameLine();
+						if (ImGui::Button("Remove##Effects"))
+						{
+							myMaterial->SetTexture(Material::TextureType::Effects, AssetManager::Get().GetAsset<TextureAsset>("T_Default_FX")->texture);
 						}
 
 						ImGui::EndTabItem();
@@ -655,9 +670,10 @@ void ModelViewer::ResetMaterial()
 	std::shared_ptr<Material> defaultMat = am.GetAsset<MaterialAsset>("MAT_DefaultMaterial")->material;
 	myMaterial->SetPSO(defaultMat->GetPSO());
 	myMaterial->MaterialSettings().albedoTint = { 1.0f, 1.0f, 1.0f, 1.0f };
-	myMaterial->SetAlbedoTexture(am.GetAsset<TextureAsset>("T_Default_C")->texture);
-	myMaterial->SetNormalTexture(am.GetAsset<TextureAsset>("T_Default_N")->texture);
-	myMaterial->SetMaterialTexture(am.GetAsset<TextureAsset>("T_Default_M")->texture);
+	myMaterial->SetTexture(Material::TextureType::Albedo, am.GetAsset<TextureAsset>("T_Default_C")->texture);
+	myMaterial->SetTexture(Material::TextureType::Normal, am.GetAsset<TextureAsset>("T_Default_N")->texture);
+	myMaterial->SetTexture(Material::TextureType::Material, am.GetAsset<TextureAsset>("T_Default_M")->texture);
+	myMaterial->SetTexture(Material::TextureType::Effects, am.GetAsset<TextureAsset>("T_Default_FX")->texture);
 
 	myMaterialName = "MAT_DefaultMaterial";
 	myMaterialPath = "";
@@ -771,6 +787,13 @@ void ModelViewer::SetMaterial(std::shared_ptr<GameObject> aGO, std::filesystem::
 		myMaterialTexPath = materialPath.string();
 	}
 
+	if (data.contains("EffectsTexture"))
+	{
+		std::filesystem::path effectsPath = data["EffectsTexture"].get<std::string>();
+		myEffectsTexName = effectsPath.filename().stem().string();
+		myEffectsTexPath = effectsPath.string();
+	}
+
 	std::shared_ptr<Model> model = aGO->GetComponent<Model>();
 	std::shared_ptr<AnimatedModel> animModel = aGO->GetComponent<AnimatedModel>();
 	if (model)
@@ -792,7 +815,7 @@ void ModelViewer::SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::p
 
 	if (assetName.ends_with("C") || assetName.ends_with("c"))
 	{
-		myMaterial->SetAlbedoTexture(AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
+		myMaterial->SetTexture(Material::TextureType::Albedo, AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
 		myAlbedoTexName = assetName;
 		myAlbedoTexPath = aAssetPath.string();
 		myLogs.emplace_back("[LOG] Set albedo texture to " + assetName);
@@ -802,7 +825,7 @@ void ModelViewer::SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::p
 	}
 	else if (assetName.ends_with("N") || assetName.ends_with("n"))
 	{
-		myMaterial->SetNormalTexture(AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
+		myMaterial->SetTexture(Material::TextureType::Normal, AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
 		myNormalTexName = assetName;
 		myNormalTexPath = aAssetPath.string();
 		myLogs.emplace_back("[LOG] Set normal texture to " + assetName);
@@ -812,10 +835,20 @@ void ModelViewer::SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::p
 	}
 	else if (assetName.ends_with("M") || assetName.ends_with("m"))
 	{
-		myMaterial->SetMaterialTexture(AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
+		myMaterial->SetTexture(Material::TextureType::Material, AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
 		myMaterialTexName = assetName;
 		myMaterialTexPath = aAssetPath.string();
 		myLogs.emplace_back("[LOG] Set material texture to " + assetName);
+		myIsCustomMaterial = true;
+		myMaterialName = "";
+		myMaterialPath = "";
+	}
+	else if (assetName.ends_with("FX") || assetName.ends_with("fx"))
+	{
+		myMaterial->SetTexture(Material::TextureType::Effects, AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
+		myEffectsTexName = assetName;
+		myEffectsTexPath = aAssetPath.string();
+		myLogs.emplace_back("[LOG] Set effects texture to " + assetName);
 		myIsCustomMaterial = true;
 		myMaterialName = "";
 		myMaterialPath = "";

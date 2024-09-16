@@ -109,9 +109,11 @@ void AssetManager::RegisterEngineAssets()
     asset->material = std::make_shared<Material>();
     asset->material->SetPSO(GraphicsEngine::Get().GetDefaultPSO());
     asset->material->MaterialSettings().albedoTint = { 1.0f, 1.0f, 1.0f, 1.0f };
-    asset->material->SetAlbedoTexture(GetAsset<TextureAsset>("T_Default_C")->texture);
-    asset->material->SetNormalTexture(GetAsset<TextureAsset>("T_Default_N")->texture);
-    asset->material->SetMaterialTexture(GetAsset<TextureAsset>("T_Default_M")->texture);
+    asset->material->MaterialSettings().emissiveStrength = 0.0f;
+    asset->material->SetTexture(Material::TextureType::Albedo, GetAsset<TextureAsset>("T_Default_C")->texture);
+    asset->material->SetTexture(Material::TextureType::Normal, GetAsset<TextureAsset>("T_Default_N")->texture);
+    asset->material->SetTexture(Material::TextureType::Material, GetAsset<TextureAsset>("T_Default_M")->texture);
+    asset->material->SetTexture(Material::TextureType::Effects, GetAsset<TextureAsset>("T_Default_FX")->texture);
     asset->name = "MAT_DefaultMaterial";
     myAssets.emplace(asset->name, asset);
 
@@ -311,9 +313,10 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
     std::shared_ptr<MaterialAsset> asset = std::make_shared<MaterialAsset>();
     asset->material = std::make_shared<Material>();
     asset->material->SetPSO(GraphicsEngine::Get().GetDefaultPSO());
-    asset->material->SetAlbedoTexture(GetAsset<TextureAsset>("T_Default_C")->texture);
-    asset->material->SetNormalTexture(GetAsset<TextureAsset>("T_Default_N")->texture);
-    asset->material->SetMaterialTexture(GetAsset<TextureAsset>("T_Default_M")->texture);
+    asset->material->SetTexture(Material::TextureType::Albedo, GetAsset<TextureAsset>("T_Default_C")->texture);
+    asset->material->SetTexture(Material::TextureType::Normal, GetAsset<TextureAsset>("T_Default_N")->texture);
+    asset->material->SetTexture(Material::TextureType::Material, GetAsset<TextureAsset>("T_Default_M")->texture);
+    asset->material->SetTexture(Material::TextureType::Effects, GetAsset<TextureAsset>("T_Default_FX")->texture);
 
     std::ifstream path(aPath);
     nl::json data = nl::json();
@@ -342,6 +345,11 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
                                                            data["AlbedoTint"]["A"].get<float>() };
     }
 
+    if (data.contains("EmissiveStrength"))
+    {
+        asset->material->MaterialSettings().emissiveStrength = data["EmissiveStrength"].get<float>();
+    }
+
     if (data.contains("AlbedoTexture"))
     {
         bool textureExists = true;
@@ -354,7 +362,7 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
 
         if (textureExists)
         {
-            asset->material->SetAlbedoTexture(GetAsset<TextureAsset>(albedoName)->texture);
+            asset->material->SetTexture(Material::TextureType::Albedo, GetAsset<TextureAsset>(albedoName)->texture);
         }
     }
 
@@ -370,7 +378,7 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
 
         if (textureExists)
         {
-            asset->material->SetNormalTexture(GetAsset<TextureAsset>(normalName)->texture);
+            asset->material->SetTexture(Material::TextureType::Normal, GetAsset<TextureAsset>(normalName)->texture);
         }
     }
 
@@ -386,7 +394,23 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
 
         if (textureExists)
         {
-            asset->material->SetMaterialTexture(GetAsset<TextureAsset>(materialName)->texture);
+            asset->material->SetTexture(Material::TextureType::Material, GetAsset<TextureAsset>(materialName)->texture);
+        }
+    }
+
+    if (data.contains("EffectsTexture"))
+    {
+        bool textureExists = true;
+        std::filesystem::path effectsPath = data["EffectsTexture"].get<std::string>();
+        std::filesystem::path effectsName = effectsPath.stem();
+        if (myAssets.find(effectsName) == myAssets.end())
+        {
+            textureExists = RegisterTextureAsset(myContentRoot / effectsPath);
+        }
+
+        if (textureExists)
+        {
+            asset->material->SetTexture(Material::TextureType::Effects, GetAsset<TextureAsset>(effectsName)->texture);
         }
     }
 
@@ -551,9 +575,9 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
         if (data["BlendStateDesc"].contains("BlendMode"))
         {
             std::string blendMode = data["BlendStateDesc"]["BlendMode"].get<std::string>();
-            if (blendMode == "AlphaAdditive")
+            if (blendMode == "Alpha")
             {
-                psoDesc.blendMode = BlendMode::AlphaAdditive;
+                psoDesc.blendMode = BlendMode::Alpha;
             }
             else if (blendMode == "Additive")
             {

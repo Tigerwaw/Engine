@@ -68,6 +68,8 @@ private:
 	std::string myNormalTexPath;
 	std::string myMaterialTexName;
 	std::string myMaterialTexPath;
+	std::string myEffectsTexName;
+	std::string myEffectsTexPath;
 
 	std::string myPSOName;
 	std::string myPSOPath;
@@ -89,6 +91,7 @@ private:
 	"Ambient Occlusion",
 	"Roughness",
 	"Metallic",
+	"Effects",
 	"Wireframe",
 	"Vertex Normals",
 	"Vertex Tangents",

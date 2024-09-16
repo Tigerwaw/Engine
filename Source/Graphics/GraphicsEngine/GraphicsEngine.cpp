@@ -233,7 +233,7 @@ bool GraphicsEngine::CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, PSODes
 		defaultRenderTargetBlendDesc.BlendEnable = TRUE;
 		defaultRenderTargetBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-		if (aPSOdesc.blendMode == BlendMode::AlphaAdditive)
+		if (aPSOdesc.blendMode == BlendMode::Alpha)
 		{
 			defaultRenderTargetBlendDesc.SrcBlend = D3D11_BLEND_SRC_ALPHA;
 			defaultRenderTargetBlendDesc.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
@@ -332,9 +332,10 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<M
 				}
 			}
 
-			SetTextureResource_PS(0, aMaterialList[element.MaterialIndex]->GetAlbedoTexture());
-			SetTextureResource_PS(1, aMaterialList[element.MaterialIndex]->GetNormalTexture());
-			SetTextureResource_PS(2, aMaterialList[element.MaterialIndex]->GetMaterialTexture());
+			SetTextureResource_PS(0, aMaterialList[element.MaterialIndex]->GetTexture(Material::TextureType::Albedo));
+			SetTextureResource_PS(1, aMaterialList[element.MaterialIndex]->GetTexture(Material::TextureType::Normal));
+			SetTextureResource_PS(2, aMaterialList[element.MaterialIndex]->GetTexture(Material::TextureType::Material));
+			SetTextureResource_PS(3, aMaterialList[element.MaterialIndex]->GetTexture(Material::TextureType::Effects));
 		}
 
 		myRHI->DrawIndexed(element.IndexOffset, element.NumIndices);
@@ -344,6 +345,7 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<M
 	ClearTextureResource_PS(0);
 	ClearTextureResource_PS(1);
 	ClearTextureResource_PS(2);
+	ClearTextureResource_PS(3);
 	ClearTextureResource_PS(127);
 }
 
@@ -355,7 +357,7 @@ void GraphicsEngine::RenderSprite()
 
 void GraphicsEngine::RenderText(const Text& aText)
 {
-	SetTextureResource_PS(3, *aText.GetTexture());
+	SetTextureResource_PS(10, *aText.GetTexture());
 
 	const Text::TextData& textData = aText.GetTextData();
 	myRHI->SetVertexBuffer(textData.vertexBuffer->GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
@@ -365,7 +367,7 @@ void GraphicsEngine::RenderText(const Text& aText)
 	myRHI->DrawIndexed(0, textData.numIndices);
 	myDrawcallAmount++;
 
-	ClearTextureResource_PS(3);
+	ClearTextureResource_PS(10);
 }
 
 void GraphicsEngine::RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsigned aLineAmount)

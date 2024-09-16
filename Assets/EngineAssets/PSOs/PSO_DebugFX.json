@@ -1,8 +1,8 @@
 {
   "VertexType": "Default",
-  "VertexShader": "SH_Quad_VS",
+  "VertexShader": "SH_Mesh_VS",
   "GeometryShader": "",
-  "PixelShader": "SH_PP_TonemapUE_PS",
+  "PixelShader": "SH_DebugFX_PS",
   "Samplers":
   {
     "LinearWrapSS": 0
