@@ -512,7 +512,7 @@ void ModelViewer::InitializeApplication()
 						}
 						ImGui::Spacing();
 
-						ImGui::Text(std::string("Effect Texture - " + myEffectsTexName).c_str());
+						ImGui::Text(std::string("Effects Texture - " + myEffectsTexName).c_str());
 						ImGui::SetItemTooltip(myEffectsTexPath.c_str());
 						ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Effects).GetSRV(), { textureSize.x, textureSize.y });
 						if (ImGui::BeginItemTooltip())
