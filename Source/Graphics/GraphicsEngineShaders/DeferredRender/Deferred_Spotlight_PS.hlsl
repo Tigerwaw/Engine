@@ -6,10 +6,10 @@ Texture2D ShadowMapSpot[4] : register(t105);
 
 float4 main(Quad_VS_to_PS input) : SV_TARGET
 {
-    float3 albedoColor = Def_Albedo.Sample(DefaultSampler, input.UV).rgb;
-    float3 material = Def_Material.Sample(DefaultSampler, input.UV).rgb;
-    float3 worldNormal = Def_WorldNormal.Sample(DefaultSampler, input.UV).rgb;
-    float4 worldPos = Def_WorldPos.Sample(DefaultSampler, input.UV);
+    float3 albedoColor = GBuffer_Albedo.Sample(LinearWrapSampler, input.UV).rgb;
+    float3 material = GBuffer_Material.Sample(LinearWrapSampler, input.UV).rgb;
+    float3 worldNormal = GBuffer_WorldNormal.Sample(LinearWrapSampler, input.UV).rgb;
+    float4 worldPos = GBuffer_WorldPos.Sample(LinearWrapSampler, input.UV);
     
     const float ambientOcclusion = material.r;
     const float roughness = material.g;

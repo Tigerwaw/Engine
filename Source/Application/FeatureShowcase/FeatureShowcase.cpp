@@ -1,6 +1,4 @@
-#include "GameEngine/Application/Application.h"
-#include "GameEngine/Application/EntryPoint.h"
-
+#include "FeatureShowcase.h"
 #include <GameEngine/Engine.h>
 #include <GameEngine/Time/Timer.h>
 #include <Psapi.h>
@@ -15,27 +13,6 @@
 #include <GameEngine/ComponentSystem/Components/Graphics/VFXModel.h>
 #include <GameEngine/ComponentSystem/Components/Physics/Colliders/BoxCollider.h>
 #include <GameEngine/ComponentSystem/Components/Physics/Colliders/SphereCollider.h>
-
-class FeatureShowcase : public Application
-{
-public:
-	FeatureShowcase() {}
-    ~FeatureShowcase() {}
-
-    void InitializeApplication() override;
-	void UpdateApplication() override;
-private:
-	int currentAnimation = 0;
-	std::vector<std::string> animationNames = {
-		"Idle",
-		"Walk",
-		"Run",
-		"Wave"
-	};
-
-	unsigned currentDebugMode = 0;
-	unsigned currentTonemapper = 1;
-};
 
 Application* CreateApplication()
 {
@@ -98,7 +75,7 @@ void FeatureShowcase::InitializeApplication()
 #ifndef _RETAIL
 			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
 			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.02f * resolution.y });
-			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.3f * resolution.y });
+			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.35f * resolution.y });
 			bool open = true;
 			ImGui::Begin("FeatureShowcase", &open, ImGuiWindowFlags_NoSavedSettings);
 
@@ -111,11 +88,11 @@ void FeatureShowcase::InitializeApplication()
 			// Rendering
 			{
 				ImGui::Text("Rendering Mode");
-				if (ImGui::BeginCombo("##RenderModeDropdown", GraphicsEngine::Get().DebugModeNames[static_cast<int>(GraphicsEngine::Get().GetCurrentDebugMode())].c_str()))
+				if (ImGui::BeginCombo("##RenderModeDropdown", GraphicsEngine::Get().DebugModeNames[static_cast<int>(GraphicsEngine::Get().CurrentDebugMode)].c_str()))
 				{
 					for (unsigned i = 0; i < static_cast<unsigned>(DebugMode::COUNT); i++)
 					{
-						if (ImGui::Selectable(GraphicsEngine::Get().DebugModeNames[i].c_str())) GraphicsEngine::Get().SetDebugMode(static_cast<DebugMode>(i));
+						if (ImGui::Selectable(GraphicsEngine::Get().DebugModeNames[i].c_str())) GraphicsEngine::Get().CurrentDebugMode = static_cast<DebugMode>(i);
 					}
 					ImGui::EndCombo();
 				}
@@ -124,14 +101,18 @@ void FeatureShowcase::InitializeApplication()
 			// Tonemapping
 			{
 				ImGui::Text("Tonemapper");
-				if (ImGui::BeginCombo("##TonemapperDropdown", GraphicsEngine::Get().TonemapperNames[static_cast<int>(GraphicsEngine::Get().GetTonemapper())].c_str()))
+				if (ImGui::BeginCombo("##TonemapperDropdown", GraphicsEngine::Get().TonemapperNames[static_cast<int>(GraphicsEngine::Get().Tonemapper)].c_str()))
 				{
-					if (ImGui::Selectable("ACES")) GraphicsEngine::Get().SetTonemapper(Tonemapper::ACES);
-					if (ImGui::Selectable("UE")) GraphicsEngine::Get().SetTonemapper(Tonemapper::UE);
-					if (ImGui::Selectable("Lottes")) GraphicsEngine::Get().SetTonemapper(Tonemapper::Lottes);
+					for (unsigned i = 0; i < static_cast<unsigned>(Tonemapper::COUNT); i++)
+					{
+						if (ImGui::Selectable(GraphicsEngine::Get().TonemapperNames[i].c_str())) GraphicsEngine::Get().Tonemapper = static_cast<Tonemapper>(i);
+					}
 					ImGui::EndCombo();
 				}
 			}
+
+			ImGui::Checkbox("Enable Bloom", &GraphicsEngine::Get().BloomEnabled);
+			ImGui::Checkbox("Enable SSAO", &GraphicsEngine::Get().SSAOEnabled);
 
 			ImGui::Separator();
 
@@ -178,8 +159,8 @@ void FeatureShowcase::InitializeApplication()
 		{
 #ifndef _RETAIL
 			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
-			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.35f * resolution.y });
-			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.6f * resolution.y });
+			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.4f * resolution.y });
+			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.55f * resolution.y });
 			bool open = true;
 			ImGui::Begin("Lighting Settings", &open, ImGuiWindowFlags_NoSavedSettings);
 			{
@@ -201,6 +182,33 @@ void FeatureShowcase::InitializeApplication()
 						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
 						if (ImGui::ColorPicker3("##AmbientColor", color, flags)) aLight->SetColor({ color[0], color[1], color[2] });
 						ImGui::EndTabItem();
+
+						// Luminance
+						ImGui::Text("Luminance");
+						if (ImGui::BeginCombo("##LuminanceDropdown", GraphicsEngine::Get().LuminanceNames[static_cast<int>(GraphicsEngine::Get().LuminanceFunction)].c_str()))
+						{
+							for (unsigned i = 0; i < static_cast<unsigned>(Luminance::COUNT); i++)
+							{
+								if (ImGui::Selectable(GraphicsEngine::Get().LuminanceNames[i].c_str())) GraphicsEngine::Get().LuminanceFunction = static_cast<Luminance>(i);
+							}
+							ImGui::EndCombo();
+						}
+
+						// Bloom
+						ImGui::Text("Bloom");
+						if (ImGui::BeginCombo("##BloomDropdown", GraphicsEngine::Get().BloomNames[static_cast<int>(GraphicsEngine::Get().BloomFunction)].c_str()))
+						{
+							for (unsigned i = 0; i < static_cast<unsigned>(Bloom::COUNT); i++)
+							{
+								if (ImGui::Selectable(GraphicsEngine::Get().BloomNames[i].c_str())) GraphicsEngine::Get().BloomFunction = static_cast<Bloom>(i);
+							}
+							ImGui::EndCombo();
+						}
+
+						ImGui::SliderFloat("Bloom Intensity", &GraphicsEngine::Get().BloomStrength, 0, 1.0f);
+						ImGui::SliderFloat("SSAO Noise Power", &GraphicsEngine::Get().SSAONoisePower, 0, 1.0f);
+						ImGui::SliderFloat("SSAO Radius", &GraphicsEngine::Get().SSAORadius, 0, 0.5f);
+						ImGui::SliderFloat("SSAO Bias", &GraphicsEngine::Get().SSAOBias, 0, 0.1f);
 					}
 
 					if (ImGui::BeginTabItem("Directional Light"))
@@ -620,17 +628,11 @@ void FeatureShowcase::UpdateApplication()
 			currentDebugMode = 0;
 		}
 
-		GraphicsEngine::Get().SetDebugMode(static_cast<DebugMode>(currentDebugMode));
+		GraphicsEngine::Get().CurrentDebugMode = static_cast<DebugMode>(currentDebugMode);
 	}
 
 	if (Engine::GetInstance().GetInputHandler().GetBinaryAction("F7"))
 	{
-		currentTonemapper += 1;
-		if (currentTonemapper >= static_cast<unsigned>(Tonemapper::COUNT))
-		{
-			currentTonemapper = 0;
-		}
-
-		GraphicsEngine::Get().SetTonemapper(static_cast<Tonemapper>(currentTonemapper));
+		GraphicsEngine::Get().SSAOEnabled = !GraphicsEngine::Get().SSAOEnabled;
 	}
 }

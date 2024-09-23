@@ -1,5 +1,7 @@
 #pragma once
 #include <d3d11.h>
+#include <d3d11shader.h>
+#include <d3dcompiler.h>
 #include <wrl.h>
 
 #include <memory>
@@ -9,6 +11,7 @@
 #include <stdexcept>
 #include <filesystem>
 #include <fstream>
+#include <random>
 
 #include <string>
 #include <vector>

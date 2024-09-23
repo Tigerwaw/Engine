@@ -6,6 +6,7 @@
 #include <d3d11shader.h>
 #include "DDSTextureLoader/DDSTextureLoader11.h"
 #include "StringHelpers.h"
+#include "ShaderReflection/ShaderInfo.h"
 
 #ifndef _RETAIL
 #include "imgui/imgui.h"
@@ -216,19 +217,7 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 	SetObjectName(myContext, "Device Context");
 
 	CreateDefaultSamplerStates();
-
-	myIntermediateHDRBuffer = std::make_shared<Texture>();
-	CreateTexture("IntermediateHDRBuffer", static_cast<unsigned>(clientWidth), static_cast<unsigned>(clientHeight), RHITextureFormat::R16G16B16A16_FLOAT, *myIntermediateHDRBuffer, false, true, true, false, false);
-	myIntermediateLDRBuffer = std::make_shared<Texture>();
-	CreateTexture("IntermediateLDRBuffer", static_cast<unsigned>(clientWidth), static_cast<unsigned>(clientHeight), RHITextureFormat::R8G8B8A8_UNORM, *myIntermediateLDRBuffer, false, true, true, false, false);
-	myLuminanceBuffer = std::make_shared<Texture>();
-	CreateTexture("LuminanceBuffer", static_cast<unsigned>(clientWidth), static_cast<unsigned>(clientHeight), RHITextureFormat::R8G8B8A8_UNORM, *myLuminanceBuffer, false, true, true, false, false);
-	myHalfScreenBuffer = std::make_shared<Texture>();
-	CreateTexture("HalfScreenBuffer", static_cast<unsigned>(clientWidth * 0.5f), static_cast<unsigned>(clientHeight * 0.5f), RHITextureFormat::R8G8B8A8_UNORM, *myHalfScreenBuffer, false, true, true, false, false);
-	myQuarterScreenBufferA = std::make_shared<Texture>();
-	CreateTexture("QuarterScreenBufferA", static_cast<unsigned>(clientWidth * 0.25f), static_cast<unsigned>(clientHeight * 0.25f), RHITextureFormat::R8G8B8A8_UNORM, *myQuarterScreenBufferA, false, true, true, false, false);
-	myQuarterScreenBufferB = std::make_shared<Texture>();
-	CreateTexture("QuarterScreenBufferB", static_cast<unsigned>(clientWidth * 0.25f), static_cast<unsigned>(clientHeight * 0.25f), RHITextureFormat::R8G8B8A8_UNORM, *myQuarterScreenBufferB, false, true, true, false, false);
+	CreateIntermediateTextures(static_cast<unsigned>(clientWidth), static_cast<unsigned>(clientHeight));
 
 	LOG(LogRHI, Log, "RHI Initialized!");
 
@@ -279,12 +268,7 @@ void RenderHardwareInterface::SetResolution(float aNewWidth, float aNewHeight)
 
 	myBackBuffer->myViewport = { 0, 0, aNewWidth, aNewHeight, 0, 1 };
 
-	CreateTexture("IntermediateHDRBuffer", static_cast<unsigned>(aNewWidth), static_cast<unsigned>(aNewHeight), RHITextureFormat::R16G16B16A16_FLOAT, *myIntermediateHDRBuffer, false, true, true, false, false);
-	CreateTexture("IntermediateLDRBuffer", static_cast<unsigned>(aNewWidth), static_cast<unsigned>(aNewHeight), RHITextureFormat::R8G8B8A8_UNORM, *myIntermediateLDRBuffer, false, true, true, false, false);
-	CreateTexture("LuminanceBuffer", static_cast<unsigned>(aNewWidth), static_cast<unsigned>(aNewHeight), RHITextureFormat::R8G8B8A8_UNORM, *myLuminanceBuffer, false, true, true, false, false);
-	CreateTexture("HalfScreenBuffer", static_cast<unsigned>(aNewWidth * 0.5f), static_cast<unsigned>(aNewHeight * 0.5f), RHITextureFormat::R8G8B8A8_UNORM, *myHalfScreenBuffer, false, true, true, false, false);
-	CreateTexture("QuarterScreenBufferA", static_cast<unsigned>(aNewWidth * 0.25f), static_cast<unsigned>(aNewHeight * 0.25f), RHITextureFormat::R8G8B8A8_UNORM, *myQuarterScreenBufferA, false, true, true, false, false);
-	CreateTexture("QuarterScreenBufferB", static_cast<unsigned>(aNewWidth * 0.25f), static_cast<unsigned>(aNewHeight * 0.25f), RHITextureFormat::R8G8B8A8_UNORM, *myQuarterScreenBufferB, false, true, true, false, false);
+	CreateIntermediateTextures(static_cast<unsigned>(aNewWidth), static_cast<unsigned>(aNewHeight));
 
 	D3D11_VIEWPORT viewport = {};
 	viewport.TopLeftX = 0;
@@ -535,6 +519,8 @@ void RenderHardwareInterface::SetInputLayout(const Microsoft::WRL::ComPtr<ID3D11
 
 bool RenderHardwareInterface::LoadShaderFromMemory(std::string_view aName, Shader& outShader, const uint8_t* aShaderDataPtr, size_t aShaderDataSize)
 {
+	ShaderInfo shaderInfo = GetShaderInfo(aShaderDataPtr, aShaderDataSize);
+
 	ComPtr<ID3D11ShaderReflection> shaderReflection;
 	HRESULT result = D3DReflect(
 		aShaderDataPtr,
@@ -708,9 +694,9 @@ void RenderHardwareInterface::CreateDefaultSamplerStates()
 
 	D3D11_SAMPLER_DESC pointClampDesc = {};
 	pointClampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	pointClampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	pointClampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	pointClampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	pointClampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	pointClampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	pointClampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 	pointClampDesc.MipLODBias = 0.0f;
 	pointClampDesc.MaxAnisotropy = 1;
 	pointClampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
@@ -724,9 +710,9 @@ void RenderHardwareInterface::CreateDefaultSamplerStates()
 
 	D3D11_SAMPLER_DESC linearClampDesc = {};
 	linearClampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	linearClampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	linearClampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	linearClampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	linearClampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	linearClampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	linearClampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 	linearClampDesc.MipLODBias = 0.0f;
 	linearClampDesc.MaxAnisotropy = 1;
 	linearClampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
@@ -740,9 +726,9 @@ void RenderHardwareInterface::CreateDefaultSamplerStates()
 
 	D3D11_SAMPLER_DESC anisoClampDesc = {};
 	anisoClampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-	anisoClampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	anisoClampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	anisoClampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	anisoClampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	anisoClampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	anisoClampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 	anisoClampDesc.MipLODBias = 0.0f;
 	anisoClampDesc.MaxAnisotropy = 1;
 	anisoClampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
@@ -785,6 +771,30 @@ void RenderHardwareInterface::CreateDefaultSamplerStates()
 	lutSamplerDesc.MinLOD = 0;
 	lutSamplerDesc.MaxLOD = 0;
 	CreateSamplerState("LutSS", lutSamplerDesc);
+}
+
+void RenderHardwareInterface::CreateIntermediateTextures(unsigned aClientWidth, unsigned aClientHeight)
+{
+	myIntermediateTextures[IntermediateTexture::HDR] = std::make_shared<Texture>();
+	CreateTexture("IntermediateHDRBuffer", static_cast<unsigned>(aClientWidth), aClientHeight, RHITextureFormat::R16G16B16A16_FLOAT, *myIntermediateTextures[IntermediateTexture::HDR], false, true, true, false, false);
+	
+	myIntermediateTextures[IntermediateTexture::LDR] = std::make_shared<Texture>();
+	CreateTexture("IntermediateLDRBuffer", static_cast<unsigned>(aClientWidth), aClientHeight, RHITextureFormat::R8G8B8A8_UNORM, *myIntermediateTextures[IntermediateTexture::LDR], false, true, true, false, false);
+	
+	myIntermediateTextures[IntermediateTexture::Luminance] = std::make_shared<Texture>();
+	CreateTexture("LuminanceBuffer", aClientWidth, aClientHeight, RHITextureFormat::R8G8B8A8_UNORM, *myIntermediateTextures[IntermediateTexture::Luminance], false, true, true, false, false);
+	
+	myIntermediateTextures[IntermediateTexture::HalfScreenA] = std::make_shared<Texture>();
+	CreateTexture("HalfScreenBuffer", static_cast<unsigned>(aClientWidth * 0.5f), static_cast<unsigned>(aClientHeight * 0.5f), RHITextureFormat::R8G8B8A8_UNORM, *myIntermediateTextures[IntermediateTexture::HalfScreenA], false, true, true, false, false);
+	
+	myIntermediateTextures[IntermediateTexture::HalfScreenB] = std::make_shared<Texture>();
+	CreateTexture("HalfScreenBuffer", static_cast<unsigned>(aClientWidth * 0.5f), static_cast<unsigned>(aClientHeight * 0.5f), RHITextureFormat::R8G8B8A8_UNORM, *myIntermediateTextures[IntermediateTexture::HalfScreenB], false, true, true, false, false);
+	
+	myIntermediateTextures[IntermediateTexture::QuarterScreenA] = std::make_shared<Texture>();
+	CreateTexture("QuarterScreenBufferA", static_cast<unsigned>(aClientWidth * 0.25f), static_cast<unsigned>(aClientHeight * 0.25f), RHITextureFormat::R8G8B8A8_UNORM, *myIntermediateTextures[IntermediateTexture::QuarterScreenA], false, true, true, false, false);
+	
+	myIntermediateTextures[IntermediateTexture::QuarterScreenB] = std::make_shared<Texture>();
+	CreateTexture("QuarterScreenBufferB", static_cast<unsigned>(aClientWidth * 0.25f), static_cast<unsigned>(aClientHeight * 0.25f), RHITextureFormat::R8G8B8A8_UNORM, *myIntermediateTextures[IntermediateTexture::QuarterScreenB], false, true, true, false, false);
 }
 
 bool RenderHardwareInterface::CreateSamplerState(std::string_view aName, const D3D11_SAMPLER_DESC& aSamplerDesc)
@@ -1202,6 +1212,25 @@ void RenderHardwareInterface::SetMarker(std::string_view aMarker) const
 {
 	const std::wstring wideMarker = str::utf8_to_wide(aMarker.data());
 	myUDA->SetMarker(wideMarker.c_str());
+}
+
+ShaderInfo RenderHardwareInterface::GetShaderInfo(const uint8_t* aTextureDataPtr, size_t aTextureDataSize)
+{
+	return ShaderInfo::Reflect(aTextureDataPtr, aTextureDataSize);
+}
+
+ShaderInfo RenderHardwareInterface::GetShaderInfo(std::wstring aShaderFilePath)
+{
+	ComPtr<ID3D10Blob> shaderBuffer;
+	HRESULT result = D3DReadFileToBlob(aShaderFilePath.c_str(), shaderBuffer.GetAddressOf());
+
+	if (FAILED(result))
+	{
+		LOG(LogRHI, Error, "Failed to read input layout shader from filepath!");
+		return ShaderInfo();
+	}
+
+	return ShaderInfo::Reflect(reinterpret_cast<const uint8_t*>(shaderBuffer->GetBufferPointer()), shaderBuffer->GetBufferSize());
 }
 
 bool RenderHardwareInterface::CreateVertexBufferInternal(std::string_view aName, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer,

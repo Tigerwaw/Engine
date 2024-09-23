@@ -75,9 +75,13 @@ int main()
     std::string premakeName = "premake5.lua";
     CreateFromTemplate(premakeTemplatePath, projectPath, projectName, premakeName);
 
-    std::filesystem::path mainTemplatePath("Premake/app_template.cpp");
-    std::string mainName = projectName + ".cpp";
-    CreateFromTemplate(mainTemplatePath, projectPath, projectName, mainName);    
+    std::filesystem::path mainTemplatePathH("Premake/app_template.h");
+    std::string mainNameH = projectName + ".h";
+    CreateFromTemplate(mainTemplatePathH, projectPath, projectName, mainNameH);
+
+    std::filesystem::path mainTemplatePathCPP("Premake/app_template.cpp");
+    std::string mainNameCPP = projectName + ".cpp";
+    CreateFromTemplate(mainTemplatePathCPP, projectPath, projectName, mainNameCPP);
 
     UpdateBasePremake(projectName);
 

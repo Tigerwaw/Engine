@@ -30,7 +30,9 @@ void DebugDrawer::DrawObjects()
 {
     if (!myLineVertices.empty())
     {
+        GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<BeginEvent>("Draw Debug Lines");
         GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderDebugLines>(myLineVertices, myLineBuffer);
+        GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<EndEvent>();
     }
 }
 

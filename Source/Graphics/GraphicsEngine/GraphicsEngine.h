@@ -54,14 +54,16 @@ enum class Luminance
 	RandomGain,
 	Contrast,
 	ReductionAndGain,
-	Fade
+	Fade,
+	COUNT
 };
 
 enum class Bloom
 {
 	Additive,
 	ScaledToScene,
-	ScaledToLuminance
+	ScaledToLuminance,
+	COUNT
 };
 
 enum class ConstantBufferType
@@ -72,7 +74,8 @@ enum class ConstantBufferType
 	MaterialBuffer,
 	LightBuffer,
 	ShadowBuffer,
-	SpriteBuffer
+	SpriteBuffer,
+	PostProcessBuffer
 };
 
 enum class BlendMode
@@ -159,24 +162,20 @@ public:
 	bool UpdateDynamicVertexBuffer(const std::vector<VertexType>& aVertexList, DynamicVertexBuffer& outVxBuffer) const;
 	bool UpdateDynamicIndexBuffer(const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer);
 
+	void BeginEvent(std::string_view aEvent) const { myRHI->BeginEvent(aEvent); }
+	void EndEvent() const { myRHI->EndEvent(); }
+	void SetMarker(std::string_view aMarker) const { myRHI->SetMarker(aMarker); }
+
 	std::shared_ptr<Texture> GetBackBuffer() { return myRHI->GetBackBuffer(); }
 	std::shared_ptr<Texture> GetDepthBuffer() { return myRHI->GetDepthBuffer(); }
-	std::shared_ptr<Texture> GetIntermediateHDRBuffer() { return myRHI->GetIntermediateHDRBuffer(); }
-	std::shared_ptr<Texture> GetIntermediateLDRBuffer() { return myRHI->GetIntermediateLDRBuffer(); }
-	std::shared_ptr<Texture> GetLuminanceBuffer() { return myRHI->GetLuminanceBuffer(); }
-	std::shared_ptr<Texture> GetHalfScreenBuffer() { return myRHI->GetHalfScreenBuffer(); }
-	std::shared_ptr<Texture> GetQuarterScreenBufferA() { return myRHI->GetQuarterScreenBufferA(); }
-	std::shared_ptr<Texture> GetQuarterScreenBufferB() { return myRHI->GetQuarterScreenBufferB(); }
+	std::shared_ptr<Texture> GetIntermediateTexture(IntermediateTexture aIntermediateTexture);
 	GBuffer& GetGBuffer() { return *myGBuffer; }
+
+	const std::vector<CU::Vector4f>& GetRandomKernel() const { return myRandomKernel; }
 
 	GraphicsCommandList& GetGraphicsCommandList() const { return *myCommandList; }
 
 	const unsigned GetDrawcallAmount() const { return myLastFrameDrawcallAmount; }
-	void SetDebugMode(DebugMode aDebugMode) { myCurrentDebugMode = aDebugMode; }
-	const DebugMode GetCurrentDebugMode() const { return myCurrentDebugMode; }
-
-	void SetTonemapper(Tonemapper aTonemapper) { myTonemapper = aTonemapper; }
-	const Tonemapper GetTonemapper() const { return myTonemapper; }
 
 	std::vector<std::string> DebugModeNames = {
 		"None",
@@ -200,6 +199,19 @@ public:
 		"PSO_TonemapACES",
 		"PSO_TonemapLottes"
 	};
+	
+	std::vector<std::string> LuminanceNames = {
+		"RandomGain",
+		"Contrast",
+		"ReductionAndGain",
+		"Fade"
+	};
+	
+	std::vector<std::string> BloomNames = {
+		"Additive",
+		"ScaledToScene",
+		"ScaledToLuminance"
+	};
 
 	bool DrawGizmos = false;
 	bool DrawBoundingBoxes = false;
@@ -208,11 +220,24 @@ public:
 	bool UseViewCulling = true;
 	bool RecalculateShadowFrustum = true;
 
+	Tonemapper Tonemapper = Tonemapper::UE;
+	DebugMode CurrentDebugMode = DebugMode::None;
+
+	bool BloomEnabled = true;
+	bool SSAOEnabled = true;
+	Bloom BloomFunction = Bloom::ScaledToLuminance;
+	Luminance LuminanceFunction = Luminance::Fade;
+	float SSAONoisePower = 0.25f;
+	float SSAORadius = 0.05f;
+	float SSAOBias = 0.025f;
+	float BloomStrength = 1.0f;
+
 private:
 	GraphicsEngine();
 	~GraphicsEngine();
 
 	void CreateConstantBuffers();
+	void CreateRandomKernel(unsigned aKernelSize);
 
 	std::unique_ptr<RenderHardwareInterface> myRHI;
 	std::unordered_map<ConstantBufferType, ConstantBuffer> myConstantBuffers;
@@ -221,14 +246,13 @@ private:
 	std::shared_ptr<PipelineStateObject> myDefaultPSO;
 
 	std::shared_ptr<Texture> myLUTtexture;
+	std::vector<CU::Vector4f> myRandomKernel;
 	
 	std::unique_ptr<GBuffer> myGBuffer;
 	std::unique_ptr<GraphicsCommandList> myCommandList;
 
 	unsigned myDrawcallAmount = 0;
 	unsigned myLastFrameDrawcallAmount = 0;
-	Tonemapper myTonemapper = Tonemapper::UE;
-	DebugMode myCurrentDebugMode = DebugMode::None;
 };
 
 template<typename BufferData>

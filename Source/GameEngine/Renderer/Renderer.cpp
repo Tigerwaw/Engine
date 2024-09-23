@@ -31,7 +31,7 @@ Renderer::~Renderer() = default;
 
 void Renderer::RenderScene(Scene& aScene)
 {
-	if (GraphicsEngine::Get().GetCurrentDebugMode() != DebugMode::None)
+	if (GraphicsEngine::Get().CurrentDebugMode != DebugMode::None)
 	{
 		RenderForward(aScene);
 	}
@@ -46,6 +46,7 @@ void Renderer::RenderScene(Scene& aScene)
 void Renderer::RenderForward(Scene& aScene)
 {
 	GraphicsEngine& gfx = GraphicsEngine::Get();
+	GraphicsCommandList& gfxList = gfx.GetGraphicsCommandList();
 
 	if (gfx.RecalculateShadowFrustum)
 	{
@@ -53,33 +54,34 @@ void Renderer::RenderForward(Scene& aScene)
 		myVisibleObjectsBB.InitWithCenterAndExtents(CU::Vector3f(), CU::Vector3f());
 	}
 
+	gfxList.Enqueue<UpdatePostProcessBuffer>();
 	QueueDirectionalLightShadows(aScene);
 	QueuePointLightShadows(aScene);
 	QueueSpotLightShadows(aScene);
 	QueueUpdateLightBuffer(aScene);
 
 	// Final Render
-	gfx.GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(aScene.myMainCamera->GetComponent<Camera>());
-	if (gfx.GetCurrentDebugMode() != DebugMode::None)
+	gfxList.Enqueue<UpdateFrameBuffer>(aScene.myMainCamera->GetComponent<Camera>());
+	if (gfx.CurrentDebugMode != DebugMode::None)
 	{
-		std::shared_ptr<PipelineStateObject> pso = AssetManager::Get().GetAsset<PSOAsset>(gfx.DebugModeNames[static_cast<int>(gfx.GetCurrentDebugMode())])->pso;
-		gfx.GetGraphicsCommandList().Enqueue<SetDefaultRenderTarget>();
+		std::shared_ptr<PipelineStateObject> pso = AssetManager::Get().GetAsset<PSOAsset>(gfx.DebugModeNames[static_cast<int>(gfx.CurrentDebugMode)])->pso;
+		gfxList.Enqueue<SetDefaultRenderTarget>();
 		QueueGameObjects(aScene, aScene.myMainCamera->GetComponent<Camera>(), false, pso);
 	}
 	else
 	{
-		gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_PBR")->pso);
-		gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetIntermediateHDRBuffer(), gfx.GetDepthBuffer(), true, false);
-		gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(126, aScene.myAmbientLight->GetComponent<AmbientLight>()->GetCubemap());
+		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_PBR")->pso);
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HDR), gfx.GetDepthBuffer(), true, false);
+		gfxList.Enqueue<SetTextureResource>(126, aScene.myAmbientLight->GetComponent<AmbientLight>()->GetCubemap());
 		QueueShadowmapTextureResources(aScene);
 		QueueGameObjects(aScene, aScene.myMainCamera->GetComponent<Camera>());
 	}
 
 	for (int i = 100; i < 110; i++)
 	{
-		gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(i);
+		gfxList.Enqueue<ClearTextureResource>(i);
 	}
-	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(126);
+	gfxList.Enqueue<ClearTextureResource>(126);
 
 	if (GraphicsEngine::Get().DrawGizmos)
 	{
@@ -89,21 +91,21 @@ void Renderer::RenderForward(Scene& aScene)
 	QueueDebugLines(aScene);
 	Engine::GetInstance().GetDebugDrawer().DrawObjects();
 
-	if (gfx.GetCurrentDebugMode() == DebugMode::None)
+	if (gfx.CurrentDebugMode == DebugMode::None)
 	{
 		// Tonemapping
-		gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>(gfx.TonemapperNames[static_cast<unsigned>(gfx.GetTonemapper())])->pso);
-		gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetBackBuffer(), gfx.GetDepthBuffer(), true, false);
-		gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(30, gfx.GetIntermediateHDRBuffer());
-		gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
-
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ClearTextureResource>(30);
+		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>(gfx.TonemapperNames[static_cast<unsigned>(gfx.Tonemapper)])->pso);
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetBackBuffer(), gfx.GetDepthBuffer(), true, false);
+		gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::HDR));
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		gfxList.Enqueue<ClearTextureResource>(30);
 	}
 }
 
 void Renderer::RenderDeferred(Scene& aScene)
 {
 	GraphicsEngine& gfx = GraphicsEngine::Get();
+	GraphicsCommandList& gfxList = gfx.GetGraphicsCommandList();
 
 	if (gfx.RecalculateShadowFrustum)
 	{
@@ -111,54 +113,91 @@ void Renderer::RenderDeferred(Scene& aScene)
 		myVisibleObjectsBB.InitWithCenterAndExtents(CU::Vector3f(), CU::Vector3f());
 	}
 
+	gfxList.Enqueue<UpdatePostProcessBuffer>();
 	QueueDirectionalLightShadows(aScene);
 	QueuePointLightShadows(aScene);
 	QueueSpotLightShadows(aScene);
 
 	// Deferred Objects
-	gfx.GetGraphicsCommandList().Enqueue<SetGBufferAsRenderTarget>();
-	gfx.GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(aScene.myMainCamera->GetComponent<Camera>());
+	gfxList.Enqueue<BeginEvent>("Draw Deferred Objects");
+	gfxList.Enqueue<SetGBufferAsRenderTarget>();
+	gfxList.Enqueue<UpdateFrameBuffer>(aScene.myMainCamera->GetComponent<Camera>());
 	RenderDeferredObjects(aScene);
+	gfxList.Enqueue<EndEvent>();
 	
 
 	// Light passes
 	QueueUpdateLightBuffer(aScene);
 	QueueShadowmapTextureResources(aScene);
 
+	if (gfx.SSAOEnabled)
+	{
+		// Downsampled SSAO
+		gfxList.Enqueue<BeginEvent>("SSAO Pass");
+		gfxList.Enqueue<SetTextureResource>(51, AssetManager::Get().GetAsset<TextureAsset>("T_BlueNoise")->texture);
+		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_SSAO")->pso);
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HalfScreenA), nullptr, true, false);
+		gfxList.Enqueue<SetGBufferAsResource>();
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		gfxList.Enqueue<ClearTextureResource>(51);
+		gfxList.Enqueue<EndEvent>();
+
+		// Blur
+		gfxList.Enqueue<BeginEvent>("Blur Pass");
+		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_RadialBlur")->pso);
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::Luminance), nullptr, true, false);
+		gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::HalfScreenA));
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		gfxList.Enqueue<ClearTextureResource>(30);
+		gfxList.Enqueue<EndEvent>();
+	}
+
 	// Directional Light
-	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(126, aScene.myAmbientLight->GetComponent<AmbientLight>()->GetCubemap());
-	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_DeferredDirectionalLight")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetIntermediateHDRBuffer(), nullptr, true, false);
-	gfx.GetGraphicsCommandList().Enqueue<SetGBufferAsResource>();
-	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
-	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(100);
-	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(126);
+	gfxList.Enqueue<BeginEvent>("Ambient & Directional Light Pass");
+	gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_DeferredDirectionalLight")->pso);
+	gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HDR), nullptr, true, false);
+	gfxList.Enqueue<SetTextureResource>(126, aScene.myAmbientLight->GetComponent<AmbientLight>()->GetCubemap());
+	gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::Luminance));
+	gfxList.Enqueue<SetGBufferAsResource>();
+	gfxList.Enqueue<RenderFullscreenQuad>();
+	gfxList.Enqueue<ClearTextureResource>(30);
+	gfxList.Enqueue<ClearTextureResource>(126);
+	gfxList.Enqueue<EndEvent>();
 
 	// Pointlights
-	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_DeferredPointlight")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetIntermediateHDRBuffer(), nullptr, false, false);
-	gfx.GetGraphicsCommandList().Enqueue<SetGBufferAsResource>();
-	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
+	gfxList.Enqueue<BeginEvent>("Pointlight Pass");
+	gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_DeferredPointlight")->pso);
+	gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HDR), nullptr, false, false);
+	gfxList.Enqueue<SetGBufferAsResource>();
+	gfxList.Enqueue<RenderFullscreenQuad>();
+	gfxList.Enqueue<EndEvent>();
 
 	// Spotlights
-	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_DeferredSpotlight")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetIntermediateHDRBuffer(), nullptr, false, false);
-	gfx.GetGraphicsCommandList().Enqueue<SetGBufferAsResource>();
-	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
+	gfxList.Enqueue<BeginEvent>("Spotlight Pass");
+	gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_DeferredSpotlight")->pso);
+	gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HDR), nullptr, false, false);
+	gfxList.Enqueue<SetGBufferAsResource>();
+	gfxList.Enqueue<RenderFullscreenQuad>();
+	gfxList.Enqueue<EndEvent>();
 
+	gfxList.Enqueue<BeginEvent>("Clear Texture Resources");
 	for (int i = 0; i < 5; i++)
 	{
-		gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(i);
+		gfxList.Enqueue<ClearTextureResource>(i);
 	}
 
 	for (int i = 100; i < 110; i++)
 	{
-		gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(i);
+		gfxList.Enqueue<ClearTextureResource>(i);
 	}
+	gfxList.Enqueue<EndEvent>();
 	
 	// Forward meshes
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetIntermediateHDRBuffer(), gfx.GetDepthBuffer(), false, false);
+	gfxList.Enqueue<BeginEvent>("Draw Forward Objects");
+	gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HDR), gfx.GetDepthBuffer(), false, false);
 	RenderForwardObjects(aScene);
+	gfxList.Enqueue<EndEvent>();
+
 	if (GraphicsEngine::Get().DrawGizmos)
 	{
 		QueueDebugGizmos(aScene, aScene.myMainCamera->GetComponent<Camera>());
@@ -167,79 +206,104 @@ void Renderer::RenderDeferred(Scene& aScene)
 	QueueDebugLines(aScene);
 	Engine::GetInstance().GetDebugDrawer().DrawObjects();
 
+	std::shared_ptr<Texture> renderTarget;
+	if (gfx.BloomEnabled)
+	{
+		renderTarget = gfx.GetIntermediateTexture(IntermediateTexture::LDR);
+	}
+	else
+	{
+		renderTarget = gfx.GetBackBuffer();
+	}
+
 	// Tonemapping
-	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>(gfx.TonemapperNames[static_cast<unsigned>(gfx.GetTonemapper())])->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetIntermediateLDRBuffer(), gfx.GetDepthBuffer(), true, true);
-	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(30, gfx.GetIntermediateHDRBuffer());
-	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
-	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(30);
+	gfxList.Enqueue<BeginEvent>("Tonemapping Pass");
+	gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>(gfx.TonemapperNames[static_cast<unsigned>(gfx.Tonemapper)])->pso);
+	gfxList.Enqueue<SetRenderTarget>(renderTarget, gfx.GetDepthBuffer(), true, true);
+	gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::HDR));
+	gfxList.Enqueue<RenderFullscreenQuad>();
+	gfxList.Enqueue<ClearTextureResource>(30);
+	gfxList.Enqueue<EndEvent>();
 
-	// Luminance
-	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Luminance")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetLuminanceBuffer(), nullptr, true, false);
-	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(30, gfx.GetIntermediateLDRBuffer());
-	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
-	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(30);
+	if (gfx.BloomEnabled)
+	{
+		// Luminance
+		gfxList.Enqueue<BeginEvent>("Luminance Pass");
+		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Luminance")->pso);
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::Luminance), nullptr, true, false);
+		gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::LDR));
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		gfxList.Enqueue<ClearTextureResource>(30);
+		gfxList.Enqueue<EndEvent>();
 
-	// Downsample
-	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Resample")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetHalfScreenBuffer(), nullptr, true, false);
-	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(30, gfx.GetLuminanceBuffer());
-	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
-	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(30);
+		// Downsample
+		gfxList.Enqueue<BeginEvent>("Downsampling Pass");
+		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Resample")->pso);
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HalfScreenA), nullptr, true, false);
+		gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::Luminance));
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		gfxList.Enqueue<ClearTextureResource>(30);
 
-	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Resample")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetQuarterScreenBufferA(), nullptr, true, false);
-	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(30, gfx.GetHalfScreenBuffer());
-	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
-	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(30);
+		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Resample")->pso);
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::QuarterScreenA), nullptr, true, false);
+		gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::HalfScreenA));
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		gfxList.Enqueue<ClearTextureResource>(30);
+		gfxList.Enqueue<EndEvent>();
 
-	// Blur
-	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_GaussianH")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetQuarterScreenBufferB(), nullptr, true, false);
-	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(30, gfx.GetQuarterScreenBufferA());
-	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
-	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(30);
+		// Blur
+		gfxList.Enqueue<BeginEvent>("Blur Pass");
+		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_GaussianH")->pso);
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::QuarterScreenB), nullptr, true, false);
+		gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::QuarterScreenA));
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		gfxList.Enqueue<ClearTextureResource>(30);
 
-	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_GaussianV")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetQuarterScreenBufferA(), nullptr, true, false);
-	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(30, gfx.GetQuarterScreenBufferB());
-	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
-	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(30);
+		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_GaussianV")->pso);
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::QuarterScreenA), nullptr, true, false);
+		gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::QuarterScreenB));
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		gfxList.Enqueue<ClearTextureResource>(30);
 
-	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_GaussianH")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetQuarterScreenBufferB(), nullptr, false, false);
-	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(30, gfx.GetQuarterScreenBufferA());
-	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
-	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(30);
+		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_GaussianH")->pso);
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::QuarterScreenB), nullptr, false, false);
+		gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::QuarterScreenA));
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		gfxList.Enqueue<ClearTextureResource>(30);
 
-	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_GaussianV")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetQuarterScreenBufferA(), nullptr, false, false);
-	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(30, gfx.GetQuarterScreenBufferB());
-	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
-	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(30);
+		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_GaussianV")->pso);
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::QuarterScreenA), nullptr, false, false);
+		gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::QuarterScreenB));
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		gfxList.Enqueue<ClearTextureResource>(30);
+		gfxList.Enqueue<EndEvent>();
 
-	// Upsample
-	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Resample")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetHalfScreenBuffer(), nullptr, true, false);
-	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(30, gfx.GetQuarterScreenBufferA());
-	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
-	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(30);
+		// Upsample
+		gfxList.Enqueue<BeginEvent>("Upsampling Pass");
+		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Resample")->pso);
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HalfScreenA), nullptr, true, false);
+		gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::QuarterScreenA));
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		gfxList.Enqueue<ClearTextureResource>(30);
 
-	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Resample")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetLuminanceBuffer(), nullptr, true, false);
-	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(30, gfx.GetHalfScreenBuffer());
-	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
-	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(30);
+		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Resample")->pso);
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::Luminance), nullptr, true, false);
+		gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::HalfScreenA));
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		gfxList.Enqueue<ClearTextureResource>(30);
+		gfxList.Enqueue<EndEvent>();
 
-	// Bloom
-	gfx.GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Bloom")->pso);
-	gfx.GetGraphicsCommandList().Enqueue<SetRenderTarget>(gfx.GetBackBuffer(), nullptr, true, false);
-	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(30, gfx.GetLuminanceBuffer());
-	gfx.GetGraphicsCommandList().Enqueue<SetTextureResource>(31, gfx.GetIntermediateLDRBuffer());
-	gfx.GetGraphicsCommandList().Enqueue<RenderFullscreenQuad>();
-	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(30);
-	gfx.GetGraphicsCommandList().Enqueue<ClearTextureResource>(31);
+		// Bloom
+		gfxList.Enqueue<BeginEvent>("Bloom Pass");
+		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Bloom")->pso);
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetBackBuffer(), nullptr, true, false);
+		gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::Luminance));
+		gfxList.Enqueue<SetTextureResource>(31, gfx.GetIntermediateTexture(IntermediateTexture::LDR));
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		gfxList.Enqueue<ClearTextureResource>(30);
+		gfxList.Enqueue<ClearTextureResource>(31);
+		gfxList.Enqueue<EndEvent>();
+	}
 }
 
 void Renderer::RenderDeferredObjects(Scene& aScene, bool aDisableViewCulling)
@@ -314,6 +378,8 @@ void Renderer::RenderForwardObjects(Scene& aScene, bool aDisableViewCulling)
 
 void Renderer::QueueShadowmapTextureResources(Scene& aScene)
 {
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetMarker>("Set Shadowmaps");
+
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(100, aScene.myDirectionalLight->GetComponent<DirectionalLight>()->GetShadowMap());
 
 	for (int i = 0; i < aScene.myPointLights.size(); i++)
@@ -347,6 +413,8 @@ void Renderer::QueueShadowmapTextureResources(Scene& aScene)
 
 void Renderer::QueueUpdateLightBuffer(Scene& aScene)
 {
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetMarker>("Update Light Buffer");
+
 	std::shared_ptr<AmbientLight> ambientLight;
 	if (aScene.myAmbientLight)
 	{
@@ -381,6 +449,8 @@ void Renderer::QueueUpdateLightBuffer(Scene& aScene)
 
 void Renderer::QueueSpotLightShadows(Scene& aScene)
 {
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<BeginEvent>("Pointlight Shadows");
+
 	for (int i = 0; i < aScene.mySpotLights.size(); i++)
 	{
 		std::shared_ptr<SpotLight> spotLight = aScene.mySpotLights[i]->GetComponent<SpotLight>();
@@ -392,10 +462,14 @@ void Renderer::QueueSpotLightShadows(Scene& aScene)
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(aScene.mySpotLights[i]->GetComponent<Camera>());
 		QueueGameObjects(aScene, aScene.mySpotLights[i]->GetComponent<Camera>(), false, AssetManager::Get().GetAsset<PSOAsset>("PSO_Shadow")->pso);
 	}
+
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<EndEvent>();
 }
 
 void Renderer::QueuePointLightShadows(Scene& aScene)
 {
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<BeginEvent>("Pointlight Shadows");
+
 	for (int i = 0; i < aScene.myPointLights.size(); i++)
 	{
 		std::shared_ptr<PointLight> pointLight = aScene.myPointLights[i]->GetComponent<PointLight>();
@@ -408,10 +482,14 @@ void Renderer::QueuePointLightShadows(Scene& aScene)
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateShadowBuffer>(pointLight);
 		QueueGameObjects(aScene, pointLight, false, AssetManager::Get().GetAsset<PSOAsset>("PSO_ShadowCube")->pso);
 	}
+
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<EndEvent>();
 }
 
 void Renderer::QueueDirectionalLightShadows(Scene& aScene)
 {
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<BeginEvent>("Directional Light Shadows");
+
 	std::shared_ptr<DirectionalLight> dLight = aScene.myDirectionalLight->GetComponent<DirectionalLight>();
 	if (!dLight->GetActive()) return;
 	if (!dLight->CastsShadows()) return;
@@ -420,10 +498,13 @@ void Renderer::QueueDirectionalLightShadows(Scene& aScene)
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Shadow")->pso);
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(aScene.myDirectionalLight->GetComponent<Camera>());
 	QueueGameObjects(aScene, aScene.myDirectionalLight->GetComponent<Camera>(), false, AssetManager::Get().GetAsset<PSOAsset>("PSO_Shadow")->pso);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<EndEvent>();
 }
 
 void Renderer::QueueDebugGizmos(Scene& aScene, std::shared_ptr<Camera> aRenderCamera)
 {
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<BeginEvent>("Draw Debug Gizmos");
+
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Gizmo")->pso);
 	CU::PlaneVolume<float> frustumVolume = aRenderCamera->GetFrustumPlaneVolume();
 
@@ -438,6 +519,8 @@ void Renderer::QueueDebugGizmos(Scene& aScene, std::shared_ptr<Camera> aRenderCa
 			}
 		}
 	}
+
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<EndEvent>();
 }
 
 void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aRenderCamera, bool aDisableViewCulling, std::shared_ptr<PipelineStateObject> aPSOoverride)

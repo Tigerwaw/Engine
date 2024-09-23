@@ -8,9 +8,14 @@ Texture2D NormalTexture : register(t1);
 Texture2D MaterialTexture : register(t2);
 Texture2D EffectsTexture : register(t3);
 
-SamplerState DefaultSampler : register(s0);
-SamplerState DefaultClampSampler : register(s1);
+SamplerState LinearWrapSampler : register(s0);
+SamplerState LinearClampSampler : register(s1);
+SamplerState PointWrapSampler : register(s2);
+SamplerState PointClampSampler : register(s3);
 SamplerComparisonState ShadowCmpSampler : register(s15);
+
+Texture2D PerlinNoise : register(t50);
+Texture2D BlueNoise : register(t51);
 
 struct MeshVertex
 {
@@ -182,6 +187,19 @@ float2 Flipbook(float2 uv, float2 size, float progress)
     frame.y += (frameSize.y * floor(progress / size.x)) - frameSize.y;
 
     return frame;
+}
+
+float3 GetRandomNoise(float2 UV, float2 aNoiseScale)
+{
+    return BlueNoise.SampleLevel(PointWrapSampler, UV * aNoiseScale, 0).rgb;
+}
+
+float2 GetNoiseScale()
+{
+    uint w, h, m;
+    BlueNoise.GetDimensions(0, w, h, m);
+    float2 noiseScale = float2(w, h);
+    return FB_Resolution / noiseScale;
 }
 
 #endif // _DEFAULT_INCLUDES_

@@ -36,3 +36,14 @@ enum class Topology : unsigned
 	TRIANGLELIST = 4,
 	TRIANGLESTRIP = 5
 };
+
+enum class IntermediateTexture
+{
+	HDR,
+	LDR,
+	Luminance,
+	HalfScreenA,
+	HalfScreenB,
+	QuarterScreenA,
+	QuarterScreenB
+};

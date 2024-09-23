@@ -80,7 +80,9 @@ namespace CommonUtilities
 	template<class T>
 	Vector4<T> Vector4<T>::GetNormalized() const
 	{
-		Vector4<T> newVector(x / Length(), y / Length(), z / Length(), w / Length());
+		T length = Length();
+		length = max(length, (T)0.0001);
+		Vector4<T> newVector(x / length, y / length, z / length, w / length);
 		return newVector;
 	}
 

@@ -70,6 +70,7 @@ void ImGuiHandler::BeginFrame()
 void ImGuiHandler::Render()
 {
 #ifndef _RETAIL
+	GraphicsEngine::Get().BeginEvent("ImGui");
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
@@ -82,6 +83,8 @@ void ImGuiHandler::Render()
 			ImGui::RenderPlatformWindowsDefault();
 		}
 	}
+
+	GraphicsEngine::Get().EndEvent();
 #endif
 }
 

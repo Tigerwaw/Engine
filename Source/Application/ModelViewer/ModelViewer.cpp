@@ -173,34 +173,34 @@ void ModelViewer::InitializeApplication()
 			// Rendering
 			{
 				ImGui::Text("Rendering Mode");
-				if (ImGui::BeginCombo("##RenderModeDropdown", debugModeNames[static_cast<int>(GraphicsEngine::Get().GetCurrentDebugMode())].c_str()))
+				if (ImGui::BeginCombo("##RenderModeDropdown", debugModeNames[static_cast<int>(GraphicsEngine::Get().CurrentDebugMode)].c_str()))
 				{
 					for (unsigned i = 0; i < static_cast<unsigned>(DebugMode::COUNT); i++)
 					{
-						if (ImGui::Selectable(debugModeNames[i].c_str())) GraphicsEngine::Get().SetDebugMode(static_cast<DebugMode>(i));
+						if (ImGui::Selectable(debugModeNames[i].c_str())) GraphicsEngine::Get().CurrentDebugMode = static_cast<DebugMode>(i);
 					}
 
 					ImGui::EndCombo();
 				}
 			}
 
-			currentDebugMode = static_cast<unsigned>(GraphicsEngine::Get().GetCurrentDebugMode());
+			currentDebugMode = static_cast<unsigned>(GraphicsEngine::Get().CurrentDebugMode);
 
 			// Tonemapping
 			{
 				ImGui::Text("Tonemapper");
-				if (ImGui::BeginCombo("##TonemapperDropdown", tonemapperNames[static_cast<int>(GraphicsEngine::Get().GetTonemapper())].c_str()))
+				if (ImGui::BeginCombo("##TonemapperDropdown", tonemapperNames[static_cast<int>(GraphicsEngine::Get().Tonemapper)].c_str()))
 				{
 					for (unsigned i = 0; i < static_cast<unsigned>(Tonemapper::COUNT); i++)
 					{
-						if (ImGui::Selectable(tonemapperNames[i].c_str())) GraphicsEngine::Get().SetTonemapper(static_cast<Tonemapper>(i));
+						if (ImGui::Selectable(tonemapperNames[i].c_str())) GraphicsEngine::Get().Tonemapper = static_cast<Tonemapper>(i);
 					}
 
 					ImGui::EndCombo();
 				}
 			}
 
-			currentTonemapper = static_cast<unsigned>(GraphicsEngine::Get().GetTonemapper());
+			currentTonemapper = static_cast<unsigned>(GraphicsEngine::Get().Tonemapper);
 
 			ImGui::Separator();
 
@@ -264,60 +264,70 @@ void ModelViewer::InitializeApplication()
 			ImGui::SetNextWindowContentSize({ size.x, size.y });
 			ImGui::PushFont(newFont);
 			bool* open = NULL;
-			ImGui::Begin("Lighting Settings", open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
+			ImGui::Begin("Settings", open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
 			{
-				if (ImGui::BeginTabBar("Lights"))
+				if (ImGui::BeginTabBar("SettingsBar"))
 				{
-					if (ImGui::BeginTabItem("Ambient Light"))
+					if (ImGui::BeginTabItem("Lights"))
 					{
-						std::shared_ptr<GameObject> ambientLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("A_Light");
-						bool active = ambientLight->GetActive();
-						if (ImGui::Checkbox("Set Active", &active)) ambientLight->SetActive(active);
-						
-						std::shared_ptr<AmbientLight> aLight = ambientLight->GetComponent<AmbientLight>();
-						float intensity = aLight->GetIntensity();
-						ImGui::Text("Intensity");
-						if (ImGui::SliderFloat("##AmbientIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) aLight->SetIntensity(intensity);
-						ImGui::Spacing();
-						float color[3] = { aLight->GetColor().x, aLight->GetColor().y, aLight->GetColor().z };
-						ImGui::Text("Color");
-						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
-						if (ImGui::ColorPicker3("##AmbientColor", color, flags)) aLight->SetColor({ color[0], color[1], color[2] });
+						if (ImGui::BeginTabBar("LightsBar"))
+						{
+							if (ImGui::BeginTabItem("Ambient Light"))
+							{
+								std::shared_ptr<GameObject> ambientLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("A_Light");
+								bool active = ambientLight->GetActive();
+								if (ImGui::Checkbox("Set Active", &active)) ambientLight->SetActive(active);
+
+								std::shared_ptr<AmbientLight> aLight = ambientLight->GetComponent<AmbientLight>();
+								float intensity = aLight->GetIntensity();
+								ImGui::Text("Intensity");
+								if (ImGui::SliderFloat("##AmbientIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) aLight->SetIntensity(intensity);
+								ImGui::Spacing();
+								float color[3] = { aLight->GetColor().x, aLight->GetColor().y, aLight->GetColor().z };
+								ImGui::Text("Color");
+								unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
+								if (ImGui::ColorPicker3("##AmbientColor", color, flags)) aLight->SetColor({ color[0], color[1], color[2] });
+								ImGui::EndTabItem();
+							}
+
+							if (ImGui::BeginTabItem("Directional Light"))
+							{
+								std::shared_ptr<GameObject> directionalLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light");
+								bool active = directionalLight->GetActive();
+								if (ImGui::Checkbox("Set Active", &active)) directionalLight->SetActive(active);
+
+								std::shared_ptr<DirectionalLight> dLight = directionalLight->GetComponent<DirectionalLight>();
+								float intensity = dLight->GetIntensity();
+								ImGui::Text("Intensity");
+								if (ImGui::SliderFloat("##DirectionalIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) dLight->SetIntensity(intensity);
+								ImGui::Spacing();
+								float color[3] = { dLight->GetColor().x, dLight->GetColor().y, dLight->GetColor().z };
+								ImGui::Text("Color");
+								unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
+								if (ImGui::ColorPicker3("##DirectionalColor", color, flags)) dLight->SetColor({ color[0], color[1], color[2] });
+								ImGui::Spacing();
+
+								std::shared_ptr<GameObject> dLightParent = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light_Parent");
+								std::shared_ptr<Transform> dlptransform = dLightParent->GetComponent<Transform>();
+								std::shared_ptr<Transform> dlightTransform = directionalLight->GetComponent<Transform>();
+								CU::Vector3f dlpRot = dlptransform->GetRotation();
+								CU::Vector3f dlightRot = dlightTransform->GetRotation();
+								ImGui::Text("Rotation");
+								ImGui::Text("Pitch:");
+								ImGui::SameLine();
+								if (ImGui::SliderFloat("##DLightRotX", &dlightRot.x, 0, 90.0f, "%.0f")) dlightTransform->SetRotation(dlightRot);
+								ImGui::Text("Yaw:");
+								ImGui::SameLine();
+								if (ImGui::SliderFloat("##DLightRotY", &dlpRot.y, 0, 360.0f, "%.0f")) dlptransform->SetRotation(dlpRot);
+								ImGui::EndTabItem();
+							}
+
+							ImGui::EndTabBar();
+						}
+
 						ImGui::EndTabItem();
 					}
-
-					if (ImGui::BeginTabItem("Directional Light"))
-					{
-						std::shared_ptr<GameObject> directionalLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light");
-						bool active = directionalLight->GetActive();
-						if (ImGui::Checkbox("Set Active", &active)) directionalLight->SetActive(active);
-
-						std::shared_ptr<DirectionalLight> dLight = directionalLight->GetComponent<DirectionalLight>();
-						float intensity = dLight->GetIntensity();
-						ImGui::Text("Intensity");
-						if (ImGui::SliderFloat("##DirectionalIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) dLight->SetIntensity(intensity);
-						ImGui::Spacing();
-						float color[3] = { dLight->GetColor().x, dLight->GetColor().y, dLight->GetColor().z };
-						ImGui::Text("Color");
-						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
-						if (ImGui::ColorPicker3("##DirectionalColor", color, flags)) dLight->SetColor({ color[0], color[1], color[2] });
-						ImGui::Spacing();
-						
-						std::shared_ptr<GameObject> dLightParent = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light_Parent");
-						std::shared_ptr<Transform> dlptransform = dLightParent->GetComponent<Transform>();
-						std::shared_ptr<Transform> dlightTransform = directionalLight->GetComponent<Transform>();
-						CU::Vector3f dlpRot = dlptransform->GetRotation();
-						CU::Vector3f dlightRot = dlightTransform->GetRotation();
-						ImGui::Text("Rotation");
-						ImGui::Text("Pitch:");
-						ImGui::SameLine();
-						if (ImGui::SliderFloat("##DLightRotX", &dlightRot.x, 0, 90.0f, "%.0f")) dlightTransform->SetRotation(dlightRot);
-						ImGui::Text("Yaw:");
-						ImGui::SameLine();
-						if (ImGui::SliderFloat("##DLightRotY", &dlpRot.y, 0, 360.0f, "%.0f")) dlptransform->SetRotation(dlpRot);
-						ImGui::EndTabItem();
-					}
-
+					
 					std::shared_ptr<AnimatedModel> animModel = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model")->GetComponent<AnimatedModel>();
 					if (animModel)
 					{
@@ -334,7 +344,7 @@ void ModelViewer::InitializeApplication()
 							for (auto& state : states)
 							{
 								ImVec4 selectedAnimColor = buttonColor;
-								
+
 								if (state->name == currentAnimName)
 								{
 									selectedAnimColor = hoveredButtonColor;
@@ -529,7 +539,7 @@ void ModelViewer::InitializeApplication()
 						ImGui::EndTabItem();
 					}
 
-					/*if (ImGui::BeginTabItem("PSO"))
+					if (ImGui::BeginTabItem("PSO"))
 					{
 						if (myIsCustomMaterial)
 						{
@@ -567,7 +577,7 @@ void ModelViewer::InitializeApplication()
 						ImGui::SetItemTooltip(myPixelShaderPath.c_str());
 
 						ImGui::EndTabItem();
-					}*/
+					}
 
 					ImGui::EndTabBar();
 				}
@@ -590,7 +600,7 @@ void ModelViewer::UpdateApplication()
 			currentDebugMode = 0;
 		}
 
-		GraphicsEngine::Get().SetDebugMode(static_cast<DebugMode>(currentDebugMode));
+		GraphicsEngine::Get().CurrentDebugMode = static_cast<DebugMode>(currentDebugMode);
 	}
 
 	if (Engine::GetInstance().GetInputHandler().GetBinaryAction("F7"))
@@ -601,7 +611,7 @@ void ModelViewer::UpdateApplication()
 			currentTonemapper = 0;
 		}
 
-		GraphicsEngine::Get().SetTonemapper(static_cast<Tonemapper>(currentTonemapper));
+		GraphicsEngine::Get().Tonemapper = static_cast<Tonemapper>(currentTonemapper);
 	}
 }
 
@@ -635,9 +645,9 @@ void ModelViewer::ResetScene()
 	camTransform->SetRotation(cameraStartingRot);
 
 	currentDebugMode = 0;
-	GraphicsEngine::Get().SetDebugMode(DebugMode::None);
+	GraphicsEngine::Get().CurrentDebugMode = DebugMode::None;
 	currentTonemapper = 0;
-	GraphicsEngine::Get().SetTonemapper(Tonemapper::UE);
+	GraphicsEngine::Get().Tonemapper = Tonemapper::UE;
 	currentBlendtime = 0.5f;
 
 	engine.GetSceneHandler().FindGameObjectByName("Plane")->SetActive(true);
@@ -961,7 +971,11 @@ void ModelViewer::ExportMaterial()
 	newMat["MaterialTexture"] = myMaterialTexPath;
 
 	std::string name = "MAT_" + myMaterialName + ".json";
-	std::filesystem::path path = AssetManager::Get().GetContentRoot() / "Materials" / name;
+	std::filesystem::path parentDirectory = std::filesystem::current_path() / "ExportedAssets";
+	std::filesystem::create_directory(parentDirectory);
+	std::filesystem::path directory = parentDirectory / "Materials";
+	std::filesystem::create_directory(directory);
+	std::filesystem::path path = directory / name;
 	std::ofstream outFile(path);
 	outFile << newMat;
 	outFile.close();
@@ -979,7 +993,11 @@ void ModelViewer::ExportPSO()
 	newPSO["PixelShader"] = myPixelShaderPath;
 
 	std::string name = "PSO_" + myPSOName + ".json";
-	std::filesystem::path path = AssetManager::Get().GetContentRoot() / "EngineAssets/PSOs" / name;
+	std::filesystem::path parentDirectory = std::filesystem::current_path() / "ExportedAssets";
+	std::filesystem::create_directory(parentDirectory);
+	std::filesystem::path directory = parentDirectory / "PSOs";
+	std::filesystem::create_directory(directory);
+	std::filesystem::path path = directory / name;
 	std::ofstream outFile(path);
 	outFile << newPSO;
 	outFile.close();

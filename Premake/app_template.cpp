@@ -1,16 +1,5 @@
-#include "GameEngine/Application/Application.h"
-#include "GameEngine/Application/EntryPoint.h"
-
+#include "APPNAME.h"
 #include <GameEngine/Engine.h>
-
-class APPNAME : public Application
-{
-public:
-	APPNAME() {}
-    ~APPNAME() {}
-
-    void InitializeApplication() override;
-};
 
 Application* CreateApplication()
 {

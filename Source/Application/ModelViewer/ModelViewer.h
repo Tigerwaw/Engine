@@ -80,7 +80,7 @@ private:
 	std::string myPixelShaderName;
 	std::string myPixelShaderPath;
 
-	ImFont* newFont;
+	ImFont* newFont = nullptr;
 	unsigned currentDebugMode = 0;
 	unsigned currentTonemapper = 0;
 	float currentBlendtime = 0.5f;

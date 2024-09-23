@@ -6,6 +6,6 @@
 float4 main(Sprite_GSout input) : SV_TARGET
 {
     float2 uv = Flipbook(input.TexCoord0.xy, SPB_SpritesheetDimensions, SPB_CurrentFrame);
-    float4 color = AlbedoTexture.Sample(DefaultSampler, uv);
+    float4 color = AlbedoTexture.Sample(LinearWrapSampler, uv);
 	return color;
 }

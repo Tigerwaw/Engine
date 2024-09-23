@@ -74,7 +74,9 @@ namespace CommonUtilities
 	template<class T>
 	Vector2<T> Vector2<T>::GetNormalized() const
 	{
-		Vector2<T> newVector(x / Length(), y / Length());
+		T length = Length();
+		length = max(length, (T)0.0001);
+		Vector2<T> newVector(x / length, y / length);
 		return newVector;
 	}
 

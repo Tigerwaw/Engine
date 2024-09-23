@@ -1,19 +1,29 @@
 #include "../Includes/DefaultShaderIncludes.hlsli"
 #include "../Includes/DeferredShaderIncludes.hlsli"
 #include "../Includes/BRDF_Lights.hlsli"
+#include "../Includes/ConstantBuffers/PostProcessBuffer.hlsli"
 
 TextureCube EnvCubeMap : register(t126);
 Texture2D ShadowMapDir : register(t100);
 
+Texture2D SSAOTexture : register(t30);
+
 float4 main(Quad_VS_to_PS input) : SV_TARGET
 {
-    float3 albedoColor = Def_Albedo.Sample(DefaultSampler, input.UV).rgb;
-    float3 material = Def_Material.Sample(DefaultSampler, input.UV).rgb;
-    float4 effects = Def_Effects.Sample(DefaultSampler, input.UV);
-    float3 worldNormal = Def_WorldNormal.Sample(DefaultSampler, input.UV).rgb;
-    float4 worldPos = Def_WorldPos.Sample(DefaultSampler, input.UV);
+    float3 albedoColor = GBuffer_Albedo.Sample(LinearWrapSampler, input.UV).rgb;
+    float3 material = GBuffer_Material.Sample(LinearWrapSampler, input.UV).rgb;
+    float4 effects = GBuffer_Effects.Sample(LinearWrapSampler, input.UV);
+    float3 worldNormal = GBuffer_WorldNormal.Sample(LinearWrapSampler, input.UV).rgb;
+    float4 worldPos = GBuffer_WorldPos.Sample(LinearWrapSampler, input.UV);
     
-    const float ambientOcclusion = material.r;
+    float ambientOcclusion = material.r;
+    
+    if (PPB_SSAOEnabled)
+    {
+        const float ssaoMap = SSAOTexture.Sample(LinearClampSampler, input.UV).r;
+        ambientOcclusion = min(ssaoMap, material.r);
+    }
+    
     const float roughness = material.g;
     const float metalness = material.b;
     

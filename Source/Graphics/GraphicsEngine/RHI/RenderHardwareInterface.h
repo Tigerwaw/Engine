@@ -6,6 +6,8 @@ class ConstantBuffer;
 class Shader;
 class Texture;
 class DynamicVertexBuffer;
+struct ShaderInfo;
+
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct IDXGISwapChain;
@@ -65,7 +67,6 @@ public:
 
 	void ChangePipelineState(const PipelineStateObject& aNewPSO);
 
-	void CreateDefaultSamplerStates();
 	bool CreateSamplerState(std::string_view aName, const D3D11_SAMPLER_DESC& aSamplerDesc);
 	const Microsoft::WRL::ComPtr<ID3D11SamplerState>& GetSamplerState(const std::string& aName) const;
 
@@ -90,14 +91,12 @@ public:
 	void EndEvent() const;
 	void SetMarker(std::string_view aMarker) const;
 
+	ShaderInfo GetShaderInfo(const uint8_t* aTextureDataPtr, size_t aTextureDataSize);
+	ShaderInfo GetShaderInfo(std::wstring aShaderFilePath);
+
 	FORCEINLINE std::shared_ptr<Texture> GetBackBuffer() { return myBackBuffer; }
 	FORCEINLINE std::shared_ptr<Texture> GetDepthBuffer() { return myDepthBuffer; }
-	FORCEINLINE std::shared_ptr<Texture> GetIntermediateHDRBuffer() { return myIntermediateHDRBuffer; }
-	FORCEINLINE std::shared_ptr<Texture> GetIntermediateLDRBuffer() { return myIntermediateLDRBuffer; }
-	FORCEINLINE std::shared_ptr<Texture> GetLuminanceBuffer() { return myLuminanceBuffer; }
-	FORCEINLINE std::shared_ptr<Texture> GetHalfScreenBuffer() { return myHalfScreenBuffer; }
-	FORCEINLINE std::shared_ptr<Texture> GetQuarterScreenBufferA() { return myQuarterScreenBufferA; }
-	FORCEINLINE std::shared_ptr<Texture> GetQuarterScreenBufferB() { return myQuarterScreenBufferB; }
+	FORCEINLINE std::shared_ptr<Texture> GetIntermediateTexture(IntermediateTexture aIntermediateTexture) { return myIntermediateTextures[aIntermediateTexture]; }
 
 private:
 	bool CreateVertexBufferInternal(std::string_view aName, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer, const uint8_t* aVertexDataPointer, size_t aNumVertices, size_t aVertexSize, bool aIsDynamic = false) const;
@@ -106,6 +105,9 @@ private:
 
 	void SetObjectName(Microsoft::WRL::ComPtr<ID3D11DeviceChild> aObject, std::string_view aName) const;
 
+	void CreateDefaultSamplerStates();
+	void CreateIntermediateTextures(unsigned aClientWidth, unsigned aClientHeight);
+
 	Microsoft::WRL::ComPtr<ID3D11Device> myDevice;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> myContext;
 	Microsoft::WRL::ComPtr<IDXGISwapChain> mySwapChain;
@@ -113,12 +115,7 @@ private:
 
 	std::shared_ptr<Texture> myBackBuffer;
 	std::shared_ptr<Texture> myDepthBuffer;
-	std::shared_ptr<Texture> myIntermediateHDRBuffer;
-	std::shared_ptr<Texture> myIntermediateLDRBuffer;
-	std::shared_ptr<Texture> myLuminanceBuffer;
-	std::shared_ptr<Texture> myHalfScreenBuffer;
-	std::shared_ptr<Texture> myQuarterScreenBufferA;
-	std::shared_ptr<Texture> myQuarterScreenBufferB;
+	std::unordered_map<IntermediateTexture, std::shared_ptr<Texture>> myIntermediateTextures;
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D11SamplerState>> mySamplerStates;
 };
 

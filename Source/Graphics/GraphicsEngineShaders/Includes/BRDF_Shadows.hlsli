@@ -18,7 +18,7 @@ void FindBlocker(Texture2D shadowMap, float lightSizeUV, float lightNearPlane, o
     
     for (int i = 0; i < 16; ++i)
     {
-        float shadowMapDepth = shadowMap.SampleLevel(DefaultSampler, uv + PoissonDisk[i] * searchWidth, 0).r;
+        float shadowMapDepth = shadowMap.SampleLevel(LinearWrapSampler, uv + PoissonDisk[i] * searchWidth, 0).r;
         
         if (shadowMapDepth < zReceiver)
         {
@@ -80,7 +80,7 @@ void FindBlocker_Cube(TextureCube shadowCubemap, float lightSizeUV, float lightN
     for (int i = 0; i < 16; ++i)
     {
         float3 offset = float3(PoissonDisk[i] * searchWidth, 0);
-        float shadowMapDepth = shadowCubemap.Sample(DefaultSampler, direction + offset).r;
+        float shadowMapDepth = shadowCubemap.Sample(LinearWrapSampler, direction + offset).r;
         
         if (shadowMapDepth < zReceiver)
         {

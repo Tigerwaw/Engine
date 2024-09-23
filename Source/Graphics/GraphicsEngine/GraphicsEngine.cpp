@@ -1,6 +1,8 @@
 #include "GraphicsEngine.pch.h"
 #include "GraphicsEngine.h"
 
+#include "ShaderReflection/ShaderInfo.h"
+
 #include "GameEngine/Engine.h"
 #include "GraphicsEngine/Objects/Shader.h"
 #include "GraphicsEngine/Objects/Vertices/Vertex.h"
@@ -17,6 +19,7 @@
 #include "GraphicsEngine/Objects/ConstantBuffers/LightBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/ShadowBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/SpriteBuffer.h"
+#include "GraphicsEngine/Objects/ConstantBuffers/PostProcessBuffer.h"
 
 #include "GraphicsEngine/Objects/DynamicVertexBuffer.h"
 #include "Objects/GBuffer.h"
@@ -87,6 +90,8 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	myGBuffer = std::make_unique<GBuffer>();
 	CU::Vector2f resolution = Engine::GetInstance().GetResolution();
 	myGBuffer->CreateGBuffer(static_cast<unsigned>(resolution.x), static_cast<unsigned>(resolution.y));
+
+	CreateRandomKernel(64);
 
 	LOG(LogGraphicsEngine, Log, "Initialized Graphics Engine!");
 	return true;
@@ -387,6 +392,11 @@ bool GraphicsEngine::UpdateDynamicIndexBuffer(const std::vector<unsigned>& aInde
 	return myRHI->UpdateDynamicIndexBuffer(aIndexList, outIxBuffer);
 }
 
+std::shared_ptr<Texture> GraphicsEngine::GetIntermediateTexture(IntermediateTexture aIntermediateTexture)
+{
+	return myRHI->GetIntermediateTexture(aIntermediateTexture);
+}
+
 GraphicsEngine::GraphicsEngine() = default;
 GraphicsEngine::~GraphicsEngine() = default;
 
@@ -419,4 +429,31 @@ void GraphicsEngine::CreateConstantBuffers()
 	ConstantBuffer spriteBuffer;
 	myRHI->CreateConstantBuffer("SpriteBuffer", sizeof(SpriteBuffer), 6, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_GEOMETRY_SHADER | PIPELINE_STAGE_PIXEL_SHADER, spriteBuffer);
 	myConstantBuffers.emplace(ConstantBufferType::SpriteBuffer, std::move(spriteBuffer));
+
+	ConstantBuffer postProcessBuffer;
+	myRHI->CreateConstantBuffer("PostProcessBuffer", sizeof(PostProcessBuffer), 7, PIPELINE_STAGE_PIXEL_SHADER, postProcessBuffer);
+	myConstantBuffers.emplace(ConstantBufferType::PostProcessBuffer, std::move(postProcessBuffer));
+}
+
+void GraphicsEngine::CreateRandomKernel(unsigned aKernelSize)
+{
+	myRandomKernel.resize(aKernelSize);
+
+	std::uniform_real_distribution<float> randomValues(0, 1);
+	std::default_random_engine rng;
+
+	for (unsigned i = 0; i < aKernelSize; ++i)
+	{
+		CU::Vector4f v = {
+		randomValues(rng) * 2.0f - 1.0f,
+		randomValues(rng) * 2.0f - 1.0f,
+		randomValues(rng),
+		0
+		};
+		v = v.GetNormalized();
+		float s = static_cast<float>(i) / static_cast<float>(aKernelSize);
+		s = std::lerp(0.1f, 1.0f, s * s);
+		v *= s;
+		myRandomKernel[i] = v;
+	}
 }
