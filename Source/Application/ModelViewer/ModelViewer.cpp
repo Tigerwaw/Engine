@@ -135,8 +135,8 @@ void ModelViewer::InitializeApplication()
 				{
 					if (assetName.starts_with("SH") || assetName.starts_with("sh"))
 					{
-						myLogs.emplace_back("[ERROR] Modelviewer does not support loading in individual shaders currently!", CU::Vector3f(1.0f, 0, 0));
-						//SetShader(assetPath);
+						//myLogs.emplace_back("[ERROR] Modelviewer does not support loading in individual shaders currently!", CU::Vector3f(1.0f, 0, 0));
+						SetShader(assetPath);
 					}
 					else
 					{
@@ -169,40 +169,6 @@ void ModelViewer::InitializeApplication()
 
 			bool* open = NULL;
 			ImGui::Begin("Modelviewer", open, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
-
-			// Rendering
-			{
-				ImGui::Text("Rendering Mode");
-				if (ImGui::BeginCombo("##RenderModeDropdown", debugModeNames[static_cast<int>(GraphicsEngine::Get().CurrentDebugMode)].c_str()))
-				{
-					for (unsigned i = 0; i < static_cast<unsigned>(DebugMode::COUNT); i++)
-					{
-						if (ImGui::Selectable(debugModeNames[i].c_str())) GraphicsEngine::Get().CurrentDebugMode = static_cast<DebugMode>(i);
-					}
-
-					ImGui::EndCombo();
-				}
-			}
-
-			currentDebugMode = static_cast<unsigned>(GraphicsEngine::Get().CurrentDebugMode);
-
-			// Tonemapping
-			{
-				ImGui::Text("Tonemapper");
-				if (ImGui::BeginCombo("##TonemapperDropdown", tonemapperNames[static_cast<int>(GraphicsEngine::Get().Tonemapper)].c_str()))
-				{
-					for (unsigned i = 0; i < static_cast<unsigned>(Tonemapper::COUNT); i++)
-					{
-						if (ImGui::Selectable(tonemapperNames[i].c_str())) GraphicsEngine::Get().Tonemapper = static_cast<Tonemapper>(i);
-					}
-
-					ImGui::EndCombo();
-				}
-			}
-
-			currentTonemapper = static_cast<unsigned>(GraphicsEngine::Get().Tonemapper);
-
-			ImGui::Separator();
 
 			if (ImGui::Button("Reset Scene"))
 			{
@@ -268,6 +234,78 @@ void ModelViewer::InitializeApplication()
 			{
 				if (ImGui::BeginTabBar("SettingsBar"))
 				{
+					if (ImGui::BeginTabItem("Rendering"))
+					{
+						// Rendering
+						{
+							ImGui::Text("Rendering Mode");
+							if (ImGui::BeginCombo("##RenderModeDropdown", debugModeNames[static_cast<int>(GraphicsEngine::Get().CurrentDebugMode)].c_str()))
+							{
+								for (unsigned i = 0; i < static_cast<unsigned>(DebugMode::COUNT); i++)
+								{
+									if (ImGui::Selectable(debugModeNames[i].c_str())) GraphicsEngine::Get().CurrentDebugMode = static_cast<DebugMode>(i);
+								}
+
+								ImGui::EndCombo();
+							}
+						}
+
+						currentDebugMode = static_cast<unsigned>(GraphicsEngine::Get().CurrentDebugMode);
+
+						// Tonemapping
+						{
+							ImGui::Text("Tonemapper");
+							if (ImGui::BeginCombo("##TonemapperDropdown", tonemapperNames[static_cast<int>(GraphicsEngine::Get().Tonemapper)].c_str()))
+							{
+								for (unsigned i = 0; i < static_cast<unsigned>(Tonemapper::COUNT); i++)
+								{
+									if (ImGui::Selectable(tonemapperNames[i].c_str())) GraphicsEngine::Get().Tonemapper = static_cast<Tonemapper>(i);
+								}
+
+								ImGui::EndCombo();
+							}
+						}
+
+						currentTonemapper = static_cast<unsigned>(GraphicsEngine::Get().Tonemapper);
+
+						// Luminance
+						ImGui::Text("Luminance");
+						if (ImGui::BeginCombo("##LuminanceDropdown", GraphicsEngine::Get().LuminanceNames[static_cast<int>(GraphicsEngine::Get().LuminanceFunction)].c_str()))
+						{
+							for (unsigned i = 0; i < static_cast<unsigned>(Luminance::COUNT); i++)
+							{
+								if (ImGui::Selectable(GraphicsEngine::Get().LuminanceNames[i].c_str())) GraphicsEngine::Get().LuminanceFunction = static_cast<Luminance>(i);
+							}
+							ImGui::EndCombo();
+						}
+
+						ImGui::Separator();
+
+						// Bloom
+						ImGui::Checkbox("Enable Bloom", &GraphicsEngine::Get().BloomEnabled);
+						ImGui::Text("Mode");
+						if (ImGui::BeginCombo("##BloomDropdown", GraphicsEngine::Get().BloomNames[static_cast<int>(GraphicsEngine::Get().BloomFunction)].c_str()))
+						{
+							for (unsigned i = 0; i < static_cast<unsigned>(Bloom::COUNT); i++)
+							{
+								if (ImGui::Selectable(GraphicsEngine::Get().BloomNames[i].c_str())) GraphicsEngine::Get().BloomFunction = static_cast<Bloom>(i);
+							}
+							ImGui::EndCombo();
+						}
+
+						ImGui::Text("Intensity");
+						ImGui::SliderFloat("##BloomIntensity", &GraphicsEngine::Get().BloomStrength, 0, 1.0f);
+
+						ImGui::Separator();
+
+						ImGui::Checkbox("Enable SSAO", &GraphicsEngine::Get().SSAOEnabled);
+						ImGui::SliderFloat("Noise Power", &GraphicsEngine::Get().SSAONoisePower, 0, 1.0f);
+						ImGui::SliderFloat("Radius", &GraphicsEngine::Get().SSAORadius, 0, 0.5f);
+						ImGui::SliderFloat("Bias", &GraphicsEngine::Get().SSAOBias, 0, 0.1f);
+
+						ImGui::EndTabItem();
+					}
+
 					if (ImGui::BeginTabItem("Lights"))
 					{
 						if (ImGui::BeginTabBar("LightsBar"))
@@ -433,7 +471,7 @@ void ModelViewer::InitializeApplication()
 			CU::Vector2f windowPos = Engine::GetInstance().GetApplicationWindow().GetTopRight();
 			windowPos.y += 250.0f;
 
-			CU::Vector2f textureSize(64.0f, 64.0f);
+			CU::Vector2f textureSize(32.0f, 32.0f);
 			CU::Vector2f textureHoverSize(256.0f, 256.0f);
 
 			ImGui::SetNextWindowPos({ windowPos.x, windowPos.y });
@@ -477,63 +515,55 @@ void ModelViewer::InitializeApplication()
 						ImGui::Spacing();
 						ImGui::Spacing();
 
-						ImGui::Text(std::string("Albedo Texture - " + myAlbedoTexName).c_str());
-						ImGui::SetItemTooltip(myAlbedoTexPath.c_str());
-						ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Albedo).GetSRV(), { textureSize.x, textureSize.y });
-						if (ImGui::BeginItemTooltip())
+						for (const auto& [slot, texture] : myMaterial->GetTextures())
 						{
-							ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Albedo).GetSRV(), { textureHoverSize.x, textureHoverSize.y });
-							ImGui::EndTooltip();
-						}
-						ImGui::SameLine();
-						if (ImGui::Button("Remove##Albedo"))
-						{
-							myMaterial->SetTexture(Material::TextureType::Albedo, AssetManager::Get().GetAsset<TextureAsset>("T_Default_C")->texture);
-						}
-						ImGui::Spacing();
+							ImGui::Text(std::string("Slot " + std::to_string(slot) + " - " + myTextureNames[slot]).c_str());
+							ImGui::SetItemTooltip(myTexturePaths[slot].c_str());
+							ImGui::Image((void*)myMaterial->GetTextureOnSlot(slot).GetSRV(), { textureSize.x, textureSize.y });
+							if (ImGui::BeginItemTooltip())
+							{
+								ImGui::Image((void*)myMaterial->GetTextureOnSlot(slot).GetSRV(), { textureHoverSize.x, textureHoverSize.y });
+								ImGui::EndTooltip();
+							}
+							ImGui::SameLine();
+							if (ImGui::Button(std::string("Remove##" + std::to_string(slot)).c_str()))
+							{
+								myIsCustomMaterial = true;
+								myMaterialName = "";
+								myMaterialPath = "";
 
-						ImGui::Text(std::string("Normal Texture - " + myNormalTexName).c_str());
-						ImGui::SetItemTooltip(myNormalTexPath.c_str());
-						ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Normal).GetSRV(), { textureSize.x, textureSize.y });
-						if (ImGui::BeginItemTooltip())
-						{
-							ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Normal).GetSRV(), { textureHoverSize.x, textureHoverSize.y });
-							ImGui::EndTooltip();
-						}
-						ImGui::SameLine();
-						if (ImGui::Button("Remove##Normal"))
-						{
-							myMaterial->SetTexture(Material::TextureType::Normal, AssetManager::Get().GetAsset<TextureAsset>("T_Default_N")->texture);
-						}
-						ImGui::Spacing();
-
-						ImGui::Text(std::string("Material Texture - " + myMaterialTexName).c_str());
-						ImGui::SetItemTooltip(myMaterialTexPath.c_str());
-						ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Material).GetSRV(), { textureSize.x, textureSize.y });
-						if (ImGui::BeginItemTooltip())
-						{
-							ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Material).GetSRV(), { textureHoverSize.x, textureHoverSize.y });
-							ImGui::EndTooltip();
-						}
-						ImGui::SameLine();
-						if (ImGui::Button("Remove##Material"))
-						{
-							myMaterial->SetTexture(Material::TextureType::Material, AssetManager::Get().GetAsset<TextureAsset>("T_Default_M")->texture);
-						}
-						ImGui::Spacing();
-
-						ImGui::Text(std::string("Effects Texture - " + myEffectsTexName).c_str());
-						ImGui::SetItemTooltip(myEffectsTexPath.c_str());
-						ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Effects).GetSRV(), { textureSize.x, textureSize.y });
-						if (ImGui::BeginItemTooltip())
-						{
-							ImGui::Image((void*)myMaterial->GetTexture(Material::TextureType::Effects).GetSRV(), { textureHoverSize.x, textureHoverSize.y });
-							ImGui::EndTooltip();
-						}
-						ImGui::SameLine();
-						if (ImGui::Button("Remove##Effects"))
-						{
-							myMaterial->SetTexture(Material::TextureType::Effects, AssetManager::Get().GetAsset<TextureAsset>("T_Default_FX")->texture);
+								if (slot == static_cast<unsigned>(Material::TextureType::Albedo))
+								{
+									myMaterial->SetTextureOnSlot(slot, AssetManager::Get().GetAsset<TextureAsset>("T_Default_C")->texture);
+									myTextureNames[0] = "T_Default_C";
+									myTexturePaths[0] = "";
+								}
+								else if (slot == static_cast<unsigned>(Material::TextureType::Normal))
+								{
+									myMaterial->SetTextureOnSlot(slot, AssetManager::Get().GetAsset<TextureAsset>("T_Default_N")->texture);
+									myTextureNames[1] = "T_Default_N";
+									myTexturePaths[1] = "";
+								}
+								else if (slot == static_cast<unsigned>(Material::TextureType::Material))
+								{
+									myMaterial->SetTextureOnSlot(slot, AssetManager::Get().GetAsset<TextureAsset>("T_Default_M")->texture);
+									myTextureNames[2] = "T_Default_M";
+									myTexturePaths[2] = "";
+								}
+								else if (slot == static_cast<unsigned>(Material::TextureType::Effects))
+								{
+									myMaterial->SetTextureOnSlot(slot, AssetManager::Get().GetAsset<TextureAsset>("T_Default_FX")->texture);
+									myTextureNames[3] = "T_Default_FX";
+									myTexturePaths[3] = "";
+								}
+								else
+								{
+									myMaterial->ClearTextureOnSlot(slot);
+									myTextureNames[slot] = "";
+									myTexturePaths[slot] = "";
+								}
+							}
+							ImGui::Spacing();
 						}
 
 						ImGui::EndTabItem();
@@ -541,14 +571,14 @@ void ModelViewer::InitializeApplication()
 
 					if (ImGui::BeginTabItem("PSO"))
 					{
-						if (myIsCustomMaterial)
+						if (myIsCustomPSO)
 						{
 							ImGui::InputText("PSO Name", &myPSOName);
 						}
 						else
 						{
 							ImGui::Text(std::string("PSO - " + myPSOName).c_str());
-							ImGui::SetItemTooltip(myMaterialPath.c_str());
+							ImGui::SetItemTooltip(myPSOPath.c_str());
 						}
 
 						if (ImGui::Button("Reset PSO"))
@@ -556,7 +586,7 @@ void ModelViewer::InitializeApplication()
 							ResetPSO();
 						};
 
-						if (myIsCustomMaterial)
+						if (myIsCustomPSO)
 						{
 							ImGui::SameLine();
 							ImGui::BeginDisabled(true);
@@ -567,14 +597,14 @@ void ModelViewer::InitializeApplication()
 							ImGui::EndDisabled();
 						}
 
-						ImGui::Text(std::string("Vertex Shader - " + myVertexShaderName).c_str());
-						ImGui::SetItemTooltip(myVertexShaderPath.c_str());
+						ImGui::Text(std::string("Vertex Shader - " + myShaderNames[ShaderType::VertexShader]).c_str());
+						ImGui::SetItemTooltip(myShaderPaths[ShaderType::VertexShader].c_str());
 
-						ImGui::Text(std::string("Geometry Shader - " + myGeometryShaderName).c_str());
-						ImGui::SetItemTooltip(myGeometryShaderPath.c_str());
+						ImGui::Text(std::string("Geometry Shader - " + myShaderNames[ShaderType::GeometryShader]).c_str());
+						ImGui::SetItemTooltip(myShaderPaths[ShaderType::GeometryShader].c_str());
 
-						ImGui::Text(std::string("Pixel Shader - " + myPixelShaderName).c_str());
-						ImGui::SetItemTooltip(myPixelShaderPath.c_str());
+						ImGui::Text(std::string("Pixel Shader - " + myShaderNames[ShaderType::PixelShader]).c_str());
+						ImGui::SetItemTooltip(myShaderPaths[ShaderType::PixelShader].c_str());
 
 						ImGui::EndTabItem();
 					}
@@ -687,12 +717,17 @@ void ModelViewer::ResetMaterial()
 
 	myMaterialName = "MAT_DefaultMaterial";
 	myMaterialPath = "";
-	myAlbedoTexName = "T_Default_C";
-	myAlbedoTexPath = "";
-	myNormalTexName = "T_Default_N";
-	myNormalTexPath = "";
-	myMaterialTexName = "T_Default_M";
-	myMaterialTexPath = "";
+
+	myTextureNames.clear();
+	myTexturePaths.clear();
+	myTextureNames[0] = "T_Default_C";
+	myTexturePaths[0] = "";
+	myTextureNames[1] = "T_Default_N";
+	myTexturePaths[1] = "";
+	myTextureNames[2] = "T_Default_M";
+	myTexturePaths[2] = "";
+	myTextureNames[3] = "T_Default_FX";
+	myTexturePaths[3] = "";
 	myIsCustomMaterial = false;
 
 	myLogs.emplace_back("[LOG] Reset material to default");
@@ -705,12 +740,15 @@ void ModelViewer::ResetPSO()
 
 	myPSOName = "Default";
 	myPSOPath = "";
-	myVertexShaderName = "";
-	myVertexShaderPath = "";
-	myGeometryShaderName = "";
-	myGeometryShaderPath = "";
-	myPixelShaderName = "";
-	myPixelShaderPath = "";
+
+	myShaderNames.clear();
+	myShaderPaths.clear();
+	myShaderNames[ShaderType::VertexShader] = "";
+	myShaderPaths[ShaderType::VertexShader] = "";
+	myShaderNames[ShaderType::GeometryShader] = "";
+	myShaderPaths[ShaderType::GeometryShader] = "";
+	myShaderNames[ShaderType::PixelShader] = "";
+	myShaderPaths[ShaderType::PixelShader] = "";
 
 	myLogs.emplace_back("[LOG] Reset PSO to default");
 }
@@ -761,6 +799,8 @@ void ModelViewer::SetMaterial(std::shared_ptr<GameObject> aGO, std::filesystem::
 	std::string assetName = aAssetPath.filename().stem().string();
 	myMaterialName = assetName;
 	myMaterialPath = aAssetPath.string();
+	myTextureNames.clear();
+	myTexturePaths.clear();
 
 	std::ifstream path(AssetManager::Get().GetContentRoot() / aAssetPath);
 	nl::json data = nl::json();
@@ -776,32 +816,15 @@ void ModelViewer::SetMaterial(std::shared_ptr<GameObject> aGO, std::filesystem::
 	}
 	path.close();
 
-	if (data.contains("AlbedoTexture"))
+	if (data.contains("Textures"))
 	{
-		std::filesystem::path albedoPath = data["AlbedoTexture"].get<std::string>();
-		myAlbedoTexName = albedoPath.filename().stem().string();
-		myAlbedoTexPath = albedoPath.string();
-	}
-
-	if (data.contains("NormalTexture"))
-	{
-		std::filesystem::path normalPath = data["NormalTexture"].get<std::string>();
-		myNormalTexName = normalPath.filename().stem().string();
-		myNormalTexPath = normalPath.string();
-	}
-
-	if (data.contains("MaterialTexture"))
-	{
-		std::filesystem::path materialPath = data["MaterialTexture"].get<std::string>();
-		myMaterialTexName = materialPath.filename().stem().string();
-		myMaterialTexPath = materialPath.string();
-	}
-
-	if (data.contains("EffectsTexture"))
-	{
-		std::filesystem::path effectsPath = data["EffectsTexture"].get<std::string>();
-		myEffectsTexName = effectsPath.filename().stem().string();
-		myEffectsTexPath = effectsPath.string();
+		unsigned textureIndex = 0;
+		for (auto& texturePath : data["Textures"])
+		{
+			std::filesystem::path texPath = texturePath.get<std::string>();
+			myTextureNames[textureIndex] = texPath.filename().stem().string();
+			myTexturePaths[textureIndex] = texPath.string();
+		}
 	}
 
 	std::shared_ptr<Model> model = aGO->GetComponent<Model>();
@@ -826,8 +849,8 @@ void ModelViewer::SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::p
 	if (assetName.ends_with("C") || assetName.ends_with("c"))
 	{
 		myMaterial->SetTexture(Material::TextureType::Albedo, AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
-		myAlbedoTexName = assetName;
-		myAlbedoTexPath = aAssetPath.string();
+		myTextureNames[0] = assetName;
+		myTexturePaths[0] = aAssetPath.string();
 		myLogs.emplace_back("[LOG] Set albedo texture to " + assetName);
 		myIsCustomMaterial = true;
 		myMaterialName = "";
@@ -836,8 +859,8 @@ void ModelViewer::SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::p
 	else if (assetName.ends_with("N") || assetName.ends_with("n"))
 	{
 		myMaterial->SetTexture(Material::TextureType::Normal, AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
-		myNormalTexName = assetName;
-		myNormalTexPath = aAssetPath.string();
+		myTextureNames[1] = assetName;
+		myTexturePaths[1] = aAssetPath.string();
 		myLogs.emplace_back("[LOG] Set normal texture to " + assetName);
 		myIsCustomMaterial = true;
 		myMaterialName = "";
@@ -846,8 +869,8 @@ void ModelViewer::SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::p
 	else if (assetName.ends_with("M") || assetName.ends_with("m"))
 	{
 		myMaterial->SetTexture(Material::TextureType::Material, AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
-		myMaterialTexName = assetName;
-		myMaterialTexPath = aAssetPath.string();
+		myTextureNames[2] = assetName;
+		myTexturePaths[2] = aAssetPath.string();
 		myLogs.emplace_back("[LOG] Set material texture to " + assetName);
 		myIsCustomMaterial = true;
 		myMaterialName = "";
@@ -856,8 +879,8 @@ void ModelViewer::SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::p
 	else if (assetName.ends_with("FX") || assetName.ends_with("fx"))
 	{
 		myMaterial->SetTexture(Material::TextureType::Effects, AssetManager::Get().GetAsset<TextureAsset>(aAssetPath)->texture);
-		myEffectsTexName = assetName;
-		myEffectsTexPath = aAssetPath.string();
+		myTextureNames[3] = assetName;
+		myTexturePaths[3] = aAssetPath.string();
 		myLogs.emplace_back("[LOG] Set effects texture to " + assetName);
 		myIsCustomMaterial = true;
 		myMaterialName = "";
@@ -872,7 +895,13 @@ void ModelViewer::SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::p
 
 void ModelViewer::SetPSO(std::filesystem::path& aAssetPath)
 {
-	myPSO = AssetManager::Get().GetAsset<PSOAsset>(aAssetPath.stem())->pso;
+	std::shared_ptr<PSOAsset> psoAsset = AssetManager::Get().GetAsset<PSOAsset>(aAssetPath.stem());
+	if (!psoAsset)
+	{
+		return;
+	}
+
+	myPSO = psoAsset->pso->CreateInstance();
 	std::string assetName = aAssetPath.stem().string();
 	myPSOName = assetName;
 	myPSOPath = aAssetPath.string();
@@ -887,6 +916,7 @@ void ModelViewer::SetPSO(std::filesystem::path& aAssetPath)
 	catch (nl::json::parse_error e)
 	{
 		LOG(LogApplication, Error, "Failed to read pso asset {}, {}", aAssetPath.filename().string(), e.what());
+		myLogs.emplace_back("[Error] Failed to read pso asset " + assetName);
 		return;
 	}
 	path.close();
@@ -894,22 +924,22 @@ void ModelViewer::SetPSO(std::filesystem::path& aAssetPath)
 	if (data.contains("VertexShader"))
 	{
 		std::filesystem::path vsPath = data["VertexShader"].get<std::string>();
-		myVertexShaderName = vsPath.filename().stem().string();
-		myVertexShaderPath = vsPath.string();
+		myShaderNames[ShaderType::VertexShader] = vsPath.filename().stem().string();
+		myShaderPaths[ShaderType::VertexShader] = vsPath.string();
 	}
 
 	if (data.contains("GeometryShader"))
 	{
 		std::filesystem::path gsPath = data["GeometryShader"].get<std::string>();
-		myGeometryShaderName = gsPath.filename().stem().string();
-		myGeometryShaderPath = gsPath.string();
+		myShaderNames[ShaderType::GeometryShader] = gsPath.filename().stem().string();
+		myShaderNames[ShaderType::GeometryShader] = gsPath.string();
 	}
 
 	if (data.contains("PixelShader"))
 	{
 		std::filesystem::path psPath = data["PixelShader"].get<std::string>();
-		myPixelShaderName = psPath.filename().stem().string();
-		myPixelShaderPath = psPath.string();
+		myShaderNames[ShaderType::PixelShader] = psPath.filename().stem().string();
+		myShaderNames[ShaderType::PixelShader] = psPath.string();
 	}
 
 	myMaterial->SetPSO(myPSO);
@@ -931,22 +961,22 @@ void ModelViewer::SetShader(std::filesystem::path& aAssetPath)
 	{
 		myPSO->VertexShader = shaderAsset->shader;
 		myMaterial->SetPSO(myPSO);
-		myVertexShaderName = shaderAsset->name.string();
-		myVertexShaderPath = shaderAsset->path.string();
+		myShaderNames[ShaderType::VertexShader] = shaderAsset->name.string();
+		myShaderPaths[ShaderType::VertexShader] = shaderAsset->path.string();
 	}
 	else if (shaderAsset->name.string().ends_with("GS"))
 	{
 		myPSO->GeometryShader = shaderAsset->shader;
 		myMaterial->SetPSO(myPSO);
-		myGeometryShaderName = shaderAsset->name.string();
-		myGeometryShaderPath = shaderAsset->path.string();
+		myShaderNames[ShaderType::GeometryShader] = shaderAsset->name.string();
+		myShaderPaths[ShaderType::GeometryShader] = shaderAsset->path.string();
 	}
 	else if (shaderAsset->name.string().ends_with("PS"))
 	{
 		myPSO->PixelShader = shaderAsset->shader;
 		myMaterial->SetPSO(myPSO);
-		myPixelShaderName = shaderAsset->name.string();
-		myPixelShaderPath = shaderAsset->path.string();
+		myShaderNames[ShaderType::PixelShader] = shaderAsset->name.string();
+		myShaderPaths[ShaderType::PixelShader] = shaderAsset->path.string();
 	}
 	else
 	{
@@ -966,9 +996,14 @@ void ModelViewer::ExportMaterial()
 	albedoTint.emplace("B", 1.0f);
 	albedoTint.emplace("A", 1.0f);
 	newMat["AlbedoTint"] = albedoTint;
-	newMat["AlbedoTexture"] = myAlbedoTexPath;
-	newMat["NormalTexture"] = myNormalTexPath;
-	newMat["MaterialTexture"] = myMaterialTexPath;
+	std::vector<std::string> texPaths;
+
+	for (auto& texture : myTexturePaths)
+	{
+		texPaths.emplace_back(texture.second);
+	}
+
+	newMat["Textures"] = texPaths;
 
 	std::string name = "MAT_" + myMaterialName + ".json";
 	std::filesystem::path parentDirectory = std::filesystem::current_path() / "ExportedAssets";
@@ -988,9 +1023,9 @@ void ModelViewer::ExportPSO()
 	nl::json newPSO;
 
 	newPSO["VertexType"] = std::string("Default");
-	newPSO["VertexShader"] = myVertexShaderPath;
-	newPSO["GeometryShader"] = myGeometryShaderPath;
-	newPSO["PixelShader"] = myPixelShaderPath;
+	newPSO["VertexShader"] = myShaderPaths[ShaderType::VertexShader];
+	newPSO["GeometryShader"] = myShaderPaths[ShaderType::GeometryShader];
+	newPSO["PixelShader"] = myShaderPaths[ShaderType::PixelShader];
 
 	std::string name = "PSO_" + myPSOName + ".json";
 	std::filesystem::path parentDirectory = std::filesystem::current_path() / "ExportedAssets";

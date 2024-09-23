@@ -6,7 +6,9 @@
     "B": 1.0,
     "A": 1.0
   },
-  "AlbedoTexture": "EngineAssets/Textures/TestCube/T_TestCube_C.dds",
-  "NormalTexture": "EngineAssets/Textures/TestCube/T_TestCube_N.dds",
-  "MaterialTexture": "EngineAssets/Textures/TestCube/T_TestCube_M.dds"
+  "Textures": [
+    "EngineAssets/Textures/TestCube/T_TestCube_C.dds",
+    "EngineAssets/Textures/TestCube/T_TestCube_N.dds",
+    "EngineAssets/Textures/TestCube/T_TestCube_M.dds"
+  ]
 }

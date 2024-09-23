@@ -350,67 +350,25 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
         asset->material->MaterialSettings().emissiveStrength = data["EmissiveStrength"].get<float>();
     }
 
-    if (data.contains("AlbedoTexture"))
+    if (data.contains("Textures"))
     {
-        bool textureExists = true;
-        std::filesystem::path albedoPath = data["AlbedoTexture"].get<std::string>();
-        std::filesystem::path albedoName = albedoPath.stem();
-        if (myAssets.find(albedoName) == myAssets.end())
+        unsigned textureIndex = 0;
+        for (auto& texturePath : data["Textures"])
         {
-            textureExists = RegisterTextureAsset(myContentRoot / albedoPath);
-        }
+            bool textureExists = true;
+            std::filesystem::path texPath = texturePath.get<std::string>();
+            std::filesystem::path texName = texPath.stem();
+            if (myAssets.find(texName) == myAssets.end())
+            {
+                textureExists = RegisterTextureAsset(myContentRoot / texPath);
+            }
 
-        if (textureExists)
-        {
-            asset->material->SetTexture(Material::TextureType::Albedo, GetAsset<TextureAsset>(albedoName)->texture);
-        }
-    }
+            if (textureExists)
+            {
+                asset->material->SetTextureOnSlot(textureIndex, GetAsset<TextureAsset>(texName)->texture);
+            }
 
-    if (data.contains("NormalTexture"))
-    {
-        bool textureExists = true;
-        std::filesystem::path normalPath = data["NormalTexture"].get<std::string>();
-        std::filesystem::path normalName = normalPath.stem();
-        if (myAssets.find(normalName) == myAssets.end())
-        {
-            textureExists = RegisterTextureAsset(myContentRoot / normalPath);
-        }
-
-        if (textureExists)
-        {
-            asset->material->SetTexture(Material::TextureType::Normal, GetAsset<TextureAsset>(normalName)->texture);
-        }
-    }
-
-    if (data.contains("MaterialTexture"))
-    {
-        bool textureExists = true;
-        std::filesystem::path materialPath = data["MaterialTexture"].get<std::string>();
-        std::filesystem::path materialName = materialPath.stem();
-        if (myAssets.find(materialName) == myAssets.end())
-        {
-            textureExists = RegisterTextureAsset(myContentRoot / materialPath);
-        }
-
-        if (textureExists)
-        {
-            asset->material->SetTexture(Material::TextureType::Material, GetAsset<TextureAsset>(materialName)->texture);
-        }
-    }
-
-    if (data.contains("EffectsTexture"))
-    {
-        bool textureExists = true;
-        std::filesystem::path effectsPath = data["EffectsTexture"].get<std::string>();
-        std::filesystem::path effectsName = effectsPath.stem();
-        if (myAssets.find(effectsName) == myAssets.end())
-        {
-            textureExists = RegisterTextureAsset(myContentRoot / effectsPath);
-        }
-
-        if (textureExists)
-        {
-            asset->material->SetTexture(Material::TextureType::Effects, GetAsset<TextureAsset>(effectsName)->texture);
+            textureIndex++;
         }
     }
 
@@ -516,20 +474,47 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
         }
     }
 
+    std::filesystem::path vsPath = "";
+    std::filesystem::path gsPath = "";
+    std::filesystem::path psPath = "";
+
     if (data.contains("VertexShader") && data["VertexShader"] != "")
     {
-        psoDesc.vsPath = (GetContentRoot() / GetAsset<ShaderAsset>(data["VertexShader"].get<std::string>())->path).wstring();
-        psoDesc.vsShader = GetAsset<ShaderAsset>(data["VertexShader"].get<std::string>())->shader;
+        vsPath = GetContentRoot() / GetAsset<ShaderAsset>(data["VertexShader"].get<std::string>())->path;
     }
 
     if (data.contains("GeometryShader") && data["GeometryShader"] != "")
     {
-        psoDesc.gsShader = GetAsset<ShaderAsset>(data["GeometryShader"].get<std::string>())->shader;
+        gsPath = GetContentRoot() / GetAsset<ShaderAsset>(data["GeometryShader"].get<std::string>())->path;
     }
 
     if (data.contains("PixelShader") && data["PixelShader"] != "")
     {
-        psoDesc.psShader = GetAsset<ShaderAsset>(data["PixelShader"].get<std::string>())->shader;
+        psPath = GetContentRoot() / GetAsset<ShaderAsset>(data["PixelShader"].get<std::string>())->path;
+    }
+
+#ifndef _RETAIL
+    if (!GraphicsEngine::Get().ValidateShaderCombination(vsPath, gsPath, psPath))
+    {
+        return false;
+    }
+#endif
+
+
+    if (!vsPath.empty())
+    {
+        psoDesc.vsPath = vsPath.wstring();
+        psoDesc.vsShader = GetAsset<ShaderAsset>(vsPath.stem())->shader;
+    }
+
+    if (!gsPath.empty())
+    {
+        psoDesc.gsShader = GetAsset<ShaderAsset>(gsPath.stem())->shader;
+    }
+
+    if (!psPath.empty())
+    {
+        psoDesc.psShader = GetAsset<ShaderAsset>(psPath.stem())->shader;
     }
 
     if (data.contains("RasterizerDesc"))

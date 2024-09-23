@@ -116,6 +116,40 @@ ShaderInfo ShaderInfo::Reflect(const uint8_t* aShaderData, size_t aShaderDataSiz
 		                  return A.Slot < B.Slot;
 	                  });
 
+
+	for (size_t i = 0; i < shaderDesc.InputParameters; i++)
+	{
+		D3D11_SIGNATURE_PARAMETER_DESC inputParams = {};
+		shaderReflection->GetInputParameterDesc(static_cast<UINT>(i), &inputParams);
+
+		if (inputParams.SystemValueType != D3D_NAME_UNDEFINED) continue;
+
+		ParameterInfo paramInfo;
+		paramInfo.Register = static_cast<unsigned>(inputParams.Register);
+		paramInfo.SemanticName = inputParams.SemanticName;
+		paramInfo.SemanticIndex = inputParams.SemanticIndex;
+		paramInfo.Type = static_cast<ComponentType>(inputParams.ComponentType);
+
+		result.myInputParameters.emplace_back(paramInfo);
+	}
+
+	for (size_t i = 0; i < shaderDesc.OutputParameters; i++)
+	{
+		D3D11_SIGNATURE_PARAMETER_DESC outputParams = {};
+		shaderReflection->GetOutputParameterDesc(static_cast<UINT>(i), &outputParams);
+
+		if (outputParams.SystemValueType != D3D_NAME_UNDEFINED) continue;
+
+		ParameterInfo paramInfo;
+		paramInfo.Register = static_cast<unsigned>(outputParams.Register);
+		paramInfo.SemanticName = outputParams.SemanticName;
+		paramInfo.SemanticIndex = outputParams.SemanticIndex;
+		paramInfo.Type = static_cast<ComponentType>(outputParams.ComponentType);
+
+		result.myOutputParameters.emplace_back(paramInfo);
+	}
+
+
 	result.myInstructionCount = shaderDesc.InstructionCount;
 	result.myConstantBuffers.reserve(shaderDesc.ConstantBuffers);
 	result.myType = static_cast<ShaderType>(D3D11_SHVER_GET_TYPE(shaderDesc.Version));

@@ -282,6 +282,53 @@ bool GraphicsEngine::CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, PSODes
 	return true;
 }
 
+const bool GraphicsEngine::CompareShaderParameters(const std::filesystem::path& aShaderOnePath, const std::filesystem::path& aShaderTwoPath) const
+{
+	ShaderInfo shaderOneInfo = myRHI->GetShaderInfo(aShaderOnePath);
+	ShaderInfo shaderTwoInfo = myRHI->GetShaderInfo(aShaderTwoPath);
+
+	if (shaderOneInfo.GetOutputParameters().size() != shaderTwoInfo.GetInputParameters().size())
+	{
+		LOG(LogGraphicsEngine, Error, "Output of shader {} ({} outputs) and input of shader {} ({} inputs) do not match!", aShaderOnePath.string(), shaderOneInfo.GetOutputParameters().size(), aShaderTwoPath.string(), shaderTwoInfo.GetInputParameters().size());
+		return false;
+	}
+
+	for (size_t i = 0; i < shaderOneInfo.GetOutputParameters().size(); i++)
+	{
+		auto& outParam = shaderOneInfo.GetOutputParameters()[i];
+		auto& inParam = shaderTwoInfo.GetInputParameters()[i];
+		if (outParam != inParam)
+		{
+			LOG(LogGraphicsEngine, Error, "Output of shader {} and input of shader {} do not match! {} != {}", aShaderOnePath.string(), aShaderTwoPath.string(), outParam.SemanticName, inParam.SemanticName);
+			return false;
+		}
+	}
+
+	return true;
+}
+
+const bool GraphicsEngine::ValidateShaderCombination(const std::filesystem::path& aVertexShaderPath, const std::filesystem::path& aGeometryShaderPath, const std::filesystem::path& aPixelShaderPath) const
+{
+	bool hasVertexShader = aVertexShaderPath != "";
+	bool hasGeometryShader = aGeometryShaderPath != "";
+	bool hasPixelShader = aPixelShaderPath != "";
+
+	if (hasVertexShader && hasGeometryShader && hasPixelShader)
+	{
+		return (CompareShaderParameters(aVertexShaderPath, aGeometryShaderPath) && CompareShaderParameters(aGeometryShaderPath, aPixelShaderPath));
+	}
+	else if (hasVertexShader && hasPixelShader)
+	{
+		return CompareShaderParameters(aVertexShaderPath, aPixelShaderPath);
+	}
+	else if (hasVertexShader && hasGeometryShader)
+	{
+		return CompareShaderParameters(aVertexShaderPath, aGeometryShaderPath);
+	}
+
+	return true;
+}
+
 bool GraphicsEngine::CreateShadowMap(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture)
 {
 	return myRHI->CreateShadowMap(aName, aWidth, aHeight, outTexture);
@@ -337,20 +384,21 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<M
 				}
 			}
 
-			SetTextureResource_PS(0, aMaterialList[element.MaterialIndex]->GetTexture(Material::TextureType::Albedo));
-			SetTextureResource_PS(1, aMaterialList[element.MaterialIndex]->GetTexture(Material::TextureType::Normal));
-			SetTextureResource_PS(2, aMaterialList[element.MaterialIndex]->GetTexture(Material::TextureType::Material));
-			SetTextureResource_PS(3, aMaterialList[element.MaterialIndex]->GetTexture(Material::TextureType::Effects));
+			for (auto& [slot, texture] : aMaterialList[element.MaterialIndex]->GetTextures())
+			{
+				SetTextureResource_PS(slot, *texture);
+			}
 		}
 
 		myRHI->DrawIndexed(element.IndexOffset, element.NumIndices);
 		myDrawcallAmount++;
+
+		for (auto& [slot, texture] : aMaterialList[element.MaterialIndex]->GetTextures())
+		{
+			ClearTextureResource_PS(slot);
+		}
 	}
 
-	ClearTextureResource_PS(0);
-	ClearTextureResource_PS(1);
-	ClearTextureResource_PS(2);
-	ClearTextureResource_PS(3);
 	ClearTextureResource_PS(127);
 }
 

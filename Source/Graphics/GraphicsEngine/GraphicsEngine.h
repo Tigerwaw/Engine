@@ -140,6 +140,13 @@ public:
 	bool CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, PSODescription& aPSOdesc);
 	std::shared_ptr<PipelineStateObject> GetDefaultPSO() { return myDefaultPSO; }
 
+	const bool CompareShaderParameters(const std::filesystem::path& aShaderOnePath, const std::filesystem::path& aShaderTwoPath) const;
+
+	const bool ValidateShaderCombination(
+		const std::filesystem::path& aVertexShaderPath,
+		const std::filesystem::path& aGeometryShaderPath,
+		const std::filesystem::path& aPixelShaderPath) const;
+
 	bool CreateShadowMap(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture);
 	bool CreateShadowCubemap(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture);
 
@@ -227,10 +234,10 @@ public:
 	bool SSAOEnabled = true;
 	Bloom BloomFunction = Bloom::ScaledToLuminance;
 	Luminance LuminanceFunction = Luminance::Fade;
+	float BloomStrength = 0.5f;
 	float SSAONoisePower = 0.25f;
 	float SSAORadius = 0.05f;
 	float SSAOBias = 0.025f;
-	float BloomStrength = 1.0f;
 
 private:
 	GraphicsEngine();

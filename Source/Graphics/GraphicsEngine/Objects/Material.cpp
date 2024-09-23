@@ -13,9 +13,9 @@ std::shared_ptr<Material> Material::CreateInstance() const
 	instance->myPSO = myPSO;
 	instance->myMaterialSettings = myMaterialSettings;
 
-	for (auto& texture : myTextures)
+	for (auto& [slot, texture] : myTextures)
 	{
-		instance->SetTexture(texture.first, texture.second);
+		instance->SetTextureOnSlot(slot, texture);
 	}
 
 	return instance;
@@ -23,15 +23,35 @@ std::shared_ptr<Material> Material::CreateInstance() const
 
 void Material::SetTexture(TextureType aTextureType, std::shared_ptr<Texture> aTexture)
 {
-	myTextures[aTextureType] = aTexture;
+	SetTextureOnSlot(static_cast<unsigned>(aTextureType), aTexture);
 }
 
 Texture& Material::GetTexture(TextureType aTextureType)
 {
-	if (myTextures.find(aTextureType) == myTextures.begin())
+	return GetTextureOnSlot(static_cast<unsigned>(aTextureType));
+}
+
+void Material::SetTextureOnSlot(unsigned aTextureSlot, std::shared_ptr<Texture> aTexture)
+{
+	myTextures[aTextureSlot] = aTexture;
+}
+
+Texture& Material::GetTextureOnSlot(unsigned aTextureSlot)
+{
+	if (myTextures.find(aTextureSlot) == myTextures.end())
 	{
 		assert("Can't find texture!");
 	}
 
-	return *myTextures.at(aTextureType);
+	return *myTextures.at(aTextureSlot);
+}
+
+void Material::ClearTextureOnSlot(unsigned aTextureSlot)
+{
+	if (myTextures.find(aTextureSlot) == myTextures.end())
+	{
+		assert("Can't find texture!");
+	}
+
+	myTextures.erase(myTextures.find(aTextureSlot));
 }

@@ -25,8 +25,15 @@ public:
 	void SetTexture(TextureType aTextureType, std::shared_ptr<Texture> aTexture);
 	Texture& GetTexture(TextureType aTextureType);
 
+	void SetTextureOnSlot(unsigned aTextureSlot, std::shared_ptr<Texture> aTexture);
+	Texture& GetTextureOnSlot(unsigned aTextureSlot);
+
+	void ClearTextureOnSlot(unsigned aTextureSlot);
+
+	const std::unordered_map<unsigned, std::shared_ptr<Texture>>& GetTextures() const { return myTextures; }
+
 private:
 	MaterialBuffer myMaterialSettings;
 	std::shared_ptr<PipelineStateObject> myPSO;
-	std::unordered_map<TextureType, std::shared_ptr<Texture>> myTextures;
+	std::unordered_map<unsigned, std::shared_ptr<Texture>> myTextures;
 };

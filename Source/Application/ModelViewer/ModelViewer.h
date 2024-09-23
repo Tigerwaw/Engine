@@ -56,29 +56,21 @@ private:
 	std::shared_ptr<Material> myMaterial;
 	std::shared_ptr<PipelineStateObject> myPSO;
 	bool myIsCustomMaterial = false;
+	bool myIsCustomPSO = false;
 
 	std::string myMeshName;
 	std::string myMeshPath;
 
 	std::string myMaterialName;
 	std::string myMaterialPath;
-	std::string myAlbedoTexName;
-	std::string myAlbedoTexPath;
-	std::string myNormalTexName;
-	std::string myNormalTexPath;
-	std::string myMaterialTexName;
-	std::string myMaterialTexPath;
-	std::string myEffectsTexName;
-	std::string myEffectsTexPath;
+
+	std::unordered_map<unsigned, std::string> myTextureNames;
+	std::unordered_map<unsigned, std::string> myTexturePaths;
 
 	std::string myPSOName;
 	std::string myPSOPath;
-	std::string myVertexShaderName;
-	std::string myVertexShaderPath;
-	std::string myGeometryShaderName;
-	std::string myGeometryShaderPath;
-	std::string myPixelShaderName;
-	std::string myPixelShaderPath;
+	std::unordered_map<ShaderType, std::string> myShaderNames;
+	std::unordered_map<ShaderType, std::string> myShaderPaths;
 
 	ImFont* newFont = nullptr;
 	unsigned currentDebugMode = 0;

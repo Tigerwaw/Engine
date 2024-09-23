@@ -16,6 +16,8 @@ struct PipelineStateObject
 	PipelineStateObject();
 	~PipelineStateObject();
 
+	std::shared_ptr<PipelineStateObject> CreateInstance() const;
+
 	Microsoft::WRL::ComPtr<ID3D11BlendState> BlendState;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> RasterizerState;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> DepthStencilState;

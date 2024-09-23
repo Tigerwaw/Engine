@@ -28,6 +28,20 @@ struct ShaderInfo
 		Unknown
 	};
 
+	enum class ComponentType : unsigned
+	{
+		Unknown = 0,
+		UInt = 1,
+		Int = 2,
+		Float = 3,
+		UInt16 = 4,
+		Int16 = 5,
+		Half = 6,
+		UInt64 = 7,
+		Int64 = 8,
+		Double = 9,
+	};
+
 	struct VariableInfo
 	{
 		// Name of the variable
@@ -67,11 +81,29 @@ struct ShaderInfo
 		unsigned Slot;
 	};
 
+	struct ParameterInfo
+	{
+		unsigned Register;
+		std::string SemanticName;
+		unsigned SemanticIndex;
+		ComponentType Type;
+
+		bool operator==(const ParameterInfo& aOtherParam) const
+		{
+			return (Register == aOtherParam.Register
+				&& SemanticName == aOtherParam.SemanticName
+				&& SemanticIndex == aOtherParam.SemanticIndex
+				&& Type == aOtherParam.Type);
+		}
+	};
+
 	FORCEINLINE ShaderType GetType() const { return myType; }
 	FORCEINLINE unsigned GetInstructionCount() const { return myInstructionCount; }
 	FORCEINLINE const std::vector<ConstantBufferInfo>& GetConstantBufferInfos() const { return myConstantBuffers; }
 	FORCEINLINE const std::vector<TextureInfo>& GetTextureSlots() const { return myTextureSlots; }
 	FORCEINLINE const std::vector<SamplerInfo>& GetSamplerSlots() const { return mySamplerSlots; }
+	FORCEINLINE const std::vector<ParameterInfo>& GetInputParameters() const { return myInputParameters; }
+	FORCEINLINE const std::vector<ParameterInfo>& GetOutputParameters() const { return myOutputParameters; }
 
 	bool HasConstantBufferInfo(const std::string& aConstantBufferName) const;
 	const ConstantBufferInfo& GetConstantBufferInfo(const std::string& aConstantBufferName) const;
@@ -84,4 +116,6 @@ private:
 	std::unordered_map<std::string, size_t> myConstantBufferNameToIndex;
 	std::vector<TextureInfo> myTextureSlots;
 	std::vector<SamplerInfo> mySamplerSlots;
+	std::vector<ParameterInfo> myInputParameters;
+	std::vector<ParameterInfo> myOutputParameters;
 };
