@@ -6,6 +6,7 @@
 #include "Objects/Vertices/Vertex.h"
 #include "Objects/Vertices/DebugLineVertex.h"
 #include "Objects/Vertices/TextVertex.h"
+#include "Objects/Vertices/ParticleVertex.h"
 
 #include "Math/Matrix.hpp"
 #include "Math/Vector.hpp"
@@ -472,6 +473,11 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
             psoDesc.inputLayoutDefinition = TextVertex::InputLayoutDefinition;
             psoDesc.vertexStride = sizeof(TextVertex);
         }
+        else if (data["VertexType"].get<std::string>() == "Particle")
+        {
+            psoDesc.inputLayoutDefinition = ParticleVertex::InputLayoutDefinition;
+            psoDesc.vertexStride = sizeof(ParticleVertex);
+        }
     }
 
     std::filesystem::path vsPath = "";
@@ -583,6 +589,11 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
         {
             psoDesc.independentBlend = data["BlendStateDesc"]["IndependentBlend"].get<bool>();
         }
+    }
+
+    if (data.contains("UseReadOnlyDepthStencil"))
+    {
+        psoDesc.useReadOnlyDepthStencilState;
     }
 
     if (data.contains("Samplers"))
@@ -728,7 +739,7 @@ bool AssetManager::ValidateAsset(const std::filesystem::path& aPath)
     std::filesystem::path assetPath = MakeRelative(aPath);
     if (myAssets.find(assetPath.stem()) != myAssets.end())
     {
-        LOG(LogAssetManager, Warning, "Asset with name '{}' is already registered!", aPath.string());
+        //LOG(LogAssetManager, Warning, "Asset with name '{}' is already registered!", aPath.string());
         return false;
     }
 

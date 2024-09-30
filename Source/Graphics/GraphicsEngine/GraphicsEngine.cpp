@@ -12,6 +12,7 @@
 #include "GraphicsEngine/Objects/Sprite.h"
 #include "GraphicsEngine/Objects/Material.h"
 #include "GraphicsEngine/Objects/Texture.h"
+#include "GraphicsEngine/Objects/ParticleSystem/ParticleEmitter.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/FrameBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/ObjectBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/AnimationBuffer.h"
@@ -273,6 +274,21 @@ bool GraphicsEngine::CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, PSODes
 		LOG(LogGraphicsEngine, Log, "Successfully created blend state for PSO {}!", aPSOdesc.name);
 	}
 
+	if (aPSOdesc.useReadOnlyDepthStencilState)
+	{
+		D3D11_DEPTH_STENCIL_DESC depthStencilDesc = CD3D11_DEPTH_STENCIL_DESC();
+		depthStencilDesc.DepthEnable = true;
+		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+		depthStencilDesc.StencilEnable = false;
+
+		if (!myRHI->CreateDepthStencilState(aPSOdesc.name + "_DepthStencilState", depthStencilDesc, *aPSO))
+		{
+			LOG(LogGraphicsEngine, Error, "Failed to create depth stencil state for PSO {}!", aPSOdesc.name);
+			return false;
+		}
+	}
+
 	for (auto& sampler : aPSOdesc.samplerList)
 	{
 		aPSO->SamplerStates[sampler.first] = myRHI->GetSamplerState(sampler.second);
@@ -289,7 +305,7 @@ const bool GraphicsEngine::CompareShaderParameters(const std::filesystem::path& 
 
 	if (shaderOneInfo.GetOutputParameters().size() != shaderTwoInfo.GetInputParameters().size())
 	{
-		LOG(LogGraphicsEngine, Error, "Output of shader {} ({} outputs) and input of shader {} ({} inputs) do not match!", aShaderOnePath.string(), shaderOneInfo.GetOutputParameters().size(), aShaderTwoPath.string(), shaderTwoInfo.GetInputParameters().size());
+		LOG(LogGraphicsEngine, Error, "Output of shader {} ({} outputs) and input of shader {} ({} inputs) do not match!", aShaderOnePath.stem().string(), shaderOneInfo.GetOutputParameters().size(), aShaderTwoPath.stem().string(), shaderTwoInfo.GetInputParameters().size());
 		return false;
 	}
 
@@ -299,7 +315,7 @@ const bool GraphicsEngine::CompareShaderParameters(const std::filesystem::path& 
 		auto& inParam = shaderTwoInfo.GetInputParameters()[i];
 		if (outParam != inParam)
 		{
-			LOG(LogGraphicsEngine, Error, "Output of shader {} and input of shader {} do not match! {} != {}", aShaderOnePath.string(), aShaderTwoPath.string(), outParam.SemanticName, inParam.SemanticName);
+			LOG(LogGraphicsEngine, Error, "Output of shader {} and input of shader {} do not match! {} != {}", aShaderOnePath.stem().string(), aShaderTwoPath.stem().string(), outParam.SemanticName, inParam.SemanticName);
 			return false;
 		}
 	}
@@ -428,6 +444,25 @@ void GraphicsEngine::RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsig
 	myRHI->SetVertexBuffer(aDynamicBuffer.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
 	myRHI->SetPrimitiveTopology(Topology::POINTLIST);
 	myRHI->Draw(aLineAmount);
+}
+
+void GraphicsEngine::RenderEmitter(ParticleEmitter& aParticleEmitter)
+{
+	ChangePipelineState(aParticleEmitter.GetMaterial()->GetPSO());
+
+	for (const auto& [slot, texture] : aParticleEmitter.GetMaterial()->GetTextures())
+	{
+		SetTextureResource_PS(slot, *texture);
+	}
+
+	myRHI->SetPrimitiveTopology(Topology::POINTLIST);
+	myRHI->SetVertexBuffer(aParticleEmitter.myVertexBuffer.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
+	myRHI->Draw(static_cast<unsigned>(aParticleEmitter.myParticles.size()));
+
+	for (const auto& [slot, texture] : aParticleEmitter.GetMaterial()->GetTextures())
+	{
+		ClearTextureResource_PS(slot);
+	}
 }
 
 bool GraphicsEngine::CreateIndexBuffer(std::string_view aName, const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer, bool aIsDynamic)

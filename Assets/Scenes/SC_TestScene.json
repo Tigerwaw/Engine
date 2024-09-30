@@ -545,6 +545,105 @@
           ]
         }
       ]
+    },
+    {
+      "Name": "ParticleTest",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -600.0, 100.0, 0.0 ],
+          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "ParticleSystem",
+          "Emitters": [
+            {
+              "EmitterSize": [ 100.0, 100.0, 100.0 ],
+              "Material": "Materials/MAT_ExplosionParticle.json",
+              "SpawnRate": 100.0,
+              "Lifetime": 1.0,
+              "Size": [
+                {
+                  "Time": 0.0,
+                  "Value": [ 1.0, 1.0 ]
+                },
+                {
+                  "Time": 1.0,
+                  "Value": [ 80.0, 80.0 ]
+                }
+              ],
+              "Velocity": {
+                "Min": [ -50.0, 100.0, -50.0 ],
+                "Max": [ 50.0, 300.0, 50.0 ]
+              },
+              "GravityScale": 10.0,
+              "Color": [
+                {
+                  "Time": 0.0,
+                  "Value": [ 1.0, 1.0, 1.0, 0.0 ]
+                },
+                {
+                  "Time": 0.5,
+                  "Value": [ 1.0, 1.0, 1.0, 0.75 ]
+                },
+                {
+                  "Time": 1.0,
+                  "Value": [ 1.0, 1.0, 1.0, 0.0 ]
+                }
+              ]
+            },
+            {
+              "EmitterSize": [ 20.0, 20.0, 20.0 ],
+              "Material": "Materials/MAT_SmokeParticle.json",
+              "SpawnRate": 20.0,
+              "Lifetime": 5.0,
+              "Size": [
+                {
+                  "Time": 0.0,
+                  "Value": [ 1.0, 1.0 ]
+                },
+                {
+                  "Time": 1.0,
+                  "Value": [ 150.0, 150.0 ]
+                }
+              ],
+              "Angle": [
+                {
+                  "Time": 0.0,
+                  "Value": 0
+                },
+                {
+                  "Time": 1.0,
+                  "Value": 45.0
+                }
+              ],
+              "Velocity": {
+                "Min": [ -30.0, 100.0, -30.0 ],
+                "Max": [ 30.0, 200.0, 30.0 ]
+              },
+              "GravityScale": 6.0,
+              "Color": [
+                {
+                  "Time": 0.0,
+                  "Value": [ 1.0, 1.0, 1.0, 0.0 ]
+                },
+                {
+                  "Time": 0.5,
+                  "Value": [ 0.8, 0.8, 0.8, 0.75 ]
+                },
+                {
+                  "Time": 1.0,
+                  "Value": [ 0.6, 0.6, 0.6, 0.0 ]
+                }
+              ],
+              "ChannelMask": [1.0, 0.0, 0.0, 0.0]
+            }
+          ]
+        }
+      ]
     }
   ]
 }

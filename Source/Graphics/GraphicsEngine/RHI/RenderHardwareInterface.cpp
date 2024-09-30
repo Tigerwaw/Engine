@@ -94,6 +94,7 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 		&context
 	);
 
+#ifdef _DEBUG
 	ComPtr<ID3D11Debug> deviceDebug;
 	device.As(&deviceDebug);
 	if (deviceDebug)
@@ -111,6 +112,7 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 		filter.DenyList.pIDList = mask;
 		infoQueue->AddStorageFilterEntries(&filter);
 	}
+#endif
 
 	if (FAILED(result))
 	{
@@ -848,6 +850,20 @@ bool RenderHardwareInterface::CreateBlendState(std::string_view aName, const D3D
 	return true;
 }
 
+bool RenderHardwareInterface::CreateDepthStencilState(std::string_view aName, const D3D11_DEPTH_STENCIL_DESC& aDepthStencilDesc, PipelineStateObject& aPSO)
+{
+	const HRESULT result = myDevice->CreateDepthStencilState(&aDepthStencilDesc, aPSO.DepthStencilState.GetAddressOf());
+	if (FAILED(result))
+	{
+		LOG(LogRHI, Error, "Failed to create depth stencil state {}", aName);
+		return false;
+	}
+
+	LOG(LogRHI, Log, "Created depth stencil state {}", aName);
+	SetObjectName(aPSO.DepthStencilState, aName);
+	return true;
+}
+
 bool RenderHardwareInterface::LoadTexture(std::string_view aName, const uint8_t* aTextureDataPtr, size_t aTextureDataSize, Texture& outTexture) const
 {
 	ComPtr<ID3D11Resource> resource;
@@ -1239,16 +1255,10 @@ bool RenderHardwareInterface::CreateVertexBufferInternal(std::string_view aName,
 	D3D11_BUFFER_DESC vxBufferDesc = {};
 	vxBufferDesc.ByteWidth = static_cast<unsigned>(aNumVertices * aVertexSize);
 	vxBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vxBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	vxBufferDesc.CPUAccessFlags = 0;
-
-	if (aIsDynamic)
-	{
-		vxBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		vxBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		vxBufferDesc.MiscFlags = 0;
-		vxBufferDesc.StructureByteStride = 0;
-	}
+	vxBufferDesc.Usage = aIsDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_IMMUTABLE;
+	vxBufferDesc.CPUAccessFlags = aIsDynamic ? D3D11_CPU_ACCESS_WRITE : 0;
+	vxBufferDesc.MiscFlags = 0;
+	vxBufferDesc.StructureByteStride = 0;
 
 	D3D11_SUBRESOURCE_DATA vxResource = {};
 	vxResource.pSysMem = aVertexDataPointer;

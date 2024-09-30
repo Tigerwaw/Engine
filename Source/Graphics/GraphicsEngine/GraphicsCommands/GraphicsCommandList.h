@@ -15,6 +15,7 @@
 #include "Render/RenderSpritesheet.h"
 #include "Render/RenderDebugLines.h"
 #include "Render/RenderFullscreenQuad.h"
+#include "Render/RenderParticles.h"
 #include "Resource/SetTextureResource.h"
 #include "Resource/ClearTextureResource.h"
 #include "Resource/SetGBufferAsRenderTarget.h"

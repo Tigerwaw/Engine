@@ -17,6 +17,7 @@ float4 main(MeshVStoPS input) : SV_TARGET
     if (albedoMap.a < 0.01)
     {
         discard;
+        return 0;
     }
     
     const float2 normalMap = NormalTexture.Sample(LinearWrapSampler, input.TexCoord0.xy).rg;

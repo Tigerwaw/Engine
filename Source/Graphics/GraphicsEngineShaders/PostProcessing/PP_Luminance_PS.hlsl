@@ -9,7 +9,10 @@ float4 main(Quad_VS_to_PS input) : SV_TARGET
     const float4 color = IntermediateLDRBuffer.Sample(LinearWrapSampler, input.UV);
     
     if (color.a < 0.05f)
+    {
         discard;
+        return 0;
+    }
     
     switch (PPB_LuminanceFunction)
     {

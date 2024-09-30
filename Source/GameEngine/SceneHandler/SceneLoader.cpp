@@ -16,6 +16,7 @@
 #include "GameEngine/ComponentSystem/Components/Graphics/DebugModel.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/VFXModel.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/Camera.h"
+#include "GameEngine/ComponentSystem/Components/Graphics/ParticleSystem.h"
 
 #include "GameEngine/ComponentSystem/Components/Lights/AmbientLight.h"
 #include "GameEngine/ComponentSystem/Components/Lights/DirectionalLight.h"
@@ -123,6 +124,7 @@ void SceneLoader::CreateComponent(std::shared_ptr<GameObject> aGO, nl::json& aCo
         else if (comp == "Model") newComponent = aGO->AddComponent<Model>();
         else if (comp == "AnimatedModel") newComponent = aGO->AddComponent<AnimatedModel>();
         else if (comp == "VFXModel") newComponent = aGO->AddComponent<VFXModel>();
+        else if (comp == "ParticleSystem") newComponent = aGO->AddComponent<ParticleSystem>();
         else if (comp == "Camera") newComponent = aGO->AddComponent<Camera>();
         else if (comp == "AmbientLight") newComponent = aGO->AddComponent<AmbientLight>();
         else if (comp == "DirectionalLight") newComponent = aGO->AddComponent<DirectionalLight>();

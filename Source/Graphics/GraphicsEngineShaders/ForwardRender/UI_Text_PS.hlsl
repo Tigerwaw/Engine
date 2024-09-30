@@ -38,6 +38,7 @@ float4 main(Text_VSout input) : SV_TARGET
     if (result.a < 0.05f)
     {
         discard;
+        return 0;
     }
     return result;
 }

@@ -17,6 +17,7 @@ class DynamicVertexBuffer;
 class GraphicsCommandList;
 struct GraphicsCommandBase;
 class GBuffer;
+class ParticleEmitter;
 
 struct ID3D11InputLayout;
 
@@ -102,6 +103,7 @@ struct PSODescription
 	BlendMode blendMode = BlendMode::None;
 	bool alphaToCoverage = false;
 	bool independentBlend = false;
+	bool useReadOnlyDepthStencilState = false;
 };
 
 class GraphicsEngine
@@ -158,6 +160,7 @@ public:
 	void RenderSprite();
 	void RenderText(const Text& aText);
 	void RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsigned aLineAmount);
+	void RenderEmitter(ParticleEmitter& aParticleEmitter);
 
 	template <typename VertexType>
 	bool CreateVertexBuffer(std::string_view aName, const std::vector<VertexType>& aVertexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer) const;

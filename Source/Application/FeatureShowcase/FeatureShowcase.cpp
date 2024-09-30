@@ -14,6 +14,8 @@
 #include <GameEngine/ComponentSystem/Components/Physics/Colliders/BoxCollider.h>
 #include <GameEngine/ComponentSystem/Components/Physics/Colliders/SphereCollider.h>
 
+#include <GameEngine/ComponentSystem/Components/Graphics/ParticleSystem.h>
+
 Application* CreateApplication()
 {
 	Engine::GetInstance().LoadSettings(std::filesystem::current_path().string() + "/" + APP_SETTINGS_PATH);

@@ -69,6 +69,41 @@ struct Quad_VS_to_PS
     float2 UV : TEXCOORD;
 };
 
+struct ParticleVertex
+{
+    float4 Position     : POSITION;
+    float4 Color        : COLOR;
+    float3 Velocity     : VELOCITY;
+    float GravityScale  : GRAVITYSCALE;
+    float Lifetime      : LIFETIME;
+    float Angle         : ANGLE;
+    float2 Size         : SIZE;
+    float4 ChannelMask  : CHANNELMASK;
+};
+
+struct Particle_VSOut
+{
+    float4 Position     : POSITION;
+    float4 Color        : COLOR;
+    float3 Velocity     : VELOCITY;
+    float GravityScale  : GRAVITYSCALE;
+    float Lifetime      : LIFETIME;
+    float Angle         : ANGLE;
+    float2 Size         : SIZE;
+    float4 ChannelMask  : CHANNELMASK;
+};
+
+struct Particle_GSOut
+{
+    float4 Position     : SV_Position;
+    float2 UV           : TEXCOORD;
+    float4 Color        : COLOR;
+    float3 Velocity     : VELOCITY;
+    float GravityScale  : GRAVITYSCALE;
+    float Lifetime      : LIFETIME;
+    float4 ChannelMask  : CHANNELMASK;
+};
+
 static const float2 defaultUVs[4] =
 {
     float2(0.0f, 1.0f),
@@ -200,6 +235,23 @@ float2 GetNoiseScale()
     BlueNoise.GetDimensions(0, w, h, m);
     float2 noiseScale = float2(w, h);
     return FB_Resolution / noiseScale;
+}
+
+float2 Rotate2DPointAroundPivot(float2 aPivot, float2 aPoint, float aAngleInRad)
+{
+    float s = sin(aAngleInRad);
+    float c = cos(aAngleInRad);
+        
+    aPoint.x -= aPivot.x;
+    aPoint.y -= aPivot.y;
+        
+    float xnew = aPoint.x * c - aPoint.y * s;
+    float ynew = aPoint.x * s + aPoint.y * c;
+        
+    aPoint.x = xnew + aPivot.x;
+    aPoint.y = ynew + aPivot.y;
+    
+    return aPoint;
 }
 
 #endif // _DEFAULT_INCLUDES_

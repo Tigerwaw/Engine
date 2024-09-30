@@ -77,6 +77,7 @@ void FindBlocker_Cube(TextureCube shadowCubemap, float lightSizeUV, float lightN
     float blockerSum = 0;
     numBlockers = 0;
     
+    [unroll(16)]
     for (int i = 0; i < 16; ++i)
     {
         float3 offset = float3(PoissonDisk[i] * searchWidth, 0);
@@ -95,6 +96,8 @@ void FindBlocker_Cube(TextureCube shadowCubemap, float lightSizeUV, float lightN
 float PCF_Filter_Cube(TextureCube shadowCubemap, float3 direction, float zReceiver, float filterRadiusUV)
 {
     float sum = 0.0f;
+    
+    [unroll(16)]
     for (int i = 0; i < 16; ++i)
     {
         float3 offset = float3(PoissonDisk[i] * filterRadiusUV, 0);
