@@ -21,5 +21,5 @@ struct ParticleEmitterSettings
 	CU::Vector4f ChannelMask = { 1.0f, 0, 0, 0 };
 
 	ParticleEmitterSettings();
-	~ParticleEmitterSettings();
+	virtual ~ParticleEmitterSettings();
 };

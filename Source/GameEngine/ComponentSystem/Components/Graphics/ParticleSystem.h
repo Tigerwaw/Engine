@@ -11,11 +11,22 @@ public:
 	void Start() override;
 	void Update() override;
 
-	void AddEmitter(ParticleEmitter aParticleEmitter);
-	std::vector<ParticleEmitter>& GetEmitters() { return myEmitters; }
+	template<typename EmitterType, typename EmitterSettingsType>
+	EmitterType* AddEmitter(const EmitterSettingsType& aSettings);
+
+	const std::vector<ParticleEmitter*>& GetEmitters() const { return myEmitters; }
 
 	bool Serialize(nl::json& outJsonObject) override;
 	bool Deserialize(nl::json& aJsonObject) override;
 private:
-	std::vector<ParticleEmitter> myEmitters;
+	std::vector<ParticleEmitter*> myEmitters;
 };
+
+template<typename EmitterType, typename EmitterSettingsType>
+inline EmitterType* ParticleSystem::AddEmitter(const EmitterSettingsType& aSettings)
+{
+	EmitterType* emitter = new EmitterType();
+	emitter->Init(aSettings);
+	myEmitters.emplace_back(emitter);
+	return emitter;
+}

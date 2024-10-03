@@ -6,22 +6,6 @@ void main(
 	point Particle_VSOut input[1], 
 	inout TriangleStream<Particle_GSOut> output)
 {    
-    //const float2 offsets[4] =
-    //{
-    //    { -1.0f, 1.0f },
-    //    { -1.0f, -1.0f },
-    //    { 1.0f, 1.0f },
-    //    { 1.0f, -1.0f }
-    //};
-    
-    //const float2 uvs[4] =
-    //{
-    //    float2(0.0f, 1.0f),
-    //    float2(0.0f, 0.0f),
-    //    float2(1.0f, 1.0f),
-    //    float2(1.0f, 0.0f)
-    //};
-    
     const float2 offsets[4] =
     {
         { -1.0f, 1.0f },
