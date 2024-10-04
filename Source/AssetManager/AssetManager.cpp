@@ -7,6 +7,7 @@
 #include "Objects/Vertices/DebugLineVertex.h"
 #include "Objects/Vertices/TextVertex.h"
 #include "Objects/Vertices/ParticleVertex.h"
+#include "Objects/Vertices/TrailVertex.h"
 
 #include "Math/Matrix.hpp"
 #include "Math/Vector.hpp"
@@ -477,6 +478,11 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
         {
             psoDesc.inputLayoutDefinition = ParticleVertex::InputLayoutDefinition;
             psoDesc.vertexStride = sizeof(ParticleVertex);
+        }
+        else if (data["VertexType"].get<std::string>() == "Trail")
+        {
+            psoDesc.inputLayoutDefinition = TrailVertex::InputLayoutDefinition;
+            psoDesc.vertexStride = sizeof(TrailVertex);
         }
     }
 

@@ -1,4 +1,5 @@
 #include "../Includes/DefaultShaderIncludes.hlsli"
+#include "../Includes/ParticleIncludes.hlsli"
 #include "../Includes/Sprite_Includes.hlsli"
 #include "../Includes/ConstantBuffers/SpriteBuffer.hlsli"
 #include "../Includes/ConstantBuffers/FrameBuffer.hlsli"

@@ -1,20 +1,17 @@
 #include "../Includes/DefaultShaderIncludes.hlsli"
+#include "../Includes/ParticleIncludes.hlsli"
 #include "../Includes/ConstantBuffers/ObjectBuffer.hlsli"
 #include "../Includes/ConstantBuffers/FrameBuffer.hlsli"
 
-Particle_VSOut main(ParticleVertex input)
+Trail_VSOut main(TrailVertex input)
 {
-    Particle_VSOut output;
+    Trail_VSOut output;
     
-    float4 worldPos = mul(OB_World, input.Position);
-    float4 viewPos = mul(FB_InvView, worldPos);
+    float4 viewPos = mul(FB_InvView, input.Position);
     output.Position = viewPos;
     output.Color = input.Color;
-    output.Velocity = input.Velocity;
-    output.GravityScale = input.GravityScale;
+    output.Width = input.Width;
     output.Lifetime = input.Lifetime;
-    output.Angle = input.Angle;
-    output.Size = input.Size;
     output.ChannelMask = input.ChannelMask;
     
     return output;

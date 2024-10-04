@@ -28,9 +28,9 @@ public:
 	const CU::Vector3f GetRightVector(bool aInWorldSpace = false);
 	const CU::Vector3f GetUpVector(bool aInWorldSpace = false);
 	const CU::Vector3f GetForwardVector(bool aInWorldSpace = false);
-	const CU::Vector3f GetTranslation(bool aInWorldSpace = false);
-	const CU::Vector3f GetRotation(bool aInWorldSpace = false);
-	const CU::Vector3f GetScale(bool aInWorldSpace = false);
+	const CU::Vector3f GetTranslation(bool aInWorldSpace = false) const;
+	const CU::Vector3f GetRotation(bool aInWorldSpace = false) const;
+	const CU::Vector3f GetScale(bool aInWorldSpace = false) const;
 
 	void SetTranslation(const CU::Vector3f aTranslation);
 	void SetTranslation(const float aX, const float aY, const float aZ);

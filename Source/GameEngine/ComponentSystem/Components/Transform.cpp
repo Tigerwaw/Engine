@@ -235,7 +235,7 @@ const CU::Vector3f Transform::GetForwardVector(bool aInWorldSpace)
 	}
 }
 
-const CU::Vector3f Transform::GetTranslation(bool aInWorldSpace)
+const CU::Vector3f Transform::GetTranslation(bool aInWorldSpace) const
 {
 	if (aInWorldSpace)
 	{
@@ -247,7 +247,7 @@ const CU::Vector3f Transform::GetTranslation(bool aInWorldSpace)
 	}
 }
 
-const CU::Vector3f Transform::GetRotation(bool aInWorldSpace)
+const CU::Vector3f Transform::GetRotation(bool aInWorldSpace) const
 {
 	if (aInWorldSpace)
 	{
@@ -259,7 +259,7 @@ const CU::Vector3f Transform::GetRotation(bool aInWorldSpace)
 	}
 }
 
-const CU::Vector3f Transform::GetScale(bool aInWorldSpace)
+const CU::Vector3f Transform::GetScale(bool aInWorldSpace) const
 {
 	if (aInWorldSpace)
 	{

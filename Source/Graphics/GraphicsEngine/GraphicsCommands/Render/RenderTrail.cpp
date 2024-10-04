@@ -1,18 +1,18 @@
 #include "GraphicsEngine.pch.h"
-#include "RenderParticles.h"
+#include "RenderTrail.h"
 
 #include "GraphicsEngine/Objects/ConstantBuffers/ObjectBuffer.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/ParticleSystem.h"
+#include "GameEngine/ComponentSystem/Components/Graphics/TrailSystem.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
 
-RenderParticles::RenderParticles(std::shared_ptr<ParticleSystem> aParticleSystem)
+RenderTrail::RenderTrail(std::shared_ptr<TrailSystem> aTrailSystem)
 {
-	particleSystem = aParticleSystem;
-    transform = aParticleSystem->gameObject->GetComponent<Transform>()->GetWorldMatrix();
+    trailSystem = aTrailSystem;
+    transform = aTrailSystem->gameObject->GetComponent<Transform>()->GetWorldMatrix();
 }
 
-void RenderParticles::Execute()
+void RenderTrail::Execute()
 {
     GraphicsEngine& gfx = GraphicsEngine::Get();
 
@@ -21,13 +21,13 @@ void RenderParticles::Execute()
     objBufferData.WorldInvT = transform.GetFastInverse().GetTranspose();
     gfx.UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
-    for (auto& emitter : particleSystem->GetEmitters())
+    for (auto& emitter : trailSystem->GetEmitters())
     {
-        gfx.RenderParticleEmitter(emitter);
+        gfx.RenderTrailEmitter(emitter);
     }
 }
 
-void RenderParticles::Destroy()
+void RenderTrail::Destroy()
 {
-	particleSystem = nullptr;
+    trailSystem = nullptr;
 }

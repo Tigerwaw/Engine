@@ -18,21 +18,7 @@ class ParticleEmitter
 		void SetMaterial(std::shared_ptr<Material> aMaterial) { myMaterial = aMaterial; }
 		std::shared_ptr<Material> GetMaterial() { return myMaterial; }
 
-		template<typename EmitterSettingsType>
-		std::enable_if_t<std::is_base_of_v<ParticleEmitterSettings, EmitterSettingsType>, void>
-		Init(const EmitterSettingsType& aSettings)
-		{
-			mySettings = new EmitterSettingsType();
-			*mySettings = aSettings;
-			InitInternal();
-		}
-
-		template<typename EmitterSettingsType>
-		FORCEINLINE std::enable_if_t<std::is_base_of_v<ParticleEmitterSettings, EmitterSettingsType>, EmitterSettingsType* const>
-		GetEmitterSettings() const
-		{
-			return dynamic_cast<EmitterSettingsType const*>(mySettings);
-		}
+		const ParticleEmitterSettings& GetEmitterSettings() const { return mySettings; }
 
 	protected:
 		virtual void InitParticle(ParticleVertex& aParticle, size_t aIndex);
@@ -42,5 +28,5 @@ class ParticleEmitter
 	private:
 		DynamicVertexBuffer myVertexBuffer;
 		std::shared_ptr<Material> myMaterial;
-		ParticleEmitterSettings* mySettings = nullptr;
+		ParticleEmitterSettings mySettings;
 };

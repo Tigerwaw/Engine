@@ -69,41 +69,6 @@ struct Quad_VS_to_PS
     float2 UV : TEXCOORD;
 };
 
-struct ParticleVertex
-{
-    float4 Position     : POSITION;
-    float4 Color        : COLOR;
-    float3 Velocity     : VELOCITY;
-    float GravityScale  : GRAVITYSCALE;
-    float Lifetime      : LIFETIME;
-    float Angle         : ANGLE;
-    float2 Size         : SIZE;
-    float4 ChannelMask  : CHANNELMASK;
-};
-
-struct Particle_VSOut
-{
-    float4 Position     : POSITION;
-    float4 Color        : COLOR;
-    float3 Velocity     : VELOCITY;
-    float GravityScale  : GRAVITYSCALE;
-    float Lifetime      : LIFETIME;
-    float Angle         : ANGLE;
-    float2 Size         : SIZE;
-    float4 ChannelMask  : CHANNELMASK;
-};
-
-struct Particle_GSOut
-{
-    float4 Position     : SV_Position;
-    float2 UV           : TEXCOORD;
-    float4 Color        : COLOR;
-    float3 Velocity     : VELOCITY;
-    float GravityScale  : GRAVITYSCALE;
-    float Lifetime      : LIFETIME;
-    float4 ChannelMask  : CHANNELMASK;
-};
-
 static const float2 defaultUVs[4] =
 {
     float2(0.0f, 1.0f),

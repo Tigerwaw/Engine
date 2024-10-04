@@ -1,4 +1,5 @@
 #include "../Includes/DefaultShaderIncludes.hlsli"
+#include "../Includes/ParticleIncludes.hlsli"
 #include "../Includes/ConstantBuffers/FrameBuffer.hlsli"
 
 [maxvertexcount(4)]

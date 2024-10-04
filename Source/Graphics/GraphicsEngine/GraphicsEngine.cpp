@@ -13,6 +13,7 @@
 #include "GraphicsEngine/Objects/Material.h"
 #include "GraphicsEngine/Objects/Texture.h"
 #include "GraphicsEngine/Objects/ParticleSystem/ParticleEmitter.h"
+#include "GraphicsEngine/Objects/ParticleSystem/TrailEmitter.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/FrameBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/ObjectBuffer.h"
 #include "GraphicsEngine/Objects/ConstantBuffers/AnimationBuffer.h"
@@ -446,7 +447,7 @@ void GraphicsEngine::RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsig
 	myRHI->Draw(aLineAmount);
 }
 
-void GraphicsEngine::RenderEmitter(ParticleEmitter& aParticleEmitter)
+void GraphicsEngine::RenderParticleEmitter(ParticleEmitter& aParticleEmitter)
 {
 	ChangePipelineState(aParticleEmitter.GetMaterial()->GetPSO());
 
@@ -460,6 +461,25 @@ void GraphicsEngine::RenderEmitter(ParticleEmitter& aParticleEmitter)
 	myRHI->Draw(static_cast<unsigned>(aParticleEmitter.myParticles.size()));
 
 	for (const auto& [slot, texture] : aParticleEmitter.GetMaterial()->GetTextures())
+	{
+		ClearTextureResource_PS(slot);
+	}
+}
+
+void GraphicsEngine::RenderTrailEmitter(TrailEmitter& aTrailEmitter)
+{
+	ChangePipelineState(aTrailEmitter.GetMaterial()->GetPSO());
+
+	for (const auto& [slot, texture] : aTrailEmitter.GetMaterial()->GetTextures())
+	{
+		SetTextureResource_PS(slot, *texture);
+	}
+
+	myRHI->SetPrimitiveTopology(Topology::LINELIST);
+	myRHI->SetVertexBuffer(aTrailEmitter.myVertexBuffer.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
+	myRHI->Draw(static_cast<unsigned>(aTrailEmitter.myTrailVertices.size()));
+
+	for (const auto& [slot, texture] : aTrailEmitter.GetMaterial()->GetTextures())
 	{
 		ClearTextureResource_PS(slot);
 	}

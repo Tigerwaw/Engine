@@ -19,6 +19,7 @@ namespace CU = CommonUtilities;
 #include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/DebugModel.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/ParticleSystem.h"
+#include "GameEngine/ComponentSystem/Components/Graphics/TrailSystem.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/Camera.h"
 #include "GameEngine/ComponentSystem/Components/Lights/AmbientLight.h"
 #include "GameEngine/ComponentSystem/Components/Lights/DirectionalLight.h"
@@ -226,7 +227,7 @@ void Renderer::RenderDeferred(Scene& aScene)
 	gfxList.Enqueue<ClearTextureResource>(30);
 	gfxList.Enqueue<EndEvent>();
 
-	// Particle Systems
+	// Particle & Trail Systems
 	gfxList.Enqueue<BeginEvent>("Render Particle Systems");
 	gfxList.Enqueue<SetRenderTarget>(renderTarget, nullptr, false, false);
 
@@ -236,6 +237,12 @@ void Renderer::RenderDeferred(Scene& aScene)
 		if (particleSystem && particleSystem->GetActive())
 		{
 			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderParticles>(particleSystem);
+		}
+
+		std::shared_ptr<TrailSystem> trailSystem = gameObject->GetComponent<TrailSystem>();
+		if (trailSystem && trailSystem->GetActive())
+		{
+			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderTrail>(trailSystem);
 		}
 	}
 	gfxList.Enqueue<EndEvent>();

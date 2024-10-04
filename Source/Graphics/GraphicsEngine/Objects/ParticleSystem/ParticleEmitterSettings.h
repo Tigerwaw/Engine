@@ -19,7 +19,4 @@ struct ParticleEmitterSettings
 	float GravityScale = 1.0f;
 	CU::Curve<float> Angle;
 	CU::Vector4f ChannelMask = { 1.0f, 0, 0, 0 };
-
-	ParticleEmitterSettings();
-	virtual ~ParticleEmitterSettings();
 };

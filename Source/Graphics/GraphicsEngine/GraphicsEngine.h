@@ -18,6 +18,7 @@ class GraphicsCommandList;
 struct GraphicsCommandBase;
 class GBuffer;
 class ParticleEmitter;
+class TrailEmitter;
 
 struct ID3D11InputLayout;
 
@@ -160,7 +161,8 @@ public:
 	void RenderSprite();
 	void RenderText(const Text& aText);
 	void RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsigned aLineAmount);
-	void RenderEmitter(ParticleEmitter& aParticleEmitter);
+	void RenderParticleEmitter(ParticleEmitter& aParticleEmitter);
+	void RenderTrailEmitter(TrailEmitter& aTrailEmitter);
 
 	template <typename VertexType>
 	bool CreateVertexBuffer(std::string_view aName, const std::vector<VertexType>& aVertexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer) const;

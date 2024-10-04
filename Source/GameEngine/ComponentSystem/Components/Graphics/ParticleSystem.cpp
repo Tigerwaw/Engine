@@ -8,10 +8,6 @@
 
 ParticleSystem::~ParticleSystem()
 {
-	for (auto emitter : myEmitters)
-	{
-		delete emitter;
-	}
 }
 
 void ParticleSystem::Start()
@@ -25,8 +21,15 @@ void ParticleSystem::Update()
 
 	for (auto& emitter : myEmitters)
 	{
-		emitter->Update(dt);
+		emitter.Update(dt);
 	}
+}
+
+ParticleEmitter& ParticleSystem::AddEmitter(const ParticleEmitterSettings& aSettings)
+{
+	ParticleEmitter& emitter = myEmitters.emplace_back(ParticleEmitter());
+	emitter.mySettings = aSettings;
+	return emitter;
 }
 
 bool ParticleSystem::Serialize(nl::json& outJsonObject)
@@ -37,7 +40,6 @@ bool ParticleSystem::Serialize(nl::json& outJsonObject)
 
 bool ParticleSystem::Deserialize(nl::json& aJsonObject)
 {
-	aJsonObject;
 	if (aJsonObject.contains("Emitters"))
 	{
 		for (auto& emitter : aJsonObject["Emitters"])
@@ -107,12 +109,14 @@ bool ParticleSystem::Deserialize(nl::json& aJsonObject)
 				peSettings.ChannelMask = Utility::DeserializeVector4<float>(emitter["ChannelMask"]);
 			}
 
-			ParticleEmitter& pe = *AddEmitter<ParticleEmitter>(peSettings);
+			ParticleEmitter& pe = AddEmitter(peSettings);
 
 			if (emitter.contains("Material"))
 			{
 				pe.SetMaterial(AssetManager::Get().GetAsset<MaterialAsset>(emitter["Material"].get<std::string>())->material);
 			}
+
+			pe.InitInternal();
 		}
 	}
 

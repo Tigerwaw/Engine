@@ -1,4 +1,5 @@
 #include "../Includes/DefaultShaderIncludes.hlsli"
+#include "../Includes/ParticleIncludes.hlsli"
 
 Texture2D ParticleTexture : register(t0);
 
