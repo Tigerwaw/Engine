@@ -471,7 +471,7 @@ void Renderer::QueueUpdateLightBuffer(Scene& aScene)
 
 void Renderer::QueueSpotLightShadows(Scene& aScene)
 {
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<BeginEvent>("Pointlight Shadows");
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<BeginEvent>("Spotlight Shadows");
 
 	for (int i = 0; i < aScene.mySpotLights.size(); i++)
 	{

@@ -12,18 +12,20 @@ TrailEmitter::~TrailEmitter()
 
 void TrailEmitter::Update(CU::Vector3f aFollowTarget, float aDeltaTime)
 {
+	myTrailVertices[0].Position = CU::ToVector4(aFollowTarget, 1.0f);
+	myPreviousPositions[0] = aFollowTarget;
+	UpdateTrailVertex(myTrailVertices[0], aDeltaTime, 0);
+
+	for (unsigned i = 1; i < static_cast<unsigned>(myTrailVertices.size()); i++)
+	{
+		TrailVertex& trailVertex = myTrailVertices[i];
+		trailVertex.Position = CU::ToVector4(myPreviousPositions[i * mySettings.Length], 1.0f);
+		UpdateTrailVertex(trailVertex, aDeltaTime, i);
+	}
+
 	for (size_t i = myPreviousPositions.size() - 1; i > 0; --i)
 	{
 		myPreviousPositions[i] = myPreviousPositions[i - 1];
-	}
-
-	myTrailVertices[0].Position = CU::ToVector4(aFollowTarget, 1.0f);
-
-	for (size_t i = 1; i < myTrailVertices.size(); i++)
-	{
-		TrailVertex& trailVertex = myTrailVertices[i];
-		trailVertex.Position = CU::ToVector4(myPreviousPositions[i * mySettings.Length]);
-		UpdateTrailVertex(trailVertex, aDeltaTime);
 	}
 
 	myVertexBuffer.UpdateVertexBuffer(myTrailVertices);
@@ -36,10 +38,21 @@ void TrailEmitter::InitTrailVertex(TrailVertex& aTrailVertex)
 	aTrailVertex.ChannelMask = mySettings.ChannelMask;
 }
 
-void TrailEmitter::UpdateTrailVertex(TrailVertex& aTrailVertex, float)
+void TrailEmitter::UpdateTrailVertex(TrailVertex& aTrailVertex, float aDeltaTime, unsigned aIndex)
 {
-	aTrailVertex.Width = mySettings.Width.Get(0);
-	aTrailVertex.Color = mySettings.Color.Get(0);
+	aDeltaTime;
+	if (aTrailVertex.Position.LengthSqr() < 1.0f)
+	{
+		aTrailVertex.Lifetime = -1.0f;
+	}
+	else
+	{
+		aTrailVertex.Lifetime = 1.0f;
+	}
+
+	float t = static_cast<float>(aIndex) / static_cast<float>(myTrailVertices.size());
+	aTrailVertex.Width = mySettings.Width.Get(t);
+	aTrailVertex.Color = mySettings.Color.Get(t);
 }
 
 void TrailEmitter::InitInternal()

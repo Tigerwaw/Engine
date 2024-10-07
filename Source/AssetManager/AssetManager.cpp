@@ -599,7 +599,7 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
 
     if (data.contains("UseReadOnlyDepthStencil"))
     {
-        psoDesc.useReadOnlyDepthStencilState;
+        psoDesc.useReadOnlyDepthStencilState = data["UseReadOnlyDepthStencil"].get<bool>();
     }
 
     if (data.contains("Samplers"))

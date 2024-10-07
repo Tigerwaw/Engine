@@ -620,7 +620,7 @@ void FeatureShowcase::InitializeApplication()
 			std::shared_ptr<Transform> psTransform = psObject->GetComponent<Transform>();
 			CU::Vector3f psPos = psTransform->GetTranslation(true);
 			float pos[3] = { psPos.x, psPos.y, psPos.z };
-			if (ImGui::DragFloat3("PS Pos", pos))
+			if (ImGui::DragFloat3("Particle System Position", pos))
 			{
 				psTransform->SetTranslation(pos[0], pos[1], pos[2]);
 			}

@@ -33,6 +33,7 @@ enum class Topology : unsigned
 {
 	POINTLIST = 1,
 	LINELIST = 2,
+	LINESTRIP = 3,
 	TRIANGLELIST = 4,
 	TRIANGLESTRIP = 5
 };

@@ -20,7 +20,7 @@ public:
 
 protected:
 	virtual void InitTrailVertex(TrailVertex& aTrailVertex);
-	virtual void UpdateTrailVertex(TrailVertex& aTrailVertex, float aDeltaTime);
+	virtual void UpdateTrailVertex(TrailVertex& aTrailVertex, float aDeltaTime, unsigned aIndex);
 	virtual void InitInternal();
 	std::vector<TrailVertex> myTrailVertices;
 private:

@@ -28,6 +28,7 @@
 #include "GameEngine/ComponentSystem/Components/Physics/Colliders/SphereCollider.h"
 
 #include "GameEngine/ComponentSystem/Components/Movement/Rotator.h"
+#include "GameEngine/ComponentSystem/Components/Movement/MoveBetweenPoints.h"
 #include "GameEngine/ComponentSystem/Components/Movement/FreecamController.h"
 #include "GameEngine/ComponentSystem/Components/AudioSource.h"
 
@@ -133,6 +134,7 @@ void SceneLoader::CreateComponent(std::shared_ptr<GameObject> aGO, nl::json& aCo
         else if (comp == "PointLight") newComponent = aGO->AddComponent<PointLight>();
         else if (comp == "SpotLight") newComponent = aGO->AddComponent<SpotLight>();
         else if (comp == "Rotator") newComponent = aGO->AddComponent<Rotator>();
+        else if (comp == "MoveBetweenPoints") newComponent = aGO->AddComponent<MoveBetweenPoints>();
         else if (comp == "FreecamController") newComponent = aGO->AddComponent<FreecamController>();
         else if (comp == "BoxCollider") newComponent = aGO->AddComponent<BoxCollider>();
         else if (comp == "SphereCollider") newComponent = aGO->AddComponent<SphereCollider>();

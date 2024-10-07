@@ -475,7 +475,7 @@ void GraphicsEngine::RenderTrailEmitter(TrailEmitter& aTrailEmitter)
 		SetTextureResource_PS(slot, *texture);
 	}
 
-	myRHI->SetPrimitiveTopology(Topology::LINELIST);
+	myRHI->SetPrimitiveTopology(Topology::LINESTRIP);
 	myRHI->SetVertexBuffer(aTrailEmitter.myVertexBuffer.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
 	myRHI->Draw(static_cast<unsigned>(aTrailEmitter.myTrailVertices.size()));
 

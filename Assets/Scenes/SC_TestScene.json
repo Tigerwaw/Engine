@@ -35,8 +35,7 @@
         {
           "Type": "Model",
           "Model": "SM_CubePrimitive",
-          "Materials":
-          [
+          "Materials": [
             "MAT_DefaultMaterial"
           ]
         }
@@ -76,8 +75,7 @@
         {
           "Type": "Model",
           "Model": "SM_RampPrimitive",
-          "Materials":
-          [
+          "Materials": [
             "MAT_DefaultMaterial"
           ]
         }
@@ -201,8 +199,7 @@
         {
           "Type": "Model",
           "Model": "EngineAssets/Models/SM_Color_Checker.fbx",
-          "Materials":
-          [
+          "Materials": [
             "EngineAssets/Materials/MAT_ColorChecker.json"
           ]
         },
@@ -235,8 +232,7 @@
         {
           "Type": "Model",
           "Model": "Models/SM_TMA_Matball.fbx",
-          "Materials":
-          [
+          "Materials": [
             "Materials/MAT_MatballOne.json",
             "Materials/MAT_MatballTwo.json"
           ]
@@ -261,8 +257,7 @@
             {
               "Type": "Model",
               "Model": "Models/SM_TMA_Matball.fbx",
-              "Materials":
-              [
+              "Materials": [
                 "Materials/MAT_MatballOne_Transparent.json",
                 "Materials/MAT_MatballOne_Transparent.json"
               ]
@@ -282,40 +277,6 @@
               "Type": "SphereCollider",
               "CenterOffset": [ 0.0, 70.0, 0.0 ],
               "Radius": 60.0
-            },
-            {
-              "Type": "TrailSystem",
-              "Emitters": [
-                {
-                  "Material": "Materials/MAT_DefaultTrail.json",
-                  "Length": 10,
-                  "Vertices": 16.0,
-                  "Width": [
-                    {
-                      "Time": 0.0,
-                      "Value": 10.0
-                    },
-                    {
-                      "Time": 1.0,
-                      "Value": 10.0
-                    }
-                  ],
-                  "Color": [
-                    {
-                      "Time": 0.0,
-                      "Value": [ 1.0, 1.0, 1.0, 1.0 ]
-                    },
-                    {
-                      "Time": 0.5,
-                      "Value": [ 1.0, 1.0, 1.0, 1.0 ]
-                    },
-                    {
-                      "Time": 1.0,
-                      "Value": [ 1.0, 1.0, 1.0, 1.0 ]
-                    }
-                  ]
-                }
-              ]
             }
           ]
         }
@@ -335,8 +296,7 @@
         {
           "Type": "AnimatedModel",
           "Model": "Models/SK_C_TGA_Bro.fbx",
-          "Materials":
-          [
+          "Materials": [
             "Materials/MAT_TgaBro.json"
           ],
           "AnimationLayers": [
@@ -560,8 +520,7 @@
           "Type": "Model",
           "ShouldViewcull": true,
           "Model": "SM_PlanePrimitive",
-          "Materials":
-          [
+          "Materials": [
             "Materials/MAT_ExplosionVFX.json"
           ]
         },
@@ -572,8 +531,7 @@
           "EventTrigger": 0,
           "IsBillboard": true,
           "IsSpritesheet": true,
-          "SpritesheetSize":
-          [
+          "SpritesheetSize": [
             8.0,
             4.0
           ]
@@ -673,7 +631,80 @@
                   "Value": [ 0.6, 0.6, 0.6, 0.0 ]
                 }
               ],
-              "ChannelMask": [1.0, 0.0, 0.0, 0.0]
+              "ChannelMask": [ 1.0, 0.0, 0.0, 0.0 ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "TrailTest",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -100.0, 50.0, 900.0 ],
+          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Scale": [ 50.0, 50.0, 50.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "SM_CubePrimitive",
+          "Materials": [
+            "MAT_DefaultMaterial"
+          ]
+        },
+        {
+          "Type": "MoveBetweenPoints",
+          "Speed": 100.0,
+          "Points": [
+            [-100.0, 50.0, 900.0],
+            [-200.0, 100.0, 950.0],
+            [-300.0, 50.0, 1000.0],
+            [-400.0, 100.0, 1050.0],
+            [-500.0, 50.0, 1000.0],
+            [-600.0, 100.0, 950.0],
+            [-700.0, 50.0, 900.0],
+            [-600.0, 100.0, 850.0],
+            [-500.0, 50.0, 800.0],
+            [-400.0, 100.0, 750.0],
+            [-300.0, 50.0, 700.0],
+            [-200.0, 100.0, 650.0],
+            [-100.0, 50.0, 600.0]
+          ]
+        },
+        {
+          "Type": "TrailSystem",
+          "Emitters": [
+            {
+              "Material": "Materials/MAT_DefaultTrail.json",
+              "Length": 20,
+              "Vertices": 16.0,
+              "Width": [
+                {
+                  "Time": 0.0,
+                  "Value": 20.0
+                },
+                {
+                  "Time": 1.0,
+                  "Value": 0.0
+                }
+              ],
+              "Color": [
+                {
+                  "Time": 0.0,
+                  "Value": [ 1.0, 0.0, 0.0, 1.0 ]
+                },
+                {
+                  "Time": 0.5,
+                  "Value": [ 0.0, 1.0, 0.0, 1.0 ]
+                },
+                {
+                  "Time": 1.0,
+                  "Value": [ 0.0, 0.0, 1.0, 1.0 ]
+                }
+              ]
             }
           ]
         }
