@@ -41,14 +41,6 @@ void TrailEmitter::InitTrailVertex(TrailVertex& aTrailVertex)
 void TrailEmitter::UpdateTrailVertex(TrailVertex& aTrailVertex, float aDeltaTime, unsigned aIndex)
 {
 	aDeltaTime;
-	if (aTrailVertex.Position.LengthSqr() < 1.0f)
-	{
-		aTrailVertex.Lifetime = -1.0f;
-	}
-	else
-	{
-		aTrailVertex.Lifetime = 1.0f;
-	}
 
 	float t = static_cast<float>(aIndex) / static_cast<float>(myTrailVertices.size());
 	aTrailVertex.Width = mySettings.Width.Get(t);

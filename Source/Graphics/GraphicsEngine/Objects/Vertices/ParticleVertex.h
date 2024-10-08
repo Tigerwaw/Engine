@@ -6,8 +6,8 @@ namespace CU = CommonUtilities;
 
 struct ParticleVertex
 {
-	CU::Vector4f Position;
-	CU::Vector4f Color;
+	CU::Vector4f Position = { 0, 0, 0, 1 };
+	CU::Vector4f Color = { 1, 1, 1, 1 };
 	CU::Vector3f Velocity;
 	float GravityScale;
 	float Lifetime;

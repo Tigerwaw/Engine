@@ -6,8 +6,8 @@ namespace CU = CommonUtilities;
 
 struct TrailVertex
 {
-	CU::Vector4f Position;
-	CU::Vector4f Color;
+	CU::Vector4f Position = { 0, 0, 0, 1 };
+	CU::Vector4f Color = { 1, 1, 1, 1 };
 	float Lifetime;
 	float Width;
 	CU::Vector4f ChannelMask;

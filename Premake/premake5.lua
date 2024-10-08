@@ -4,7 +4,7 @@ workspace "TGPGameEngine"
   location "%{dirs.root}"
   architecture "x64"
   configurations { "Debug", "Release", "Retail" }
-  startproject "ModelViewer"
+  startproject "FeatureShowcase"
 
 include (dirs.engine)
 include (dirs.graphicsengine)

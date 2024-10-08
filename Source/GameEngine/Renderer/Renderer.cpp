@@ -221,7 +221,7 @@ void Renderer::RenderDeferred(Scene& aScene)
 	// Tonemapping
 	gfxList.Enqueue<BeginEvent>("Tonemapping Pass");
 	gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>(gfx.TonemapperNames[static_cast<unsigned>(gfx.Tonemapper)])->pso);
-	gfxList.Enqueue<SetRenderTarget>(renderTarget, gfx.GetDepthBuffer(), true, true);
+	gfxList.Enqueue<SetRenderTarget>(renderTarget, nullptr, true, false);
 	gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::HDR));
 	gfxList.Enqueue<RenderFullscreenQuad>();
 	gfxList.Enqueue<ClearTextureResource>(30);
@@ -229,7 +229,7 @@ void Renderer::RenderDeferred(Scene& aScene)
 
 	// Particle & Trail Systems
 	gfxList.Enqueue<BeginEvent>("Render Particle Systems");
-	gfxList.Enqueue<SetRenderTarget>(renderTarget, nullptr, false, false);
+	gfxList.Enqueue<SetRenderTarget>(renderTarget, gfx.GetDepthBuffer(), false, false);
 
 	for (auto& gameObject : aScene.myGameObjects)
 	{
