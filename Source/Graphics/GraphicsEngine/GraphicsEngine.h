@@ -158,6 +158,7 @@ public:
 
 	void RenderQuad();
 	void RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<Material>> aMaterialList, bool aOverrideMaterialPSO = false);
+	void RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, std::vector<std::shared_ptr<Material>> aMaterialList, DynamicVertexBuffer& aInstanceBuffer, bool aOverrideMaterialPSO = false);
 	void RenderSprite();
 	void RenderText(const Text& aText);
 	void RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsigned aLineAmount);

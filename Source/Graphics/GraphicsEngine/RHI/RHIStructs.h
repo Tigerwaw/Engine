@@ -5,6 +5,7 @@ struct VertexElementDesc
 	std::string Semantic;
 	unsigned SemanticIndex = 0;
 	unsigned Type = 0;
+	bool IsInstanceData = false;
 };
 
 typedef enum PIPELINE_STAGE

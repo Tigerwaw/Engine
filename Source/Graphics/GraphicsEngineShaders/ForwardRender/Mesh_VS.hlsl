@@ -47,7 +47,15 @@ MeshVStoPS main(MeshVertex vertex)
     }
     
     float4 skinnedPos = mul(skinMatrix, vertex.Position);
-    result.WorldPos = mul(OB_World, skinnedPos);
+    float4 localPosition = skinnedPos;
+    
+    if (OB_IsInstanced)
+    {
+        localPosition = mul(vertex.RelativeTransform, localPosition);
+
+    }
+    
+    result.WorldPos = mul(OB_World, localPosition);
     result.ViewPos = mul(FB_InvView, result.WorldPos);
     result.Position = mul(FB_Projection, result.ViewPos);
     

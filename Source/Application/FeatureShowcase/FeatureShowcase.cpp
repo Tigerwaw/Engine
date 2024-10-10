@@ -10,6 +10,7 @@
 #include "GameEngine/ComponentSystem/Components/Lights/SpotLight.h"
 #include <GameEngine/ComponentSystem/Components/Graphics/Model.h>
 #include <GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h>
+#include <GameEngine/ComponentSystem/Components/Graphics/InstancedModel.h>
 #include <GameEngine/ComponentSystem/Components/Graphics/VFXModel.h>
 #include <GameEngine/ComponentSystem/Components/Physics/Colliders/BoxCollider.h>
 #include <GameEngine/ComponentSystem/Components/Physics/Colliders/SphereCollider.h>
@@ -71,6 +72,25 @@ void FeatureShowcase::InitializeApplication()
 
 	inputHandler.RegisterBinaryAction("SharedAction", Keys::W, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("SharedAction", ControllerButtons::A, GenericInput::ActionType::Held);
+
+	std::shared_ptr<GameObject> instancedModelObj = std::make_shared<GameObject>();
+	instancedModelObj->AddComponent<Transform>(CU::Vector3f(-500.0f, 0, 1500.0f));
+	std::shared_ptr<InstancedModel> instancedModel = instancedModelObj->AddComponent<InstancedModel>();
+	instancedModel->SetMesh(AssetManager::Get().GetAsset<MeshAsset>("Models/SM_Chest.fbx")->mesh);
+	instancedModel->SetMaterialOnSlot(0, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_Chest.json")->material);
+
+	for (int outer = 0; outer < 10; outer++)
+	{
+		for (int inner = 0; inner < 10; inner++)
+		{
+			CU::Matrix4x4f instanceMatrix;
+			instanceMatrix(4, 1) = inner * 250.0f;
+			instanceMatrix(4, 3) = outer * 250.0f;
+			instancedModel->AddInstance(instanceMatrix);
+		}
+	}
+
+	Engine::GetInstance().GetSceneHandler().Instantiate(instancedModelObj);
 	
 	Engine::GetInstance().GetImGuiHandler().AddNewFunction([]()
 		{

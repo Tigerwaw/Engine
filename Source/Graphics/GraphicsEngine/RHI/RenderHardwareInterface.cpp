@@ -407,6 +407,12 @@ void RenderHardwareInterface::SetVertexBuffer(const Microsoft::WRL::ComPtr<ID3D1
 	myContext->IASetVertexBuffers(0, 1, aVertexBuffer.GetAddressOf(), &vertexSize, &vertexOffset);
 }
 
+void RenderHardwareInterface::SetVertexBuffers(const std::vector<ID3D11Buffer*> aVertexBuffers, std::vector<unsigned> aStrides, std::vector<unsigned> aOffsets) const
+{
+	unsigned numBuffers = static_cast<unsigned>(aVertexBuffers.size());
+	myContext->IASetVertexBuffers(0, numBuffers, aVertexBuffers.data(), aStrides.data(), aOffsets.data());
+}
+
 void RenderHardwareInterface::SetIndexBuffer(const Microsoft::WRL::ComPtr<ID3D11Buffer>& aIndexBuffer) const
 {
 	DXGI_FORMAT indexBufferFormat = DXGI_FORMAT_R32_UINT;
@@ -468,10 +474,10 @@ bool RenderHardwareInterface::CreateInputLayout(Microsoft::WRL::ComPtr<ID3D11Inp
 		element.SemanticIndex = vxED.SemanticIndex;
 		element.Format = static_cast<DXGI_FORMAT>(vxED.Type);
 
-		element.InputSlot = 0;
+		element.InputSlot = vxED.IsInstanceData ? 1 : 0;
 		element.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-		element.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-		element.InstanceDataStepRate = 0;
+		element.InputSlotClass = vxED.IsInstanceData ? D3D11_INPUT_PER_INSTANCE_DATA : D3D11_INPUT_PER_VERTEX_DATA;
+		element.InstanceDataStepRate = vxED.IsInstanceData ? 1 : 0;
 
 		inputElements.emplace_back(element);
 	}
@@ -604,6 +610,11 @@ void RenderHardwareInterface::Draw(unsigned aVertexCount)
 void RenderHardwareInterface::DrawIndexed(unsigned aStartIndex, unsigned aIndexCount) const
 {
 	myContext->DrawIndexed(aIndexCount, aStartIndex, 0);
+}
+
+void RenderHardwareInterface::DrawIndexedInstanced(unsigned aIndexCount, unsigned aInstanceCount, unsigned aStartIndex, unsigned aStartVertex, unsigned aStartInstance) const
+{
+	myContext->DrawIndexedInstanced(aIndexCount, aInstanceCount, aStartIndex, aStartVertex, aStartInstance);
 }
 
 void RenderHardwareInterface::ChangePipelineState(const PipelineStateObject& aNewPSO)

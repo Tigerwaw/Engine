@@ -9,6 +9,7 @@
 #include "LambdaGraphicsCommand.h"
 #include "Render/RenderMesh.h"
 #include "Render/RenderAnimatedMesh.h"
+#include "Render/RenderInstancedMesh.h"
 #include "Render/RenderDebugMesh.h"
 #include "Render/RenderText.h"
 #include "Render/RenderSprite.h"

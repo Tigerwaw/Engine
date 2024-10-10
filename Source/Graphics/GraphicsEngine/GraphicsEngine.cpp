@@ -419,6 +419,60 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<M
 	ClearTextureResource_PS(127);
 }
 
+void GraphicsEngine::RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, std::vector<std::shared_ptr<Material>> aMaterialList, DynamicVertexBuffer& aInstanceBuffer, bool aOverrideMaterialPSO)
+{
+	std::vector<ID3D11Buffer*> buffers;
+	std::vector<unsigned> strides;
+	std::vector<unsigned> offsets;
+
+	buffers.emplace_back(*aMesh.GetVertexBuffer().GetAddressOf());
+	buffers.emplace_back(*aInstanceBuffer.GetVertexBuffer().GetAddressOf());
+
+	strides.emplace_back(myCurrentPSO->VertexStride);
+	strides.emplace_back(static_cast<unsigned>(sizeof(CU::Matrix4x4f)));
+
+	offsets.emplace_back(0);
+	offsets.emplace_back(0);
+
+	myRHI->SetVertexBuffers(buffers, strides, offsets);
+	myRHI->SetIndexBuffer(aMesh.GetIndexBuffer());
+	myRHI->SetPrimitiveTopology(Topology::TRIANGLELIST);
+
+	SetTextureResource_PS(127, *myLUTtexture);
+
+	for (const auto& element : aMesh.GetElements())
+	{
+		if (aMaterialList.size() > element.MaterialIndex)
+		{
+			MaterialBuffer matBufferData = aMaterialList[element.MaterialIndex]->MaterialSettings();
+			GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, matBufferData);
+
+			if (!aOverrideMaterialPSO)
+			{
+				if (aMaterialList[element.MaterialIndex]->GetPSO())
+				{
+					ChangePipelineState(aMaterialList[element.MaterialIndex]->GetPSO());
+				}
+			}
+
+			for (auto& [slot, texture] : aMaterialList[element.MaterialIndex]->GetTextures())
+			{
+				SetTextureResource_PS(slot, *texture);
+			}
+		}
+
+		myRHI->DrawIndexedInstanced(element.NumIndices, aMeshCount, element.IndexOffset, 0, 0);
+		myDrawcallAmount++;
+
+		for (auto& [slot, texture] : aMaterialList[element.MaterialIndex]->GetTextures())
+		{
+			ClearTextureResource_PS(slot);
+		}
+	}
+
+	ClearTextureResource_PS(127);
+}
+
 void GraphicsEngine::RenderSprite()
 {
 	myRHI->SetPrimitiveTopology(Topology::POINTLIST);

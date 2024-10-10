@@ -17,6 +17,7 @@ namespace CU = CommonUtilities;
 #include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
+#include "GameEngine/ComponentSystem/Components/Graphics/InstancedModel.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/DebugModel.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/ParticleSystem.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/TrailSystem.h"
@@ -361,6 +362,19 @@ void Renderer::RenderDeferredObjects(Scene& aScene, bool aDisableViewCulling)
 				}
 			}
 		}
+
+		std::shared_ptr<InstancedModel> instancedModel = gameObject->GetComponent<InstancedModel>();
+		if (instancedModel && instancedModel->GetActive())
+		{
+			if (aDisableViewCulling || !instancedModel->GetShouldViewcull() || IsInsideFrustum(renderCamera, gameObject->GetComponent<Transform>(), instancedModel->GetBoundingBox()))
+			{
+				if (instancedModel->GetMaterialOnSlot(0)->GetPSO()->BlendState == nullptr)
+				{
+					UpdateBoundingBox(gameObject);
+					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(instancedModel, AssetManager::Get().GetAsset<PSOAsset>("PSO_Deferred")->pso);
+				}
+			}
+		}
 	}
 }
 
@@ -392,6 +406,18 @@ void Renderer::RenderForwardObjects(Scene& aScene, bool aDisableViewCulling)
 				if (animModel->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr)
 				{
 					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel);
+				}
+			}
+		}
+
+		std::shared_ptr<InstancedModel> instancedModel = gameObject->GetComponent<InstancedModel>();
+		if (instancedModel && instancedModel->GetActive())
+		{
+			if (aDisableViewCulling || !instancedModel->GetShouldViewcull() || IsInsideFrustum(renderCamera, gameObject->GetComponent<Transform>(), instancedModel->GetBoundingBox()))
+			{
+				if (instancedModel->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr)
+				{
+					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(instancedModel);
 				}
 			}
 		}
@@ -585,6 +611,24 @@ void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aRenderCa
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel, aPSOoverride);
 			}
 		}
+
+		std::shared_ptr<InstancedModel> instancedModel = gameObject->GetComponent<InstancedModel>();
+		if (instancedModel && instancedModel->GetActive())
+		{
+			if (aDisableViewCulling || !instancedModel->GetShouldViewcull() || IsInsideFrustum(aRenderCamera, gameObject->GetComponent<Transform>(), instancedModel->GetBoundingBox()))
+			{
+				if (aRenderCamera->gameObject->GetName() == "MainCamera")
+				{
+					UpdateBoundingBox(gameObject);
+				}
+				else
+				{
+					if (!instancedModel->GetCastShadows()) continue;
+				}
+
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(instancedModel, aPSOoverride);
+			}
+		}
 	}
 }
 
@@ -613,6 +657,17 @@ void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<PointLight> aPoin
 			if (aDisableViewCulling || !animModel->GetShouldViewcull() || IsInsideRadius(aPointLight, gameObject->GetComponent<Transform>(), animModel->GetBoundingBox()))
 			{
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel, aPSOoverride);
+			}
+		}
+
+		std::shared_ptr<InstancedModel> instancedModel = gameObject->GetComponent<InstancedModel>();
+		if (instancedModel && instancedModel->GetActive())
+		{
+			if (!instancedModel->GetCastShadows()) continue;
+
+			if (aDisableViewCulling || !instancedModel->GetShouldViewcull() || IsInsideRadius(aPointLight, gameObject->GetComponent<Transform>(), instancedModel->GetBoundingBox()))
+			{
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(instancedModel, aPSOoverride);
 			}
 		}
 	}
@@ -699,6 +754,7 @@ void Renderer::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
 
 		std::shared_ptr<Model> model = aGameObject->GetComponent<Model>();
 		std::shared_ptr<AnimatedModel> animModel = aGameObject->GetComponent<AnimatedModel>();
+		std::shared_ptr<InstancedModel> instancedModel = aGameObject->GetComponent<InstancedModel>();
 		if (model)
 		{
 			if (!model->GetShouldViewcull()) return;
@@ -722,6 +778,23 @@ void Renderer::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
 			if (!animModel->GetShouldViewcull()) return;
 
 			auto& corners = animModel->GetBoundingBox().GetCorners();
+			for (CU::Vector3f corner : corners)
+			{
+				corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * objectTransform->GetWorldMatrix());
+
+				bbMin.x = std::fminf(corner.x, bbMin.x);
+				bbMax.x = std::fmaxf(corner.x, bbMax.x);
+				bbMin.y = std::fminf(corner.y, bbMin.y);
+				bbMax.y = std::fmaxf(corner.y, bbMax.y);
+				bbMin.z = std::fminf(corner.z, bbMin.z);
+				bbMax.z = std::fmaxf(corner.z, bbMax.z);
+			}
+		}
+		else if (instancedModel)
+		{
+			if (!instancedModel->GetShouldViewcull()) return;
+
+			auto& corners = instancedModel->GetBoundingBox().GetCorners();
 			for (CU::Vector3f corner : corners)
 			{
 				corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * objectTransform->GetWorldMatrix());

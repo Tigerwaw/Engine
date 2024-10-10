@@ -44,6 +44,7 @@ public:
 	bool CreateConstantBuffer(std::string_view aName, size_t aSize, unsigned aSlot, unsigned aPipelineStages, ConstantBuffer& outBuffer);
 
 	void SetVertexBuffer(const Microsoft::WRL::ComPtr<ID3D11Buffer>& aVertexBuffer, size_t aVertexSize, size_t aVertexOffset = 0) const;
+	void SetVertexBuffers(const std::vector<ID3D11Buffer*> aVertexBuffers, std::vector<unsigned> aStrides, std::vector<unsigned> aOffsets) const;
 	void SetIndexBuffer(const Microsoft::WRL::ComPtr<ID3D11Buffer>& aIndexBuffer) const;
 	void SetConstantBuffer(const ConstantBuffer& aBuffer);
 
@@ -65,6 +66,7 @@ public:
 
 	void Draw(unsigned aVertexCount);
 	void DrawIndexed(unsigned aStartIndex, unsigned aIndexCount) const;
+	void DrawIndexedInstanced(unsigned aIndexCount, unsigned aInstanceCount, unsigned aStartIndex, unsigned aStartVertex, unsigned aStartInstance) const;
 
 	void ChangePipelineState(const PipelineStateObject& aNewPSO);
 

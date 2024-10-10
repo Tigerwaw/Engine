@@ -19,19 +19,20 @@ Texture2D BlueNoise : register(t51);
 
 struct MeshVertex
 {
-    float4 Position     : POSITION;
-    float4 VertexColor0 : VERTEXCOLOR0;
-    float4 VertexColor1 : VERTEXCOLOR1;
-    float4 VertexColor2 : VERTEXCOLOR2;
-    float4 VertexColor3 : VERTEXCOLOR3;
-    float2 TexCoord0    : TEXCOORD0;
-    float2 TexCoord1    : TEXCOORD1;
-    float2 TexCoord2    : TEXCOORD2;
-    float2 TexCoord3    : TEXCOORD3;
-    float3 Normal       : NORMAL;
-    float3 Tangent      : TANGENT;
-    uint4 BoneIDs       : BONEIDS;
-    float4 Skinweights  : SKINWEIGHTS;
+    float4 Position             : POSITION;
+    float4 VertexColor0         : VERTEXCOLOR0;
+    float4 VertexColor1         : VERTEXCOLOR1;
+    float4 VertexColor2         : VERTEXCOLOR2;
+    float4 VertexColor3         : VERTEXCOLOR3;
+    float2 TexCoord0            : TEXCOORD0;
+    float2 TexCoord1            : TEXCOORD1;
+    float2 TexCoord2            : TEXCOORD2;
+    float2 TexCoord3            : TEXCOORD3;
+    float3 Normal               : NORMAL;
+    float3 Tangent              : TANGENT;
+    uint4 BoneIDs               : BONEIDS;
+    float4 Skinweights          : SKINWEIGHTS;
+    float4x4 RelativeTransform  : RELATIVEXF;
 };
 
 struct MeshVStoPS
