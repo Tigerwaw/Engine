@@ -679,8 +679,8 @@
           "Emitters": [
             {
               "Material": "Materials/MAT_DefaultTrail.json",
-              "Length": 40,
-              "Vertices": 24.0,
+              "Length": 24,
+              "Vertices": 36.0,
               "Width": [
                 {
                   "Time": 0.0,

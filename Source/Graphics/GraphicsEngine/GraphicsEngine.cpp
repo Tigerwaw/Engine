@@ -531,7 +531,8 @@ void GraphicsEngine::RenderTrailEmitter(TrailEmitter& aTrailEmitter)
 
 	myRHI->SetPrimitiveTopology(Topology::LINESTRIP);
 	myRHI->SetVertexBuffer(aTrailEmitter.myVertexBuffer.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
-	myRHI->Draw(static_cast<unsigned>(aTrailEmitter.myTrailVertices.size()));
+	unsigned count = aTrailEmitter.GetCurrentLength();
+	myRHI->Draw(count);
 
 	for (const auto& [slot, texture] : aTrailEmitter.GetMaterial()->GetTextures())
 	{

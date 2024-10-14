@@ -17,6 +17,7 @@ public:
 	std::shared_ptr<Material> GetMaterial() { return myMaterial; }
 
 	const TrailEmitterSettings& GetEmitterSettings() const { return mySettings; }
+	const unsigned GetCurrentLength() const { return myCurrentLength; }
 
 protected:
 	virtual void InitTrailVertex(TrailVertex& aTrailVertex);
@@ -28,5 +29,6 @@ private:
 	std::shared_ptr<Material> myMaterial;
 	TrailEmitterSettings mySettings;
 	std::vector<CU::Vector3f> myPreviousPositions;
+	unsigned myCurrentLength = 0;
 };
 

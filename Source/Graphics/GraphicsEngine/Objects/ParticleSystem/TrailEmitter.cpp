@@ -12,6 +12,7 @@ TrailEmitter::~TrailEmitter()
 
 void TrailEmitter::Update(CU::Vector3f aFollowTarget, float aDeltaTime)
 {
+	myCurrentLength = 0;
 	myTrailVertices[0].Position = CU::ToVector4(aFollowTarget, 1.0f);
 	myPreviousPositions[0] = aFollowTarget;
 	UpdateTrailVertex(myTrailVertices[0], aDeltaTime, 0);
@@ -20,6 +21,11 @@ void TrailEmitter::Update(CU::Vector3f aFollowTarget, float aDeltaTime)
 	{
 		TrailVertex& trailVertex = myTrailVertices[i];
 		trailVertex.Position = CU::ToVector4(myPreviousPositions[i * mySettings.Length], 1.0f);
+		if (trailVertex.Position.LengthSqr() > 1.0f)
+		{
+			myCurrentLength++;
+		}
+
 		UpdateTrailVertex(trailVertex, aDeltaTime, i);
 	}
 
