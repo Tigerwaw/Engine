@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #pragma region WindowsIncludes
 #define	WIN32_LEAN_AND_MEAN
 

@@ -1,4 +1,4 @@
-dirs = {}
+﻿dirs = {}
 dirs["root"] 			= os.realpath("../")
 dirs["bin"]				= os.realpath(dirs.root .. "Bin/")
 dirs["temp"]			= os.realpath(dirs.root .. "Temp/")
@@ -61,3 +61,72 @@ function verify_or_create_settings(app_name)
 		json.encode(settings)
 	)
 end
+
+-- ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+-- ┃ Manual VSPROJ fixes         ┃
+-- ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+-- Utility functions
+local srep = string.rep
+
+local lpad = function(s, l, c)
+    local res = srep(c or ' ', l - #s) .. s
+    return res, res ~= s
+end
+
+local rpad = function(s, l, c)
+    local res = s .. srep(c or ' ', l - #s)
+    return res, res ~= s
+end
+
+local printTable = function(_table)
+    local sortedKeys = {}
+    local maxLength = 0;
+
+    for k in pairs(_table) do
+        table.insert(sortedKeys, k)
+        maxLength = math.max(maxLength, string.len(k))
+    end
+
+    table.sort(sortedKeys)
+
+    for _, k in ipairs(sortedKeys) do
+        print(rpad(k, maxLength, " "), _table[k])
+    end
+end
+
+local write = function(content)
+    premake.w(content)
+end
+
+local writeOpenTag = function(tag)
+    write(string.format("<%s>", tag))
+end
+
+local writeCloseTag = function(tag)
+    write(string.format("</%s>", tag))
+end
+
+-- Actual stuff
+local hiddenFunction = function()
+    require('vstudio')
+
+    premake.override(premake.vstudio.vc2010, "propertyGroup", function(base, prj)
+        base(prj)
+        premake.w('<MultiProcFXC>true</MultiProcFXC>')
+    end)
+
+    premake.override(premake.vstudio.vc2010, "fxCompile", function(base, prj)
+        if prj.filename == "GraphicsEngineShaders" and prj.buildcfg == "Debug" then
+            writeOpenTag("FxCompile");
+            write("<ShaderModel>5.0</ShaderModel>")
+            write("<DisableOptimizations>true</DisableOptimizations>")
+            write("<EnableDebuggingInformation>true</EnableDebuggingInformation>")
+            writeCloseTag("FxCompile");
+        else
+            base(prj)
+        end
+
+    end)
+end
+hiddenFunction()

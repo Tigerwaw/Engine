@@ -11,6 +11,14 @@ project "AssetManager"
   kind "StaticLib"
   language "C++"
   cppdialect "C++20"
+  enableunitybuild "On"
+  conformancemode "On"
+
+	dependson {
+	"GameEngine",
+    "GraphicsEngine",
+    "Logger"
+  }
 
   targetdir ("%{dirs.lib}/%{cfg.buildcfg}/%{prj.name}")
 	targetname("%{prj.name}_%{cfg.buildcfg}")

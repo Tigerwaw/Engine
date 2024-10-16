@@ -11,6 +11,8 @@ project "GameEngine"
   kind "StaticLib"
   language "C++"
   cppdialect "C++20"
+  enableunitybuild "On"
+  conformancemode "On"
 
   targetdir ("%{dirs.lib}/%{cfg.buildcfg}/%{prj.name}")
 	targetname("%{prj.name}_%{cfg.buildcfg}")

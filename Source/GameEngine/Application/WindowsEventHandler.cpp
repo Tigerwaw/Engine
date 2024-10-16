@@ -3,7 +3,6 @@
 
 WindowsEventHandler::WindowsEventHandler()
 {
-
 }
 
 WindowsEventHandler::~WindowsEventHandler()

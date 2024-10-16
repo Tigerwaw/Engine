@@ -11,11 +11,12 @@ project "ModelViewer"
   kind "WindowedApp"
   language "C++"
   cppdialect "C++20"
+  enableunitybuild "On"
+  conformancemode "On"
 
   dependson { 
     "GameEngine", 
-    "GraphicsEngine", 
-    "GraphicsEngineShaders", 
+    "GraphicsEngine",
     "AssetManager",
     "Imgui",
     "Logger"
