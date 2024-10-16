@@ -1,12 +1,11 @@
 #include "GameEngine/Application/Application.h"
 #include "GameEngine/Application/EntryPoint.h"
 
-class APPNAME : public Application
+class WorldInterfacing : public Application
 {
 public:
-	APPNAME() {}
-    ~APPNAME() {}
+	WorldInterfacing() {}
+    ~WorldInterfacing() {}
 
     void InitializeApplication() override;
-    void UpdateApplication() override;
 };

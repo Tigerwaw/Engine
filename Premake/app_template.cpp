@@ -11,3 +11,8 @@ void APPNAME::InitializeApplication()
 {
 
 }
+
+void APPNAME::UpdateApplication()
+{
+
+}
