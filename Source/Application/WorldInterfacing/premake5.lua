@@ -11,6 +11,8 @@ project "WorldInterfacing"
   kind "WindowedApp"
   language "C++"
   cppdialect "C++20"
+  enableunitybuild "On"
+  conformancemode "On"
 
   dependson { 
     "GameEngine", 

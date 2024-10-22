@@ -73,7 +73,7 @@
           "Type": "AnimatedModel",
           "Model": "Models/SK_C_TGA_Bro.fbx",
           "Materials": [
-            "Materials/MAT_TgaBro.json"
+            "Materials/MAT_TgaBroRed.json"
           ],
           "AnimationLayers": [
             {
@@ -110,7 +110,7 @@
           "Type": "AnimatedModel",
           "Model": "Models/SK_C_TGA_Bro.fbx",
           "Materials": [
-            "Materials/MAT_TgaBro.json"
+            "Materials/MAT_TgaBroRed.json"
           ],
           "AnimationLayers": [
             {
@@ -147,7 +147,7 @@
           "Type": "AnimatedModel",
           "Model": "Models/SK_C_TGA_Bro.fbx",
           "Materials": [
-            "Materials/MAT_TgaBro.json"
+            "Materials/MAT_TgaBroYellow.json"
           ],
           "AnimationLayers": [
             {
@@ -184,7 +184,7 @@
           "Type": "AnimatedModel",
           "Model": "Models/SK_C_TGA_Bro.fbx",
           "Materials": [
-            "Materials/MAT_TgaBro.json"
+            "Materials/MAT_TgaBroYellow.json"
           ],
           "AnimationLayers": [
             {

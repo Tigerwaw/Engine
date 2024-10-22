@@ -8,4 +8,5 @@ public:
     ~WorldInterfacing() {}
 
     void InitializeApplication() override;
+    void UpdateApplication() override;
 };

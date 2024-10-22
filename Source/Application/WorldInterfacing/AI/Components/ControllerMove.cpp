@@ -5,10 +5,10 @@
 #include "GameEngine/Engine.h"
 #include "GameEngine/Time/Timer.h"
 
-#include "../Controllers/ControllerBase.h"
-#include "../Controllers/PlayerController.h"
-#include "../Controllers/AIEventsController.h"
-#include "../Controllers/AIPollingController.h"
+#include "WorldInterfacing/AI/Controllers/ControllerBase.h"
+#include "WorldInterfacing/AI/Controllers/PlayerController.h"
+#include "WorldInterfacing/AI/Controllers/AIEventsController.h"
+#include "WorldInterfacing/AI/Controllers/AIPollingController.h"
 
 ControllerMove::~ControllerMove()
 {

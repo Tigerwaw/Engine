@@ -3,6 +3,8 @@
 
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "AI/Components/ControllerMove.h"
+#include "AI/PollingStation.h"
+#include "AI/AIEventManager.h"
 
 Application* CreateApplication()
 {
@@ -20,4 +22,14 @@ void WorldInterfacing::InitializeApplication()
 	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Robot2")->AddComponent<ControllerMove>(100.0f, ControllerMove::ControllerType::AIPolling);
 	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Robot3")->AddComponent<ControllerMove>(100.0f, ControllerMove::ControllerType::AIEvents);
 	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Robot4")->AddComponent<ControllerMove>(100.0f, ControllerMove::ControllerType::AIEvents);
+}
+
+void WorldInterfacing::UpdateApplication()
+{
+	PollingStation::Get().Update();
+
+	if (PollingStation::Get().IsPlayerHackingComputer())
+	{
+		AIEventManager::Get().Notify("PlayerIsHacking", std::any(PollingStation::Get().GetPlayerPosition()));
+	}
 }
