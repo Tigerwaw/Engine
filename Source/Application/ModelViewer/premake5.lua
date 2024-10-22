@@ -55,10 +55,11 @@ project "ModelViewer"
     "Imgui_%{cfg.buildcfg}", 
     "Logger_%{cfg.buildcfg}",
     "TGAFbx",
-    "d3d11.lib",
-    "dxguid.lib",
-    "dxgi.lib",
-    "d3dcompiler.lib"
+    "d3d11",
+    "dxguid",
+    "dxgi",
+    "d3dcompiler",
+    "WinPixEventRuntime"
   }
 
   verify_or_create_settings("ModelViewer")

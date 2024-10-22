@@ -71,10 +71,12 @@
 #include "GameEngine/Audio/AudioEngine.h"
 #include "GameEngine/ImGui/ImGuiHandler.h"
 
-#if _DEBUG
+#ifndef _RETAIL
 #include "imgui.h"
 #include "utilities/Imgui/misc/cpp/imgui_stdlib.h"
+#define USE_PIX
 #endif
+#include "WinPixEventRuntime/pix3.h"
 
 
 class Application

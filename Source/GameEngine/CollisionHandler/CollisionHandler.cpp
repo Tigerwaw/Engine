@@ -17,6 +17,8 @@ CollisionHandler::~CollisionHandler()
 
 void CollisionHandler::TestCollisions(Scene& aScene)
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(9), "Test Collisions in Scene");
+
     for (auto& goA : aScene.myGameObjects)
     {
 		int collisions = 0;

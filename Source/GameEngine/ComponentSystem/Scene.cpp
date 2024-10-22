@@ -37,6 +37,7 @@ Scene::~Scene()
 
 void Scene::Update()
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(7), "Update GameObjects in Scene");
 	myActiveGameObjectAmount = 0;
 
 	for (auto& gameObject : myGameObjects)
@@ -140,6 +141,7 @@ void Scene::Destroy(std::shared_ptr<GameObject> aGameObject)
 
 void Scene::SortGameObjects()
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(8), "Sort GameObjects in Scene");
 	CU::Vector3f camPos = myMainCamera->GetComponent<Transform>()->GetTranslation(true);
 
 	std::stable_sort(myGameObjects.begin(), myGameObjects.end(), [this, camPos](const std::shared_ptr<GameObject> lhs, const std::shared_ptr<GameObject> rhs)

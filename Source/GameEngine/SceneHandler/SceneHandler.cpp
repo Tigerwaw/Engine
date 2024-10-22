@@ -22,6 +22,7 @@ SceneHandler::~SceneHandler()
 
 void SceneHandler::UpdateActiveScene()
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(3), "Update Active Scene");
     if (!myActiveScene)
     {
         LOG(LogSceneHandler, Error, "Scenehandler does not contain an active scene!");

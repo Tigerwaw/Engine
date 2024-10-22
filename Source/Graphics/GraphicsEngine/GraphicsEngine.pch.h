@@ -24,7 +24,9 @@ namespace nl = nlohmann;
 
 #ifndef _RETAIL
 #include "Logger/Logger.h"
+#define USE_PIX
 #endif
+#include "WinPixEventRuntime/pix3.h"
 
 #if _DEBUG
 DECLARE_LOG_CATEGORY_WITH_NAME(LogGraphicsEngine, GraphicsEngine, Verbose);

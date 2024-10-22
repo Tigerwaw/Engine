@@ -38,6 +38,7 @@ void AudioEngine::Destroy()
 
 void AudioEngine::Update()
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(5), "Update Audio Engine");
     if (!mySystem)
     {
         return;

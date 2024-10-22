@@ -25,6 +25,8 @@ void Application::Run()
 
     while (myIsRunning)
     {
+		PIXScopedEvent(PIX_COLOR_INDEX(0), "Main Update Loop");
+
 #ifndef _RETAIL
 		if (Engine::GetInstance().GetIsFullscreen())
 		{

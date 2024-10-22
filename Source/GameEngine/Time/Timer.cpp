@@ -11,6 +11,7 @@ Timer::Timer()
 
 void Timer::Update()
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(2), "Timer Update");
 	myLastFrameTime = myCurrentFrameTime;
 	myCurrentFrameTime = std::chrono::high_resolution_clock::now();
 

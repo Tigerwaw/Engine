@@ -115,6 +115,7 @@ void GraphicsEngine::BeginFrame()
 
 void GraphicsEngine::RenderFrame()
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "Execute Render Command List");
 	if (myCommandList->HasCommands() && !myCommandList->IsFinished())
 	{
 		myCommandList->Execute();

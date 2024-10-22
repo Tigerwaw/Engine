@@ -16,6 +16,7 @@ void InputHandler::UpdateEvents(UINT message, WPARAM wParam, LPARAM lParam)
 
 void InputHandler::UpdateInput()
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(4), "Update Input");
 	for (int i = 0; i < static_cast<int>(InputMode::Count); i++)
 	{
 		myInputModes[static_cast<InputMode>(i)]->UpdateInput();
