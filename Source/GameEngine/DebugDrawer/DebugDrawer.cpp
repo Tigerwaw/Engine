@@ -60,6 +60,11 @@ void DebugDrawer::DrawLine(CU::Vector3f aFromPosition, CU::Vector3f aToPosition,
     myLineVertices.emplace_back(DebugLineVertex(aFromPosition, aToPosition, aColor));
 }
 
+void DebugDrawer::DrawLine(DebugLine aLine)
+{
+    DrawLine(aLine.From, aLine.To, aLine.Color);
+}
+
 void DebugDrawer::DrawCameraFrustum(std::shared_ptr<Camera> aCamera, CU::Vector4f aColor)
 {
     CU::Matrix4x4f camMatrix = aCamera->gameObject->GetComponent<Transform>()->GetMatrix();

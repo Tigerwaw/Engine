@@ -114,6 +114,7 @@ bool Application::InitializeEngine()
 	Engine::GetInstance().GetAudioEngine().Initialize();
 
 #ifndef _RETAIL
+	Engine::GetInstance().GetDebugDrawer().InitializeDebugDrawer();
 	Engine::GetInstance().GetImGuiHandler().Initialize(myWindow->GetWindowHandle());
 	GraphicsEngine::Get().InitializeImGui();
 #endif

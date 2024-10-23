@@ -6,7 +6,7 @@ workspace "TGPGameEngine"
   configurations { "Debug", "Release", "Retail" }
 
 group "Applications"
-project "APPNAME"
+project "Navigation"
   location "%{dirs.application}/%{prj.name}/"
   kind "WindowedApp"
   language "C++"
@@ -63,7 +63,7 @@ project "APPNAME"
     "WinPixEventRuntime"
   }
 
-  verify_or_create_settings("APPNAME")
+  verify_or_create_settings("Navigation")
 
   filter "system:windows"
     cppdialect "C++20"

@@ -69,6 +69,10 @@ bool AssetManager::RegisterAsset(const std::filesystem::path& aPath)
     {
         return RegisterFontAsset(aPath);
     }
+    else if (name.starts_with("NM") || name.starts_with("nm"))
+    {
+        return RegisterNavMeshAsset(aPath);
+    }
 
     return false;
 }
@@ -715,6 +719,104 @@ bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered font asset {}", asset->path.filename().string());
+    return true;
+}
+
+bool AssetManager::RegisterNavMeshAsset(const std::filesystem::path& aPath)
+{
+    if (!ValidateAsset(aPath)) return false;
+
+    std::filesystem::path assetPath = MakeRelative(aPath);
+    const std::string ext = assetPath.extension().string();
+    if (!ext.ends_with("fbx")) return false;
+
+    TGA::FBX::NavMesh tgaNavMesh;
+    TGA::FBX::Importer::LoadNavMesh(aPath, tgaNavMesh, true);
+
+    // Create Nav Polygons.
+    std::vector<NavPolygon> navPolygons;
+    for (auto& tgaChunk : tgaNavMesh.Chunks)
+    {
+        for (auto& tgaPolygon : tgaChunk.Polygons)
+        {
+            assert(tgaPolygon.Indices.size() < 4 && "Navmesh isn't triangulated >:((");
+            NavPolygon& navPolygon = navPolygons.emplace_back(NavPolygon());
+            for (auto& polygonIndex : tgaPolygon.Indices)
+            {
+                CU::Vector3f vertexPos = { tgaChunk.Vertices[polygonIndex].Position[0], tgaChunk.Vertices[polygonIndex].Position[1], tgaChunk.Vertices[polygonIndex].Position[2] };
+                navPolygon.vertexPositions.emplace_back(vertexPos);
+            }
+        }
+    }
+
+    // Create Nav nodes with connections between eachother.
+    std::unordered_map<unsigned, std::vector<unsigned>> connections;
+    std::vector<NavNode> navNodes;
+
+    for (int i = 0; i < static_cast<int>(navPolygons.size()); ++i)
+    {
+        NavPolygon& navPoly1 = navPolygons[i];
+
+        for (int j = 0; j < static_cast<int>(navPolygons.size()); ++j)
+        {
+            if (i == j) break;
+
+            NavPolygon& navPoly2 = navPolygons[j];
+
+            int sharedVertices = 0;
+
+            for (int vertexPos = 0; vertexPos < static_cast<int>(navPoly2.vertexPositions.size()); vertexPos++)
+            {
+                if (std::find(navPoly1.vertexPositions.begin(), navPoly1.vertexPositions.end(), navPoly2.vertexPositions[vertexPos]) != navPoly1.vertexPositions.end())
+                {
+                    sharedVertices++;
+                }
+            }
+
+            if (sharedVertices == 2) // Polygons share an edge
+            {
+                connections[i].emplace_back(j);
+                connections[j].emplace_back(i);
+            }
+        }
+
+        NavNode& navNode = navNodes.emplace_back(NavNode());
+        CU::Vector3f pos;
+        int numVertices = static_cast<int>(navPoly1.vertexPositions.size());
+        for (int vertexPos = 0; vertexPos < numVertices; vertexPos++)
+        {
+            pos += navPoly1.vertexPositions[vertexPos];
+        }
+
+        pos.x /= numVertices;
+        pos.y /= numVertices;
+        pos.z /= numVertices;
+
+        navNode.position = pos;
+    }
+
+    for (int i = 0; i < static_cast<int>(navNodes.size()); ++i)
+    {
+        for (auto& nodeConnection : connections[i])
+        {
+            navNodes[i].edges.emplace_back(nodeConnection);
+            navNodes[i].edgeCosts.emplace_back(static_cast<int>((navNodes[i].position - navNodes[nodeConnection].position).Length()));
+        }
+    }
+
+    NavMesh navMesh;
+    navMesh.Init(navNodes, navPolygons);
+    CU::Vector3f boxExtents = { tgaNavMesh.BoxSphereBounds.BoxExtents[0], tgaNavMesh.BoxSphereBounds.BoxExtents[1], tgaNavMesh.BoxSphereBounds.BoxExtents[2] };
+    CU::Vector3f boxCenter = { tgaNavMesh.BoxSphereBounds.Center[0], tgaNavMesh.BoxSphereBounds.Center[1], tgaNavMesh.BoxSphereBounds.Center[2] };
+    navMesh.SetBoundingBox(boxCenter, boxExtents * 2.0f);
+
+    std::shared_ptr<NavMeshAsset> asset = std::make_shared<NavMeshAsset>();
+    asset->navmesh = std::make_shared<NavMesh>(std::move(navMesh));
+    asset->path = assetPath;
+    asset->name = assetPath.stem();
+    myAssets.emplace(asset->name, asset);
+
+    LOG(LogAssetManager, Log, "Registered navmesh asset {}", asset->path.filename().string());
     return true;
 }
 

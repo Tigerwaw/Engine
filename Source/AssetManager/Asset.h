@@ -7,6 +7,8 @@
 #include "Objects/PipelineStateObject.h"
 #include "Objects/Text/Font.h"
 
+#include "GameEngine/Pathfinding/NavMesh.h"
+
 struct Asset
 {
 	virtual ~Asset() = default;
@@ -17,6 +19,11 @@ struct Asset
 struct MeshAsset : public Asset
 {
 	std::shared_ptr<Mesh> mesh;
+};
+
+struct NavMeshAsset : public Asset
+{
+	std::shared_ptr<NavMesh> navmesh;
 };
 
 struct AnimationAsset : public Asset

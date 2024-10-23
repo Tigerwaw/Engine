@@ -1,3 +1,4 @@
+#include "Enginepch.h"
 #include "FeatureShowcase.h"
 #include <GameEngine/Engine.h>
 #include <GameEngine/Time/Timer.h>
@@ -34,7 +35,6 @@ void FeatureShowcase::InitializeApplication()
 	Engine::GetInstance().GetAudioEngine().AddBus(BusType::Ambience, "Ambience");
 	Engine::GetInstance().GetAudioEngine().AddBus(BusType::SFX, "SFX");
 
-	Engine::GetInstance().GetDebugDrawer().InitializeDebugDrawer();
 	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_TestScene.json");
 
 	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();

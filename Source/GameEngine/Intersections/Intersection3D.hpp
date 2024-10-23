@@ -19,7 +19,7 @@ namespace CommonUtilities
 	{
 		T tolerance = (T)0.0001;
 		T d = aPlane.GetPoint().Dot(aPlane.GetNormal());
-		T numerator = d - aRay.GetPoint().Dot(aPlane.GetNormal());
+		T numerator = d - aRay.GetOrigin().Dot(aPlane.GetNormal());
 		T denominator = aRay.GetDirection().Dot(aPlane.GetNormal());
 
 		// Ray is parallel to the plane
@@ -49,7 +49,7 @@ namespace CommonUtilities
 	{
 		T tolerance = (T)0.0001;
 		T d = aPlane.GetPoint().Dot(aPlane.GetNormal());
-		T numerator = d - aRay.GetPoint().Dot(aPlane.GetNormal());
+		T numerator = d - aRay.GetOrigin().Dot(aPlane.GetNormal());
 		T denominator = aRay.GetDirection().Dot(aPlane.GetNormal());
 
 		// Ray is parallel to the plane
@@ -72,7 +72,7 @@ namespace CommonUtilities
 			return false;
 		}
 
-		outIntersectionPoint = aRay.GetPoint() + aRay.GetDirection() * t;
+		outIntersectionPoint = aRay.GetOrigin() + aRay.GetDirection() * t;
 		return true;
 	}
 
@@ -162,25 +162,31 @@ namespace CommonUtilities
 	template <class T>
 	bool IntersectionAABBRay(const AABB3D<T>& aAABB, const Ray<T>& aRay)
 	{
-		std::vector<Plane<T>> planeVector;
+		const Vector3<T> rDir = aRay.GetDirection();
 
-		planeVector.push_back(Plane<T>(aAABB.GetMin(), Vector3<T>(-1, 0, 0)));
-		planeVector.push_back(Plane<T>(aAABB.GetMin(), Vector3<T>(0, -1, 0)));
-		planeVector.push_back(Plane<T>(aAABB.GetMin(), Vector3<T>(0, 0, -1)));
-		planeVector.push_back(Plane<T>(aAABB.GetMax(), Vector3<T>(1, 0, 0)));
-		planeVector.push_back(Plane<T>(aAABB.GetMax(), Vector3<T>(0, 1, 0)));
-		planeVector.push_back(Plane<T>(aAABB.GetMax(), Vector3<T>(0, 0, 1)));
+		const Vector3<T> originToMin = (aAABB.GetMin() - aRay.GetOrigin());
+		const Vector3<T> originToMax = (aAABB.GetMax() - aRay.GetOrigin());
 
-		for (auto& plane : planeVector)
+		const Vector3<T> t1{ originToMin.x / rDir.x, originToMin.y / rDir.y, originToMin.z / rDir.z };
+		const Vector3<T> t2{ originToMax.x / rDir.x, originToMax.y / rDir.y, originToMax.z / rDir.z };
+
+		T tMin = 0;
+		T tMax = static_cast<T>(FLT_MAX);
+
+		tMin = static_cast<T>(std::fmin(std::fmax(t1.x, tMin), std::fmax(t2.x, tMin)));
+		tMax = static_cast<T>(std::fmax(std::fmin(t1.x, tMax), std::fmin(t2.x, tMax)));
+
+		tMin = static_cast<T>(std::fmin(std::fmax(t1.y, tMin), std::fmax(t2.y, tMin)));
+		tMax = static_cast<T>(std::fmax(std::fmin(t1.y, tMax), std::fmin(t2.y, tMax)));
+
+		tMin = static_cast<T>(std::fmin(std::fmax(t1.z, tMin), std::fmax(t2.z, tMin)));
+		tMax = static_cast<T>(std::fmax(std::fmin(t1.z, tMax), std::fmin(t2.z, tMax)));
+
+		if (tMin <= tMax)
 		{
-			Vector3<T> intersectionPoint;
-			if (IntersectionPlaneRay(plane, aRay, intersectionPoint))
-			{
-				if (aAABB.IsInside(intersectionPoint))
-				{
-					return true;
-				}
-			}
+			tMin = static_cast<T>(std::fmax(tMin, T(0))); // clamp tMin to zero if inside aabb
+
+			return true;
 		}
 
 		return false;
@@ -189,38 +195,35 @@ namespace CommonUtilities
 	template <class T>
 	bool IntersectionAABBRay(const AABB3D<T>& aAABB, const Ray<T>& aRay, Vector3<T>& outIntersectionPoint)
 	{
-		std::vector<Plane<T>> planeVector;
+		const Vector3<T> rDir = aRay.GetDirection();
 
-		planeVector.emplace_back(Plane<T>(aAABB.GetMin(), Vector3<T>(-1, 0, 0)));
-		planeVector.emplace_back(Plane<T>(aAABB.GetMin(), Vector3<T>(0, -1, 0)));
-		planeVector.emplace_back(Plane<T>(aAABB.GetMin(), Vector3<T>(0, 0, -1)));
-		planeVector.emplace_back(Plane<T>(aAABB.GetMax(), Vector3<T>(1, 0, 0)));
-		planeVector.emplace_back(Plane<T>(aAABB.GetMax(), Vector3<T>(0, 1, 0)));
-		planeVector.emplace_back(Plane<T>(aAABB.GetMax(), Vector3<T>(0, 0, 1)));
+		const Vector3<T> originToMin = (aAABB.GetMin() - aRay.GetOrigin());
+		const Vector3<T> originToMax = (aAABB.GetMax() - aRay.GetOrigin());
 
-		Vector3<T> closestIntersectionPoint;
-		float closestDistanceSqr = FLT_MAX;
-		bool hit = false;
+		const Vector3<T> t1{ originToMin.x / rDir.x, originToMin.y / rDir.y, originToMin.z / rDir.z };
+		const Vector3<T> t2{ originToMax.x / rDir.x, originToMax.y / rDir.y, originToMax.z / rDir.z };
 
-		for (auto& plane : planeVector)
+		T tMin = 0;
+		T tMax = static_cast<T>(FLT_MAX);
+
+		tMin = static_cast<T>(std::fmin(std::fmax(t1.x, tMin), std::fmax(t2.x, tMin)));
+		tMax = static_cast<T>(std::fmax(std::fmin(t1.x, tMax), std::fmin(t2.x, tMax)));
+
+		tMin = static_cast<T>(std::fmin(std::fmax(t1.y, tMin), std::fmax(t2.y, tMin)));
+		tMax = static_cast<T>(std::fmax(std::fmin(t1.y, tMax), std::fmin(t2.y, tMax)));
+																   
+		tMin = static_cast<T>(std::fmin(std::fmax(t1.z, tMin), std::fmax(t2.z, tMin)));
+		tMax = static_cast<T>(std::fmax(std::fmin(t1.z, tMax), std::fmin(t2.z, tMax)));
+
+		if (tMin <= tMax)
 		{
-			Vector3<T> intersectionPoint;
-			if (IntersectionPlaneRay(plane, aRay, intersectionPoint))
-			{
-				hit = aAABB.IsInside(intersectionPoint);
-				if (hit)
-				{
-					float pointDistanceSqr = Vector3<T>(intersectionPoint - aRay.GetPoint()).LengthSqr();
-					if (pointDistanceSqr < closestDistanceSqr)
-					{
-						closestDistanceSqr = pointDistanceSqr;
-						closestIntersectionPoint = intersectionPoint;
-					}
-				}
-			}
+			tMin = static_cast<T>(std::fmax(tMin, T(0))); // clamp tMin to zero if inside aabb
+
+			outIntersectionPoint = aRay.GetOrigin() + aRay.GetDirection() * tMin;
+			return true;
 		}
-		
-		return hit;
+
+		return false;
 	}
 
 	// If the ray intersects the sphere, true is returned, if not, false is returned.
@@ -228,7 +231,7 @@ namespace CommonUtilities
 	template <class T>
 	bool IntersectionSphereRay(const Sphere<T>& aSphere, const Ray<T>& aRay)
 	{
-		Vector3<T> sphereCenterToRayPoint = aSphere.GetPoint() - aRay.GetPoint();
+		Vector3<T> sphereCenterToRayPoint = aSphere.GetPoint() - aRay.GetOrigin();
 		T distanceProjectedOntoRay = sphereCenterToRayPoint.Dot(aRay.GetDirection());
 
 		if (distanceProjectedOntoRay < 0)
