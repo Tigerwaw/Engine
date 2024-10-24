@@ -29,7 +29,7 @@ private:
 
 	NavMesh* myNavMesh;
 	float myMovementSpeed = 150.0f;
-	float myRotationSpeed = 5.0f;
+	float myRotationSpeed = 10.0f;
 
 	float myCurrentRotationTime = 0;
 	float myMaxRotationTime = 1.0f;

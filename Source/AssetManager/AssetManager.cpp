@@ -722,6 +722,10 @@ bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
     return true;
 }
 
+std::vector<NavPolygon> CreateNavPolygons(const TGA::FBX::NavMesh& tgaNavMesh);
+std::vector<NavNode> CreateNavNodes(const std::vector<NavPolygon> navPolygons);
+std::vector<NavPortal> CreateNavPortals(const std::vector<NavPolygon> navPolygons);
+
 bool AssetManager::RegisterNavMeshAsset(const std::filesystem::path& aPath)
 {
     if (!ValidateAsset(aPath)) return false;
@@ -734,78 +738,23 @@ bool AssetManager::RegisterNavMeshAsset(const std::filesystem::path& aPath)
     TGA::FBX::Importer::LoadNavMesh(aPath, tgaNavMesh, true);
 
     // Create Nav Polygons.
-    std::vector<NavPolygon> navPolygons;
-    for (auto& tgaChunk : tgaNavMesh.Chunks)
-    {
-        for (auto& tgaPolygon : tgaChunk.Polygons)
-        {
-            assert(tgaPolygon.Indices.size() < 4 && "Navmesh isn't triangulated >:((");
-            NavPolygon& navPolygon = navPolygons.emplace_back(NavPolygon());
-            for (auto& polygonIndex : tgaPolygon.Indices)
-            {
-                CU::Vector3f vertexPos = { tgaChunk.Vertices[polygonIndex].Position[0], tgaChunk.Vertices[polygonIndex].Position[1], tgaChunk.Vertices[polygonIndex].Position[2] };
-                navPolygon.vertexPositions.emplace_back(vertexPos);
-            }
-        }
-    }
+    std::vector<NavPolygon> navPolygons = CreateNavPolygons(tgaNavMesh);
+
+    // Create Nav Portals.
+    std::vector<NavPortal> navPortals = CreateNavPortals(navPolygons);
 
     // Create Nav nodes with connections between eachother.
-    std::unordered_map<unsigned, std::vector<unsigned>> connections;
-    std::vector<NavNode> navNodes;
+    std::vector<NavNode> navNodes = CreateNavNodes(navPolygons);
 
-    for (int i = 0; i < static_cast<int>(navPolygons.size()); ++i)
+    for (int portalIndex = 0; portalIndex < static_cast<int>(navPortals.size()); ++portalIndex)
     {
-        NavPolygon& navPoly1 = navPolygons[i];
-
-        for (int j = 0; j < static_cast<int>(navPolygons.size()); ++j)
-        {
-            if (i == j) break;
-
-            NavPolygon& navPoly2 = navPolygons[j];
-
-            int sharedVertices = 0;
-
-            for (int vertexPos = 0; vertexPos < static_cast<int>(navPoly2.vertexPositions.size()); vertexPos++)
-            {
-                if (std::find(navPoly1.vertexPositions.begin(), navPoly1.vertexPositions.end(), navPoly2.vertexPositions[vertexPos]) != navPoly1.vertexPositions.end())
-                {
-                    sharedVertices++;
-                }
-            }
-
-            if (sharedVertices == 2) // Polygons share an edge
-            {
-                connections[i].emplace_back(j);
-                connections[j].emplace_back(i);
-            }
-        }
-
-        NavNode& navNode = navNodes.emplace_back(NavNode());
-        CU::Vector3f pos;
-        int numVertices = static_cast<int>(navPoly1.vertexPositions.size());
-        for (int vertexPos = 0; vertexPos < numVertices; vertexPos++)
-        {
-            pos += navPoly1.vertexPositions[vertexPos];
-        }
-
-        pos.x /= numVertices;
-        pos.y /= numVertices;
-        pos.z /= numVertices;
-
-        navNode.position = pos;
-    }
-
-    for (int i = 0; i < static_cast<int>(navNodes.size()); ++i)
-    {
-        for (auto& nodeConnection : connections[i])
-        {
-            navNodes[i].edges.emplace_back(nodeConnection);
-            navNodes[i].edgeCosts.emplace_back(static_cast<int>((navNodes[i].position - navNodes[nodeConnection].position).Length()));
-        }
+        NavPortal& portal = navPortals[portalIndex];
+        navNodes[portal.nodes[0]].portals.emplace_back(portalIndex);
+        navNodes[portal.nodes[1]].portals.emplace_back(portalIndex);
     }
 
     NavMesh navMesh;
-    navMesh.Init(navNodes, navPolygons);
+    navMesh.Init(navNodes, navPolygons, navPortals);
     CU::Vector3f boxExtents = { tgaNavMesh.BoxSphereBounds.BoxExtents[0], tgaNavMesh.BoxSphereBounds.BoxExtents[1], tgaNavMesh.BoxSphereBounds.BoxExtents[2] };
     CU::Vector3f boxCenter = { tgaNavMesh.BoxSphereBounds.Center[0], tgaNavMesh.BoxSphereBounds.Center[1], tgaNavMesh.BoxSphereBounds.Center[2] };
     navMesh.SetBoundingBox(boxCenter, boxExtents * 2.0f);
@@ -1307,4 +1256,88 @@ void AssetManager::LogAssetLoadError(const std::filesystem::path& aPath)
 {
     LOG(LogAssetManager, Error, "Asset manager can not find asset at path: {}", aPath.string());
     MessageBox(NULL, L"Asset manager can not find asset, Please check the log for more information!", L"Asset Manager Error", MB_ICONERROR);
+}
+
+std::vector<NavPolygon> CreateNavPolygons(const TGA::FBX::NavMesh& tgaNavMesh)
+{
+    std::vector<NavPolygon> navPolygons;
+    for (auto& tgaChunk : tgaNavMesh.Chunks)
+    {
+        for (auto& tgaPolygon : tgaChunk.Polygons)
+        {
+            assert(tgaPolygon.Indices.size() < 4 && "Navmesh isn't triangulated >:((");
+            NavPolygon& navPolygon = navPolygons.emplace_back(NavPolygon());
+            for (auto& polygonIndex : tgaPolygon.Indices)
+            {
+                CU::Vector3f vertexPos = { tgaChunk.Vertices[polygonIndex].Position[0], tgaChunk.Vertices[polygonIndex].Position[1], tgaChunk.Vertices[polygonIndex].Position[2] };
+                navPolygon.vertexPositions.emplace_back(vertexPos);
+            }
+        }
+    }
+
+    return navPolygons;
+}
+
+std::vector<NavNode> CreateNavNodes(const std::vector<NavPolygon> navPolygons)
+{
+    std::vector<NavNode> navNodes;
+
+    for (int i = 0; i < static_cast<int>(navPolygons.size()); ++i)
+    {
+        NavNode& navNode = navNodes.emplace_back(NavNode());
+        CU::Vector3f pos;
+        int numVertices = static_cast<int>(navPolygons[i].vertexPositions.size());
+        for (int vertexPos = 0; vertexPos < numVertices; vertexPos++)
+        {
+            pos += navPolygons[i].vertexPositions[vertexPos];
+        }
+
+        pos.x /= numVertices;
+        pos.y /= numVertices;
+        pos.z /= numVertices;
+
+        navNode.position = pos;
+    }
+
+    return navNodes;
+}
+
+std::vector<NavPortal> CreateNavPortals(const std::vector<NavPolygon> navPolygons)
+{
+    std::vector<NavPortal> navPortals;
+
+    for (int i = 0; i < static_cast<int>(navPolygons.size()); ++i)
+    {
+        const NavPolygon& navPoly1 = navPolygons[i];
+
+        for (int j = 0; j < static_cast<int>(navPolygons.size()); ++j)
+        {
+            if (i == j) continue;
+
+            const NavPolygon& navPoly2 = navPolygons[j];
+
+            std::vector<CU::Vector3f> sharedVertices;
+
+            for (int vertexPos = 0; vertexPos < static_cast<int>(navPoly2.vertexPositions.size()); vertexPos++)
+            {
+                const CU::Vector3f& vertexPosToTest = navPoly2.vertexPositions[vertexPos];
+                if (std::find(navPoly1.vertexPositions.begin(), navPoly1.vertexPositions.end(), vertexPosToTest) != navPoly1.vertexPositions.end())
+                {
+                    sharedVertices.emplace_back(vertexPosToTest);
+                }
+            }
+
+            if (sharedVertices.size() == 2) // Polygons share an edge
+            {
+                NavPortal& navPortal = navPortals.emplace_back(NavPortal());
+                navPortal.nodes[0] = i;
+                navPortal.nodes[1] = j;
+                navPortal.vertices[0] = sharedVertices[0];
+                navPortal.vertices[1] = sharedVertices[1];
+                navPortal.cost = (navPortal.vertices[0] - navPortal.vertices[1]).Length();
+            }
+        }
+    }
+
+    return navPortals;
 }

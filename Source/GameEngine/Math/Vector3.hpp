@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <cassert>
+#include "Utility/ArithmeticUtilities.hpp"
 
 namespace CommonUtilities
 {
@@ -34,6 +35,7 @@ namespace CommonUtilities
 		static Vector3<T> Abs(const Vector3<T>& aVector);
 		static T Distance(const Vector3<T>& aVector0, const Vector3<T>& aVector1);
 		static Vector3<T> Lerp(const Vector3<T>& aStart, const Vector3<T>& aEnd, const float aPercent);
+		static std::tuple<Vector3, Vector3> ClosestPointsSegmentSegment(const Vector3& aFirstStart, const Vector3& aFirstEnd, const Vector3& aSecondStart, const Vector3& aSecondEnd);
 	};
 
 	template<class T>
@@ -125,6 +127,65 @@ namespace CommonUtilities
 	inline Vector3<T> Vector3<T>::Lerp(const Vector3<T>& aStart, const Vector3<T>& aEnd, const float aPercent)
 	{
 		return (aStart + aPercent * (aEnd - aStart));
+	}
+
+	template<class T>
+	inline std::tuple<Vector3<T>, Vector3<T>> Vector3<T>::ClosestPointsSegmentSegment(const Vector3& aFirstStart, const Vector3& aFirstEnd, const Vector3& aSecondStart, const Vector3& aSecondEnd)
+	{
+		const Vector3<T> AB = aFirstEnd - aFirstStart;
+		const Vector3<T> CD = aSecondEnd - aSecondStart;
+		const Vector3<T> CA = aFirstStart - aSecondStart;
+
+		const T ABdotAB = AB.Dot(AB);
+		const T CDdotCD = CD.Dot(CD); 
+		const T CDdotCA = CD.Dot(CA); 
+
+		T s{};
+		T t{};
+
+		if (ABdotAB <= EPSILON_V<T> && CDdotCD <= EPSILON_V<T>)
+		{
+			s = t = T(0);
+		}
+		else if (ABdotAB <= EPSILON_V<T>)
+		{
+			s = T(0);
+			t = Saturate(CDdotCA / CDdotCD);
+		}
+		else
+		{
+			const T ABdotCA = AB.Dot(CA);
+			if (CDdotCD <= EPSILON_V<T>)
+			{
+				s = Saturate(-ABdotCA / ABdotAB);
+				t = T(0);
+			}
+			else
+			{
+				const T ABdotCD = AB.Dot(CD);
+				const T denom = ABdotAB * CDdotCD - ABdotCD * ABdotCD;
+
+				s = (denom != T(0)) ? Saturate((ABdotCD * CDdotCA - ABdotCA * CDdotCD) / denom) : T(0);
+
+				t = (ABdotCD * s + CDdotCA) / CDdotCD;
+
+				if (t < T(0))
+				{
+					s = Saturate(-ABdotCA / ABdotAB);
+					t = T(0);
+				}
+				else if (t > T(1))
+				{
+					s = Saturate((ABdotCD - ABdotCA) / ABdotAB);
+					t = T(1);
+				}
+			}
+		}
+
+		const Vector3<T> p1 = aFirstStart + AB * s;
+		const Vector3<T> p2 = aSecondStart + CD * t;
+
+		return std::make_tuple(p1, p2);
 	}
 
 	//Returns the vector sum of aVector0 and aVector1

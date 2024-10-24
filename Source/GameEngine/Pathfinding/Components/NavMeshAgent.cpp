@@ -65,12 +65,7 @@ void NavMeshAgent::MoveToLocation(CU::Vector3f aPosition)
 
     myPath = navPath;
     myCurrentGoalPoint = 0;
-
-    if (myPath.GetSize() > 1)
-    {
-        myCurrentGoalPoint = 1;
-        myShouldPathfind = true;
-    }
+    myShouldPathfind = true;
 
 #ifdef _DEBUG
     CreateDebugPath();
