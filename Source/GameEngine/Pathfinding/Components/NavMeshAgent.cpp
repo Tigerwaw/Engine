@@ -129,7 +129,7 @@ void NavMeshAgent::CreateDebugPath()
 
     for (int i = 0; i < static_cast<int>(myPath.GetSize()) - 1; i++)
     {
-        CU::Vector3f offset = { 0, 10.0f, 0 };
+        CU::Vector3f offset = { 0, 15.0f, 0 };
         DebugLine pathLine;
         pathLine.Color = { 1.0f, 0.0f, 0.0f, 1.0f };
         pathLine.From = myPath[i] + offset;

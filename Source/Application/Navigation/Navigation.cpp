@@ -19,7 +19,7 @@ void Navigation::InitializeApplication()
 {
 	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
 
-	inputHandler.RegisterBinaryAction("LMB", Keys::MOUSELBUTTON, GenericInput::ActionType::Clicked);
+	inputHandler.RegisterBinaryAction("LMB", Keys::MOUSELBUTTON, GenericInput::ActionType::Held);
 	inputHandler.RegisterAnalog2DAction("MousePosNDC", MouseMovement2D::MousePosNDC);
 
 	GraphicsEngine::Get().RecalculateShadowFrustum = false;
@@ -33,9 +33,11 @@ void Navigation::UpdateApplication()
 {
 	myNavMesh->DrawDebugLines();
 	myNavMesh->DrawBoundingBox();
+	myNavMesh->DrawFunnelLines();
 
 	if (Engine::GetInstance().GetInputHandler().GetBinaryAction("LMB"))
 	{
+		myNavMesh->ClearFunnelLines();
 		CastRay();
 	}
 

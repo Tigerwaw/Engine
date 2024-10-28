@@ -59,6 +59,14 @@ void NavMesh::DrawBoundingBox()
 	Engine::GetInstance().GetDebugDrawer().DrawBoundingBox(myBoundingBox, CU::Matrix4x4f(), { 1.0f, 1.0f, 1.0f, 1.0f });
 }
 
+void NavMesh::DrawFunnelLines()
+{
+	for (auto& funnelLine : myFunnelLines)
+	{
+		Engine::GetInstance().GetDebugDrawer().DrawLine(funnelLine);
+	}
+}
+
 void NavMesh::SnapGameObjectToNavMesh(GameObject& aGameObject)
 {
 	auto transform = aGameObject.GetComponent<Transform>();
@@ -78,40 +86,75 @@ NavMeshPath NavMesh::FindPath(CU::Vector3f aStartingPos, CU::Vector3f aEndPos)
 	}
 
 	std::vector<int> shortestNodePath = GetShortestNodePath(aStartingPos, aEndPos);
-	std::vector<CU::Vector3f> worldPath = ConvertPathIndexToWorldPos(shortestNodePath);
-	ShortenEndNodes(aStartingPos, aEndPos, worldPath);
+	//std::vector<CU::Vector3f> worldPath = ConvertPathIndexToWorldPos(shortestNodePath);
+	//ShortenEndNodes(aStartingPos, aEndPos, worldPath);
+	std::vector<CU::Vector3f> funneledPath = FunnelPath(aStartingPos, aEndPos, shortestNodePath);
 
-	return NavMeshPath(worldPath);
+	return NavMeshPath(funneledPath);
 }
 
 const bool NavMesh::RayCast(CU::Ray<float> aRay, CU::Vector3f& outHitPoint) const
 {
 	if (!CU::IntersectionAABBRay<float>(myBoundingBox, aRay, outHitPoint))
 	{
-		return false;
+		if (!myBoundingBox.IsInside(aRay.GetOrigin()))
+		{
+			return false;
+		}
 	}
 
 	// https://gdbooks.gitbooks.io/3dcollisions/content/Chapter4/point_in_triangle.html
+	float closestPolygon = FLT_MAX;
+	bool hitNavMesh = false;
 	for (auto& polygon : myPolygons)
 	{
 		CU::Plane<float> polygonPlane(polygon.vertexPositions[0], polygon.vertexPositions[1], polygon.vertexPositions[2]);
 
 		CU::Vector3f polyIntersectionPoint;
-		if (CU::IntersectionPlaneRay(polygonPlane, aRay, polyIntersectionPoint))
+		bool polyIntersection = CU::IntersectionPlaneRay(polygonPlane, aRay, polyIntersectionPoint);
+		float intersectionDistance = polyIntersectionPoint.LengthSqr();
+		if (polyIntersection && intersectionDistance < closestPolygon)
 		{
 			if (IsPointInsidePolygon(polygon, polyIntersectionPoint))
 			{
 				outHitPoint = polyIntersectionPoint;
-				return true;
+				closestPolygon = intersectionDistance;
+				hitNavMesh = true;
 			}
 		}
 	}
 
-	return false;
+	return hitNavMesh;
+}
+
+const bool NavMesh::IsGoalInSameOrNeighbouringPolygon(CU::Vector3f aStartingPos, CU::Vector3f aEndPos) const
+{
+	int startingNodeIndex = GetClosestPolygon(aStartingPos);
+	if (IsPointInsidePolygon(myPolygons[startingNodeIndex], aEndPos)) return true;
+
+	int goalNodeIndex = GetClosestPolygon(aEndPos);
+	bool hasConnection = false;
+	for (auto& portalIndex : myNodes[startingNodeIndex].portals)
+	{
+		if (myPortals[portalIndex].GetOtherNode(startingNodeIndex) == goalNodeIndex)
+		{
+			hasConnection = true;
+			break;
+		}
+	}
+
+	return hasConnection;
 }
 
 const bool NavMesh::CanPathStraight(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos) const
 {
+	if (IsGoalInSameOrNeighbouringPolygon(aStartingPos, aEndPos)) return true;
+
+	CU::Vector3f direction = (aEndPos - aStartingPos).GetNormalized();
+	float dot = direction.Dot(CU::Vector3f(0, 1.0f, 0));
+	bool rayIsNotAtASteepAngle = dot > -0.25f && dot < 0.25f;
+	if (!rayIsNotAtASteepAngle) return false;
+
 	std::vector<std::array<CU::Vector3f, 2>> intersectedEdges;
 
 	for (auto& polygon : myPolygons)
@@ -223,7 +266,7 @@ std::vector<int> NavMesh::GetShortestNodePath(const CU::Vector3f& aStartingPos, 
 	return shortestPath;
 }
 
-const int NavMesh::GetClosestNode(const CU::Vector3f& aPosition)
+const int NavMesh::GetClosestNode(const CU::Vector3f& aPosition) const
 {
 	// Needs to be optimized lol
 
@@ -243,6 +286,18 @@ const int NavMesh::GetClosestNode(const CU::Vector3f& aPosition)
 	}
 
 	return nodeIndex;
+}
+
+const int NavMesh::GetClosestPolygon(const CU::Vector3f& aPosition) const
+{
+	int polyIndex = 0;
+	for (auto& poly : myPolygons)
+	{
+		if (IsPointInsidePolygon(poly, aPosition)) return polyIndex;
+		polyIndex++;
+	}
+
+	return GetClosestNode(aPosition);
 }
 
 std::vector<CU::Vector3f> NavMesh::ConvertPathIndexToWorldPos(std::vector<int> aPath)
@@ -278,6 +333,20 @@ const bool NavMesh::IsPointInsidePolygon(NavPolygon aPolygon, CU::Vector3f aPosi
 	}
 
 	return true;
+}
+
+const bool NavMesh::NodesAreConnected(int aNodeIndexOne, int aNodeIndexTwo, int& inoutPortalIndex) const
+{
+	for (const auto& portal : myNodes[aNodeIndexOne].portals)
+	{
+		if (myPortals[portal].GetOtherNode(aNodeIndexOne) == aNodeIndexTwo)
+		{
+			inoutPortalIndex = portal;
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void NavMesh::ShortenEndNodes(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos, std::vector<CU::Vector3f>& inoutWorldPath)
@@ -316,8 +385,71 @@ void NavMesh::ShortenEndNodes(const CU::Vector3f& aStartingPos, const CU::Vector
 	}
 }
 
-std::vector<CU::Vector3f> NavMesh::FunnelPath(const std::vector<int>& aNavNodePath)
+std::vector<CU::Vector3f> NavMesh::FunnelPath(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos, const std::vector<int>& aNavNodePath)
 {
-	aNavNodePath;
-	return std::vector<CU::Vector3f>();
+	aStartingPos;
+	aEndPos;
+	if (aNavNodePath.empty()) return std::vector<CU::Vector3f>();
+	std::vector<CU::Vector3f> left;
+	std::vector<CU::Vector3f> right;
+
+	for (int pathNodeIndex = 1; pathNodeIndex < aNavNodePath.size() - 1; pathNodeIndex++)
+	{
+		int currentNodeIndex = aNavNodePath[pathNodeIndex];
+		int nextNodeIndex = aNavNodePath[pathNodeIndex + 1];
+
+		int connectedPortalIndex;
+		if (!NodesAreConnected(currentNodeIndex, nextNodeIndex, connectedPortalIndex))
+		{
+			return std::vector<CU::Vector3f>();
+		}
+		
+		const NavNode& currentNode = myNodes[currentNodeIndex];
+		const NavNode& nextNode = myNodes[nextNodeIndex];
+		const NavPolygon& currentPolygon = myPolygons[currentNodeIndex];
+		for (const auto& polyVertexPos : currentPolygon.vertexPositions)
+		{
+			CU::Vector3f directionToNextNode = (nextNode.position - currentNode.position).GetNormalized();
+			CU::Vector3f directionToVertex = (polyVertexPos - currentNode.position).GetNormalized();
+			if (directionToNextNode.Dot(directionToNextNode) < 0) continue;
+
+			bool leftContainsVertex = std::find(left.begin(), left.end(), polyVertexPos) != left.end();
+			bool rightContainsVertex = std::find(right.begin(), right.end(), polyVertexPos) != right.end();
+			if (!leftContainsVertex && !rightContainsVertex)
+			{
+				auto* vectorPtr = &left;
+				if (directionToNextNode.Cross({ 1.0f, 0, 0 }).Dot(directionToVertex) > 0)
+				{
+					vectorPtr = &right;
+				}
+
+				vectorPtr->emplace_back(polyVertexPos);
+			}
+		}
+	}
+
+	for (int leftIndex = 1; leftIndex < left.size(); leftIndex++)
+	{
+		CU::Vector3f offset = { 0, 5.0f, 0 };
+		DebugLine pathLine;
+		pathLine.Color = { 1.0f, 1.0f, 0.0f, 1.0f };
+		CU::Vector3f previousPos = left[leftIndex - 1];
+		pathLine.From = previousPos + offset;
+		pathLine.To = left[leftIndex] + offset;
+		myFunnelLines.emplace_back(pathLine);
+	}
+
+	for (int rightIndex = 1; rightIndex < right.size(); rightIndex++)
+	{
+		CU::Vector3f offset = { 0, 5.0f, 0 };
+		DebugLine pathLine;
+		pathLine.Color = { 1.0f, 0.0f, 1.0f, 1.0f };
+		CU::Vector3f previousPos = right[rightIndex - 1];
+		pathLine.From = previousPos + offset;
+		pathLine.To = right[rightIndex] + offset;
+		myFunnelLines.emplace_back(pathLine);
+	}
+
+	std::vector<CU::Vector3f> funneledPath;
+	return funneledPath;
 }
