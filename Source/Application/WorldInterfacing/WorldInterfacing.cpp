@@ -4,7 +4,6 @@
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "AI/Components/ControllerMove.h"
 #include "AI/PollingStation.h"
-#include "AI/AIEventManager.h"
 
 Application* CreateApplication()
 {
@@ -17,19 +16,29 @@ void WorldInterfacing::InitializeApplication()
 	GraphicsEngine::Get().RecalculateShadowFrustum = false;
 	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_WorldInterfacing.json");
 
-	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Player")->AddComponent<ControllerMove>(150.0f, ControllerMove::ControllerType::Player);
-	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Robot1")->AddComponent<ControllerMove>(100.0f, ControllerMove::ControllerType::AIPolling);
-	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Robot2")->AddComponent<ControllerMove>(100.0f, ControllerMove::ControllerType::AIPolling);
-	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Robot3")->AddComponent<ControllerMove>(100.0f, ControllerMove::ControllerType::AIEvents);
-	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Robot4")->AddComponent<ControllerMove>(100.0f, ControllerMove::ControllerType::AIEvents);
+	auto wanderer = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Wanderer");
+	wanderer->AddComponent<ControllerMove>(150.0f, ControllerMove::ControllerType::Wander);
+	PollingStation::Get().SetWanderer(wanderer);
+
+	std::vector<std::string> seekerNames = { "Seeker1", "Seeker2", "Seeker3", "Seeker4" };
+	for (auto& seekerName : seekerNames)
+	{
+		auto seeker = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(seekerName);
+		seeker->AddComponent<ControllerMove>(100.0f, ControllerMove::ControllerType::Seek);
+		PollingStation::Get().AddWatchedActor(seeker);
+	}
+
+	std::vector<std::string> separatorNames = { "Separator1", "Separator2", "Separator3", "Separator4", "Separator5", 
+											"Separator6", "Separator7", "Separator8", "Separator9", "Separator10" };
+	for (auto& separatorName : separatorNames)
+	{
+		auto separator = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(separatorName);
+		separator->AddComponent<ControllerMove>(100.0f, ControllerMove::ControllerType::Separate);
+		PollingStation::Get().AddWatchedActor(separator);
+	}
 }
 
 void WorldInterfacing::UpdateApplication()
 {
 	PollingStation::Get().Update();
-
-	if (PollingStation::Get().IsPlayerHackingComputer())
-	{
-		AIEventManager::Get().Notify("PlayerIsHacking", std::any(PollingStation::Get().GetPlayerPosition()));
-	}
 }

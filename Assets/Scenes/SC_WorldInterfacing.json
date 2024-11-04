@@ -22,7 +22,7 @@
       ]
     },
     {
-      "Name": "Player",
+      "Name": "Wanderer",
       "Active": true,
       "Static": false,
       "Components": [
@@ -59,13 +59,13 @@
       ]
     },
     {
-      "Name": "Robot1",
+      "Name": "Seeker1",
       "Active": true,
       "Static": false,
       "Components": [
         {
           "Type": "Transform",
-          "Position": [ -1200.0, 0.0, 0.0 ],
+          "Position": [ 500.0, 0.0, 500.0 ],
           "Rotation": [ 0.0, 120.0, 0.0 ],
           "Scale": [ 1.0, 1.0, 1.0 ]
         },
@@ -96,13 +96,13 @@
       ]
     },
     {
-      "Name": "Robot2",
+      "Name": "Seeker2",
       "Active": true,
       "Static": false,
       "Components": [
         {
           "Type": "Transform",
-          "Position": [ 1200.0, 0.0, 0.0 ],
+          "Position": [ 500.0, 0.0, -500.0 ],
           "Rotation": [ 0.0, -20.0, 0.0 ],
           "Scale": [ 1.0, 1.0, 1.0 ]
         },
@@ -133,13 +133,13 @@
       ]
     },
     {
-      "Name": "Robot3",
+      "Name": "Seeker3",
       "Active": true,
       "Static": false,
       "Components": [
         {
           "Type": "Transform",
-          "Position": [ 0.0, 0.0, 800.0 ],
+          "Position": [ -500.0, 0.0, 500.0 ],
           "Rotation": [ 0.0, 0.0, 0.0 ],
           "Scale": [ 1.0, 1.0, 1.0 ]
         },
@@ -147,7 +147,7 @@
           "Type": "AnimatedModel",
           "Model": "Models/SK_C_TGA_Bro.fbx",
           "Materials": [
-            "Materials/MAT_TgaBroYellow.json"
+            "Materials/MAT_TgaBroRed.json"
           ],
           "AnimationLayers": [
             {
@@ -170,13 +170,50 @@
       ]
     },
     {
-      "Name": "Robot4",
+      "Name": "Seeker4",
       "Active": true,
       "Static": false,
       "Components": [
         {
           "Type": "Transform",
-          "Position": [ 0.0, 0.0, -800.0 ],
+          "Position": [ 500.0, 0.0, 500.0 ],
+          "Rotation": [ 0.0, 20.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "AnimatedModel",
+          "Model": "Models/SK_C_TGA_Bro.fbx",
+          "Materials": [
+            "Materials/MAT_TgaBroRed.json"
+          ],
+          "AnimationLayers": [
+            {
+              "StartBone": "",
+              "Animations": [
+                {
+                  "Name": "Idle",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx",
+                  "Loop": true
+                },
+                {
+                  "Name": "Run",
+                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx",
+                  "Loop": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Separator1",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -800.0, 0.0, -800.0 ],
           "Rotation": [ 0.0, 20.0, 0.0 ],
           "Scale": [ 1.0, 1.0, 1.0 ]
         },
@@ -207,61 +244,334 @@
       ]
     },
     {
-      "Name": "Computer1",
+      "Name": "Separator2",
       "Active": true,
-      "Static": true,
+      "Static": false,
       "Components": [
         {
           "Type": "Transform",
-          "Position": [ -500.0, 0.0, 500.0 ],
-          "Rotation": [ 0.0, 180.0, 0.0 ],
+          "Position": [ -700.0, 0.0, -700.0 ],
+          "Rotation": [ 0.0, 20.0, 0.0 ],
           "Scale": [ 1.0, 1.0, 1.0 ]
         },
         {
-          "Type": "Model",
-          "Model": "Models/SM_Chest.fbx",
+          "Type": "AnimatedModel",
+          "Model": "Models/SK_C_TGA_Bro.fbx",
           "Materials": [
-            "Materials/MAT_Chest.json"
+            "Materials/MAT_TgaBroYellow.json"
+          ],
+          "AnimationLayers": [
+            {
+              "StartBone": "",
+              "Animations": [
+                {
+                  "Name": "Idle",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx",
+                  "Loop": true
+                },
+                {
+                  "Name": "Run",
+                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx",
+                  "Loop": true
+                }
+              ]
+            }
           ]
         }
       ]
     },
     {
-      "Name": "Computer2",
+      "Name": "Separator3",
       "Active": true,
-      "Static": true,
+      "Static": false,
       "Components": [
         {
           "Type": "Transform",
-          "Position": [ 500.0, 0.0, 500.0 ],
-          "Rotation": [ 0.0, 180.0, 0.0 ],
+          "Position": [ -600.0, 0.0, -600.0 ],
+          "Rotation": [ 0.0, 20.0, 0.0 ],
           "Scale": [ 1.0, 1.0, 1.0 ]
         },
         {
-          "Type": "Model",
-          "Model": "Models/SM_Chest.fbx",
+          "Type": "AnimatedModel",
+          "Model": "Models/SK_C_TGA_Bro.fbx",
           "Materials": [
-            "Materials/MAT_Chest.json"
+            "Materials/MAT_TgaBroYellow.json"
+          ],
+          "AnimationLayers": [
+            {
+              "StartBone": "",
+              "Animations": [
+                {
+                  "Name": "Idle",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx",
+                  "Loop": true
+                },
+                {
+                  "Name": "Run",
+                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx",
+                  "Loop": true
+                }
+              ]
+            }
           ]
         }
       ]
     },
     {
-      "Name": "Computer3",
+      "Name": "Separator4",
       "Active": true,
-      "Static": true,
+      "Static": false,
       "Components": [
         {
           "Type": "Transform",
-          "Position": [ 500.0, 0.0, -500.0 ],
-          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Position": [ -500.0, 0.0, -500.0 ],
+          "Rotation": [ 0.0, 20.0, 0.0 ],
           "Scale": [ 1.0, 1.0, 1.0 ]
         },
         {
-          "Type": "Model",
-          "Model": "Models/SM_Chest.fbx",
+          "Type": "AnimatedModel",
+          "Model": "Models/SK_C_TGA_Bro.fbx",
           "Materials": [
-            "Materials/MAT_Chest.json"
+            "Materials/MAT_TgaBroYellow.json"
+          ],
+          "AnimationLayers": [
+            {
+              "StartBone": "",
+              "Animations": [
+                {
+                  "Name": "Idle",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx",
+                  "Loop": true
+                },
+                {
+                  "Name": "Run",
+                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx",
+                  "Loop": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Separator5",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -400.0, 0.0, -400.0 ],
+          "Rotation": [ 0.0, 20.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "AnimatedModel",
+          "Model": "Models/SK_C_TGA_Bro.fbx",
+          "Materials": [
+            "Materials/MAT_TgaBroYellow.json"
+          ],
+          "AnimationLayers": [
+            {
+              "StartBone": "",
+              "Animations": [
+                {
+                  "Name": "Idle",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx",
+                  "Loop": true
+                },
+                {
+                  "Name": "Run",
+                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx",
+                  "Loop": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Separator6",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -300.0, 0.0, -300.0 ],
+          "Rotation": [ 0.0, 20.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "AnimatedModel",
+          "Model": "Models/SK_C_TGA_Bro.fbx",
+          "Materials": [
+            "Materials/MAT_TgaBroYellow.json"
+          ],
+          "AnimationLayers": [
+            {
+              "StartBone": "",
+              "Animations": [
+                {
+                  "Name": "Idle",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx",
+                  "Loop": true
+                },
+                {
+                  "Name": "Run",
+                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx",
+                  "Loop": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Separator7",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -200.0, 0.0, -200.0 ],
+          "Rotation": [ 0.0, 20.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "AnimatedModel",
+          "Model": "Models/SK_C_TGA_Bro.fbx",
+          "Materials": [
+            "Materials/MAT_TgaBroYellow.json"
+          ],
+          "AnimationLayers": [
+            {
+              "StartBone": "",
+              "Animations": [
+                {
+                  "Name": "Idle",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx",
+                  "Loop": true
+                },
+                {
+                  "Name": "Run",
+                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx",
+                  "Loop": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Separator8",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -100.0, 0.0, -100.0 ],
+          "Rotation": [ 0.0, 20.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "AnimatedModel",
+          "Model": "Models/SK_C_TGA_Bro.fbx",
+          "Materials": [
+            "Materials/MAT_TgaBroYellow.json"
+          ],
+          "AnimationLayers": [
+            {
+              "StartBone": "",
+              "Animations": [
+                {
+                  "Name": "Idle",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx",
+                  "Loop": true
+                },
+                {
+                  "Name": "Run",
+                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx",
+                  "Loop": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Separator9",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 100.0, 0.0, 100.0 ],
+          "Rotation": [ 0.0, 20.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "AnimatedModel",
+          "Model": "Models/SK_C_TGA_Bro.fbx",
+          "Materials": [
+            "Materials/MAT_TgaBroYellow.json"
+          ],
+          "AnimationLayers": [
+            {
+              "StartBone": "",
+              "Animations": [
+                {
+                  "Name": "Idle",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx",
+                  "Loop": true
+                },
+                {
+                  "Name": "Run",
+                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx",
+                  "Loop": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Separator10",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 200.0, 0.0, 200.0 ],
+          "Rotation": [ 0.0, 20.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "AnimatedModel",
+          "Model": "Models/SK_C_TGA_Bro.fbx",
+          "Materials": [
+            "Materials/MAT_TgaBroYellow.json"
+          ],
+          "AnimationLayers": [
+            {
+              "StartBone": "",
+              "Animations": [
+                {
+                  "Name": "Idle",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx",
+                  "Loop": true
+                },
+                {
+                  "Name": "Run",
+                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx",
+                  "Loop": true
+                }
+              ]
+            }
           ]
         }
       ]

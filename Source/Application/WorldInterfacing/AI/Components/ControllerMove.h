@@ -10,9 +10,9 @@ class ControllerMove : public Component
 public:
 	enum class ControllerType
 	{
-		Player,
-		AIEvents,
-		AIPolling
+		Wander,
+		Seek,
+		Separate
 	};
 
 	ControllerMove() = default;

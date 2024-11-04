@@ -18,12 +18,13 @@ private:
 	static PollingStation* myInstance;
 
 public:
-
 	void Update();
+	void AddWatchedActor(std::shared_ptr<GameObject> aGameObject);
+	void SetWanderer(std::shared_ptr<GameObject> aGameObject);
 
-	const CU::Vector3f& GetPlayerPosition() const { return myPlayerPosition; }
-	const bool& IsPlayerHackingComputer() const { return myIsPlayerHackingComputer; }
+	const std::vector<CU::Vector3f> GetOtherActorPositions() const;
+	const CU::Vector3f GetWandererPosition() const;
 private:
-	CU::Vector3f myPlayerPosition;
-	bool myIsPlayerHackingComputer = false;
+	std::vector<std::shared_ptr<GameObject>> myWatchedActors;
+	std::shared_ptr<GameObject> myWanderer;
 };

@@ -42,7 +42,7 @@ private:
 	int myCurrentGoalPoint = 0;
 	float myGoalTolerance = 40.0f;
 
-#ifdef _DEBUG
+#ifndef _RETAIL
 	void CreateDebugPath();
 	void RenderDebugPath();
 	std::vector<DebugLine> myPathLines;

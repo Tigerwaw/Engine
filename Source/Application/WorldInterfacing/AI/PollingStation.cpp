@@ -16,32 +16,41 @@ PollingStation::~PollingStation()
 
 void PollingStation::Update()
 {
-    bool isPlayerHackingComputer1 = false;
-    bool isPlayerHackingComputer2 = false;
-    bool isPlayerHackingComputer3 = false;
+}
 
-    if (auto player = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Player"); player)
-    {
-        myPlayerPosition = player->GetComponent<Transform>()->GetTranslation(true);
-    }
+void PollingStation::AddWatchedActor(std::shared_ptr<GameObject> aGameObject)
+{
+	if (std::find(myWatchedActors.begin(), myWatchedActors.end(), aGameObject) != myWatchedActors.end()) return;
 
-    if (auto comp1 = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Computer1"); comp1)
-    {
-        CU::Vector3f computer1Position = comp1->GetComponent<Transform>()->GetTranslation(true);
-        isPlayerHackingComputer1 = (myPlayerPosition - computer1Position).LengthSqr() < 6000.0f;
-    }
+	myWatchedActors.emplace_back(aGameObject);
+}
 
-    if (auto comp2 = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Computer2"); comp2)
-    {
-        CU::Vector3f computer2Position = comp2->GetComponent<Transform>()->GetTranslation(true);
-        isPlayerHackingComputer2 = (myPlayerPosition - computer2Position).LengthSqr() < 6000.0f;
-    }
+void PollingStation::SetWanderer(std::shared_ptr<GameObject> aGameObject)
+{
+	myWanderer = aGameObject;
+}
 
-    if (auto comp3 = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Computer3"); comp3)
-    {
-        CU::Vector3f computer3Position = comp3->GetComponent<Transform>()->GetTranslation(true);
-        isPlayerHackingComputer3 = (myPlayerPosition - computer3Position).LengthSqr() < 6000.0f;
-    }
+const std::vector<CU::Vector3f> PollingStation::GetOtherActorPositions() const
+{
+	std::vector<CU::Vector3f> actorPositions;
 
-    myIsPlayerHackingComputer = isPlayerHackingComputer1 || isPlayerHackingComputer2 || isPlayerHackingComputer3;
+	for (auto& actor : myWatchedActors)
+	{
+		if (auto transform = actor->GetComponent<Transform>())
+		{
+			actorPositions.emplace_back(transform->GetTranslation());
+		}
+	}
+
+	return actorPositions;
+}
+
+const CU::Vector3f PollingStation::GetWandererPosition() const
+{
+	if (auto transform = myWanderer->GetComponent<Transform>())
+	{
+		return transform->GetTranslation();
+	}
+
+	return CU::Vector3f();
 }

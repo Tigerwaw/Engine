@@ -1,7 +1,7 @@
 #pragma once
 #include "ControllerBase.h"
 
-class PlayerController : public ControllerBase
+class Seek : public ControllerBase
 {
 public:
 	void Start() override;

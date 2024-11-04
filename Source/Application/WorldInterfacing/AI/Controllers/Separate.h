@@ -1,7 +1,7 @@
 #pragma once
 #include "ControllerBase.h"
 
-class AIPollingController : public ControllerBase
+class Separate : public ControllerBase
 {
 public:
 	void Start() override;

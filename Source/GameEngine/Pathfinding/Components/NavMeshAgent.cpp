@@ -28,7 +28,7 @@ void NavMeshAgent::Update()
     {
         MoveToNextPathPoint();
 
-#ifdef _DEBUG
+#ifndef _RETAIL
         RenderDebugPath();
 #endif
     }
@@ -67,7 +67,7 @@ void NavMeshAgent::MoveToLocation(CU::Vector3f aPosition)
     myCurrentGoalPoint = 0;
     myShouldPathfind = true;
 
-#ifdef _DEBUG
+#ifndef _RETAIL
     CreateDebugPath();
 #endif
 }
@@ -122,7 +122,7 @@ void NavMeshAgent::RotateTowardsVelocity(CU::Vector3f aDirection)
     }
 }
 
-#ifdef _DEBUG
+#ifndef _RETAIL
 void NavMeshAgent::CreateDebugPath()
 {
     myPathLines.clear();

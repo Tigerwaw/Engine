@@ -6,9 +6,9 @@
 #include "GameEngine/Time/Timer.h"
 
 #include "WorldInterfacing/AI/Controllers/ControllerBase.h"
-#include "WorldInterfacing/AI/Controllers/PlayerController.h"
-#include "WorldInterfacing/AI/Controllers/AIEventsController.h"
-#include "WorldInterfacing/AI/Controllers/AIPollingController.h"
+#include "WorldInterfacing/AI/Controllers/Wander.h"
+#include "WorldInterfacing/AI/Controllers/Seek.h"
+#include "WorldInterfacing/AI/Controllers/Separate.h"
 
 ControllerMove::~ControllerMove()
 {
@@ -30,14 +30,14 @@ void ControllerMove::SetControllerType(ControllerType aControllerType)
 {
 	switch (aControllerType)
 	{
-	case ControllerMove::ControllerType::Player:
-		myController = new PlayerController();
+	case ControllerMove::ControllerType::Wander:
+		myController = new Wander();
 		break;
-	case ControllerMove::ControllerType::AIEvents:
-		myController = new AIEventsController();
+	case ControllerMove::ControllerType::Seek:
+		myController = new Seek();
 		break;
-	case ControllerMove::ControllerType::AIPolling:
-		myController = new AIPollingController();
+	case ControllerMove::ControllerType::Separate:
+		myController = new Separate();
 		break;
 	default:
 		break;
