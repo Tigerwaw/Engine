@@ -18,6 +18,15 @@
           "Materials": [
             "MAT_DefaultMaterial"
           ]
+        },
+        {
+          "Type": "BoxCollider",
+          "CenterOffset": [ 0.0, 0.0, 0.0 ],
+          "Extents": {
+            "Width": 5000.0,
+            "Height": 1.0,
+            "Depth": 5000.0
+          }
         }
       ]
     },
@@ -37,6 +46,43 @@
           "Model": "Models/SK_C_TGA_Bro.fbx",
           "Materials": [
             "Materials/MAT_TgaBro.json"
+          ],
+          "AnimationLayers": [
+            {
+              "StartBone": "",
+              "Animations": [
+                {
+                  "Name": "Idle",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx",
+                  "Loop": true
+                },
+                {
+                  "Name": "Run",
+                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx",
+                  "Loop": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Companion",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 0.0, 0.0, 100.0 ],
+          "Rotation": [ 0.0, 180.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "AnimatedModel",
+          "Model": "Models/SK_C_TGA_Bro.fbx",
+          "Materials": [
+            "Materials/MAT_TgaBroRed.json"
           ],
           "AnimationLayers": [
             {

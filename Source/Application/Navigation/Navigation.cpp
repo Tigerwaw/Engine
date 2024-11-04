@@ -8,6 +8,9 @@
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/Camera.h"
+#include "GameEngine/ComponentSystem/Components/Physics/Colliders/BoxCollider.h"
+#include "Intersections/Intersection3D.hpp"
+#include "WalkToPoint.h"
 
 Application* CreateApplication()
 {
@@ -26,7 +29,8 @@ void Navigation::InitializeApplication()
 	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_Navigation.json");
 
 	myNavMesh = AssetManager::Get().GetAsset<NavMeshAsset>("NM_Navmesh")->navmesh;
-	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Player")->AddComponent<NavMeshAgent>(myNavMesh.get(), 150.0f);
+	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Companion")->AddComponent<NavMeshAgent>(myNavMesh.get(), 150.0f);
+	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Player")->AddComponent<WalkToPoint>(200.0f);
 }
 
 void Navigation::UpdateApplication()
@@ -65,20 +69,24 @@ void Navigation::CastRay()
 
 	CU::Ray<float> mouseRay(cameraPos, direction.GetNormalized());
 
-	CU::Vector3f hitPoint;
-	bool hit = myNavMesh->RayCast(mouseRay, hitPoint);
+	if (auto collider = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Plane")->GetComponent<BoxCollider>())
+	{
+		CU::Vector3f hitPoint;
+		bool hit = CU::IntersectionAABBRay(collider->GetAABB(), mouseRay, hitPoint);
 
-	if (hit)
-	{
-		myDebugRay.From = mouseRay.GetOrigin();
-		myDebugRay.To = hitPoint;
-		myDebugRay.Color = { 0, 1.0f, 0, 1.0f };
-		Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Player")->GetComponent<NavMeshAgent>()->MoveToLocation(hitPoint);
-	}
-	else
-	{
-		myDebugRay.From = mouseRay.GetOrigin();
-		myDebugRay.To = mouseRay.GetOrigin() + mouseRay.GetDirection() * 1000.0f;
-		myDebugRay.Color = { 1.0f, 0, 0, 1.0f };
+		if (hit)
+		{
+			myDebugRay.From = mouseRay.GetOrigin();
+			myDebugRay.To = hitPoint;
+			myDebugRay.Color = { 0, 1.0f, 0, 1.0f };
+			Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Player")->GetComponent<WalkToPoint>()->SetTarget(hitPoint);
+			Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Companion")->GetComponent<NavMeshAgent>()->MoveToLocation(hitPoint);
+		}
+		else
+		{
+			myDebugRay.From = mouseRay.GetOrigin();
+			myDebugRay.To = mouseRay.GetOrigin() + mouseRay.GetDirection() * 1000.0f;
+			myDebugRay.Color = { 1.0f, 0, 0, 1.0f };
+		}
 	}
 }

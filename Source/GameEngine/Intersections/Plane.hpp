@@ -25,6 +25,8 @@ namespace CommonUtilities
 		// Returns whether a point is inside the plane: it is inside when the point is on the plane or on the side the normal is pointing away from.
 		bool IsInside(const Vector3<T>& aPosition) const;
 
+		const Vector3<T> ClosestPointOnPlane(const Vector3<T>& aPosition) const;
+
 		const Vector3<T>& GetPoint() const;
 		const Vector3<T>& GetNormal() const;
 	private:
@@ -77,6 +79,13 @@ namespace CommonUtilities
 	bool Plane<T>::IsInside(const Vector3<T>& aPosition) const
 	{
 		return GetNormal().Dot(aPosition) - GetNormal().Dot(myPoint) <= 0;
+	}
+
+	template<class T>
+	inline const Vector3<T> Plane<T>::ClosestPointOnPlane(const Vector3<T>& aPosition) const
+	{
+		T distance = GetNormal().Dot(aPosition) - GetPoint().Length();
+		return aPosition - distance * GetNormal();
 	}
 
 	template <class T>

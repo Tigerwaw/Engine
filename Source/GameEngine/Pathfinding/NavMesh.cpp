@@ -4,6 +4,7 @@
 
 #include "GameEngine/DebugDrawer/DebugDrawer.h"
 #include "GameEngine/Intersections/Intersection3D.hpp"
+#include "GameEngine/Intersections/Triangle.hpp"
 
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
@@ -88,9 +89,10 @@ NavMeshPath NavMesh::FindPath(CU::Vector3f aStartingPos, CU::Vector3f aEndPos)
 	std::vector<int> shortestNodePath = GetShortestNodePath(aStartingPos, aEndPos);
 	//std::vector<CU::Vector3f> worldPath = ConvertPathIndexToWorldPos(shortestNodePath);
 	//ShortenEndNodes(aStartingPos, aEndPos, worldPath);
-	std::vector<CU::Vector3f> funneledPath = FunnelPath(aStartingPos, aEndPos, shortestNodePath);
+	//std::vector<CU::Vector3f> funneledPath = FunnelPath(aStartingPos, aEndPos, shortestNodePath);
+	std::vector<CU::Vector3f> smoothedPath = PortalMiddlePointSmoothing(aStartingPos, aEndPos, shortestNodePath);
 
-	return NavMeshPath(funneledPath);
+	return NavMeshPath(smoothedPath);
 }
 
 const bool NavMesh::RayCast(CU::Ray<float> aRay, CU::Vector3f& outHitPoint) const
@@ -175,24 +177,22 @@ const bool NavMesh::CanPathStraight(const CU::Vector3f& aStartingPos, const CU::
 		}
 	}
 
+	if (intersectedEdges.empty()) return false;
+
+	int intersectedPortals = 0;
 	for (auto& edge : intersectedEdges)
 	{
-		bool isPortal = false;
 		for (auto& portal : myPortals)
 		{
 			if (portal.IsSameEdge(edge[0], edge[1]))
 			{
-				isPortal = true;
+				intersectedPortals++;
+				break;
 			}
-		}
-
-		if (!isPortal)
-		{
-			return false;
 		}
 	}
 
-	return true;
+	return intersectedPortals == intersectedEdges.size();
 }
 
 std::vector<int> NavMesh::GetShortestNodePath(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos)
@@ -300,6 +300,17 @@ const int NavMesh::GetClosestPolygon(const CU::Vector3f& aPosition) const
 	return GetClosestNode(aPosition);
 }
 
+const CU::Vector3f NavMesh::GetClosestPointInNavMesh(const CU::Vector3f& aPosition) const
+{
+	int closestNodeIndex = GetClosestNode(aPosition);
+	const NavPolygon& closestPoly = myPolygons[closestNodeIndex];
+	CU::Triangle<float> tri(closestPoly.vertexPositions[0], closestPoly.vertexPositions[1], closestPoly.vertexPositions[2]);
+
+	CU::Vector3f closestPoint = tri.ClosestPointOnTriangle(aPosition);
+
+	return closestPoint;
+}
+
 std::vector<CU::Vector3f> NavMesh::ConvertPathIndexToWorldPos(std::vector<int> aPath)
 {
 	std::vector<CU::Vector3f> vector;
@@ -393,16 +404,10 @@ std::vector<CU::Vector3f> NavMesh::FunnelPath(const CU::Vector3f& aStartingPos, 
 	std::vector<CU::Vector3f> left;
 	std::vector<CU::Vector3f> right;
 
-	for (int pathNodeIndex = 1; pathNodeIndex < aNavNodePath.size() - 1; pathNodeIndex++)
+	for (int pathNodeIndex = 0; pathNodeIndex < aNavNodePath.size() - 1; pathNodeIndex++)
 	{
 		int currentNodeIndex = aNavNodePath[pathNodeIndex];
 		int nextNodeIndex = aNavNodePath[pathNodeIndex + 1];
-
-		int connectedPortalIndex;
-		if (!NodesAreConnected(currentNodeIndex, nextNodeIndex, connectedPortalIndex))
-		{
-			return std::vector<CU::Vector3f>();
-		}
 		
 		const NavNode& currentNode = myNodes[currentNodeIndex];
 		const NavNode& nextNode = myNodes[nextNodeIndex];
@@ -411,14 +416,14 @@ std::vector<CU::Vector3f> NavMesh::FunnelPath(const CU::Vector3f& aStartingPos, 
 		{
 			CU::Vector3f directionToNextNode = (nextNode.position - currentNode.position).GetNormalized();
 			CU::Vector3f directionToVertex = (polyVertexPos - currentNode.position).GetNormalized();
-			if (directionToNextNode.Dot(directionToNextNode) < 0) continue;
+			if (directionToNextNode.Dot(directionToVertex) < -0.5f) continue;
 
 			bool leftContainsVertex = std::find(left.begin(), left.end(), polyVertexPos) != left.end();
 			bool rightContainsVertex = std::find(right.begin(), right.end(), polyVertexPos) != right.end();
 			if (!leftContainsVertex && !rightContainsVertex)
 			{
 				auto* vectorPtr = &left;
-				if (directionToNextNode.Cross({ 1.0f, 0, 0 }).Dot(directionToVertex) > 0)
+				if (directionToNextNode.Cross({ 0, 1.0f, 0 }).Dot(directionToVertex) > 0)
 				{
 					vectorPtr = &right;
 				}
@@ -430,7 +435,7 @@ std::vector<CU::Vector3f> NavMesh::FunnelPath(const CU::Vector3f& aStartingPos, 
 
 	for (int leftIndex = 1; leftIndex < left.size(); leftIndex++)
 	{
-		CU::Vector3f offset = { 0, 5.0f, 0 };
+		CU::Vector3f offset = { 0, 25.0f, 0 };
 		DebugLine pathLine;
 		pathLine.Color = { 1.0f, 1.0f, 0.0f, 1.0f };
 		CU::Vector3f previousPos = left[leftIndex - 1];
@@ -441,7 +446,7 @@ std::vector<CU::Vector3f> NavMesh::FunnelPath(const CU::Vector3f& aStartingPos, 
 
 	for (int rightIndex = 1; rightIndex < right.size(); rightIndex++)
 	{
-		CU::Vector3f offset = { 0, 5.0f, 0 };
+		CU::Vector3f offset = { 0, 25.0f, 0 };
 		DebugLine pathLine;
 		pathLine.Color = { 1.0f, 0.0f, 1.0f, 1.0f };
 		CU::Vector3f previousPos = right[rightIndex - 1];
@@ -451,5 +456,160 @@ std::vector<CU::Vector3f> NavMesh::FunnelPath(const CU::Vector3f& aStartingPos, 
 	}
 
 	std::vector<CU::Vector3f> funneledPath;
+	funneledPath.emplace_back(aStartingPos);
+	int leftIndex = 0;
+	int rightIndex = 0;
+	float funnelAngle = -1.0f;
+	CU::Vector3f apex = aStartingPos;
+	CU::Vector3f apexToLeftNormalized;
+	CU::Vector3f apexToRightNormalized;
+
+	bool funnelTightened = true;
+	bool newApexFound = true;
+	while (funnelTightened || newApexFound)
+	{
+		assert(funneledPath.size() <= aNavNodePath.size());
+		if (leftIndex + 1 >= left.size() && rightIndex + 1 >= right.size()) break;
+		if (leftIndex + 1 >= left.size()) leftIndex--;
+		if (rightIndex + 1 >= right.size()) rightIndex--;
+		funnelTightened = false;
+		newApexFound = false;
+		apexToLeftNormalized = (left[leftIndex] - apex).GetNormalized();
+		apexToRightNormalized = (right[rightIndex] - apex).GetNormalized();
+		funnelAngle = apexToLeftNormalized.Dot(apexToRightNormalized);
+
+		leftIndex++;
+		apexToLeftNormalized = (left[leftIndex] - apex).GetNormalized();
+		CU::Vector3f cross = apexToLeftNormalized.Cross(apexToRightNormalized);
+		float angleFromPosY = cross.Dot({ 0, 1.0f, 0 });
+		bool crossedOver = angleFromPosY < 0;
+		if (crossedOver)
+		{
+			newApexFound = true;
+			leftIndex--;
+			apex = right[rightIndex];
+			funneledPath.emplace_back(apex);
+			rightIndex++;
+			continue;
+		}
+		
+		if (apexToLeftNormalized.Dot(apexToRightNormalized) <= funnelAngle)
+		{
+			leftIndex--;
+			apexToLeftNormalized = (left[leftIndex] - apex).GetNormalized();
+		}
+		else
+		{
+			funnelTightened = true;
+		}
+
+		rightIndex++;
+		apexToRightNormalized = (right[rightIndex] - apex).GetNormalized();
+		cross = apexToRightNormalized.Cross(apexToLeftNormalized);
+		angleFromPosY = cross.Dot({ 0, 1.0f, 0 });
+		crossedOver = angleFromPosY < 0;
+		if (crossedOver)
+		{
+			newApexFound = true;
+			rightIndex--;
+			apex = left[leftIndex];
+			funneledPath.emplace_back(apex);
+			leftIndex++;
+			continue;
+		}
+		
+		if (apexToRightNormalized.Dot(apexToLeftNormalized) <= funnelAngle)
+		{
+			rightIndex--;
+			apexToRightNormalized = (right[rightIndex] - apex).GetNormalized();
+		}
+		else
+		{
+			funnelTightened = true;
+		}
+	}
+
+	for (int funnelIndex = 1; funnelIndex < funneledPath.size(); funnelIndex++)
+	{
+		CU::Vector3f offset = { 0, 30.0f, 0 };
+		DebugLine pathLine;
+		pathLine.Color = { 1.0f, 1.0f, 1.0f, 1.0f };
+		CU::Vector3f previousPos = funneledPath[funnelIndex - 1];
+		pathLine.From = previousPos + offset;
+		pathLine.To = funneledPath[funnelIndex] + offset;
+		myFunnelLines.emplace_back(pathLine);
+	}
+
 	return funneledPath;
+}
+
+std::vector<CU::Vector3f> NavMesh::PortalMiddlePointSmoothing(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos, const std::vector<int>& aNavNodePath)
+{
+	if (aNavNodePath.empty()) return std::vector<CU::Vector3f>();
+
+	std::vector<NavPortal> portals;
+	
+	for (int pathNodeIndex = 0; pathNodeIndex < aNavNodePath.size() - 1; pathNodeIndex++)
+	{
+		int currentNodeIndex = aNavNodePath[pathNodeIndex];
+		int nextNodeIndex = aNavNodePath[pathNodeIndex + 1];
+
+		const NavNode& currentNode = myNodes[currentNodeIndex];
+		const NavNode& nextNode = myNodes[nextNodeIndex];
+
+		for (auto& portal : currentNode.portals)
+		{
+			bool doBreak = false;
+			for (auto& otherNodePortal : nextNode.portals)
+			{
+				if (portal == otherNodePortal)
+				{
+					portals.emplace_back(myPortals[portal]);
+					doBreak = true;
+					break;
+				}
+			}
+
+			if (doBreak) break;
+		}
+	}
+
+	std::vector<CU::Vector3f> smoothedPath;
+
+	if (myBoundingBox.IsInside(aStartingPos))
+	{
+		smoothedPath.emplace_back(aStartingPos);
+	}
+	else
+	{
+		smoothedPath.emplace_back(GetClosestPointInNavMesh(aStartingPos));
+	}
+
+	for (int nodeIndex = 0; nodeIndex < aNavNodePath.size() - 1; nodeIndex++)
+	{
+		const NavPortal& portal = portals[nodeIndex];
+		CU::LineSegment3D<float> portalLine(portal.vertices[0], portal.vertices[1]);
+		CU::Vector3f closestPointOne = portalLine.ClosestPointOnLine(myNodes[aNavNodePath[nodeIndex]].position);
+		CU::Vector3f closestPointTwo = portalLine.ClosestPointOnLine(myNodes[aNavNodePath[nodeIndex + 1]].position);
+		smoothedPath.emplace_back((closestPointOne + closestPointTwo) * 0.5f);
+		//smoothedPath.emplace_back(closestPointTwo);
+	}
+
+	//for (auto& portal : portals)
+	//{
+	//	CU::LineSegment3D<float> portalLine(portal.vertices[0], portal.vertices[1]);
+	//	CU::Vector3f closestPointOne = portalLine.ClosestPointOnLine(smoothedPath[smoothedPath.size() - 1]);
+	//	smoothedPath.emplace_back(closestPointOne);
+	//}
+
+	if (myBoundingBox.IsInside(aEndPos))
+	{
+		smoothedPath.emplace_back(aEndPos);
+	}
+	else
+	{
+		smoothedPath.emplace_back(GetClosestPointInNavMesh(aEndPos));
+	}
+
+	return smoothedPath;
 }

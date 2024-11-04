@@ -32,6 +32,7 @@ private:
 	const bool CanPathStraight(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos) const;
 	const int GetClosestNode(const CU::Vector3f& aPosition) const;
 	const int GetClosestPolygon(const CU::Vector3f& aPosition) const;
+	const CU::Vector3f GetClosestPointInNavMesh(const CU::Vector3f& aPosition) const;
 	const bool IsPointInsidePolygon(NavPolygon aPolygon, CU::Vector3f aPosition) const;
 	const bool NodesAreConnected(int aNodeIndexOne, int aNodeIndexTwo, int& inoutPortalIndex) const;
 
@@ -40,6 +41,7 @@ private:
 
 	void ShortenEndNodes(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos, std::vector<CU::Vector3f>& inoutWorldPath);
 	std::vector<CU::Vector3f> FunnelPath(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos, const std::vector<int>& aNavNodePath);
+	std::vector<CU::Vector3f> PortalMiddlePointSmoothing(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos, const std::vector<int>& aNavNodePath);
 
 	std::vector<NavNode> myNodes;
 	std::vector<NavPolygon> myPolygons;
