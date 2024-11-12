@@ -15,15 +15,21 @@ ControllerMove::~ControllerMove()
 	delete myController;
 }
 
-ControllerMove::ControllerMove(float aMoveSpeed, ControllerType aControllerType)
+ControllerMove::ControllerMove(float aMaxMoveSpeed, float aMaxAcceleration, ControllerType aControllerType)
 {
-	SetMoveSpeed(aMoveSpeed);
+	SetMaxMoveSpeed(aMaxMoveSpeed);
+	SetMaxAcceleration(aMaxAcceleration);
 	SetControllerType(aControllerType);
 }
 
-void ControllerMove::SetMoveSpeed(float aMoveSpeed)
+void ControllerMove::SetMaxMoveSpeed(float aMaxMoveSpeed)
 {
-	myMoveSpeed = aMoveSpeed;
+	myMaxMoveSpeed = aMaxMoveSpeed;
+}
+
+void ControllerMove::SetMaxAcceleration(float aMaxAcceleration)
+{
+	myMaxAcceleration = aMaxAcceleration;
 }
 
 void ControllerMove::SetControllerType(ControllerType aControllerType)
@@ -55,12 +61,28 @@ void ControllerMove::Start()
 
 void ControllerMove::Update()
 {
+	float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
 	auto& transform = gameObject->GetComponent<Transform>();
-	CU::Vector3f currentPosition = transform->GetTranslation();
-	CU::Vector3f direction = myController->GetDirection(currentPosition);
-	if (direction.LengthSqr() > 1.0f)
+
+	ControllerBase::SteeringInput steeringInput;
+	steeringInput.position = transform->GetTranslation();
+	steeringInput.orientation = transform->GetForwardVector();
+	ControllerBase::SteeringOutput steering = myController->GetSteering(steeringInput);
+
+	if (steering.velocity.LengthSqr() > myMaxAcceleration * myMaxAcceleration)
 	{
-		CU::Vector3f newPosition = currentPosition + direction.GetNormalized() * myMoveSpeed * Engine::GetInstance().GetTimer().GetDeltaTime();
-		transform->SetTranslation(newPosition);
+		steering.velocity.Normalize();
+		steering.velocity *= myMaxAcceleration;
 	}
+
+	myVelocity += steering.velocity;
+
+	if (myVelocity.LengthSqr() > myMaxMoveSpeed * myMaxMoveSpeed)
+	{
+		myVelocity.Normalize();
+		myVelocity *= myMaxMoveSpeed;
+	}
+
+	transform->AddTranslation(myVelocity * dt);
+	transform->AddRotation(0, steering.rotation * dt, 0);
 }

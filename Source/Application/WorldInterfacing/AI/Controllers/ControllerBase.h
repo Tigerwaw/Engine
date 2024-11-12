@@ -5,9 +5,19 @@ namespace CU = CommonUtilities;
 class ControllerBase
 {
 public:
+	struct SteeringInput
+	{
+		CU::Vector3f position;
+		CU::Vector3f orientation;
+	};
+
+	struct SteeringOutput
+	{
+		CU::Vector3f velocity;
+		float rotation;
+	};
+
 	virtual ~ControllerBase();
 	virtual void Start() = 0;
-	virtual CU::Vector3f GetDirection(CU::Vector3f aCurrentPosition) = 0;
-protected:
-	CU::Vector3f myTargetPosition;
+	virtual SteeringOutput GetSteering(const SteeringInput& aSteeringInput) = 0;
 };

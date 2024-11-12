@@ -4,6 +4,7 @@
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "AI/Components/ControllerMove.h"
 #include "AI/PollingStation.h"
+#include "AI/Components/WrapAroundWorld.h"
 
 Application* CreateApplication()
 {
@@ -13,18 +14,20 @@ Application* CreateApplication()
 
 void WorldInterfacing::InitializeApplication()
 {
-	GraphicsEngine::Get().RecalculateShadowFrustum = false;
 	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_WorldInterfacing.json");
 
 	auto wanderer = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Wanderer");
-	wanderer->AddComponent<ControllerMove>(150.0f, ControllerMove::ControllerType::Wander);
+	wanderer->AddComponent<ControllerMove>(80.0f, 5.0f, ControllerMove::ControllerType::Wander);
+	wanderer->AddComponent<WrapAroundWorld>();
 	PollingStation::Get().SetWanderer(wanderer);
+	PollingStation::Get().AddWatchedActor(wanderer);
 
 	std::vector<std::string> seekerNames = { "Seeker1", "Seeker2", "Seeker3", "Seeker4" };
 	for (auto& seekerName : seekerNames)
 	{
 		auto seeker = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(seekerName);
-		seeker->AddComponent<ControllerMove>(100.0f, ControllerMove::ControllerType::Seek);
+		seeker->AddComponent<ControllerMove>(80.0f, 5.0f, ControllerMove::ControllerType::Seek);
+		seeker->AddComponent<WrapAroundWorld>();
 		PollingStation::Get().AddWatchedActor(seeker);
 	}
 
@@ -33,7 +36,8 @@ void WorldInterfacing::InitializeApplication()
 	for (auto& separatorName : separatorNames)
 	{
 		auto separator = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(separatorName);
-		separator->AddComponent<ControllerMove>(100.0f, ControllerMove::ControllerType::Separate);
+		separator->AddComponent<ControllerMove>(80.0f, 5.0f, ControllerMove::ControllerType::Separate);
+		separator->AddComponent<WrapAroundWorld>();
 		PollingStation::Get().AddWatchedActor(separator);
 	}
 }

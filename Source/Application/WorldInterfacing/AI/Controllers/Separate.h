@@ -5,5 +5,8 @@ class Separate : public ControllerBase
 {
 public:
 	void Start() override;
-	CU::Vector3f GetDirection(CU::Vector3f aCurrentPosition) override;
+	SteeringOutput GetSteering(const SteeringInput& aSteeringInput) override;
+
+private:
+	float myThreshold = 300.0f;
 };

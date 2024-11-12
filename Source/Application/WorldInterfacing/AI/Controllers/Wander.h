@@ -5,5 +5,12 @@ class Wander : public ControllerBase
 {
 public:
 	void Start() override;
-	CU::Vector3f GetDirection(CU::Vector3f aCurrentPosition) override;
+	SteeringOutput GetSteering(const SteeringInput& aSteeringInput) override;
+
+private:
+	CU::Vector3f GetNewTargetRotation();
+	float Random();
+	float RandomBinomial();
+
+	float myMaxRotation = 90.0f;
 };

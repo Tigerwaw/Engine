@@ -17,15 +17,20 @@ public:
 
 	ControllerMove() = default;
 	~ControllerMove();
-	ControllerMove(float aMoveSpeed, ControllerType aControllerType);
+	ControllerMove(float aMaxMoveSpeed, float aMaxAcceleration, ControllerType aControllerType);
 
-	void SetMoveSpeed(float aMoveSpeed);
+	void SetMaxMoveSpeed(float aMaxMoveSpeed);
+	void SetMaxAcceleration(float aMaxAcceleration);
 	void SetControllerType(ControllerType aControllerType);
 
 	void Start() override;
 	void Update() override;
 
+protected:
+	CU::Vector3f myVelocity;
+
 private:
 	ControllerBase* myController;
-	float myMoveSpeed = 1.0f;
+	float myMaxAcceleration = 1.0f;
+	float myMaxMoveSpeed = 10.0f;
 };

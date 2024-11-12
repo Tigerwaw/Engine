@@ -5,5 +5,5 @@ class Seek : public ControllerBase
 {
 public:
 	void Start() override;
-	CU::Vector3f GetDirection(CU::Vector3f aCurrentPosition) override;
+	SteeringOutput GetSteering(const SteeringInput& aSteeringInput) override;
 };

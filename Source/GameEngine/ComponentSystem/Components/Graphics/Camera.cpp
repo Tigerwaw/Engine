@@ -66,7 +66,7 @@ void Camera::InitPerspectiveProjection(float aFOV, float aNearPlane, float aFarP
 
 void Camera::InitOrtographicProjection(float aLeft, float aRight, float aTop, float aBottom, float aNearPlane, float aFarPlane)
 {
-	myViewportDimensions = { aRight - aLeft, aTop - aBottom };
+	myViewportDimensions = { (aRight - aLeft) * 0.5f, (aTop - aBottom) * 0.5f };
 	myNearPlane = aNearPlane;
 	myFarPlane = aFarPlane;
 	myProjectionMatrix = CU::Matrix4x4<float>();

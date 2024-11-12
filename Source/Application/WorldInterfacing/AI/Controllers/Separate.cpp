@@ -11,19 +11,21 @@ void Separate::Start()
 {
 }
 
-CU::Vector3f Separate::GetDirection(CU::Vector3f aCurrentPosition)
+ControllerBase::SteeringOutput Separate::GetSteering(const SteeringInput& aSteeringInput)
 {
-    PollingStation& ps = PollingStation::Get();
-    for (auto& otherActorPos : ps.GetOtherActorPositions())
+    SteeringOutput output;
+
+    auto otherActors = PollingStation::Get().GetOtherActorPositions();
+    for (auto& actorPos : otherActors)
     {
-        if (otherActorPos == aCurrentPosition) continue;
-        CU::Vector3f diff = otherActorPos - aCurrentPosition;
-        float toleranceSqr = 200.0f;
-        if (diff.LengthSqr() < toleranceSqr)
+        CU::Vector3f diff = aSteeringInput.position - actorPos;
+        if (diff.LengthSqr() < myThreshold * myThreshold)
         {
-            return -diff;
+            output.velocity += diff;
         }
     }
 
-    return aCurrentPosition;
+    output.rotation = std::atan2f(-output.velocity.x, output.velocity.z);
+
+    return output;
 }

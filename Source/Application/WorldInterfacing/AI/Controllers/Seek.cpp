@@ -11,10 +11,11 @@ void Seek::Start()
 {
 }
 
-CU::Vector3f Seek::GetDirection(CU::Vector3f aCurrentPosition)
+ControllerBase::SteeringOutput Seek::GetSteering(const SteeringInput& aSteeringInput)
 {
-    CU::Vector3f diff = PollingStation::Get().GetWandererPosition() - aCurrentPosition;
-    if (diff.LengthSqr() < 1.0f) return CU::Vector3f();
+    SteeringOutput output;
+    output.velocity = PollingStation::Get().GetWandererPosition() - aSteeringInput.position;
+    output.rotation = std::atan2f(-output.velocity.x, output.velocity.z);
 
-    return diff;
+    return output;
 }

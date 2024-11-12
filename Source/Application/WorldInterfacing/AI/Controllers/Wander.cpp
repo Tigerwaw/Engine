@@ -7,14 +7,32 @@
 #include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "WorldInterfacing/AI/PollingStation.h"
 
+#include <random>
+
 void Wander::Start()
 {
 }
 
-CU::Vector3f Wander::GetDirection(CU::Vector3f aCurrentPosition)
+ControllerBase::SteeringOutput Wander::GetSteering(const SteeringInput& aSteeringInput)
 {
-    CU::Vector3f dir = aCurrentPosition + aCurrentPosition.GetNormalized() * 100.0f - aCurrentPosition;
-    if (dir.LengthSqr() < 1.0f) return CU::Vector3f();
+    SteeringOutput output;
+    output.velocity = aSteeringInput.orientation;
+    output.rotation = myMaxRotation * RandomBinomial();
 
-    return dir;
+    return output;
+}
+
+CU::Vector3f Wander::GetNewTargetRotation()
+{
+    return CU::Vector3f();
+}
+
+float Wander::Random()
+{
+    return (std::rand() % 100) / 100.0f;
+}
+
+float Wander::RandomBinomial()
+{
+    return Random() - Random();
 }
