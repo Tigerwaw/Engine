@@ -18,6 +18,7 @@ namespace nl = nlohmann;
 #include <array>
 #include <unordered_map>
 #include <any>
+#include <queue>
 
 #include "AssetManager/AssetManager.h"
 #include "GameEngine/Engine.h"

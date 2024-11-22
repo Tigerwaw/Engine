@@ -17,7 +17,7 @@ void WorldInterfacing::InitializeApplication()
 	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_WorldInterfacing.json");
 
 	auto wanderer = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Wanderer");
-	wanderer->AddComponent<ControllerMove>(80.0f, 5.0f, ControllerMove::ControllerType::Wander);
+	wanderer->AddComponent<ControllerMove>(80.0f, 15.0f, ControllerMove::ControllerType::Wander);
 	wanderer->AddComponent<WrapAroundWorld>();
 	PollingStation::Get().SetWanderer(wanderer);
 	PollingStation::Get().AddWatchedActor(wanderer);

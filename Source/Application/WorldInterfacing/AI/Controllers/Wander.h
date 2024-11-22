@@ -12,5 +12,5 @@ private:
 	float Random();
 	float RandomBinomial();
 
-	float myMaxRotation = 90.0f;
+	float myMaxRotation = 180.0f;
 };
