@@ -5,7 +5,7 @@
 #include "GameEngine/SceneHandler/SceneHandler.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "WorldInterfacing/AI/PollingStation.h"
+#include "Movement/AI/PollingStation.h"
 
 #include <random>
 
@@ -20,11 +20,6 @@ ControllerBase::SteeringOutput Wander::GetSteering(const SteeringInput& aSteerin
     output.rotation = myMaxRotation * RandomBinomial();
 
     return output;
-}
-
-CU::Vector3f Wander::GetNewTargetRotation()
-{
-    return CU::Vector3f();
 }
 
 float Wander::Random()

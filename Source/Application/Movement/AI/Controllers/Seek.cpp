@@ -5,7 +5,7 @@
 #include "GameEngine/SceneHandler/SceneHandler.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "WorldInterfacing/AI/PollingStation.h"
+#include "Movement/AI/PollingStation.h"
 
 void Seek::Start()
 {

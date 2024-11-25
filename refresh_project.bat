@@ -26,4 +26,3 @@ mkdir Lib\Retail\Logger
 
 cd Premake\
 call premake5.exe vs2022
-pause

@@ -8,7 +8,6 @@ public:
 	SteeringOutput GetSteering(const SteeringInput& aSteeringInput) override;
 
 private:
-	CU::Vector3f GetNewTargetRotation();
 	float Random();
 	float RandomBinomial();
 

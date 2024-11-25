@@ -11,23 +11,24 @@ void WrapAroundWorld::Update()
 	auto transform = gameObject->GetComponent<Transform>();
 	auto pos = transform->GetTranslation(true);
 	auto viewport = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("MainCamera")->GetComponent<Camera>()->GetViewportDimensions();
+	float offset = 10.0f;
 
-	if (pos.x < -viewport.x)
+	if (pos.x < -viewport.x - offset)
 	{
-		pos.x = viewport.x;
+		pos.x = viewport.x + offset;
 	}
-	else if (pos.x > viewport.x)
+	else if (pos.x > viewport.x + offset)
 	{
-		pos.x = -viewport.x;
+		pos.x = -viewport.x - offset;
 	}
 
-	if (pos.z < -viewport.y)
+	if (pos.z < -viewport.y - offset)
 	{
-		pos.z = viewport.y;
+		pos.z = viewport.y + offset;
 	}
-	else if (pos.z > viewport.y)
+	else if (pos.z > viewport.y + offset)
 	{
-		pos.z = -viewport.y;
+		pos.z = -viewport.y - offset;
 	}
 
 	transform->SetTranslation(pos);

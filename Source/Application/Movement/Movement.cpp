@@ -1,4 +1,4 @@
-#include "WorldInterfacing.h"
+#include "Movement.h"
 #include <GameEngine/Engine.h>
 
 #include "GameEngine/ComponentSystem/GameObject.h"
@@ -9,15 +9,15 @@
 Application* CreateApplication()
 {
 	Engine::GetInstance().LoadSettings(std::filesystem::current_path().string() + "/" + APP_SETTINGS_PATH);
-    return new WorldInterfacing();
+    return new Movement();
 }
 
-void WorldInterfacing::InitializeApplication()
+void Movement::InitializeApplication()
 {
-	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_WorldInterfacing.json");
+	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_Movement.json");
 
 	auto wanderer = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Wanderer");
-	wanderer->AddComponent<ControllerMove>(80.0f, 15.0f, ControllerMove::ControllerType::Wander);
+	wanderer->AddComponent<ControllerMove>(120.0f, 15.0f, ControllerMove::ControllerType::Wander);
 	wanderer->AddComponent<WrapAroundWorld>();
 	PollingStation::Get().SetWanderer(wanderer);
 	PollingStation::Get().AddWatchedActor(wanderer);
@@ -42,7 +42,7 @@ void WorldInterfacing::InitializeApplication()
 	}
 }
 
-void WorldInterfacing::UpdateApplication()
+void Movement::UpdateApplication()
 {
 	PollingStation::Get().Update();
 }

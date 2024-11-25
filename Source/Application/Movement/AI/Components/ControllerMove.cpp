@@ -5,10 +5,10 @@
 #include "GameEngine/Engine.h"
 #include "GameEngine/Time/Timer.h"
 
-#include "WorldInterfacing/AI/Controllers/ControllerBase.h"
-#include "WorldInterfacing/AI/Controllers/Wander.h"
-#include "WorldInterfacing/AI/Controllers/Seek.h"
-#include "WorldInterfacing/AI/Controllers/Separate.h"
+#include "Movement/AI/Controllers/ControllerBase.h"
+#include "Movement/AI/Controllers/Wander.h"
+#include "Movement/AI/Controllers/Seek.h"
+#include "Movement/AI/Controllers/Separate.h"
 
 ControllerMove::~ControllerMove()
 {
@@ -69,6 +69,7 @@ void ControllerMove::Update()
 	steeringInput.orientation = transform->GetForwardVector();
 	ControllerBase::SteeringOutput steering = myController->GetSteering(steeringInput);
 
+	// Clamp steering velocity to max acceleration
 	if (steering.velocity.LengthSqr() > myMaxAcceleration * myMaxAcceleration)
 	{
 		steering.velocity.Normalize();
@@ -77,6 +78,12 @@ void ControllerMove::Update()
 
 	myVelocity += steering.velocity;
 
+	//if (myVelocity.LengthSqr() < 0.1f)
+	//{
+	//	myVelocity = CU::Vector3f(0, 0, 0);
+	//}
+
+	// Clamp velocity to max speed
 	if (myVelocity.LengthSqr() > myMaxMoveSpeed * myMaxMoveSpeed)
 	{
 		myVelocity.Normalize();
@@ -85,4 +92,5 @@ void ControllerMove::Update()
 
 	transform->AddTranslation(myVelocity * dt);
 	transform->AddRotation(0, steering.rotation * dt, 0);
+	myVelocity = myVelocity * (1 - myDeceleration);
 }

@@ -6,7 +6,7 @@ workspace "TGPGameEngine"
   configurations { "Debug", "Release", "Retail" }
 
 group "Applications"
-project "WorldInterfacing"
+project "Movement"
   location "%{dirs.application}/%{prj.name}/"
   kind "WindowedApp"
   language "C++"
@@ -63,7 +63,7 @@ project "WorldInterfacing"
     "WinPixEventRuntime"
   }
 
-  verify_or_create_settings("WorldInterfacing")
+  verify_or_create_settings("Movement")
 
   filter "system:windows"
     cppdialect "C++20"

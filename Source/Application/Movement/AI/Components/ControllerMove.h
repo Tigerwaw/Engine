@@ -32,5 +32,6 @@ protected:
 private:
 	ControllerBase* myController;
 	float myMaxAcceleration = 1.0f;
+	float myDeceleration = 0.01f;
 	float myMaxMoveSpeed = 10.0f;
 };
