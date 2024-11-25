@@ -22,6 +22,7 @@ public:
 	void AddWatchedActor(std::shared_ptr<GameObject> aGameObject);
 	void SetWanderer(std::shared_ptr<GameObject> aGameObject);
 
+	const std::vector<std::shared_ptr<GameObject>>& GetOtherActors() { return myWatchedActors; }
 	const std::vector<CU::Vector3f> GetOtherActorPositions() const;
 	const CU::Vector3f GetWandererPosition() const;
 private:

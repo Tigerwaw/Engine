@@ -7,9 +7,7 @@
 #include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "Movement/AI/PollingStation.h"
 
-void Separate::Start()
-{
-}
+#include <random>
 
 ControllerBase::SteeringOutput Separate::GetSteering(const SteeringInput& aSteeringInput)
 {
@@ -19,13 +17,17 @@ ControllerBase::SteeringOutput Separate::GetSteering(const SteeringInput& aSteer
     for (auto& actorPos : otherActors)
     {
         CU::Vector3f diff = aSteeringInput.position - actorPos;
-        if (diff.LengthSqr() < myThreshold * myThreshold)
+        float diffLength = diff.LengthSqr();
+        if (diffLength > myNeighbourhoodRadius * myNeighbourhoodRadius) continue;
+        if (diffLength > myAvoidanceThreshold * myAvoidanceThreshold) continue;
+        if (diffLength < 1.0f)
         {
-            output.velocity += diff;
+            diff = CU::Vector3f(static_cast<float>(std::rand() % 100), 0, static_cast<float>(std::rand() % 100));
         }
+
+        output.velocity += diff;
     }
 
-    output.rotation = std::atan2f(-output.velocity.x, output.velocity.z);
-
+    output.rotation = 0;
     return output;
 }

@@ -48,11 +48,6 @@ void ControllerMove::SetControllerType(ControllerType aControllerType)
 	default:
 		break;
 	}
-
-	if (myController)
-	{
-		myController->Start();
-	}
 }
 
 void ControllerMove::Start()

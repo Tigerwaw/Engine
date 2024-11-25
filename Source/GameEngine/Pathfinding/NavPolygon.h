@@ -4,5 +4,5 @@
 
 struct NavPolygon
 {
-	std::vector<CU::Vector3f> vertexPositions;
+	std::array<CU::Vector3f, 3> vertexPositions;
 };

@@ -1,14 +1,11 @@
 #pragma once
 #include "ControllerBase.h"
 
-class Wander : public ControllerBase
+class VelocityMatch : public ControllerBase
 {
 public:
 	SteeringOutput GetSteering(const SteeringInput& aSteeringInput) override;
 
 private:
-	float Random();
-	float RandomBinomial();
-
-	float myMaxRotation = 180.0f;
+	float myTimeToTarget = 0.5f;
 };

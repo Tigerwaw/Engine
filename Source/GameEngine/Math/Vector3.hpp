@@ -34,8 +34,13 @@ namespace CommonUtilities
 		Vector3<T> Cross(const Vector3<T>& aVector) const;
 		static Vector3<T> Abs(const Vector3<T>& aVector);
 		static T Distance(const Vector3<T>& aVector0, const Vector3<T>& aVector1);
+		static T DistanceSqr(const Vector3& aCurrent, const Vector3& aTarget);
+		static T DistanceSqrToLine(const Vector3& aStart, const Vector3& aEnd, const Vector3& aPoint);
 		static Vector3<T> Lerp(const Vector3<T>& aStart, const Vector3<T>& aEnd, const float aPercent);
+		static Vector3 ClosestPointOnLine(const Vector3& aStart, const Vector3& aEnd, const Vector3& aPoint);
+		static Vector3 ClosestPointOnSegment(const Vector3& aStart, const Vector3& aEnd, const Vector3& aPoint);
 		static std::tuple<Vector3, Vector3> ClosestPointsSegmentSegment(const Vector3& aFirstStart, const Vector3& aFirstEnd, const Vector3& aSecondStart, const Vector3& aSecondEnd);
+		static bool Equal(const Vector3& aLeft, const Vector3& aRight, T aTolerance = EPSILON_V<T>);
 	};
 
 	template<class T>
@@ -123,10 +128,44 @@ namespace CommonUtilities
 		return direction.Length();
 	}
 
+	template<typename T>
+	T Vector3<T>::DistanceSqr(const Vector3& aCurrent, const Vector3& aTarget)
+	{
+		return (aTarget - aCurrent).LengthSqr();
+	}
+
 	template<class T>
 	inline Vector3<T> Vector3<T>::Lerp(const Vector3<T>& aStart, const Vector3<T>& aEnd, const float aPercent)
 	{
 		return (aStart + aPercent * (aEnd - aStart));
+	}
+
+	template<typename T>
+	Vector3<T> Vector3<T>::ClosestPointOnLine(const Vector3& aStart, const Vector3& aEnd, const Vector3& aPoint)
+	{
+		const Vector3<T> dir = aEnd - aStart;
+		const T dirLengthSqr = dir.LengthSqr();
+
+		if (dirLengthSqr <= EPSILON_V<T>)
+			return aStart;
+
+		const T t = dir.Dot(aPoint - aStart) / dirLengthSqr;
+
+		return aStart + t * dir;
+	}
+
+	template<typename T>
+	Vector3<T> Vector3<T>::ClosestPointOnSegment(const Vector3& aStart, const Vector3& aEnd, const Vector3& aPoint)
+	{
+		const Vector3<T> dir = aEnd - aStart;
+		const T dirLengthSqr = dir.LengthSqr();
+
+		if (dirLengthSqr <= EPSILON_V<T>)
+			return aStart;
+
+		const T t = dir.Dot(aPoint - aStart) / dirLengthSqr;
+
+		return aStart + Saturate(t) * dir;
 	}
 
 	template<class T>
@@ -186,6 +225,22 @@ namespace CommonUtilities
 		const Vector3<T> p2 = aSecondStart + CD * t;
 
 		return std::make_tuple(p1, p2);
+	}
+
+	template<typename T>
+	bool Vector3<T>::Equal(const Vector3& aLeft, const Vector3& aRight, T aTolerance)
+	{
+		using CommonUtilities::Equal;
+
+		return Equal(aLeft.x, aRight.x, aTolerance) &&
+			Equal(aLeft.y, aRight.y, aTolerance) &&
+			Equal(aLeft.z, aRight.z, aTolerance);
+	}
+
+	template<typename T>
+	T Vector3<T>::DistanceSqrToLine(const Vector3& aStart, const Vector3& aEnd, const Vector3& aPoint)
+	{
+		return Vector3<T>::DistanceSqr(ClosestPointOnLine(aStart, aEnd, aPoint), aPoint);
 	}
 
 	//Returns the vector sum of aVector0 and aVector1

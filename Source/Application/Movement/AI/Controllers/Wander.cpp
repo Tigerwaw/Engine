@@ -9,10 +9,6 @@
 
 #include <random>
 
-void Wander::Start()
-{
-}
-
 ControllerBase::SteeringOutput Wander::GetSteering(const SteeringInput& aSteeringInput)
 {
     SteeringOutput output;

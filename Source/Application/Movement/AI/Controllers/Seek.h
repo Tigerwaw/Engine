@@ -4,6 +4,5 @@
 class Seek : public ControllerBase
 {
 public:
-	void Start() override;
 	SteeringOutput GetSteering(const SteeringInput& aSteeringInput) override;
 };

@@ -35,17 +35,19 @@ void Navigation::InitializeApplication()
 
 void Navigation::UpdateApplication()
 {
+#ifndef _RETAIL
 	myNavMesh->DrawDebugLines();
 	myNavMesh->DrawBoundingBox();
-	myNavMesh->DrawFunnelLines();
+#endif
 
 	if (Engine::GetInstance().GetInputHandler().GetBinaryAction("LMB"))
 	{
-		myNavMesh->ClearFunnelLines();
 		CastRay();
 	}
 
+#ifndef _RETAIL
 	Engine::GetInstance().GetDebugDrawer().DrawLine(myDebugRay);
+#endif
 }
 
 void Navigation::CastRay()

@@ -724,7 +724,7 @@ bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
 
 std::vector<NavPolygon> CreateNavPolygons(const TGA::FBX::NavMesh& tgaNavMesh);
 std::vector<NavNode> CreateNavNodes(const std::vector<NavPolygon> navPolygons);
-std::vector<NavPortal> CreateNavPortals(const std::vector<NavPolygon> navPolygons);
+std::vector<NavPortal> CreateNavPortals(const std::vector<NavPolygon> navPolygons, const std::vector<NavNode>& aNavNodes);
 
 bool AssetManager::RegisterNavMeshAsset(const std::filesystem::path& aPath)
 {
@@ -740,17 +740,16 @@ bool AssetManager::RegisterNavMeshAsset(const std::filesystem::path& aPath)
     // Create Nav Polygons.
     std::vector<NavPolygon> navPolygons = CreateNavPolygons(tgaNavMesh);
 
-    // Create Nav Portals.
-    std::vector<NavPortal> navPortals = CreateNavPortals(navPolygons);
-
     // Create Nav nodes with connections between eachother.
     std::vector<NavNode> navNodes = CreateNavNodes(navPolygons);
+
+    // Create Nav Portals.
+    std::vector<NavPortal> navPortals = CreateNavPortals(navPolygons, navNodes);
 
     for (int portalIndex = 0; portalIndex < static_cast<int>(navPortals.size()); ++portalIndex)
     {
         NavPortal& portal = navPortals[portalIndex];
         navNodes[portal.nodes[0]].portals.emplace_back(portalIndex);
-        navNodes[portal.nodes[1]].portals.emplace_back(portalIndex);
     }
 
     NavMesh navMesh;
@@ -1263,14 +1262,18 @@ std::vector<NavPolygon> CreateNavPolygons(const TGA::FBX::NavMesh& tgaNavMesh)
     std::vector<NavPolygon> navPolygons;
     for (auto& tgaChunk : tgaNavMesh.Chunks)
     {
+        navPolygons.reserve(navPolygons.size() + tgaChunk.Polygons.size());
+
         for (auto& tgaPolygon : tgaChunk.Polygons)
         {
             assert(tgaPolygon.Indices.size() < 4 && "Navmesh isn't triangulated >:((");
             NavPolygon& navPolygon = navPolygons.emplace_back(NavPolygon());
-            for (auto& polygonIndex : tgaPolygon.Indices)
+            for (std::size_t i = 0; i < tgaPolygon.Indices.size(); ++i)
             {
-                CU::Vector3f vertexPos = { tgaChunk.Vertices[polygonIndex].Position[0], tgaChunk.Vertices[polygonIndex].Position[1], tgaChunk.Vertices[polygonIndex].Position[2] };
-                navPolygon.vertexPositions.emplace_back(vertexPos);
+                const int vertexIndex = tgaPolygon.Indices[i];
+
+                CU::Vector3f vertexPos = { tgaChunk.Vertices[vertexIndex].Position[0], tgaChunk.Vertices[vertexIndex].Position[1], tgaChunk.Vertices[vertexIndex].Position[2] };
+                navPolygon.vertexPositions[i] = vertexPos;
             }
         }
     }
@@ -1302,7 +1305,7 @@ std::vector<NavNode> CreateNavNodes(const std::vector<NavPolygon> navPolygons)
     return navNodes;
 }
 
-std::vector<NavPortal> CreateNavPortals(const std::vector<NavPolygon> navPolygons)
+std::vector<NavPortal> CreateNavPortals(const std::vector<NavPolygon> navPolygons, const std::vector<NavNode>& aNavNodes)
 {
     std::vector<NavPortal> navPortals;
 
@@ -1316,25 +1319,27 @@ std::vector<NavPortal> CreateNavPortals(const std::vector<NavPolygon> navPolygon
 
             const NavPolygon& navPoly2 = navPolygons[j];
 
-            std::vector<CU::Vector3f> sharedVertices;
+            std::array<CU::Vector3f, 2> sharedVertices;
+            int sharedCount = 0;
 
             for (int vertexPos = 0; vertexPos < static_cast<int>(navPoly2.vertexPositions.size()); vertexPos++)
             {
                 const CU::Vector3f& vertexPosToTest = navPoly2.vertexPositions[vertexPos];
                 if (std::find(navPoly1.vertexPositions.begin(), navPoly1.vertexPositions.end(), vertexPosToTest) != navPoly1.vertexPositions.end())
                 {
-                    sharedVertices.emplace_back(vertexPosToTest);
+                    assert(sharedCount < 2 && "More than 2 shared vertices means mesh is not triangulated, or polygon is really damn small");
+                    sharedVertices[sharedCount++] = vertexPosToTest;
                 }
             }
 
-            if (sharedVertices.size() == 2) // Polygons share an edge
+            if (sharedCount == 2) // Polygons share an edge
             {
-                NavPortal& navPortal = navPortals.emplace_back(NavPortal());
+                NavPortal& navPortal = navPortals.emplace_back();
                 navPortal.nodes[0] = i;
                 navPortal.nodes[1] = j;
                 navPortal.vertices[0] = sharedVertices[0];
                 navPortal.vertices[1] = sharedVertices[1];
-                navPortal.cost = (navPortal.vertices[0] - navPortal.vertices[1]).Length();
+                navPortal.cost = (aNavNodes[i].position - aNavNodes[j].position).Length();
             }
         }
     }

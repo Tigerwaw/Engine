@@ -19,29 +19,30 @@ public:
 
 	NavMeshPath FindPath(CU::Vector3f aStartingPos, CU::Vector3f aEndPos);
 	void SnapGameObjectToNavMesh(GameObject& aGameObject);
+	CU::Vector3f ClampToNavMesh(const CU::Vector3f& aPos) const;
+	CU::Vector3f ClampToNearestEdge(const CU::Vector3f& aStart, const CU::Vector3f& aEnd) const;
 
-	const bool RayCast(CU::Ray<float> aRay, CU::Vector3f& outHitPoint) const;
+	const bool RayCast(CU::Ray<float> aRay, CU::Vector3f& outHitPoint, bool aClampToNavMesh) const;
 
 	void DrawDebugLines();
 	void DrawBoundingBox();
-	void DrawFunnelLines(); // TEMP
-	void ClearFunnelLines() { myFunnelLines.clear(); }
 
 private:
 	const bool IsGoalInSameOrNeighbouringPolygon(CU::Vector3f aStartingPos, CU::Vector3f aEndPos) const;
-	const bool CanPathStraight(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos) const;
+	const bool IsGoalInSameOrNeighbouringPolygon(int aStartPolyIndex, int aEndPolyIndex, CU::Vector3f aEndPos) const;
 	const int GetClosestNode(const CU::Vector3f& aPosition) const;
 	const int GetClosestPolygon(const CU::Vector3f& aPosition) const;
 	const CU::Vector3f GetClosestPointInNavMesh(const CU::Vector3f& aPosition) const;
 	const bool IsPointInsidePolygon(NavPolygon aPolygon, CU::Vector3f aPosition) const;
 	const bool NodesAreConnected(int aNodeIndexOne, int aNodeIndexTwo, int& inoutPortalIndex) const;
 
-	std::vector<int> GetShortestNodePath(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos);
+	std::vector<int> GetShortestNodePath(int aStartingNode, int aEndNode) const;
 	std::vector<CU::Vector3f> ConvertPathIndexToWorldPos(std::vector<int> aPath);
 
 	void ShortenEndNodes(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos, std::vector<CU::Vector3f>& inoutWorldPath);
+	std::vector<CU::Vector3f> PathStraight(CU::Vector3f aStartingPos, CU::Vector3f aEndPos, const std::vector<int>& aNavNodePath) const;
+	const bool CanPathStraight(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos) const;
 	std::vector<CU::Vector3f> FunnelPath(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos, const std::vector<int>& aNavNodePath);
-	std::vector<CU::Vector3f> PortalMiddlePointSmoothing(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos, const std::vector<int>& aNavNodePath);
 
 	std::vector<NavNode> myNodes;
 	std::vector<NavPolygon> myPolygons;
@@ -54,6 +55,4 @@ private:
 		int predecessor = -1;
 		bool hasBeenChecked = false;
 	};
-
-	std::vector<DebugLine> myFunnelLines; // TEMP
 };

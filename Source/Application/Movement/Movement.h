@@ -9,4 +9,7 @@ public:
 
     void InitializeApplication() override;
     void UpdateApplication() override;
+
+private:
+    std::vector<std::shared_ptr<GameObject>> myActors;
 };

@@ -2,7 +2,9 @@
 #include <GameEngine/Engine.h>
 
 #include "GameEngine/ComponentSystem/GameObject.h"
-#include "AI/Components/ControllerMove.h"
+#include "GameEngine/ComponentSystem/Components/Transform.h"
+#include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
+#include "AI/Components/ControllerMoveWeighted.h"
 #include "AI/PollingStation.h"
 #include "AI/Components/WrapAroundWorld.h"
 
@@ -14,31 +16,30 @@ Application* CreateApplication()
 
 void Movement::InitializeApplication()
 {
+	//GraphicsEngine::Get().RecalculateShadowFrustum = false;
 	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_Movement.json");
 
-	auto wanderer = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Wanderer");
-	wanderer->AddComponent<ControllerMove>(120.0f, 15.0f, ControllerMove::ControllerType::Wander);
-	wanderer->AddComponent<WrapAroundWorld>();
-	PollingStation::Get().SetWanderer(wanderer);
-	PollingStation::Get().AddWatchedActor(wanderer);
-
-	std::vector<std::string> seekerNames = { "Seeker1", "Seeker2", "Seeker3", "Seeker4" };
-	for (auto& seekerName : seekerNames)
+	for (int i = 0; i < 50; i++)
 	{
-		auto seeker = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(seekerName);
-		seeker->AddComponent<ControllerMove>(80.0f, 5.0f, ControllerMove::ControllerType::Seek);
-		seeker->AddComponent<WrapAroundWorld>();
-		PollingStation::Get().AddWatchedActor(seeker);
+		std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
+		go->AddComponent<Transform>();
+		auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_TgaBroBlue.json")->material);
+		model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
+		go->AddComponent<WrapAroundWorld>();
+		auto cont = go->AddComponent<ControllerMoveWeighted>(200.0f, 5.0f);
+		cont->AddControllerType(ControllerMoveWeighted::ControllerType::Separate, 0.7f);
+		cont->AddControllerType(ControllerMoveWeighted::ControllerType::Cohesion, 0.2f);
+		cont->AddControllerType(ControllerMoveWeighted::ControllerType::VelocityMatch, 0.05f);
+		cont->AddControllerType(ControllerMoveWeighted::ControllerType::Wander, 0.05f);
+
+		myActors.emplace_back(go);
+		PollingStation::Get().AddWatchedActor(go);
+		Engine::GetInstance().GetSceneHandler().Instantiate(go);
 	}
 
-	std::vector<std::string> separatorNames = { "Separator1", "Separator2", "Separator3", "Separator4", "Separator5", 
-											"Separator6", "Separator7", "Separator8", "Separator9", "Separator10" };
-	for (auto& separatorName : separatorNames)
+	for (int i = 1; i < myActors.size(); i++)
 	{
-		auto separator = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(separatorName);
-		separator->AddComponent<ControllerMove>(80.0f, 5.0f, ControllerMove::ControllerType::Separate);
-		separator->AddComponent<WrapAroundWorld>();
-		PollingStation::Get().AddWatchedActor(separator);
+		myActors[i]->GetComponent<ControllerMoveWeighted>()->SetTarget(myActors[i - 1]);
 	}
 }
 

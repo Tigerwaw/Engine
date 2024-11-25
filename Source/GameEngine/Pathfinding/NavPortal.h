@@ -10,14 +10,7 @@ struct NavPortal
 
 	const int GetOtherNode(const int& aOwnNodeIndex) const
 	{
-		if (nodes[0] == aOwnNodeIndex)
-		{
-			return nodes[1];
-		}
-		else
-		{
-			return nodes[0];
-		}
+		return (nodes[0] == aOwnNodeIndex) ? nodes[1] : nodes[0];
 	}
 
 	const bool IsSameEdge(const CU::Vector3f& aPointOne, const CU::Vector3f& aPointTwo) const
