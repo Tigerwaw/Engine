@@ -28,19 +28,21 @@
       "Components": [
         {
           "Type": "Transform",
-          "Position": [ 0.0, 1500.0, 0.0 ],
-          "Rotation": [ 90.0, 0.0, 0.0 ],
+          "Position": [ 0.0, 1500.0, -1200.0 ],
+          "Rotation": [ 60.0, 0.0, 0.0 ],
           "Scale": [ 1.0, 1.0, 1.0 ]
         },
         {
           "Type": "Camera",
-          "Perspective": false,
-          "LeftPlane": -1600.0,
-          "RightPlane": 1600.0,
-          "TopPlane": 900.0,
-          "BottomPlane": -900.0,
+          "Perspective": true,
+          "FOV": 90.0,
           "NearPlane": 1.0,
-          "FarPlane": 6000.0
+          "FarPlane": 10000.0
+        },
+        {
+          "Type": "FreecamController",
+          "MoveSpeed": 400.0,
+          "RotationSpeed": 300.0
         }
       ]
     },

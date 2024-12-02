@@ -295,10 +295,11 @@ namespace CommonUtilities
 	template <class T>
 	Vector3<T> operator/(const Vector3<T>& aVector, const Vector3<T>& aOtherVector)
 	{
-		aVector.x /= aOtherVector.x;
-		aVector.y /= aOtherVector.y;
-		aVector.z /= aOtherVector.z;
-		return aVector;
+		Vector3<T> vector;
+		vector.x = aVector.x / aOtherVector.x;
+		vector.y = aVector.y / aOtherVector.y;
+		vector.z = aVector.z / aOtherVector.z;
+		return vector;
 	}
 
 	//Equivalent to setting aVector0 to (aVector0 + aVector1)
