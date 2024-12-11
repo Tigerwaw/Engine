@@ -5,6 +5,7 @@
 #include "GameEngine/Time/Timer.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
+#include "GameEngine/ComponentSystem/Components/Graphics/ParticleSystem.h"
 #include "../PollingStation.h"
 #include "StateMachineController.h"
 
@@ -14,9 +15,16 @@ void DecisionTreeController::Start()
 
 void DecisionTreeController::Update()
 {
+	float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
+	myCurrentParticleActiveTime += dt;
+	if (myIsShooting && myCurrentParticleActiveTime > myMaxParticleActiveTime)
+	{
+		gameObject->GetComponent<ParticleSystem>()->SetActive(false);
+		myIsShooting = false;
+	}
+
 	if (!myTarget) return;
 
-	float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
 	auto transform = gameObject->GetComponent<Transform>();
 	CU::Vector3f pos = transform->GetTranslation();
 
@@ -33,6 +41,9 @@ void DecisionTreeController::Update()
 			{
 				myTimeSinceLastShot = 0;
 				myTarget->GetComponent<StateMachineController>()->TakeDamage(myDamage);
+				gameObject->GetComponent<ParticleSystem>()->SetActive(true);
+				myCurrentParticleActiveTime = 0;
+				myIsShooting = true;
 			}
 			else
 			{

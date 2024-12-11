@@ -29,6 +29,7 @@ ParticleEmitter& ParticleSystem::AddEmitter(const ParticleEmitterSettings& aSett
 {
 	ParticleEmitter& emitter = myEmitters.emplace_back(ParticleEmitter());
 	emitter.mySettings = aSettings;
+	emitter.InitInternal();
 	return emitter;
 }
 
@@ -115,8 +116,6 @@ bool ParticleSystem::Deserialize(nl::json& aJsonObject)
 			{
 				pe.SetMaterial(AssetManager::Get().GetAsset<MaterialAsset>(emitter["Material"].get<std::string>())->material);
 			}
-
-			pe.InitInternal();
 		}
 	}
 

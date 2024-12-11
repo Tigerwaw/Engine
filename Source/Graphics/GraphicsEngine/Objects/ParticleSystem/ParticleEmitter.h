@@ -3,8 +3,6 @@
 #include "Objects/Vertices/ParticleVertex.h"
 #include "ParticleEmitterSettings.h"
 
-class ParticleSystem;
-
 class ParticleEmitter
 {
 	friend class GraphicsEngine;

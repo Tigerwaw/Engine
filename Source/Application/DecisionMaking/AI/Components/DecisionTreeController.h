@@ -45,5 +45,9 @@ private:
 	float myMaxRotationTime = 0.25f;
 	CU::Quatf myCurrentRot;
 	CU::Quatf myGoalRot;
+
+	float myMaxParticleActiveTime = 0.5f;
+	float myCurrentParticleActiveTime = 0;
+	bool myIsShooting = false;
 };
 

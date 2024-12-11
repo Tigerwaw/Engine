@@ -5,6 +5,7 @@
 #include "GameEngine/SceneHandler/SceneHandler.h"
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
+#include "GameEngine/ComponentSystem/Components/Graphics/ParticleSystem.h"
 #include "../PollingStation.h"
 #include "DecisionTreeController.h"
 
@@ -14,6 +15,14 @@ void StateMachineController::Start()
 
 void StateMachineController::Update()
 {
+	float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
+	myCurrentParticleActiveTime += dt;
+	if (myIsShooting && myCurrentParticleActiveTime > myMaxParticleActiveTime)
+	{
+		gameObject->GetComponent<ParticleSystem>()->SetActive(false);
+		myIsShooting = false;
+	}
+
 	switch (myCurrentState)
 	{
 	case StateMachineController::State::SeekEnemy:
@@ -54,7 +63,6 @@ void StateMachineController::Update()
 	}
 	case StateMachineController::State::Aim:
 	{
-		float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
 		myCurrentRotationTime += dt;
 		if (myCurrentRotationTime >= myMaxRotationTime)
 		{
@@ -79,6 +87,9 @@ void StateMachineController::Update()
 			{
 				myTimeSinceLastShot = 0;
 				myTarget->GetComponent<DecisionTreeController>()->TakeDamage(myDamage);
+				gameObject->GetComponent<ParticleSystem>()->SetActive(true);
+				myCurrentParticleActiveTime = 0;
+				myIsShooting = true;
 			}
 		}
 		else if (dot < mySightAngle)
@@ -89,7 +100,7 @@ void StateMachineController::Update()
 	}
 	case StateMachineController::State::Heal:
 	{
-		Heal(myHPS * Engine::GetInstance().GetTimer().GetDeltaTime());
+		Heal(myHPS * dt);
 		if (myHealth / myMaxHealth > 0.9f)
 		{
 			myCurrentState = State::SeekEnemy;
@@ -98,7 +109,7 @@ void StateMachineController::Update()
 	}
 	case StateMachineController::State::Death:
 	{
-		myCurrentDeathTime += Engine::GetInstance().GetTimer().GetDeltaTime();
+		myCurrentDeathTime += dt;
 
 		if (myCurrentDeathTime >= myDeathTimer)
 		{
