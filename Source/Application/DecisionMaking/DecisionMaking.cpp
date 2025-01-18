@@ -11,6 +11,7 @@
 #include "AI/PollingStation.h"
 #include "AI/Components/StateMachineController.h"
 #include "AI/Components/DecisionTreeController.h"
+#include "HealthComponent.h"
 
 Application* CreateApplication()
 {
@@ -40,9 +41,10 @@ void DecisionMaking::InitializeApplication()
 	{
 		std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
 		go->SetName("SMCont");
-		go->AddComponent<Transform>(CU::Vector3f(500.0f, 0, -800.0f));
-		auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_TgaBroBlue.json")->material);
+		go->AddComponent<Transform>(CU::Vector3f(300.0f, 0, -500.0f));
+		auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorGreen.json")->material);
 		model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
+		go->AddComponent<HealthComponent>();
 
 		{
 			auto ps = go->AddComponent<ParticleSystem>();
@@ -76,9 +78,10 @@ void DecisionMaking::InitializeApplication()
 	{
 		std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
 		go->SetName("DTCont");
-		go->AddComponent<Transform>(CU::Vector3f(-500.0f, 0, 800.0f), CU::Vector3f(0, 180.0f, 0));
-		auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_TgaBroRed.json")->material);
+		go->AddComponent<Transform>(CU::Vector3f(-200.0f, 0, 500.0f), CU::Vector3f(0, 180.0f, 0));
+		auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorGreen.json")->material);
 		model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
+		go->AddComponent<HealthComponent>();
 
 		{
 			auto ps = go->AddComponent<ParticleSystem>();

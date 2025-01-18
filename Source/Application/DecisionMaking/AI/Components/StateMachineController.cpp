@@ -7,7 +7,8 @@
 #include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/ParticleSystem.h"
 #include "../PollingStation.h"
-#include "DecisionTreeController.h"
+#include "DecisionMaking/HealthComponent.h"
+#include "GameEngine/Intersections/Intersection3D.hpp"
 
 void StateMachineController::Start()
 {
@@ -21,6 +22,16 @@ void StateMachineController::Update()
 	{
 		gameObject->GetComponent<ParticleSystem>()->SetActive(false);
 		myIsShooting = false;
+	}
+
+	auto healthComp = gameObject->GetComponent<HealthComponent>();
+	if (healthComp->GetHealth() <= 0)
+	{
+		myCurrentState = State::Death;
+	}
+	else if (healthComp->GetHealth() / healthComp->GetMaxHealth() < 0.5f)
+	{
+		myCurrentState = State::SeekWell;
 	}
 
 	switch (myCurrentState)
@@ -39,7 +50,10 @@ void StateMachineController::Update()
 			float dot = transform->GetForwardVector().Dot(directionToTarget.GetNormalized());
 			if (dot >= mySightAngle)
 			{
-				myCurrentState = State::Aim;
+				if (IsLineOfSightClear(pos, directionToTarget))
+				{
+					myCurrentState = State::Aim;
+				}
 			}
 		}
 
@@ -63,22 +77,31 @@ void StateMachineController::Update()
 	}
 	case StateMachineController::State::Aim:
 	{
+		auto transform = gameObject->GetComponent<Transform>();
+		CU::Vector3f pos = transform->GetTranslation();
+		CU::Vector3f targetPos = myTarget->GetComponent<Transform>()->GetTranslation();
+		CU::Vector3f directionToTarget = targetPos - pos;
+		if (directionToTarget.LengthSqr() > myShootingRange * myShootingRange)
+		{
+			myCurrentState = State::SeekEnemy;
+		}
+
+		if (!IsLineOfSightClear(pos, directionToTarget))
+		{
+			myCurrentState = State::SeekEnemy;
+		}
+
 		myCurrentRotationTime += dt;
 		if (myCurrentRotationTime >= myMaxRotationTime)
 		{
 			myCurrentRotationTime = 0;
 			myCurrentRot = myGoalRot;
-			myGoalRot = CU::Quatf(CU::Vector3f(0, std::atan2(myVelocity.x, myVelocity.z), 0));
+			myGoalRot = CU::Quatf(CU::Vector3f(0, std::atan2(directionToTarget.x, directionToTarget.z), 0));
 		}
 
 		float rotTimeDelta = myCurrentRotationTime / myMaxRotationTime;
 		CU::Quatf rot = CU::Quatf::Slerp(myCurrentRot, myGoalRot, rotTimeDelta);
-		auto transform = gameObject->GetComponent<Transform>();
 		transform->SetRotation(rot.GetEulerAnglesDegrees());
-
-		CU::Vector3f pos = transform->GetTranslation();
-		CU::Vector3f targetPos = myTarget->GetComponent<Transform>()->GetTranslation();
-		CU::Vector3f directionToTarget = pos - targetPos;
 		float dot = transform->GetForwardVector().Dot(directionToTarget.GetNormalized());
 		myTimeSinceLastShot += dt;
 		if (dot >= myShootingAngle)
@@ -86,7 +109,7 @@ void StateMachineController::Update()
 			if (myTimeSinceLastShot > myShootingCooldown)
 			{
 				myTimeSinceLastShot = 0;
-				myTarget->GetComponent<DecisionTreeController>()->TakeDamage(myDamage);
+				myTarget->GetComponent<HealthComponent>()->TakeDamage(myDamage);
 				gameObject->GetComponent<ParticleSystem>()->SetActive(true);
 				myCurrentParticleActiveTime = 0;
 				myIsShooting = true;
@@ -100,8 +123,8 @@ void StateMachineController::Update()
 	}
 	case StateMachineController::State::Heal:
 	{
-		Heal(myHPS * dt);
-		if (myHealth / myMaxHealth > 0.9f)
+		healthComp->Heal(myHPS * dt);
+		if (healthComp->GetHealth() / healthComp->GetMaxHealth() > 0.9f)
 		{
 			myCurrentState = State::SeekEnemy;
 		}
@@ -115,24 +138,14 @@ void StateMachineController::Update()
 		{
 			myCurrentDeathTime = 0.0f;
 			auto transform = gameObject->GetComponent<Transform>();
-			transform->SetTranslation(-500.0f, 0, 800.0f);
-			Heal(myMaxHealth);
+			transform->SetTranslation(300.0f, 0, -500.0f);
+			healthComp->Heal(healthComp->GetMaxHealth());
 			myCurrentState = State::SeekEnemy;
 		}
 		break;
 	}
 	default:
 		break;
-	}
-}
-
-void StateMachineController::TakeDamage(float aDamage)
-{
-	myHealth = std::max(myHealth - aDamage, 0.0f);
-
-	if (myHealth <= 0)
-	{
-		myCurrentState = State::Death;
 	}
 }
 
@@ -189,4 +202,22 @@ void StateMachineController::SeekTarget()
 	}
 
 	myVelocity = myVelocity * (1 - myDeceleration);
+}
+
+bool StateMachineController::IsLineOfSightClear(CU::Vector3f aOrigin, CU::Vector3f aDiff)
+{
+	for (auto& wallPos : PollingStation::Get().GetWallPositions())
+	{
+		if ((wallPos - aOrigin).LengthSqr() > aDiff.LengthSqr()) continue;
+
+		CU::Sphere<float> sphere(wallPos, myAvoidRadius);
+		CU::Ray<float> ray(aOrigin, aDiff.GetNormalized());
+
+		if (CU::IntersectionSphereRay(sphere, ray))
+		{
+			return false;
+		}
+	}
+
+	return true;
 }

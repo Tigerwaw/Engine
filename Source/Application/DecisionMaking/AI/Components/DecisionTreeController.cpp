@@ -7,7 +7,8 @@
 #include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/ParticleSystem.h"
 #include "../PollingStation.h"
-#include "StateMachineController.h"
+#include "DecisionMaking/HealthComponent.h"
+#include "GameEngine/Intersections/Intersection3D.hpp"
 
 void DecisionTreeController::Start()
 {
@@ -31,16 +32,19 @@ void DecisionTreeController::Update()
 	CU::Vector3f targetPos = myTarget->GetComponent<Transform>()->GetTranslation();
 	CU::Vector3f directionToTarget = targetPos - pos;
 
-	if (myHealth / myMaxHealth > 0.5f)
+	auto healthComp = gameObject->GetComponent<HealthComponent>();
+
+	if (healthComp->GetHealth() / healthComp->GetMaxHealth() > 0.5f)
 	{
+		myTarget = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("SMCont");
 		float dot = transform->GetForwardVector().Dot(directionToTarget.GetNormalized());
-		if (directionToTarget.LengthSqr() < myShootingRange * myShootingRange && dot >= mySightAngle)
+		if (directionToTarget.LengthSqr() < myShootingRange * myShootingRange && dot >= mySightAngle && IsLineOfSightClear(pos, directionToTarget))
 		{
 			myTimeSinceLastShot += dt;
 			if (dot >= myShootingAngle && myTimeSinceLastShot > myShootingCooldown)
 			{
 				myTimeSinceLastShot = 0;
-				myTarget->GetComponent<StateMachineController>()->TakeDamage(myDamage);
+				myTarget->GetComponent<HealthComponent>()->TakeDamage(myDamage);
 				gameObject->GetComponent<ParticleSystem>()->SetActive(true);
 				myCurrentParticleActiveTime = 0;
 				myIsShooting = true;
@@ -52,7 +56,7 @@ void DecisionTreeController::Update()
 				{
 					myCurrentRotationTime = 0;
 					myCurrentRot = myGoalRot;
-					myGoalRot = CU::Quatf(CU::Vector3f(0, std::atan2(myVelocity.x, myVelocity.z), 0));
+					myGoalRot = CU::Quatf(CU::Vector3f(0, std::atan2(directionToTarget.x, directionToTarget.z), 0));
 				}
 
 				float rotTimeDelta = myCurrentRotationTime / myMaxRotationTime;
@@ -62,21 +66,20 @@ void DecisionTreeController::Update()
 		}
 		else
 		{
-			myTarget = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("SMCont");
 			SeekTarget();
 		}
 	}
 	else
 	{
-		if (myHealth > 0)
+		if (healthComp->GetHealth() > 0)
 		{
+			myTarget = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("HWell");
 			if (directionToTarget.LengthSqr() < myHealRadius * myHealRadius)
 			{
-				Heal(myHPS * dt);
+				healthComp->Heal(myHPS * dt);
 			}
 			else
 			{
-				myTarget = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("HWell");
 				SeekTarget();
 			}
 		}
@@ -87,16 +90,12 @@ void DecisionTreeController::Update()
 			if (myCurrentDeathTime >= myDeathTimer)
 			{
 				myCurrentDeathTime = 0.0f;
-				transform->SetTranslation(-500.0f, 0, 800.0f);
-				Heal(myMaxHealth);
+				transform->SetTranslation(-200.0f, 0, 500.0f);
+				healthComp->Heal(healthComp->GetMaxHealth());
+				myTarget = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("SMCont");
 			}
 		}
 	}
-}
-
-void DecisionTreeController::TakeDamage(float aDamage)
-{
-	myHealth = std::max(myHealth - aDamage, 0.0f);
 }
 
 void DecisionTreeController::SeekTarget()
@@ -152,4 +151,22 @@ void DecisionTreeController::SeekTarget()
 	}
 
 	myVelocity = myVelocity * (1 - myDeceleration);
+}
+
+bool DecisionTreeController::IsLineOfSightClear(CU::Vector3f aOrigin, CU::Vector3f aDiff)
+{
+	for (auto& wallPos : PollingStation::Get().GetWallPositions())
+	{
+		if ((wallPos - aOrigin).LengthSqr() > aDiff.LengthSqr()) continue;
+
+		CU::Sphere<float> sphere(wallPos, myAvoidRadius);
+		CU::Ray<float> ray(aOrigin, aDiff.GetNormalized());
+
+		if (CU::IntersectionSphereRay(sphere, ray))
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
