@@ -75,7 +75,7 @@ void ControllerMoveWeighted::Update()
 	steeringInput.velocity = myVelocity;
 	steeringInput.position = transform->GetTranslation();
 	steeringInput.orientation = transform->GetForwardVector();
-	steeringInput.target = PollingStation::Get().GetAITwoPosition();
+	//steeringInput.target = PollingStation::Get().GetAITwoPosition();
 
 	ControllerBase::SteeringOutput steering;
 	

@@ -18,14 +18,20 @@ void PollingStation::Update()
 {
 }
 
-const CU::Vector3f PollingStation::GetAIOnePosition()
+std::shared_ptr<GameObject> PollingStation::GetRandomAIActor(std::shared_ptr<GameObject> aSelf)
 {
-	return myAIOne->GetComponent<Transform>()->GetTranslation(true);
+	int random = 0;
+	do 
+	{
+		random = std::rand() % 3;
+	} while (myAIActors[random] == aSelf);
+
+	return myAIActors[random];
 }
 
-const CU::Vector3f PollingStation::GetAITwoPosition()
+void PollingStation::AddAIActor(std::shared_ptr<GameObject> aGameObject)
 {
-	return myAITwo->GetComponent<Transform>()->GetTranslation(true);
+	myAIActors.push_back(aGameObject);
 }
 
 const CU::Vector3f PollingStation::GetHealingWellPosition()
