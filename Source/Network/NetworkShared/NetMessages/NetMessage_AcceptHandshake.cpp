@@ -1,0 +1,20 @@
+#include "NetMessage_AcceptHandshake.h"
+
+NetMessage_AcceptHandshake::NetMessage_AcceptHandshake()
+{
+	myMessageType = NetMessageType::HandshakeAccept;
+}
+
+void NetMessage_AcceptHandshake::Serialize(NetBuffer& aBuffer)
+{
+	NetMessage::Serialize(aBuffer);
+}
+
+void NetMessage_AcceptHandshake::Deserialize(const NetBuffer& aBuffer)
+{
+	NetMessage::Deserialize(aBuffer);
+}
+
+void NetMessage_AcceptHandshake::GetStringRepresentation(char*, int) const
+{
+}
