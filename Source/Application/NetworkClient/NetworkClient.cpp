@@ -14,9 +14,9 @@ void NetworkClient::InitializeApplication()
 
 	Engine::GetInstance().GetImGuiHandler().AddNewFunction([this] 
 		{
-			CU::Vector2f resolution = Engine::GetInstance().GetWindowSize();
-			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.02f * resolution.y });
-			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.35f * resolution.y });
+			CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
+			ImGui::SetNextWindowPos({ 0.01f * windowSize.x, 0.02f * windowSize.y });
+			ImGui::SetNextWindowContentSize({ 0.16f * windowSize.x, 0.35f * windowSize.y });
 			if (ImGui::Begin("Chat window"))
 			{
 				std::string input;

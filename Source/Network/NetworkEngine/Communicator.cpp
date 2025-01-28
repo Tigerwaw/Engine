@@ -9,7 +9,7 @@
 
 #define DEFAULT_PORT "27015"
 
-void Communicator::Init(bool aIsBinding, bool aIsBlocking)
+void Communicator::Init(bool aIsBinding, bool aIsBlocking, const char* aIP)
 {
     // Initialize Winsock
     WSADATA wsaData;
@@ -35,6 +35,20 @@ void Communicator::Init(bool aIsBinding, bool aIsBlocking)
         printf("getaddrinfo failed with error: %d\n", result);
         WSACleanup();
         return;
+    }
+
+    if (!aIsBinding)
+    {
+        sockaddr_in* addr = reinterpret_cast<sockaddr_in*>(myAddressInfo->ai_addr);
+        result = inet_pton(AF_INET, aIP, &addr->sin_addr.S_un.S_addr);
+        if (result == SOCKET_ERROR)
+        {
+            printf("failed to get address with error: %d\n", WSAGetLastError());
+            freeaddrinfo(myAddressInfo);
+            closesocket(mySocket);
+            WSACleanup();
+            return;
+        }
     }
 
     mySocket = socket(myAddressInfo->ai_family, myAddressInfo->ai_socktype, myAddressInfo->ai_protocol);

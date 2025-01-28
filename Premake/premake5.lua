@@ -13,7 +13,9 @@ include (dirs.assetmanager)
 include (dirs.imgui)
 include (dirs.logger)
 include (dirs.projectcreator)
-include (dirs.network)
+include (dirs.networkengine)
+
+include (dirs.network .. "NetworkShared")
 
 include (dirs.application .. "ModelViewer")
 include (dirs.application .. "FeatureShowcase")

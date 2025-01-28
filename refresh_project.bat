@@ -24,5 +24,13 @@ mkdir Lib\Debug\Logger
 mkdir Lib\Release\Logger
 mkdir Lib\Retail\Logger
 
+mkdir Lib\Debug\NetworkEngine
+mkdir Lib\Release\NetworkEngine
+mkdir Lib\Retail\NetworkEngine
+
+mkdir Lib\Debug\NetworkShared
+mkdir Lib\Release\NetworkShared
+mkdir Lib\Retail\NetworkShared
+
 cd Premake\
 call premake5.exe vs2022

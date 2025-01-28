@@ -6,8 +6,8 @@ workspace "TGPGameEngine"
   configurations { "Debug", "Release", "Retail" }
 
 group "Network"
-project "NetworkShared"
-  location "%{dirs.network}/%{prj.name}/"
+project "NetworkEngine"
+  location "%{dirs.networkengine}"
   kind "StaticLib"
   language "C++"
   cppdialect "C++20"
@@ -32,8 +32,7 @@ project "NetworkShared"
     dirs.assetmanager,
     dirs.utilities,
     dirs.imgui,
-	dirs.network,
-	dirs.networkengine
+	dirs.network
   }
 
   filter "system:windows"

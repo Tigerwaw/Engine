@@ -41,6 +41,11 @@ inline void NetBuffer::WriteData(const T& aDataToReadFrom)
 template<typename T>
 inline void NetBuffer::WriteData(const T& aDataToReadFrom, int aSizeOfDataToReadFrom)
 {
+	if (aSizeOfDataToReadFrom > DEFAULT_BUFLEN - myReadWriteIndex)
+	{
+		aSizeOfDataToReadFrom = DEFAULT_BUFLEN - myReadWriteIndex;
+	}
+
 	memcpy_s(myBuffer + myReadWriteIndex, DEFAULT_BUFLEN - myReadWriteIndex, &aDataToReadFrom, aSizeOfDataToReadFrom);
 	myReadWriteIndex += aSizeOfDataToReadFrom;
 }

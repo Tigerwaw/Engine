@@ -8,7 +8,7 @@ struct sockaddr_in;
 class Communicator
 {
 public:
-	void Init(bool aIsBinding, bool aIsBlocking);
+	void Init(bool aIsBinding, bool aIsBlocking, const char* aIP);
 	void Destroy();
 	bool SendData(const NetBuffer& inData, const sockaddr_in& aRecipient) const;
 	int ReceiveData(NetBuffer& outData, sockaddr_in& outSender) const;

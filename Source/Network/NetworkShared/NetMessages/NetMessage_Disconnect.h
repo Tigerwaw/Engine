@@ -1,5 +1,5 @@
 #pragma once
-#include "../NetMessage.h"
+#include "NetworkEngine/NetMessage.h"
 #include <string>
 
 class NetMessage_Disconnect : public NetMessage

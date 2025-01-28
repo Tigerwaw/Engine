@@ -1,26 +1,21 @@
-#include "Client.h"
+#include "ChatClient.h"
 #include <iostream>
 #include <WinSock2.h>
 
-#include "NetMessages/NetMessage_Text.h"
-#include "NetMessages/NetMessage_Connect.h"
-#include "NetMessages/NetMessage_Disconnect.h"
-#include "NetMessages/NetMessage_RequestHandshake.h"
-#include "NetMessages/NetMessage_AcceptHandshake.h"
+#include "NetworkEngine/NetMessage.h"
+#include "NetworkShared/NetMessages/NetMessage_Text.h"
+#include "NetworkShared/NetMessages/NetMessage_Connect.h"
+#include "NetworkShared/NetMessages/NetMessage_Disconnect.h"
+#include "NetworkShared/NetMessages/NetMessage_RequestHandshake.h"
+#include "NetworkShared/NetMessages/NetMessage_AcceptHandshake.h"
 
-Client::Client()
+ChatClient::ChatClient()
 {
-    myComm.Init(false, false);
-    myReceiveThread = std::thread(&Client::Receive, this);
+    StartReceive(this);
+    printf("\nWaiting for server...");
 }
 
-Client::~Client()
-{
-    myReceiveThread.join();
-    myComm.Destroy();
-}
-
-void Client::SendInput(std::string aMessage)
+void ChatClient::SendInput(std::string aMessage)
 {
     if (!myHasEstablishedConnection)
     {
@@ -40,29 +35,8 @@ void Client::SendInput(std::string aMessage)
     }
 }
 
-void Client::Receive()
-{
-    if (!myHasEstablishedHandshake)
-    {
-        SendHandshakeRequest();
-    }
 
-    sockaddr_in otherAddress = {};
-    NetBuffer receiveBuffer;
-    if (int bytesReceived = myComm.ReceiveData(receiveBuffer, otherAddress); bytesReceived > 0)
-    {
-        NetMessage* receivedMessage = ReceiveMessage(receiveBuffer);
-
-        if (receivedMessage)
-        {
-            receivedMessage->Deserialize(receiveBuffer);
-            HandleMessage(receivedMessage);
-            delete(receivedMessage);
-        }
-    }
-}
-
-void Client::SendHandshakeRequest() const
+void ChatClient::SendHandshakeRequest() const
 {
     NetMessage_RequestHandshake msg;
     NetBuffer sendBuffer;
@@ -70,7 +44,7 @@ void Client::SendHandshakeRequest() const
     myComm.SendData(sendBuffer, myComm.GetAddress());
 }
 
-void Client::SendTextMessage(const std::string& aMessage) const
+void ChatClient::SendTextMessage(const std::string& aMessage) const
 {
     NetMessage_Text textMsg;
     textMsg.SetData(aMessage);
@@ -79,7 +53,7 @@ void Client::SendTextMessage(const std::string& aMessage) const
     myComm.SendData(sendBuffer, myComm.GetAddress());
 }
 
-void Client::SendConnectMessage(const std::string& aUsername) const
+void ChatClient::SendConnectMessage(const std::string& aUsername) const
 {
     NetMessage_Connect connectMsg;
     connectMsg.SetData(aUsername);
@@ -88,7 +62,7 @@ void Client::SendConnectMessage(const std::string& aUsername) const
     myComm.SendData(sendBuffer, myComm.GetAddress());
 }
 
-void Client::SendDisconnectMessage() const
+void ChatClient::SendDisconnectMessage() const
 {
     NetMessage_Disconnect disconnectMsg;
     NetBuffer sendBuffer;
@@ -96,7 +70,7 @@ void Client::SendDisconnectMessage() const
     myComm.SendData(sendBuffer, myComm.GetAddress());
 }
 
-NetMessage* Client::ReceiveMessage(const NetBuffer& aBuffer) const
+NetMessage* ChatClient::ReceiveMessage(const NetBuffer& aBuffer) const
 {
     NetMessageType receivedMessageType = static_cast<NetMessageType>(aBuffer.GetBuffer()[0]);
 
@@ -128,7 +102,7 @@ NetMessage* Client::ReceiveMessage(const NetBuffer& aBuffer) const
     }
 }
 
-void Client::HandleMessage(NetMessage* aMessage)
+void ChatClient::HandleMessage(NetMessage* aMessage)
 {
     NetMessageType type = aMessage->GetType();
     switch (type)
@@ -148,7 +122,7 @@ void Client::HandleMessage(NetMessage* aMessage)
     {
         if (!myHasEstablishedHandshake)
         {
-            printf("Enter your username: ");
+            printf("\nEnter your username: ");
             myHasEstablishedHandshake = true;
         }
         break;
@@ -158,22 +132,17 @@ void Client::HandleMessage(NetMessage* aMessage)
     }
 }
 
-void Client::HandleMessage_Connect(NetMessage_Connect& aMessage)
+void ChatClient::HandleMessage_Connect(NetMessage_Connect& aMessage)
 {
-    printf("[%s] has joined the chat!\n", aMessage.GetData().data());
+    printf("\n[%s] has joined the chat!", aMessage.GetData().data());
 }
 
-void Client::HandleMessage_Disconnect(NetMessage_Disconnect& aMessage)
+void ChatClient::HandleMessage_Disconnect(NetMessage_Disconnect& aMessage)
 {
-    printf("[%s] has left the chat.\n", aMessage.GetData().data());
+    printf("\n[%s] has left the chat.", aMessage.GetData().data());
 }
 
-void Client::HandleMessage_Text(NetMessage_Text& aMessage)
+void ChatClient::HandleMessage_Text(NetMessage_Text& aMessage)
 {
-    printf("%s\n", aMessage.GetData().data());
-}
-
-void Client::HandleMessage_HandshakeAccept()
-{
-    myHasEstablishedHandshake = true;
+    printf("\n%s", aMessage.GetData().data());
 }

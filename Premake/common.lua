@@ -18,7 +18,8 @@ dirs["logger"] 	= os.realpath(dirs.utilities .. "Logger/")
 dirs["projectcreator"] 	= os.realpath(dirs.utilities .. "ProjectCreator/")
 
 dirs["application"]			= os.realpath(dirs.source .. "Application/")
-dirs["network"]			= os.realpath(dirs.source .. "Network/NetworkShared")
+dirs["network"]			= os.realpath(dirs.source .. "Network/")
+dirs["networkengine"]			= os.realpath(dirs.network .. "NetworkEngine/")
 
 dirs["shaders"]	= {}
 dirs.shaders["absolute"] = os.realpath(dirs.root .. "Assets/EngineAssets/Shaders/")

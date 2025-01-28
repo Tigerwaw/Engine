@@ -1,14 +1,6 @@
 #pragma once
 #include "NetBuffer.h"
-
-enum class NetMessageType
-{
-	Connect,
-	Disconnect,
-	Text,
-	HandshakeRequest,
-	HandshakeAccept
-};
+#include "NetMessageType.h"
 
 class NetMessage
 {

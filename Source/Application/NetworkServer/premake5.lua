@@ -21,7 +21,8 @@ project "NetworkServer"
     "AssetManager",
     "Imgui",
     "Logger",
-    "NetworkShared"
+    "NetworkShared",
+    "NetworkEngine"
   }
 
   debugdir "%{dirs.bin}/%{prj.name}"
@@ -47,7 +48,8 @@ project "NetworkServer"
     dirs.assetmanager,
     dirs.utilities,
     dirs.imgui,
-    dirs.network
+    dirs.network,
+	dirs.networkengine
   }
 
   libdirs { dirs.lib .. "%{cfg.buildcfg}/**" }
@@ -58,6 +60,7 @@ project "NetworkServer"
     "Imgui_%{cfg.buildcfg}", 
     "Logger_%{cfg.buildcfg}",
     "NetworkShared_%{cfg.buildcfg}",
+    "NetworkEngine_%{cfg.buildcfg}",
     "TGAFbx",
     "d3d11",
     "dxguid",

@@ -24,25 +24,16 @@ struct NetInfo
 };
 
 class NetMessage;
-class NetMessage_Connect;
-class NetMessage_Disconnect;
-class NetMessage_Text;
 
-class Server
+class ServerBase
 {
 public:
-    Server();
-    ~Server();
+    ServerBase();
+    virtual ~ServerBase();
 protected:
     void Receive();
-    NetMessage* ReceiveMessage(const NetBuffer& aBuffer) const;
-    void HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress, const int aBytesReceived);
-
-    void HandleMessage_Connect(NetMessage_Connect& aMessage, const sockaddr_in& aAddress);
-    void HandleMessage_Disconnect(NetMessage_Disconnect& aMessage, const sockaddr_in& aAddress);
-    void HandleMessage_Text(NetMessage_Text& aMessage, const sockaddr_in& aAddress, const int aBytesReceived);
-
-    void HandleMessage_HandshakeRequest(const sockaddr_in& aAddress);
+    virtual NetMessage* ReceiveMessage(const NetBuffer& aBuffer) const = 0;
+    virtual void HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress, const int aBytesReceived) = 0;
 
     void SendToAllClients(NetBuffer& aBuffer) const;
     bool DoesClientExist(const sockaddr_in& aAddress) const;
@@ -50,6 +41,8 @@ protected:
 
     Communicator myComm;
     std::vector<NetInfo> myClients;
+
     std::thread myReceiveThread;
+    bool myShouldReceive = true;
 };
 
