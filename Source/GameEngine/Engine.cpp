@@ -68,6 +68,11 @@ void Engine::LoadSettings(const std::string& aSettingsFilepath)
         myWindowSize = { data["windowSize"]["width"].get<float>(), data["windowSize"]["height"].get<float>() };
     }
 
+    if (data.contains("windowPos"))
+    {
+        myWindowPos = { data["windowPos"]["top"].get<float>(), data["windowPos"]["left"].get<float>() };
+    }
+
     if (data.contains("fullscreen"))
     {
         myIsFullscreen = data["fullscreen"].get<bool>();
@@ -86,6 +91,27 @@ void Engine::LoadSettings(const std::string& aSettingsFilepath)
     if (data.contains("autoregisterassets"))
     {
         myAutoRegisterAssets = data["autoregisterassets"].get<bool>();
+    }
+
+    LPWSTR* szArgList;
+    int argCount;
+    szArgList = CommandLineToArgvW(GetCommandLine(), &argCount);
+
+    for (int i = 0; i < argCount; i++)
+    {
+        std::wstring arg = std::wstring(szArgList[i]);
+
+        if (arg.find(L"WINPOSX") != std::string::npos)
+        {
+            arg.erase(0, 8);
+            myWindowPos.x = std::stof(arg, nullptr);
+        }
+        if (arg.find(L"WINPOSY") != std::string::npos)
+        {
+            arg.erase(0, 8);
+            myWindowPos.y = std::stof(arg, nullptr);
+        }
+            
     }
 }
 
@@ -107,6 +133,11 @@ void Engine::SetResolution(float aWidth, float aHeight)
 void Engine::SetWindowSize(float aWidth, float aHeight)
 {
     myWindowSize = { aWidth, aHeight };
+}
+
+void Engine::SetWindowPos(float aTop, float aLeft)
+{
+    myWindowPos = { aTop, aLeft };
 }
 
 void Engine::ToggleFullscreen(bool aIsFullscreen)

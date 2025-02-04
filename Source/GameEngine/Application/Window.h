@@ -54,7 +54,9 @@ class Window
 public:
     bool InitializeWindow(std::string aWindowTitle = "Application", 
         CU::Vector2f aWindowSize = CU::Vector2f(1920.0f, 1080.0f), 
-        bool aIsFullscreen = true, bool aIsBorderless = true, bool aAllowDropFiles = false);
+        CU::Vector2f aWindowPos = CU::Vector2f(0, 0),
+        bool aIsFullscreen = true, bool aIsBorderless = true, 
+        bool aAllowDropFiles = false);
 
     HWND GetWindowHandle() const { return myMainWindowHandle; }
 

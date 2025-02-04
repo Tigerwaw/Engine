@@ -99,10 +99,11 @@ bool Application::InitializeEngine()
 	Engine& engine = Engine::GetInstance();
 	std::string title = engine.GetApplicationTitle();
 	CU::Vector2f windowSize = engine.GetWindowSize();
+	CU::Vector2f windowPos = engine.GetWindowPos();
 	bool fullscreen = engine.GetIsFullscreen();
 	bool borderless = engine.GetIsBorderless();
 	bool allowDropFiles = engine.GetAllowDropFiles();
-	myWindow->InitializeWindow(title, windowSize, fullscreen, borderless, allowDropFiles);
+	myWindow->InitializeWindow(title, windowSize, windowPos, fullscreen, borderless, allowDropFiles);
 
 	engine.SetApplicationInstance(this);
 

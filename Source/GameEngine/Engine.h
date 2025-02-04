@@ -42,9 +42,11 @@ public:
 
     void SetResolution(float aWidth, float aHeight);
     void SetWindowSize(float aWidth, float aHeight);
+    void SetWindowPos(float aTop, float aLeft);
     void ToggleFullscreen(bool aIsFullscreen);
     const CU::Vector2f& GetResolution() const { return myResolution; }
     const CU::Vector2f& GetWindowSize() const { return myWindowSize; }
+    const CU::Vector2f& GetWindowPos() const { return myWindowPos; }
     const bool& GetIsFullscreen() const { return myIsFullscreen; }
     const bool& GetIsBorderless() const { return myIsBorderless; }
     const bool& GetAllowDropFiles() const { return myAllowDropFiles; }
@@ -78,6 +80,7 @@ private:
     std::filesystem::path myContentRoot;
     CU::Vector2f myResolution;
     CU::Vector2f myWindowSize;
+    CU::Vector2f myWindowPos;
     bool myIsFullscreen = true;
     bool myIsBorderless = true;
     bool myAllowDropFiles = false;

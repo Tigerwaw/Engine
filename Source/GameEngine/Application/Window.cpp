@@ -3,7 +3,7 @@
 
 LRESULT CALLBACK WinProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam);
 
-bool Window::InitializeWindow(std::string aWindowTitle, CU::Vector2f aWindowSize, bool aIsFullscreen, bool aIsBorderless, bool aAllowDropFiles)
+bool Window::InitializeWindow(std::string aWindowTitle, CU::Vector2f aWindowSize, CU::Vector2f aWindowPos, bool aIsFullscreen, bool aIsBorderless, bool aAllowDropFiles)
 {
     LOG(LogGameEngine, Log, "Initializing window...");
     
@@ -12,9 +12,20 @@ bool Window::InitializeWindow(std::string aWindowTitle, CU::Vector2f aWindowSize
 	LPCWSTR windowTitle = tempString.c_str();
 	constexpr LPCWSTR windowClassName = L"MainWindow";
 
+	float posX = aWindowPos.x;
+	float posY = aWindowPos.y;
+
 	if (aIsFullscreen)
 	{
 		windowSize = { GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };
+
+		posX = static_cast<float>((GetSystemMetrics(SM_CXSCREEN) - windowSize.cx) / 2);
+		if (posX < 0)
+			posX = 0;
+
+		posY = static_cast<float>((GetSystemMetrics(SM_CYSCREEN) - windowSize.cy) / 2);
+		if (posY < 0)
+			posY = 0;
 	}
 
 	// First we create our Window Class
@@ -24,14 +35,6 @@ bool Window::InitializeWindow(std::string aWindowTitle, CU::Vector2f aWindowSize
 	windowClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	windowClass.lpszClassName = windowClassName;
 	RegisterClass(&windowClass);
-
-	LONG posX = (GetSystemMetrics(SM_CXSCREEN) - windowSize.cx) / 2;
-	if (posX < 0)
-		posX = 0;
-
-	LONG posY = (GetSystemMetrics(SM_CYSCREEN) - windowSize.cy) / 2;
-	if (posY < 0)
-		posY = 0;
 
 	long flags;
 
@@ -49,8 +52,8 @@ bool Window::InitializeWindow(std::string aWindowTitle, CU::Vector2f aWindowSize
 		windowClassName,		// Classname
 		windowTitle,			// Window Title
 		flags,					// Flags
-		posX,
-		posY,
+		static_cast<LONG>(posX),
+		static_cast<LONG>(posY),
 		windowSize.cx,
 		windowSize.cy,
 		nullptr, nullptr, nullptr,

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <thread>
+#include <chrono>
 
 #include "Communicator.h"
 
@@ -30,5 +31,8 @@ protected:
 
 	std::thread myReceiveThread;
 	bool myShouldReceive = true;
+
+	std::chrono::system_clock::time_point myLastHandshakeRequestTime;
+	float myTimeBetweenHandshakeRequests = 2.0f;
 };
 

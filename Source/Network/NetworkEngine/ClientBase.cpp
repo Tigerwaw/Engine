@@ -6,6 +6,7 @@
 ClientBase::ClientBase()
 {
     myComm.Init(false, false, "10.250.224.81");
+    myLastHandshakeRequestTime = std::chrono::system_clock::now();
 }
 
 ClientBase::~ClientBase()
@@ -17,6 +18,7 @@ ClientBase::~ClientBase()
 void ClientBase::StartReceive(ClientBase* aClient)
 {
     myReceiveThread = std::thread(&ClientBase::Receive, aClient);
+    SendHandshakeRequest();
 }
 
 void ClientBase::Receive()
@@ -25,7 +27,12 @@ void ClientBase::Receive()
     {
         if (!myHasEstablishedHandshake)
         {
-            SendHandshakeRequest();
+            std::chrono::duration<float> elapsed_seconds = myLastHandshakeRequestTime - std::chrono::system_clock::now();
+            if (elapsed_seconds.count() > myTimeBetweenHandshakeRequests)
+            {
+                myLastHandshakeRequestTime = std::chrono::system_clock::now();
+                SendHandshakeRequest();
+            }
         }
 
         sockaddr_in otherAddress = {};

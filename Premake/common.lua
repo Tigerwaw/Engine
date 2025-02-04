@@ -34,6 +34,7 @@ function default_settings(app_name)
 		assetsDir = path.getrelative(dirs.bin .. "/*/", dirs.root .. "Assets/") .. "/",
 		resolution = { width=1920, height=1080 },
 		windowSize = { width=1920, height=1080 },
+        windowPos = { top=0, left=0 },
 		fullscreen = true,
 		borderless = true,
 		allowdropfiles = false,
