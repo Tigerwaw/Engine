@@ -7,6 +7,7 @@
 
 struct NetInfo
 {
+    int id;
     std::string username;
     sockaddr_in address;
 

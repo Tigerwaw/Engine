@@ -12,10 +12,11 @@ NetMessage::NetMessage(NetMessageType aType)
 
 void NetMessage::Serialize(NetBuffer& aBuffer)
 {
-	aBuffer.WriteData(static_cast<int>(myMessageType));
+	aBuffer.WriteData(myMessageType);
 }
 
-void NetMessage::Deserialize(const NetBuffer& aBuffer)
+void NetMessage::Deserialize(NetBuffer& aBuffer)
 {
+	//aBuffer.ReadData(myMessageType);
 	myMessageType = static_cast<NetMessageType>(aBuffer.GetBuffer()[0]);
 }

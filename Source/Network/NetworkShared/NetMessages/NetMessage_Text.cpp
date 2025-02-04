@@ -11,7 +11,7 @@ void NetMessage_Text::Serialize(NetBuffer& aBuffer)
 	aBuffer.WriteData(*myData.data(), static_cast<int>(myData.size()));
 }
 
-void NetMessage_Text::Deserialize(const NetBuffer& aBuffer)
+void NetMessage_Text::Deserialize(NetBuffer& aBuffer)
 {
 	NetMessage::Deserialize(aBuffer);
 	char buff[DEFAULT_BUFLEN]{ 0 };
@@ -21,6 +21,5 @@ void NetMessage_Text::Deserialize(const NetBuffer& aBuffer)
 
 void NetMessage_Text::GetStringRepresentation(char* outString, int aBufferSize) const
 {
-	outString = const_cast<char*>(myData.data());
-	aBufferSize = static_cast<int>(myData.size());
+	memcpy_s(outString, aBufferSize, myData.data(), myData.size());
 }

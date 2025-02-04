@@ -10,7 +10,7 @@ void NetMessage_AcceptHandshake::Serialize(NetBuffer& aBuffer)
 	NetMessage::Serialize(aBuffer);
 }
 
-void NetMessage_AcceptHandshake::Deserialize(const NetBuffer& aBuffer)
+void NetMessage_AcceptHandshake::Deserialize(NetBuffer& aBuffer)
 {
 	NetMessage::Deserialize(aBuffer);
 }

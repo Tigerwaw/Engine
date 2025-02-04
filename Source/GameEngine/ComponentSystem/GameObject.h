@@ -15,8 +15,11 @@ public:
     void SetStatic(bool aStatic);
     bool GetStatic() const { return myIsStatic; }
 
-    void SetName(std::string aName) { myName = aName; }
-    const std::string GetName() const { return myName; }
+    void SetName(const std::string& aName) { myName = aName; }
+    const std::string& GetName() const { return myName; }
+
+    void SetID(const unsigned aID) { myID = aID; }
+    const unsigned GetID() const { return myID; }
 
     // COMPONENTS
     template <typename T, typename... Args>
@@ -47,6 +50,7 @@ private:
     float myTimeAlive = 0;
 
     std::string myName;
+    unsigned myID;
 };
 
 template<class T, typename... Args>

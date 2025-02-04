@@ -1,4 +1,4 @@
-#include "ChatServer.h"
+#include "GameServer.h"
 #include <iostream>
 
 #include "NetworkEngine/NetMessage.h"
@@ -7,8 +7,9 @@
 #include "NetworkShared/NetMessages/NetMessage_Disconnect.h"
 #include "NetworkShared/NetMessages/NetMessage_RequestHandshake.h"
 #include "NetworkShared/NetMessages/NetMessage_AcceptHandshake.h"
+#include "NetworkShared/NetMessages/NetMessage_CreateCharacter.h"
 
-NetMessage* ChatServer::ReceiveMessage(const NetBuffer& aBuffer) const
+NetMessage* GameServer::ReceiveMessage(const NetBuffer& aBuffer) const
 {
     NetMessageType receivedMessageType = static_cast<NetMessageType>(aBuffer.GetBuffer()[0]);
 
@@ -40,7 +41,7 @@ NetMessage* ChatServer::ReceiveMessage(const NetBuffer& aBuffer) const
     }
 }
 
-void ChatServer::HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress, const int aBytesReceived)
+void GameServer::HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress, const int aBytesReceived)
 {
     NetMessageType type = aMessage->GetType();
     switch (type)
@@ -59,12 +60,15 @@ void ChatServer::HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress
         break;
     case NetMessageType::HandshakeAccept:
         break;
+    case NetMessageType::CreateCharacter:
+        HandleMessage_CreateCharacter(*static_cast<NetMessage_CreateCharacter*>(aMessage), aAddress);
+        break;
     default:
         break;
     }
 }
 
-void ChatServer::HandleMessage_Connect(NetMessage_Connect& aMessage, const sockaddr_in& aAddress)
+void GameServer::HandleMessage_Connect(NetMessage_Connect& aMessage, const sockaddr_in& aAddress)
 {
     if (DoesClientExist(aAddress)) return;
 
@@ -81,7 +85,7 @@ void ChatServer::HandleMessage_Connect(NetMessage_Connect& aMessage, const socka
     SendToAllClients(buffer);
 }
 
-void ChatServer::HandleMessage_Disconnect(NetMessage_Disconnect&, const sockaddr_in& aAddress)
+void GameServer::HandleMessage_Disconnect(NetMessage_Disconnect&, const sockaddr_in& aAddress)
 {
     if (!DoesClientExist(aAddress)) return;
 
@@ -98,7 +102,7 @@ void ChatServer::HandleMessage_Disconnect(NetMessage_Disconnect&, const sockaddr
     SendToAllClients(buffer);
 }
 
-void ChatServer::HandleMessage_Text(NetMessage_Text& aMessage, const sockaddr_in& aAddress, const int aBytesReceived)
+void GameServer::HandleMessage_Text(NetMessage_Text& aMessage, const sockaddr_in& aAddress, const int aBytesReceived)
 {
     if (!DoesClientExist(aAddress)) return;
 
@@ -114,7 +118,13 @@ void ChatServer::HandleMessage_Text(NetMessage_Text& aMessage, const sockaddr_in
     SendToAllClients(buffer);
 }
 
-void ChatServer::HandleMessage_HandshakeRequest(const sockaddr_in& aAddress)
+void GameServer::HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMessage, const sockaddr_in& aAddress)
+{
+    aMessage;
+    aAddress;
+}
+
+void GameServer::HandleMessage_HandshakeRequest(const sockaddr_in& aAddress)
 {
     if (DoesClientExist(aAddress)) return;
 

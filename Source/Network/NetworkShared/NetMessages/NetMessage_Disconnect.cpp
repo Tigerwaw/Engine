@@ -11,7 +11,7 @@ void NetMessage_Disconnect::Serialize(NetBuffer& aBuffer)
 	aBuffer.WriteData(*myUsername.data(), static_cast<int>(myUsername.size()));
 }
 
-void NetMessage_Disconnect::Deserialize(const NetBuffer& aBuffer)
+void NetMessage_Disconnect::Deserialize(NetBuffer& aBuffer)
 {
 	NetMessage::Deserialize(aBuffer);
 	char buff[DEFAULT_BUFLEN]{ 0 };
@@ -21,6 +21,5 @@ void NetMessage_Disconnect::Deserialize(const NetBuffer& aBuffer)
 
 void NetMessage_Disconnect::GetStringRepresentation(char* outString, int aBufferSize) const
 {
-	outString = const_cast<char*>(myUsername.data());
-	aBufferSize = static_cast<int>(myUsername.size());
+	memcpy_s(outString, aBufferSize, myUsername.data(), myUsername.size());
 }

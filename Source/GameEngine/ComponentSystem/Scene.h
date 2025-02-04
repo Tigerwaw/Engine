@@ -39,6 +39,8 @@ private:
 	bool myIsActive = false;
 	CU::AABB3D<float> myBoundingBox;
 
+	unsigned myCurrentGameObjectID = 0;
+
 	// TEMP (?)
 	std::shared_ptr<GameObject> myMainCamera;
 	std::shared_ptr<GameObject> myAmbientLight;

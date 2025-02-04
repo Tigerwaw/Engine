@@ -5,10 +5,12 @@ class NetMessage_Connect;
 class NetMessage_Disconnect;
 class NetMessage_Text;
 
-class ChatClient : public ClientBase
+class GameObject;
+
+class GameClient : public ClientBase
 {
 public:
-    ChatClient();
+    GameClient();
     void SendInput(std::string aMessage);
 
 protected:
@@ -25,4 +27,7 @@ protected:
     void HandleMessage_Disconnect(NetMessage_Disconnect& aMessage);
     void HandleMessage_Text(NetMessage_Text& aMessage);
 
+private:
+    std::shared_ptr<GameObject> myPlayer;
+    std::vector<std::shared_ptr<GameObject>> myRemotePlayers;
 };

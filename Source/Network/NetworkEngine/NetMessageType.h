@@ -2,9 +2,11 @@
 
 enum class NetMessageType
 {
+	None,
 	HandshakeRequest,
 	HandshakeAccept,
 	Connect,
 	Disconnect,
-	Text
+	Text,
+	CreateCharacter
 };

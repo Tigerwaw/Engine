@@ -10,7 +10,7 @@ public:
 	const std::string& GetData() { return myData; }
 
 	void Serialize(NetBuffer& aBuffer) override;
-	void Deserialize(const NetBuffer& aBuffer) override;
+	void Deserialize(NetBuffer& aBuffer) override;
 
 	void GetStringRepresentation(char* outString, int aBufferSize) const override;
 

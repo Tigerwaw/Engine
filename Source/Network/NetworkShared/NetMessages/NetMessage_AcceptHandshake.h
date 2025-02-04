@@ -7,7 +7,7 @@ class NetMessage_AcceptHandshake : public NetMessage
 public:
 	NetMessage_AcceptHandshake();
 	void Serialize(NetBuffer& aBuffer) override;
-	void Deserialize(const NetBuffer& aBuffer) override;
+	void Deserialize(NetBuffer& aBuffer) override;
 
 	void GetStringRepresentation(char* outString, int aBufferSize) const override;
 };

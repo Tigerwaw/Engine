@@ -1,4 +1,4 @@
-#include "ChatClient.h"
+#include "GameClient.h"
 #include <iostream>
 #include <WinSock2.h>
 
@@ -9,13 +9,13 @@
 #include "NetworkShared/NetMessages/NetMessage_RequestHandshake.h"
 #include "NetworkShared/NetMessages/NetMessage_AcceptHandshake.h"
 
-ChatClient::ChatClient()
+GameClient::GameClient()
 {
     StartReceive(this);
     printf("\nWaiting for server...");
 }
 
-void ChatClient::SendInput(std::string aMessage)
+void GameClient::SendInput(std::string aMessage)
 {
     if (!myHasEstablishedConnection)
     {
@@ -36,7 +36,7 @@ void ChatClient::SendInput(std::string aMessage)
 }
 
 
-void ChatClient::SendHandshakeRequest() const
+void GameClient::SendHandshakeRequest() const
 {
     NetMessage_RequestHandshake msg;
     NetBuffer sendBuffer;
@@ -44,7 +44,7 @@ void ChatClient::SendHandshakeRequest() const
     myComm.SendData(sendBuffer, myComm.GetAddress());
 }
 
-void ChatClient::SendTextMessage(const std::string& aMessage) const
+void GameClient::SendTextMessage(const std::string& aMessage) const
 {
     NetMessage_Text textMsg;
     textMsg.SetData(aMessage);
@@ -53,7 +53,7 @@ void ChatClient::SendTextMessage(const std::string& aMessage) const
     myComm.SendData(sendBuffer, myComm.GetAddress());
 }
 
-void ChatClient::SendConnectMessage(const std::string& aUsername) const
+void GameClient::SendConnectMessage(const std::string& aUsername) const
 {
     NetMessage_Connect connectMsg;
     connectMsg.SetData(aUsername);
@@ -62,7 +62,7 @@ void ChatClient::SendConnectMessage(const std::string& aUsername) const
     myComm.SendData(sendBuffer, myComm.GetAddress());
 }
 
-void ChatClient::SendDisconnectMessage() const
+void GameClient::SendDisconnectMessage() const
 {
     NetMessage_Disconnect disconnectMsg;
     NetBuffer sendBuffer;
@@ -70,7 +70,7 @@ void ChatClient::SendDisconnectMessage() const
     myComm.SendData(sendBuffer, myComm.GetAddress());
 }
 
-NetMessage* ChatClient::ReceiveMessage(const NetBuffer& aBuffer) const
+NetMessage* GameClient::ReceiveMessage(const NetBuffer& aBuffer) const
 {
     NetMessageType receivedMessageType = static_cast<NetMessageType>(aBuffer.GetBuffer()[0]);
 
@@ -102,7 +102,7 @@ NetMessage* ChatClient::ReceiveMessage(const NetBuffer& aBuffer) const
     }
 }
 
-void ChatClient::HandleMessage(NetMessage* aMessage)
+void GameClient::HandleMessage(NetMessage* aMessage)
 {
     NetMessageType type = aMessage->GetType();
     switch (type)
@@ -132,17 +132,17 @@ void ChatClient::HandleMessage(NetMessage* aMessage)
     }
 }
 
-void ChatClient::HandleMessage_Connect(NetMessage_Connect& aMessage)
+void GameClient::HandleMessage_Connect(NetMessage_Connect& aMessage)
 {
     printf("\n[%s] has joined the chat!", aMessage.GetData().data());
 }
 
-void ChatClient::HandleMessage_Disconnect(NetMessage_Disconnect& aMessage)
+void GameClient::HandleMessage_Disconnect(NetMessage_Disconnect& aMessage)
 {
     printf("\n[%s] has left the chat.", aMessage.GetData().data());
 }
 
-void ChatClient::HandleMessage_Text(NetMessage_Text& aMessage)
+void GameClient::HandleMessage_Text(NetMessage_Text& aMessage)
 {
     printf("\n%s", aMessage.GetData().data());
 }

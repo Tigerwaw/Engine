@@ -2,7 +2,7 @@
 #include "GameEngine/Application/Application.h"
 #include "GameEngine/Application/EntryPoint.h"
 
-#include "ChatServer.h"
+#include "GameServer.h"
 
 class NetworkServer : public Application
 {
@@ -14,5 +14,5 @@ public:
     void UpdateApplication() override;
 
 private:
-    ChatServer myServer;
+    GameServer myServer;
 };

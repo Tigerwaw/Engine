@@ -76,6 +76,8 @@ void Scene::Instantiate(std::shared_ptr<GameObject> aGameObject)
 
 	UpdateBoundingBox(aGameObject);
 
+	aGameObject->SetID(myCurrentGameObjectID);
+	myCurrentGameObjectID++;
 	myGameObjects.emplace_back(aGameObject);
 
 	// Temp

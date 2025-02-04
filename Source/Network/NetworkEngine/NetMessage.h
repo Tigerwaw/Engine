@@ -12,7 +12,7 @@ public:
 	NetMessageType GetType() const { return myMessageType; }
 
 	virtual void Serialize(NetBuffer& aBuffer);
-	virtual void Deserialize(const NetBuffer& aBuffer);
+	virtual void Deserialize(NetBuffer& aBuffer);
 
 	virtual void GetStringRepresentation(char* outString, int aBufferSize) const = 0;
 

@@ -11,7 +11,7 @@ public:
 	int GetSize() const { return myReadWriteIndex; }
 
 	template<typename T>
-	void ReadData(T& aDataToWriteTo) const;
+	void ReadData(T& aDataToWriteTo);
 
 	template<typename T>
 	void WriteData(const T& aDataToReadFrom);
@@ -25,17 +25,20 @@ private:
 };
 
 template<typename T>
-inline void NetBuffer::ReadData(T& aDataToWriteTo) const
+inline void NetBuffer::ReadData(T& aDataToWriteTo)
 {
+	//constexpr int numBytes = static_cast<int>(sizeof(T));
+	//memcpy_s(&aDataToWriteTo, DEFAULT_BUFLEN, myBuffer + myReadWriteIndex, DEFAULT_BUFLEN - myReadWriteIndex);
 	memcpy_s(&aDataToWriteTo, DEFAULT_BUFLEN - 4, myBuffer + 4, DEFAULT_BUFLEN - 4);
+	//myReadWriteIndex += numBytes;
 }
 
 template<typename T>
 inline void NetBuffer::WriteData(const T& aDataToReadFrom)
 {
-	static constexpr size_t numBytes = sizeof(T);
+	constexpr int numBytes = static_cast<int>(sizeof(T));
 	memcpy_s(myBuffer + myReadWriteIndex, DEFAULT_BUFLEN - myReadWriteIndex, &aDataToReadFrom, numBytes);
-	myReadWriteIndex += static_cast<int>(numBytes);
+	myReadWriteIndex += numBytes;
 }
 
 template<typename T>
