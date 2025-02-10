@@ -2,8 +2,8 @@
 
 set clientDir=Bin\NetworkClient\
 set serverDir=Bin\NetworkServer\
-set clientExe=NetworkClient.exe
-set serverExe=NetworkServer.exe
+set clientExe=NetworkClient_Release.exe
+set serverExe=NetworkServer_Release.exe
 
 set client1cmd=WINPOSX=250 WINPOSY=0
 set client2cmd=WINPOSX=750 WINPOSY=0

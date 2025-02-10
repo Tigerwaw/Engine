@@ -110,11 +110,17 @@ void GameServer::HandleMessage_Connect(NetMessage_Connect& aMessage, const socka
         SendToAllClients(buffer);
     }
 
+    CU::Vector3f startingPos;
+    startingPos.x = static_cast<float>((std::rand() % 1000) - 500);
+    startingPos.y = 0.0f;
+    startingPos.z = static_cast<float>((std::rand() % 1000) - 500);
+
     // Create character for newly joined user.
     {
         NetMessage_CreateCharacter createCharacterMsg;
         createCharacterMsg.SetNetworkID(newInfo.id);
         createCharacterMsg.SetIsClient(true);
+        createCharacterMsg.SetStartingPosition(startingPos);
         NetBuffer buffer;
         createCharacterMsg.Serialize(buffer);
         myComm.SendData(buffer, myClients[index].address);
@@ -125,6 +131,7 @@ void GameServer::HandleMessage_Connect(NetMessage_Connect& aMessage, const socka
         NetMessage_CreateCharacter createCharacterMsg;
         createCharacterMsg.SetNetworkID(newInfo.id);
         createCharacterMsg.SetIsClient(false);
+        createCharacterMsg.SetStartingPosition(startingPos);
         NetBuffer buffer;
         createCharacterMsg.Serialize(buffer);
         SendToAllClientsExcluding(buffer, index);

@@ -25,7 +25,7 @@
 
 GameClient::GameClient()
 {
-    StartReceive(this, "10.250.224.90");
+    StartReceive("10.250.224.90");
     printf("\nWaiting for server...");
 }
 
@@ -51,7 +51,13 @@ void GameClient::SendInput(std::string aMessage)
 
 void GameClient::Update()
 {
-    if (!myHasEstablishedConnection) return;
+    ClientBase::Update();
+    if (!myHasEstablishedConnection)
+    {
+        SendConnectMessage(std::to_string(rand() % 10000));
+        myHasEstablishedConnection = true;
+        return;
+    }
 
     //float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
     //if (dt > (1.0f / 60.0f))
@@ -191,6 +197,12 @@ void GameClient::HandleMessage(NetMessage* aMessage)
 void GameClient::HandleMessage_Connect(NetMessage_Connect& aMessage)
 {
     printf("\n[%s] has joined the game!", aMessage.GetUsername().data());
+
+    if (!myPlayer) return;
+    if (auto transform = myPlayer->GetComponent<Transform>())
+    {
+        SendPositionMessage(transform->GetTranslation());
+    }
 }
 
 void GameClient::HandleMessage_Disconnect(NetMessage_Disconnect& aMessage)
@@ -207,13 +219,32 @@ void GameClient::HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMess
 {
     std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
     go->SetNetworkID(aMessage.GetNetworkID());
-    go->AddComponent<Transform>();
-    auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorGreen.json")->material);
+    go->AddComponent<Transform>(aMessage.GetPosition());
+
+    std::shared_ptr<Material> mat;
+
+    switch (aMessage.GetNetworkID())
+    {
+    case 1:
+        mat = AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorBlue.json")->material;
+        break;
+    case 2:
+        mat = AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorRed.json")->material;
+        break;
+    case 3:
+        mat = AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorYellow.json")->material;
+        break;
+    default:
+        mat = AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorGreen.json")->material;
+        break;
+    }
+
+    auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, mat);
     model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
 
     if (aMessage.GetIsClient())
     {
-        go->AddComponent<Controller>(200.0f, 1.0f);
+        go->AddComponent<Controller>(500.0f, 1.0f);
         myPlayer = go;
     }
     else
@@ -226,10 +257,8 @@ void GameClient::HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMess
 
 void GameClient::HandleMessage_Position(NetMessage_Position& aMessage)
 {
-    unsigned id = aMessage.GetNetworkID();
-    CU::Vector3f pos = aMessage.GetPosition();
-    if (auto go = Engine::GetInstance().GetSceneHandler().FindGameObjectByNetworkID(id))
+    if (auto go = Engine::GetInstance().GetSceneHandler().FindGameObjectByNetworkID(aMessage.GetNetworkID()))
     {
-        go->GetComponent<Transform>()->SetTranslation(pos);
+        go->GetComponent<Transform>()->SetTranslation(aMessage.GetPosition());
     }
 }

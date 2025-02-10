@@ -15,8 +15,7 @@ public:
 
 	virtual void Update();
 protected:
-	// Pass in 'this' from subclass.
-	virtual void StartReceive(ClientBase* aClient, const char* aIP);
+	void StartReceive(const char* aIP);
 	void Receive();
 	virtual void SendHandshakeRequest() const = 0;
 	virtual void HandleMessage_HandshakeAccept();
@@ -31,8 +30,7 @@ protected:
 	bool myHasEstablishedHandshake = false;
 	bool myHasEstablishedConnection = false;
 
-	std::thread myReceiveThread;
-	bool myShouldReceive = true;
+	bool myShouldReceive = false;
 
 	std::chrono::system_clock::time_point myLastHandshakeRequestTime;
 	float myTimeBetweenHandshakeRequests = 2.0f;

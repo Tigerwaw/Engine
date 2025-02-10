@@ -27,8 +27,4 @@ void NetMessage_Position::GetStringRepresentation(char* outString, int aBufferSi
 {
 	outString;
 	aBufferSize;
-	//char buff[sizeof(CU::Vector3f)]{0};
-	//buff[0] = myPosition.x;
-	//buff[sizeof(float)] = myPosition.y;
-	//memcpy_s(outString, aBufferSize, buff, sizeof(CU::Vector3f));
 }
