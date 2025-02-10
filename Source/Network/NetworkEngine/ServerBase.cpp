@@ -15,6 +15,10 @@ ServerBase::~ServerBase()
     myComm.Destroy();
 }
 
+void ServerBase::Update()
+{
+}
+
 void ServerBase::Receive()
 {
     while (myShouldReceive)
@@ -29,7 +33,7 @@ void ServerBase::Receive()
             {
                 receivedMessage->Deserialize(receiveBuffer);
                 HandleMessage(receivedMessage, otherAddress, bytesReceived);
-                delete(receivedMessage);
+                delete receivedMessage;
             }
         }
     }
@@ -39,6 +43,16 @@ void ServerBase::SendToAllClients(NetBuffer& aBuffer) const
 {
     for (auto& client : myClients)
     {
+        myComm.SendData(aBuffer, client.address);
+    }
+}
+
+void ServerBase::SendToAllClientsExcluding(NetBuffer& aBuffer, const int aClientIndex) const
+{
+    for (auto& client : myClients)
+    {
+        if (GetClientIndex(client.address) == aClientIndex) continue;
+
         myComm.SendData(aBuffer, client.address);
     }
 }

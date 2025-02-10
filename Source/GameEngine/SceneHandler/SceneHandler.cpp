@@ -83,9 +83,19 @@ void SceneHandler::ChangeActiveScene(unsigned aSceneIndex)
     myActiveScene = myLoadedScenes[aSceneIndex];
 }
 
-std::shared_ptr<GameObject> SceneHandler::FindGameObjectByName(std::string aName)
+std::shared_ptr<GameObject> SceneHandler::FindGameObjectByName(const std::string& aName)
 {
     return myActiveScene->FindGameObjectByName(aName);
+}
+
+std::shared_ptr<GameObject> SceneHandler::FindGameObjectByID(const unsigned aID)
+{
+    return myActiveScene->FindGameObjectByID(aID);
+}
+
+std::shared_ptr<GameObject> SceneHandler::FindGameObjectByNetworkID(const unsigned aNetworkID)
+{
+    return myActiveScene->FindGameObjectByNetworkID(aNetworkID);
 }
 
 void SceneHandler::Instantiate(std::shared_ptr<GameObject> aGameObject)

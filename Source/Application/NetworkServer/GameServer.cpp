@@ -1,3 +1,4 @@
+#include <Enginepch.h>
 #include "GameServer.h"
 #include <iostream>
 
@@ -8,6 +9,19 @@
 #include "NetworkShared/NetMessages/NetMessage_RequestHandshake.h"
 #include "NetworkShared/NetMessages/NetMessage_AcceptHandshake.h"
 #include "NetworkShared/NetMessages/NetMessage_CreateCharacter.h"
+#include "NetworkShared/NetMessages/NetMessage_Position.h"
+
+#include <GameEngine/Engine.h>
+#include <Time/Timer.h>
+
+void GameServer::Update()
+{
+    //float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
+    //if (dt > (1.0f / 60.0f))
+    //{
+    //    // Send queued message.
+    //}
+}
 
 NetMessage* GameServer::ReceiveMessage(const NetBuffer& aBuffer) const
 {
@@ -35,6 +49,11 @@ NetMessage* GameServer::ReceiveMessage(const NetBuffer& aBuffer) const
         return new NetMessage_RequestHandshake();
         break;
     }
+    case NetMessageType::Position:
+    {
+        return new NetMessage_Position();
+        break;
+    }
     default:
         return nullptr;
         break;
@@ -60,8 +79,8 @@ void GameServer::HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress
         break;
     case NetMessageType::HandshakeAccept:
         break;
-    case NetMessageType::CreateCharacter:
-        HandleMessage_CreateCharacter(*static_cast<NetMessage_CreateCharacter*>(aMessage), aAddress);
+    case NetMessageType::Position:
+        HandleMessage_Position(*static_cast<NetMessage_Position*>(aMessage), aAddress);
         break;
     default:
         break;
@@ -74,15 +93,55 @@ void GameServer::HandleMessage_Connect(NetMessage_Connect& aMessage, const socka
 
     NetInfo& newInfo = myClients.emplace_back();
     newInfo.address = aAddress;
-    newInfo.username = aMessage.GetData();
+    newInfo.username = aMessage.GetUsername();
+    newInfo.id = myCurrentNetworkID;
+    myCurrentNetworkID++;
+    int index = GetClientIndex(newInfo.address);
 
     printf("\n[User %s connected]", newInfo.username.data());
 
-    NetMessage_Connect connectMsg;
-    connectMsg.SetData(newInfo.username);
-    NetBuffer buffer;
-    connectMsg.Serialize(buffer);
-    SendToAllClients(buffer);
+    // Send connect message.
+    {
+        NetMessage_Connect connectMsg;
+        connectMsg.SetNetworkID(newInfo.id);
+        connectMsg.SetUsername(newInfo.username);
+        NetBuffer buffer;
+        connectMsg.Serialize(buffer);
+        SendToAllClients(buffer);
+    }
+
+    // Create character for newly joined user.
+    {
+        NetMessage_CreateCharacter createCharacterMsg;
+        createCharacterMsg.SetNetworkID(newInfo.id);
+        createCharacterMsg.SetIsClient(true);
+        NetBuffer buffer;
+        createCharacterMsg.Serialize(buffer);
+        myComm.SendData(buffer, myClients[index].address);
+    }
+
+    // Create character for all other clients.
+    {
+        NetMessage_CreateCharacter createCharacterMsg;
+        createCharacterMsg.SetNetworkID(newInfo.id);
+        createCharacterMsg.SetIsClient(false);
+        NetBuffer buffer;
+        createCharacterMsg.Serialize(buffer);
+        SendToAllClientsExcluding(buffer, index);
+    }
+
+    // Create already existing client characters for newly joined user.
+    for (auto& client : myClients)
+    {
+        if (client.id == newInfo.id) continue;
+
+        NetMessage_CreateCharacter createCharacterMsg;
+        createCharacterMsg.SetNetworkID(client.id);
+        createCharacterMsg.SetIsClient(false);
+        NetBuffer buffer;
+        createCharacterMsg.Serialize(buffer);
+        myComm.SendData(buffer, myClients[index].address);
+    }
 }
 
 void GameServer::HandleMessage_Disconnect(NetMessage_Disconnect&, const sockaddr_in& aAddress)
@@ -118,10 +177,20 @@ void GameServer::HandleMessage_Text(NetMessage_Text& aMessage, const sockaddr_in
     SendToAllClients(buffer);
 }
 
-void GameServer::HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMessage, const sockaddr_in& aAddress)
+void GameServer::HandleMessage_Position(NetMessage_Position& aMessage, const sockaddr_in& aAddress)
 {
-    aMessage;
-    aAddress;
+    if (!DoesClientExist(aAddress)) return;
+
+    NetMessage_Position newMsg;
+    unsigned clientID = myClients[GetClientIndex(aAddress)].id;
+    newMsg.SetNetworkID(clientID);
+    CU::Vector3f pos = aMessage.GetPosition();
+    newMsg.SetPosition(pos);
+    NetBuffer buffer;
+    newMsg.Serialize(buffer);
+    SendToAllClients(buffer);
+
+    printf("\n Received position x: %f, y: %f, z: %f, from ID %i", pos.x, pos.y, pos.z, clientID);
 }
 
 void GameServer::HandleMessage_HandshakeRequest(const sockaddr_in& aAddress)

@@ -35,6 +35,7 @@ Renderer::~Renderer() = default;
 void Renderer::RenderScene(Scene& aScene)
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(6), "Renderer Add Render Commands");
+
 	if (GraphicsEngine::Get().CurrentDebugMode != DebugMode::None)
 	{
 		RenderForward(aScene);

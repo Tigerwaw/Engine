@@ -20,6 +20,8 @@ public:
 
     void SetID(const unsigned aID) { myID = aID; }
     const unsigned GetID() const { return myID; }
+    void SetNetworkID(const unsigned aNetworkID) { myNetworkID = aNetworkID; }
+    const unsigned GetNetworkID() const { return myNetworkID; }
 
     // COMPONENTS
     template <typename T, typename... Args>
@@ -51,6 +53,7 @@ private:
 
     std::string myName;
     unsigned myID;
+    unsigned myNetworkID;
 };
 
 template<class T, typename... Args>

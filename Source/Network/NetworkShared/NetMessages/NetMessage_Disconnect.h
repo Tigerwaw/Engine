@@ -7,7 +7,7 @@ class NetMessage_Disconnect : public NetMessage
 public:
 	NetMessage_Disconnect();
 	void SetData(std::string aString) { myUsername = aString; }
-	const std::string& GetData() { return myUsername; }
+	const std::string GetData() { return myUsername; }
 
 	void Serialize(NetBuffer& aBuffer) override;
 	void Deserialize(NetBuffer& aBuffer) override;

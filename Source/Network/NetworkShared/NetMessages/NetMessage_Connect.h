@@ -6,8 +6,10 @@ class NetMessage_Connect : public NetMessage
 {
 public:
 	NetMessage_Connect();
-	void SetData(const std::string& aString) { myUsername = aString; }
-	const std::string& GetData() { return myUsername; }
+	void SetNetworkID(const unsigned aNetworkID) { myNetworkID = aNetworkID; }
+	void SetUsername(const std::string& aUsername) { myUsername = aUsername; }
+	const std::string GetUsername() const { return myUsername; }
+	const unsigned GetNetworkID() const { return myNetworkID; }
 
 	void Serialize(NetBuffer& aBuffer) override;
 	void Deserialize(NetBuffer& aBuffer) override;
@@ -15,6 +17,7 @@ public:
 	void GetStringRepresentation(char* outString, int aBufferSize) const override;
 
 protected:
+	unsigned myNetworkID;
 	std::string myUsername;
 };
 

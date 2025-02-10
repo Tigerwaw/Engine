@@ -2,12 +2,17 @@
 
 NetMessage::NetMessage()
 {
-	myMessageType = NetMessageType::Connect;
+	myMessageType = NetMessageType::None;
 }
 
 NetMessage::NetMessage(NetMessageType aType)
 {
 	myMessageType = aType;
+}
+
+NetMessage::~NetMessage()
+{
+
 }
 
 void NetMessage::Serialize(NetBuffer& aBuffer)
@@ -17,6 +22,5 @@ void NetMessage::Serialize(NetBuffer& aBuffer)
 
 void NetMessage::Deserialize(NetBuffer& aBuffer)
 {
-	//aBuffer.ReadData(myMessageType);
-	myMessageType = static_cast<NetMessageType>(aBuffer.GetBuffer()[0]);
+	aBuffer.ReadData(myMessageType);
 }

@@ -20,6 +20,9 @@ namespace nl = nlohmann;
 #include <unordered_map>
 #include <any>
 #include <queue>
+#include <mutex>
+#include <shared_mutex>
+#include <thread>
 
 #include "AssetManager/AssetManager.h"
 #include "GameEngine/Engine.h"

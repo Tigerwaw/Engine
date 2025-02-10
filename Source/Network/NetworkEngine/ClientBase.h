@@ -12,9 +12,11 @@ class ClientBase
 public:
 	ClientBase();
 	virtual ~ClientBase();
+
+	virtual void Update();
 protected:
 	// Pass in 'this' from subclass.
-	virtual void StartReceive(ClientBase* aClient);
+	virtual void StartReceive(ClientBase* aClient, const char* aIP);
 	void Receive();
 	virtual void SendHandshakeRequest() const = 0;
 	virtual void HandleMessage_HandshakeAccept();

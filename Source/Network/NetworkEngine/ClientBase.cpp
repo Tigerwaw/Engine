@@ -5,8 +5,6 @@
 
 ClientBase::ClientBase()
 {
-    myComm.Init(false, false, "10.250.224.81");
-    myLastHandshakeRequestTime = std::chrono::system_clock::now();
 }
 
 ClientBase::~ClientBase()
@@ -15,10 +13,16 @@ ClientBase::~ClientBase()
     myComm.Destroy();
 }
 
-void ClientBase::StartReceive(ClientBase* aClient)
+void ClientBase::Update()
 {
+}
+
+void ClientBase::StartReceive(ClientBase* aClient, const char* aIP)
+{
+    myComm.Init(false, false, aIP);
     myReceiveThread = std::thread(&ClientBase::Receive, aClient);
     SendHandshakeRequest();
+    myLastHandshakeRequestTime = std::chrono::system_clock::now();
 }
 
 void ClientBase::Receive()
@@ -27,7 +31,7 @@ void ClientBase::Receive()
     {
         if (!myHasEstablishedHandshake)
         {
-            std::chrono::duration<float> elapsed_seconds = myLastHandshakeRequestTime - std::chrono::system_clock::now();
+            std::chrono::duration<float> elapsed_seconds = std::chrono::system_clock::now() - myLastHandshakeRequestTime;
             if (elapsed_seconds.count() > myTimeBetweenHandshakeRequests)
             {
                 myLastHandshakeRequestTime = std::chrono::system_clock::now();
@@ -39,13 +43,14 @@ void ClientBase::Receive()
         NetBuffer receiveBuffer;
         if (int bytesReceived = myComm.ReceiveData(receiveBuffer, otherAddress); bytesReceived > 0)
         {
-            NetMessage* receivedMessage = ReceiveMessage(receiveBuffer);
+            NetMessage* receivedMessage = nullptr;
+            receivedMessage = ReceiveMessage(receiveBuffer);
 
             if (receivedMessage)
             {
                 receivedMessage->Deserialize(receiveBuffer);
                 HandleMessage(receivedMessage);
-                delete(receivedMessage);
+                delete receivedMessage;
             }
         }
     }

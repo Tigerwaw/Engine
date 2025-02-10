@@ -18,7 +18,10 @@ public:
     void UnloadScene(unsigned aLoadedSceneIndex);
     void ChangeActiveScene(unsigned aLoadedSceneIndex);
 
-    std::shared_ptr<GameObject> FindGameObjectByName(std::string aName);
+    std::shared_ptr<GameObject> FindGameObjectByName(const std::string& aName);
+    std::shared_ptr<GameObject> FindGameObjectByID(const unsigned aID);
+    std::shared_ptr<GameObject> FindGameObjectByNetworkID(const unsigned aNetworkID);
+
     void Instantiate(std::shared_ptr<GameObject> aGameObject);
     void Destroy(std::shared_ptr<GameObject> aGameObject);
 

@@ -27,10 +27,10 @@ private:
 template<typename T>
 inline void NetBuffer::ReadData(T& aDataToWriteTo)
 {
-	//constexpr int numBytes = static_cast<int>(sizeof(T));
-	//memcpy_s(&aDataToWriteTo, DEFAULT_BUFLEN, myBuffer + myReadWriteIndex, DEFAULT_BUFLEN - myReadWriteIndex);
-	memcpy_s(&aDataToWriteTo, DEFAULT_BUFLEN - 4, myBuffer + 4, DEFAULT_BUFLEN - 4);
-	//myReadWriteIndex += numBytes;
+	constexpr int numBytes = static_cast<int>(sizeof(T));
+	memcpy_s(&aDataToWriteTo, numBytes, myBuffer + myReadWriteIndex, numBytes);
+	//memcpy_s(&aDataToWriteTo, DEFAULT_BUFLEN, myBuffer + 4, DEFAULT_BUFLEN - 4);
+	myReadWriteIndex += numBytes;
 }
 
 template<typename T>

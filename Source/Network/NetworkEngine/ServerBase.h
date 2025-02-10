@@ -7,7 +7,7 @@
 
 struct NetInfo
 {
-    int id;
+    unsigned id;
     std::string username;
     sockaddr_in address;
 
@@ -31,12 +31,15 @@ class ServerBase
 public:
     ServerBase();
     virtual ~ServerBase();
+
+    virtual void Update();
 protected:
     void Receive();
     virtual NetMessage* ReceiveMessage(const NetBuffer& aBuffer) const = 0;
     virtual void HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress, const int aBytesReceived) = 0;
 
     void SendToAllClients(NetBuffer& aBuffer) const;
+    void SendToAllClientsExcluding(NetBuffer& aBuffer, const int aClientIndex) const;
     bool DoesClientExist(const sockaddr_in& aAddress) const;
     const int GetClientIndex(const sockaddr_in& aAddress) const;
 

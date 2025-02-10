@@ -16,7 +16,7 @@ void NetMessage_Text::Deserialize(NetBuffer& aBuffer)
 	NetMessage::Deserialize(aBuffer);
 	char buff[DEFAULT_BUFLEN]{ 0 };
 	aBuffer.ReadData(buff);
-	myData = std::string(buff);
+	myData.assign(buff);
 }
 
 void NetMessage_Text::GetStringRepresentation(char* outString, int aBufferSize) const

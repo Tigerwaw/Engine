@@ -8,5 +8,6 @@ enum class NetMessageType
 	Connect,
 	Disconnect,
 	Text,
-	CreateCharacter
+	CreateCharacter,
+	Position
 };

@@ -6,7 +6,7 @@ class NetMessage
 {
 public:
 	NetMessage();
-	virtual ~NetMessage() {};
+	virtual ~NetMessage();
 	NetMessage(NetMessageType aType);
 
 	NetMessageType GetType() const { return myMessageType; }

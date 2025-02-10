@@ -2,25 +2,21 @@
 
 NetMessage_CreateCharacter::NetMessage_CreateCharacter()
 {
-	myMessageType = NetMessageType::Text;
+	myMessageType = NetMessageType::CreateCharacter;
 }
 
 void NetMessage_CreateCharacter::Serialize(NetBuffer& aBuffer)
 {
 	NetMessage::Serialize(aBuffer);
-	aBuffer.WriteData(myPosition.x);
-	aBuffer.WriteData(myPosition.y);
+	aBuffer.WriteData(myNetworkID);
+	aBuffer.WriteData(myIsClient);
 }
 
 void NetMessage_CreateCharacter::Deserialize(NetBuffer& aBuffer)
 {
 	NetMessage::Deserialize(aBuffer);
-	char buff[DEFAULT_BUFLEN]{ 0 };
-	aBuffer.ReadData(buff);
-
-	myPosition.x = buff[0];
-	myPosition.y = buff[sizeof(float)];
-	myPosition.z = buff[sizeof(float) * 2];
+	aBuffer.ReadData(myNetworkID);
+	aBuffer.ReadData(myIsClient);
 }
 
 void NetMessage_CreateCharacter::GetStringRepresentation(char* outString, int aBufferSize) const
