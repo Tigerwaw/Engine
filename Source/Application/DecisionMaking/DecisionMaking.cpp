@@ -153,9 +153,9 @@ void DecisionMaking::InitializeApplication()
 	auto smCont = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("SMCont");
 	auto dtCont = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("DTCont");
 	auto btCont = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("BTCont");
-	smCont->GetComponent<StateMachineController>()->SetTarget(PollingStation::Get().GetRandomAIActor(smCont));
-	dtCont->GetComponent<DecisionTreeController>()->SetTarget(PollingStation::Get().GetRandomAIActor(dtCont));
-	btCont->GetComponent<BehaviourTreeController>()->SetTarget(PollingStation::Get().GetRandomAIActor(btCont));
+	smCont->GetComponent<StateMachineController>()->SetTarget(dtCont);
+	dtCont->GetComponent<DecisionTreeController>()->SetTarget(btCont);
+	btCont->GetComponent<BehaviourTreeController>()->SetTarget(smCont);
 
 	{
 		std::shared_ptr<GameObject> go = std::make_shared<GameObject>();

@@ -1,25 +1,17 @@
 #pragma once
 #include "GameEngine/ComponentSystem/Component.h"
+#include "DecisionMaking/BrainTree.h"
 
 class BehaviourTreeController : public Component
 {
 public:
-	enum class State
-	{
-		SeekEnemy,
-		SeekWell,
-		Aim,
-		Heal,
-		Death
-	};
-
 	void Start() override;
 	void Update() override;
-	void SetTarget(std::shared_ptr<GameObject> aGameObject) { myTarget = aGameObject; }
 
+	void SetTarget(std::shared_ptr<GameObject> aGameObject);
 private:
-	void SeekTarget();
-	bool IsLineOfSightClear(CU::Vector3f aOrigin, CU::Vector3f aDirection);
+	BrainTree::Blackboard::Ptr myBlackboard;
+	BrainTree::BehaviorTree myTree;
 
 	float myDamage = 25.0f;
 	std::shared_ptr<GameObject> myTarget;

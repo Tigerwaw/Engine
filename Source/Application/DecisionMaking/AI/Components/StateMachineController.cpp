@@ -38,7 +38,7 @@ void StateMachineController::Update()
 	{
 	case StateMachineController::State::SeekEnemy:
 	{
-		myTarget = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("DTCont");
+		SetTarget(PollingStation::Get().GetRandomAIActor(Engine::GetInstance().GetSceneHandler().FindGameObjectByName(gameObject->GetName())));
 		SeekTarget();
 
 		auto transform = gameObject->GetComponent<Transform>();
@@ -61,7 +61,7 @@ void StateMachineController::Update()
 	}
 	case StateMachineController::State::SeekWell:
 	{
-		myTarget = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("HWell");
+		SetTarget(Engine::GetInstance().GetSceneHandler().FindGameObjectByName("HWell"));
 		SeekTarget();
 
 		auto transform = gameObject->GetComponent<Transform>();
@@ -109,7 +109,16 @@ void StateMachineController::Update()
 			if (myTimeSinceLastShot > myShootingCooldown)
 			{
 				myTimeSinceLastShot = 0;
-				myTarget->GetComponent<HealthComponent>()->TakeDamage(myDamage);
+				if (auto targetHealthComp = myTarget->GetComponent<HealthComponent>())
+				{
+					targetHealthComp->TakeDamage(myDamage);
+
+					if (targetHealthComp->GetHealth() <= 0)
+					{
+						SetTarget(PollingStation::Get().GetRandomAIActor(Engine::GetInstance().GetSceneHandler().FindGameObjectByName(gameObject->GetName())));
+					}
+				}
+
 				gameObject->GetComponent<ParticleSystem>()->SetActive(true);
 				myCurrentParticleActiveTime = 0;
 				myIsShooting = true;

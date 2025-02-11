@@ -36,7 +36,7 @@ void DecisionTreeController::Update()
 
 	if (healthComp->GetHealth() / healthComp->GetMaxHealth() > 0.5f)
 	{
-		myTarget = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("SMCont");
+		SetTarget(PollingStation::Get().GetRandomAIActor(Engine::GetInstance().GetSceneHandler().FindGameObjectByName(gameObject->GetName())));
 		float dot = transform->GetForwardVector().Dot(directionToTarget.GetNormalized());
 		if (directionToTarget.LengthSqr() < myShootingRange * myShootingRange && dot >= mySightAngle && IsLineOfSightClear(pos, directionToTarget))
 		{
@@ -44,7 +44,14 @@ void DecisionTreeController::Update()
 			if (dot >= myShootingAngle && myTimeSinceLastShot > myShootingCooldown)
 			{
 				myTimeSinceLastShot = 0;
-				myTarget->GetComponent<HealthComponent>()->TakeDamage(myDamage);
+				auto targetHealthComp = myTarget->GetComponent<HealthComponent>();
+				targetHealthComp->TakeDamage(myDamage);
+
+				if (targetHealthComp->GetHealth() <= 0)
+				{
+					SetTarget(PollingStation::Get().GetRandomAIActor(Engine::GetInstance().GetSceneHandler().FindGameObjectByName(gameObject->GetName())));
+				}
+
 				gameObject->GetComponent<ParticleSystem>()->SetActive(true);
 				myCurrentParticleActiveTime = 0;
 				myIsShooting = true;
@@ -73,7 +80,7 @@ void DecisionTreeController::Update()
 	{
 		if (healthComp->GetHealth() > 0)
 		{
-			myTarget = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("HWell");
+			SetTarget(Engine::GetInstance().GetSceneHandler().FindGameObjectByName("HWell"));
 			if (directionToTarget.LengthSqr() < myHealRadius * myHealRadius)
 			{
 				healthComp->Heal(myHPS * dt);
