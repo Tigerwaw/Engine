@@ -37,7 +37,7 @@ void Communicator::Init(bool aIsBinding, bool aIsBlocking, const char* aIP)
         return;
     }
 
-    if (!aIsBinding)
+    if (!aIsBinding && strlen(aIP) > 0)
     {
         sockaddr_in* addr = reinterpret_cast<sockaddr_in*>(myAddressInfo->ai_addr);
         result = inet_pton(AF_INET, aIP, &addr->sin_addr.S_un.S_addr);

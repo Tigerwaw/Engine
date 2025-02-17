@@ -5,7 +5,7 @@
 
 ServerBase::ServerBase()
 {
-    myComm.Init(true, true, "0");
+    myComm.Init(true, true, "");
     myReceiveThread = std::thread(&ServerBase::Receive, this);
 }
 

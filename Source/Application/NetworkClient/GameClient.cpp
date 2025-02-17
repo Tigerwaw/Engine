@@ -25,7 +25,7 @@
 
 GameClient::GameClient()
 {
-    StartReceive("10.250.224.90");
+    StartReceive("");
     printf("\nWaiting for server...");
 }
 
