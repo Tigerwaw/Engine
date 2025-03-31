@@ -13,7 +13,6 @@
 void Engine::Update()
 {
     myTimer->Update();
-
     mySceneHandler->UpdateActiveScene();
     myInputHandler->UpdateInput();
     myAudioEngine->Update();

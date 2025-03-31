@@ -17,12 +17,22 @@ protected:
 
     void HandleMessage_Connect(NetMessage_Connect& aMessage, const sockaddr_in& aAddress);
     void HandleMessage_Disconnect(NetMessage_Disconnect& aMessage, const sockaddr_in& aAddress);
-    void HandleMessage_Text(NetMessage_Text& aMessage, const sockaddr_in& aAddress, const int aBytesReceived);
-    void HandleMessage_Position(NetMessage_Position& aMessage, const sockaddr_in& aAddress);
 
     void HandleMessage_HandshakeRequest(const sockaddr_in& aAddress);
 
+    void CreateNewObject();
+    void DestroyObject(unsigned aNetworkID);
+    void UpdatePositions();
+
 private:
     unsigned myCurrentNetworkID = 1;
+    std::vector<std::shared_ptr<GameObject>> myObjects;
+
+    int myCurrentlyActiveObjects;
+    int myObjectLimit = 16;
+
+    double myLastUpdateTimestamp = 0;
+    float myTimeBetweenObjectsSpawned = 1.0f;
+    float myCurrentTimeSinceLastSpawn = 0;
 };
 

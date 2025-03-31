@@ -1,6 +1,7 @@
 #include "Enginepch.h"
 #include "NetworkServer.h"
 #include <GameEngine/Engine.h>
+#include <GameEngine/Time/Timer.h>
 
 Application* CreateApplication()
 {
@@ -10,9 +11,12 @@ Application* CreateApplication()
 
 void NetworkServer::InitializeApplication()
 {
-	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_BaseScene.json");
+	GraphicsEngine::Get().RecalculateShadowFrustum = false;
+	GraphicsEngine::Get().DrawColliders = true;
+	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_NetworkingScene.json");
 }
 
 void NetworkServer::UpdateApplication()
 {
+	myServer.Update();
 }

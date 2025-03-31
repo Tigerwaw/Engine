@@ -38,6 +38,7 @@ private:
 	void UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject);
 
 	std::vector<std::shared_ptr<GameObject>> myGameObjects;
+	std::vector<std::shared_ptr<GameObject>> myGameObjectsToDestroy;
 	unsigned myActiveGameObjectAmount = 0;
 	bool myIsActive = false;
 	CU::AABB3D<float> myBoundingBox;

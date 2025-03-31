@@ -5,6 +5,7 @@ class NetMessage_Connect;
 class NetMessage_Disconnect;
 class NetMessage_Text;
 class NetMessage_CreateCharacter;
+class NetMessage_RemoveCharacter;
 class NetMessage_Position;
 
 class GameObject;
@@ -13,7 +14,6 @@ class GameClient : public ClientBase
 {
 public:
     GameClient();
-    void SendInput(std::string aMessage);
     void Update() override;
 
 protected:
@@ -31,11 +31,6 @@ protected:
     void HandleMessage_Disconnect(NetMessage_Disconnect& aMessage);
     void HandleMessage_Text(NetMessage_Text& aMessage);
     void HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMessage);
+    void HandleMessage_RemoveCharacter(NetMessage_RemoveCharacter& aMessage);
     void HandleMessage_Position(NetMessage_Position& aMessage);
-
-private:
-    std::shared_ptr<GameObject> myPlayer;
-    std::vector<std::shared_ptr<GameObject>> myRemotePlayers;
-
-    CU::Vector3f myLastPosition;
 };

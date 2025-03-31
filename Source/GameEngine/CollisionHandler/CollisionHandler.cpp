@@ -37,7 +37,8 @@ void CollisionHandler::TestCollisions(Scene& aScene)
 
 			if (colliderA->TestCollision(colliderB.get()))
 			{
-				// Send collision response
+				colliderA->TriggerCollisionResponse();
+				colliderB->TriggerCollisionResponse();
 				colliderA->debugColliding = true;
 				colliderB->debugColliding = true;
 				collisions++;

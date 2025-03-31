@@ -10,6 +10,7 @@
 #include "NetworkShared/NetMessages/NetMessage_RequestHandshake.h"
 #include "NetworkShared/NetMessages/NetMessage_AcceptHandshake.h"
 #include "NetworkShared/NetMessages/NetMessage_CreateCharacter.h"
+#include "NetworkShared/NetMessages/NetMessage_RemoveCharacter.h"
 #include "NetworkShared/NetMessages/NetMessage_Position.h"
 
 #include <GameEngine/Engine.h>
@@ -20,6 +21,7 @@
 #include <GameEngine/ComponentSystem/Components/Transform.h>
 #include <GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h>
 #include <GameEngine/ComponentSystem/Components/Graphics/Model.h>
+#include <GameEngine/ComponentSystem/Components/Physics/Colliders/BoxCollider.h>
 
 #include "Controller.h"
 
@@ -29,51 +31,14 @@ GameClient::GameClient()
     printf("\nWaiting for server...");
 }
 
-void GameClient::SendInput(std::string aMessage)
-{
-    if (!myHasEstablishedConnection)
-    {
-        SendConnectMessage(aMessage);
-        myHasEstablishedConnection = true;
-    }
-    else
-    {
-        if (aMessage == "quit")
-        {
-            SendDisconnectMessage();
-        }
-        else
-        {
-            SendTextMessage(aMessage);
-        }
-    }
-}
-
 void GameClient::Update()
 {
     ClientBase::Update();
     if (!myHasEstablishedConnection)
     {
-        SendConnectMessage(std::to_string(rand() % 10000));
+        SendConnectMessage(std::to_string(myComm.GetAddress().sin_addr.S_un.S_addr));
         myHasEstablishedConnection = true;
         return;
-    }
-
-    //float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
-    //if (dt > (1.0f / 60.0f))
-    //{
-    //    
-    //}
-
-    if (!myPlayer) return;
-    if (auto transform = myPlayer->GetComponent<Transform>())
-    {
-        CU::Vector3f currentPos = transform->GetTranslation();
-        if (myLastPosition != currentPos)
-        {
-            SendPositionMessage(currentPos);
-            myLastPosition = currentPos;
-        }
     }
 }
 
@@ -197,12 +162,6 @@ void GameClient::HandleMessage(NetMessage* aMessage)
 void GameClient::HandleMessage_Connect(NetMessage_Connect& aMessage)
 {
     printf("\n[%s] has joined the game!", aMessage.GetUsername().data());
-
-    if (!myPlayer) return;
-    if (auto transform = myPlayer->GetComponent<Transform>())
-    {
-        SendPositionMessage(transform->GetTranslation());
-    }
 }
 
 void GameClient::HandleMessage_Disconnect(NetMessage_Disconnect& aMessage)
@@ -220,39 +179,21 @@ void GameClient::HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMess
     std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
     go->SetNetworkID(aMessage.GetNetworkID());
     go->AddComponent<Transform>(aMessage.GetPosition());
+    go->AddComponent<BoxCollider>(CU::Vector3f(50.0f, 100.0f, 50.0f), CU::Vector3f(0.0f, 90.0f, 0.0f));
 
-    std::shared_ptr<Material> mat;
-
-    switch (aMessage.GetNetworkID())
-    {
-    case 1:
-        mat = AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorBlue.json")->material;
-        break;
-    case 2:
-        mat = AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorRed.json")->material;
-        break;
-    case 3:
-        mat = AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorYellow.json")->material;
-        break;
-    default:
-        mat = AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorGreen.json")->material;
-        break;
-    }
-
-    auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, mat);
+    auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorBlue.json")->material);
     model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
 
-    if (aMessage.GetIsClient())
-    {
-        go->AddComponent<Controller>(500.0f, 1.0f);
-        myPlayer = go;
-    }
-    else
-    {
-        myRemotePlayers.push_back(go);
-    }
-
     Engine::GetInstance().GetSceneHandler().Instantiate(go);
+}
+
+void GameClient::HandleMessage_RemoveCharacter(NetMessage_RemoveCharacter& aMessage)
+{
+    auto& sceneHandler = Engine::GetInstance().GetSceneHandler();
+    if (auto go = sceneHandler.FindGameObjectByNetworkID(aMessage.GetNetworkID()))
+    {
+        Engine::GetInstance().GetSceneHandler().Destroy(go);
+    }
 }
 
 void GameClient::HandleMessage_Position(NetMessage_Position& aMessage)

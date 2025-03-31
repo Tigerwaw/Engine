@@ -40,6 +40,20 @@ void Scene::Update()
 	PIXScopedEvent(PIX_COLOR_INDEX(7), "Update GameObjects in Scene");
 	myActiveGameObjectAmount = 0;
 
+	for (auto& gameObject : myGameObjectsToDestroy)
+	{
+		if (auto goTransform = gameObject->GetComponent<Transform>())
+		{
+			DestroyHierarchy(goTransform.get());
+		}
+		else
+		{
+			DestroyInternal(gameObject.get());
+		}
+	}
+
+	myGameObjectsToDestroy.clear();
+
 	for (auto& gameObject : myGameObjects)
 	{
 		if (gameObject->GetActive())
@@ -156,12 +170,7 @@ void Scene::Destroy(std::shared_ptr<GameObject> aGameObject)
 	{
 		if (myGameObjects[i].get() == aGameObject.get())
 		{
-			std::shared_ptr<Transform> goTransform = myGameObjects[i]->GetComponent<Transform>();
-			if (goTransform)
-			{
-				DestroyHierarchy(goTransform.get());
-			}
-
+			myGameObjectsToDestroy.push_back(aGameObject);
 			return;
 		}
 	}
