@@ -28,8 +28,9 @@ void GameServer::Update()
 {
     double currentTime = Engine::GetInstance().GetTimer().GetTotalTime();
     float dt = static_cast<float>(currentTime - myLastUpdateTimestamp);
-    if (dt > (1.0f / 60.0f))
+    if (dt > (1.0f / 10.0f))
     {
+        printf("Tick\n");
         myLastUpdateTimestamp = currentTime;
 
         UpdatePositions();
@@ -207,6 +208,12 @@ void GameServer::CreateNewObject()
 
 void GameServer::DestroyObject(unsigned aNetworkID)
 {
+    auto it = std::find_if(myObjects.begin(), myObjects.end(), [aNetworkID](const std::shared_ptr<GameObject>& object) { return object->GetNetworkID() == aNetworkID; });
+    if (*it)
+    {
+        myObjects.erase(it);
+    }
+
     NetMessage_RemoveCharacter removeCharacterMsg;
     removeCharacterMsg.SetNetworkID(aNetworkID);
     NetBuffer buffer;

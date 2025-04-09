@@ -89,6 +89,7 @@ void Communicator::Destroy()
 bool Communicator::SendData(const NetBuffer& inData, const sockaddr_in& aRecipient) const
 {
     int sendResult = sendto(mySocket, inData.GetBuffer(), inData.GetSize(), 0, reinterpret_cast<const sockaddr*>(&aRecipient), sizeof(sockaddr_in));
+
     if (sendResult == SOCKET_ERROR) {
         printf("send failed: %d\n", WSAGetLastError());
         closesocket(mySocket);

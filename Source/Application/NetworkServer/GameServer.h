@@ -28,7 +28,7 @@ private:
     unsigned myCurrentNetworkID = 1;
     std::vector<std::shared_ptr<GameObject>> myObjects;
 
-    int myCurrentlyActiveObjects;
+    int myCurrentlyActiveObjects = 0;
     int myObjectLimit = 16;
 
     double myLastUpdateTimestamp = 0;

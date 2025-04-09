@@ -94,38 +94,21 @@ NetMessage* GameClient::ReceiveMessage(const NetBuffer& aBuffer) const
     switch (receivedMessageType)
     {
     case NetMessageType::Connect:
-    {
         return new NetMessage_Connect();
-        break;
-    }
     case NetMessageType::Disconnect:
-    {
         return new NetMessage_Disconnect();
-        break;
-    }
     case NetMessageType::Text:
-    {
         return new NetMessage_Text();
-        break;
-    }
     case NetMessageType::HandshakeAccept:
-    {
         return new NetMessage_AcceptHandshake();
-        break;
-    }
     case NetMessageType::CreateCharacter:
-    {
         return new NetMessage_CreateCharacter();
-        break;
-    }
+    case NetMessageType::RemoveCharacter:
+        return new NetMessage_RemoveCharacter();
     case NetMessageType::Position:
-    {
         return new NetMessage_Position();
-        break;
-    }
     default:
         return nullptr;
-        break;
     }
 }
 
@@ -144,17 +127,16 @@ void GameClient::HandleMessage(NetMessage* aMessage)
         HandleMessage_Text(*static_cast<NetMessage_Text*>(aMessage));
         break;
     case NetMessageType::HandshakeAccept:
-    {
         HandleMessage_HandshakeAccept();
         break;
-    }
     case NetMessageType::CreateCharacter:
         HandleMessage_CreateCharacter(*static_cast<NetMessage_CreateCharacter*>(aMessage));
         break;
+    case NetMessageType::RemoveCharacter:
+        HandleMessage_RemoveCharacter(*static_cast<NetMessage_RemoveCharacter*>(aMessage));
+        break;
     case NetMessageType::Position:
         HandleMessage_Position(*static_cast<NetMessage_Position*>(aMessage));
-        break;
-    default:
         break;
     }
 }

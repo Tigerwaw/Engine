@@ -68,12 +68,9 @@ void Scene::Update()
 
 std::shared_ptr<GameObject> Scene::FindGameObjectByName(const std::string& aName)
 {
-	for (auto& gameObject : myGameObjects)
+	if (auto go = std::find_if(myGameObjects.begin(), myGameObjects.end(), [aName](const std::shared_ptr<GameObject>& object) { return object->GetName() == aName; }); *go != nullptr)
 	{
-		if (gameObject->GetName() == aName)
-		{
-			return gameObject;
-		}
+		return *go;
 	}
 
 	LOG(LogScene, Warning, "Could not find game object with name {} in the scene!", aName);
@@ -82,12 +79,9 @@ std::shared_ptr<GameObject> Scene::FindGameObjectByName(const std::string& aName
 
 std::shared_ptr<GameObject> Scene::FindGameObjectByID(const unsigned aID)
 {
-	for (auto& gameObject : myGameObjects)
+	if (auto go = std::find_if(myGameObjects.begin(), myGameObjects.end(), [aID](const std::shared_ptr<GameObject>& object) { return object->GetID() == aID; }); *go != nullptr)
 	{
-		if (gameObject->GetID() == aID)
-		{
-			return gameObject;
-		}
+		return *go;
 	}
 
 	LOG(LogScene, Warning, "Could not find game object with ID {} in the scene!", aID);
@@ -96,12 +90,9 @@ std::shared_ptr<GameObject> Scene::FindGameObjectByID(const unsigned aID)
 
 std::shared_ptr<GameObject> Scene::FindGameObjectByNetworkID(const unsigned aNetworkID)
 {
-	for (auto& gameObject : myGameObjects)
+	if (auto go = std::find_if(myGameObjects.begin(), myGameObjects.end(), [aNetworkID](const std::shared_ptr<GameObject>& object) { return object->GetNetworkID() == aNetworkID; }); *go != nullptr)
 	{
-		if (gameObject->GetNetworkID() == aNetworkID)
-		{
-			return gameObject;
-		}
+		return *go;
 	}
 
 	LOG(LogScene, Warning, "Could not find game object with network ID {} in the scene!", aNetworkID);

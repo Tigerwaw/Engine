@@ -42,7 +42,8 @@ void ClientBase::Receive()
 
     sockaddr_in otherAddress = {};
     NetBuffer receiveBuffer;
-    if (int bytesReceived = myComm.ReceiveData(receiveBuffer, otherAddress); bytesReceived > 0)
+    int bytesReceived = myComm.ReceiveData(receiveBuffer, otherAddress);
+    if (bytesReceived > 0)
     {
         NetMessage* receivedMessage = nullptr;
         receivedMessage = ReceiveMessage(receiveBuffer);
