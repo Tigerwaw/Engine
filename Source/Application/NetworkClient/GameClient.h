@@ -7,6 +7,7 @@ class NetMessage_Text;
 class NetMessage_CreateCharacter;
 class NetMessage_RemoveCharacter;
 class NetMessage_Position;
+class NetMessage_Test;
 
 class GameObject;
 
@@ -33,4 +34,5 @@ protected:
     void HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMessage);
     void HandleMessage_RemoveCharacter(NetMessage_RemoveCharacter& aMessage);
     void HandleMessage_Position(NetMessage_Position& aMessage);
+    void HandleMessage_Test(NetMessage_Test& aMessage);
 };

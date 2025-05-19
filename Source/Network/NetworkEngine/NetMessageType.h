@@ -10,5 +10,6 @@ enum class NetMessageType
 	Text,
 	CreateCharacter,
 	RemoveCharacter,
-	Position
+	Position,
+	Test
 };

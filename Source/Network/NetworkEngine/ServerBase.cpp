@@ -41,9 +41,12 @@ void ServerBase::Receive()
 
 void ServerBase::SendToAllClients(NetBuffer& aBuffer) const
 {
+    int clientIndex = 0;
     for (auto& client : myClients)
     {
         myComm.SendData(aBuffer, client.address);
+        ++clientIndex;
+        //printf("Sent data to client: %i\n", clientIndex);
     }
 }
 

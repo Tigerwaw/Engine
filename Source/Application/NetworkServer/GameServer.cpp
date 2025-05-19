@@ -11,6 +11,7 @@
 #include "NetworkShared/NetMessages/NetMessage_CreateCharacter.h"
 #include "NetworkShared/NetMessages/NetMessage_RemoveCharacter.h"
 #include "NetworkShared/NetMessages/NetMessage_Position.h"
+#include "NetworkShared/NetMessages/NetMessage_Test.h"
 
 #include <GameEngine/Engine.h>
 #include <Time/Timer.h>
@@ -28,10 +29,20 @@ void GameServer::Update()
 {
     double currentTime = Engine::GetInstance().GetTimer().GetTotalTime();
     float dt = static_cast<float>(currentTime - myLastUpdateTimestamp);
-    if (dt > (1.0f / 10.0f))
+    if (dt > (1.0f / myTickRate))
     {
-        printf("Tick\n");
         myLastUpdateTimestamp = currentTime;
+
+        static int increment = 0;
+        printf("%i\n", increment);
+
+        NetMessage_Test newMsg;
+        newMsg.SetNetworkID(0);
+        newMsg.SetInt(increment);
+        NetBuffer buffer;
+        newMsg.Serialize(buffer);
+        SendToAllClients(buffer);
+        ++increment;
 
         UpdatePositions();
 
@@ -98,8 +109,6 @@ void GameServer::HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress
     case NetMessageType::HandshakeRequest:
         HandleMessage_HandshakeRequest(aAddress);
         break;
-    case NetMessageType::HandshakeAccept:
-        break;
     default:
         break;
     }
@@ -114,7 +123,7 @@ void GameServer::HandleMessage_Connect(NetMessage_Connect& aMessage, const socka
     newInfo.username = aMessage.GetUsername();
     int index = GetClientIndex(newInfo.address);
 
-    printf("\n[User %s connected]", newInfo.username.data());
+    printf("\n[User %s connected]\n", newInfo.username.data());
 
     // Send connect message.
     {
@@ -166,6 +175,8 @@ void GameServer::HandleMessage_HandshakeRequest(const sockaddr_in& aAddress)
 
 void GameServer::CreateNewObject()
 {
+    //printf("\nStarted creating object!\n");
+
     CU::Vector3f startingPos;
     startingPos.x = static_cast<float>((std::rand() % 1000) - 500);
     startingPos.y = 0.0f;
@@ -204,10 +215,14 @@ void GameServer::CreateNewObject()
 
     myCurrentTimeSinceLastSpawn = 0.0f;
     myCurrentNetworkID++;
+
+    //printf("Finished creating object!\n");
 }
 
 void GameServer::DestroyObject(unsigned aNetworkID)
 {
+    //printf("\nStarted destroying object!\n");
+
     auto it = std::find_if(myObjects.begin(), myObjects.end(), [aNetworkID](const std::shared_ptr<GameObject>& object) { return object->GetNetworkID() == aNetworkID; });
     if (*it)
     {
@@ -219,10 +234,14 @@ void GameServer::DestroyObject(unsigned aNetworkID)
     NetBuffer buffer;
     removeCharacterMsg.Serialize(buffer);
     SendToAllClients(buffer);
+
+    //printf("Finished destroying object!\n");
 }
 
 void GameServer::UpdatePositions()
 {
+    //printf("\nStarted updating all %i positions!\n", static_cast<int>(myObjects.size()));
+
     for (auto& object : myObjects)
     {
         NetMessage_Position newMsg;
@@ -232,4 +251,6 @@ void GameServer::UpdatePositions()
         newMsg.Serialize(buffer);
         SendToAllClients(buffer);
     }
+
+    //printf("Updated all %i positions!\n\n", static_cast<int>(myObjects.size()));
 }

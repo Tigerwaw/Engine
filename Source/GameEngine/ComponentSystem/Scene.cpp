@@ -147,6 +147,8 @@ void Scene::Instantiate(std::shared_ptr<GameObject> aGameObject)
 			Engine::GetInstance().GetAudioEngine().SetListener(aGameObject);
 		}
 	}
+
+	LOG(LogScene, Log, "Created GameObject {}!", aGameObject->GetName());
 }
 
 void Scene::Destroy(std::shared_ptr<GameObject> aGameObject)

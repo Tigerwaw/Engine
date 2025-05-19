@@ -29,7 +29,6 @@ inline void NetBuffer::ReadData(T& aDataToWriteTo)
 {
 	constexpr int numBytes = static_cast<int>(sizeof(T));
 	memcpy_s(&aDataToWriteTo, numBytes, myBuffer + myReadWriteIndex, numBytes);
-	//memcpy_s(&aDataToWriteTo, DEFAULT_BUFLEN, myBuffer + 4, DEFAULT_BUFLEN - 4);
 	myReadWriteIndex += numBytes;
 }
 

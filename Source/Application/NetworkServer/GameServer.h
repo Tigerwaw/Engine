@@ -28,6 +28,8 @@ private:
     unsigned myCurrentNetworkID = 1;
     std::vector<std::shared_ptr<GameObject>> myObjects;
 
+    float myTickRate = 10.0f;
+
     int myCurrentlyActiveObjects = 0;
     int myObjectLimit = 16;
 

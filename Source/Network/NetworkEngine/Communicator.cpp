@@ -86,18 +86,19 @@ void Communicator::Destroy()
     WSACleanup();
 }
 
-bool Communicator::SendData(const NetBuffer& inData, const sockaddr_in& aRecipient) const
+int Communicator::SendData(const NetBuffer& inData, const sockaddr_in& aRecipient) const
 {
     int sendResult = sendto(mySocket, inData.GetBuffer(), inData.GetSize(), 0, reinterpret_cast<const sockaddr*>(&aRecipient), sizeof(sockaddr_in));
+    //printf("Sent: %i\n", sendResult);
 
     if (sendResult == SOCKET_ERROR) {
         printf("send failed: %d\n", WSAGetLastError());
         closesocket(mySocket);
         WSACleanup();
-        return false;
+        return -1;
     }
 
-    return true;
+    return sendResult;
 }
 
 int Communicator::ReceiveData(NetBuffer& outData, sockaddr_in& outSender) const
@@ -109,6 +110,7 @@ int Communicator::ReceiveData(NetBuffer& outData, sockaddr_in& outSender) const
     int result = recvfrom(mySocket, buff, DEFAULT_BUFLEN, 0, reinterpret_cast<sockaddr*>(&recAddress), &recAddressLen);
     if (result > 0)
     {
+        //printf("Received: %i\n", result);
         memcpy_s(outData.GetBuffer(), result, buff, result);
         outSender = recAddress;
         return result;

@@ -12,6 +12,7 @@
 #include "NetworkShared/NetMessages/NetMessage_CreateCharacter.h"
 #include "NetworkShared/NetMessages/NetMessage_RemoveCharacter.h"
 #include "NetworkShared/NetMessages/NetMessage_Position.h"
+#include "NetworkShared/NetMessages/NetMessage_Test.h"
 
 #include <GameEngine/Engine.h>
 #include <Time/Timer.h>
@@ -90,6 +91,7 @@ void GameClient::SendPositionMessage(const CU::Vector3f& aPosition) const
 NetMessage* GameClient::ReceiveMessage(const NetBuffer& aBuffer) const
 {
     NetMessageType receivedMessageType = static_cast<NetMessageType>(aBuffer.GetBuffer()[0]);
+    //printf("NetMessageType: %i\n", static_cast<int>(receivedMessageType));
 
     switch (receivedMessageType)
     {
@@ -107,6 +109,8 @@ NetMessage* GameClient::ReceiveMessage(const NetBuffer& aBuffer) const
         return new NetMessage_RemoveCharacter();
     case NetMessageType::Position:
         return new NetMessage_Position();
+    case NetMessageType::Test:
+        return new NetMessage_Test();
     default:
         return nullptr;
     }
@@ -138,6 +142,9 @@ void GameClient::HandleMessage(NetMessage* aMessage)
     case NetMessageType::Position:
         HandleMessage_Position(*static_cast<NetMessage_Position*>(aMessage));
         break;
+    case NetMessageType::Test:
+        HandleMessage_Test(*static_cast<NetMessage_Test*>(aMessage));
+        break;
     }
 }
 
@@ -161,7 +168,7 @@ void GameClient::HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMess
     std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
     go->SetNetworkID(aMessage.GetNetworkID());
     go->AddComponent<Transform>(aMessage.GetPosition());
-    go->AddComponent<BoxCollider>(CU::Vector3f(50.0f, 100.0f, 50.0f), CU::Vector3f(0.0f, 90.0f, 0.0f));
+    //go->AddComponent<BoxCollider>(CU::Vector3f(50.0f, 100.0f, 50.0f), CU::Vector3f(0.0f, 90.0f, 0.0f));
 
     auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorBlue.json")->material);
     model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
@@ -184,4 +191,9 @@ void GameClient::HandleMessage_Position(NetMessage_Position& aMessage)
     {
         go->GetComponent<Transform>()->SetTranslation(aMessage.GetPosition());
     }
+}
+
+void GameClient::HandleMessage_Test(NetMessage_Test& aMessage)
+{
+    printf("%i\n", aMessage.GetInt());
 }
