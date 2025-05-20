@@ -24,6 +24,8 @@ protected:
     void DestroyObject(unsigned aNetworkID);
     void UpdatePositions();
 
+    void SendTestMessage();
+
 private:
     unsigned myCurrentNetworkID = 1;
     std::vector<std::shared_ptr<GameObject>> myObjects;

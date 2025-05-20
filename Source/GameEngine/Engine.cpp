@@ -100,6 +100,16 @@ void Engine::LoadSettings(const std::string& aSettingsFilepath)
     {
         std::wstring arg = std::wstring(szArgList[i]);
 
+        if (arg.find(L"FULLSCREEN") != std::string::npos)
+        {
+            arg.erase(0, 11);
+            myIsFullscreen = static_cast<bool>(std::stoi(arg, nullptr));
+        }
+        if (arg.find(L"BORDERLESS") != std::string::npos)
+        {
+            arg.erase(0, 11);
+            myIsBorderless = static_cast<bool>(std::stoi(arg, nullptr));
+        }
         if (arg.find(L"WINPOSX") != std::string::npos)
         {
             arg.erase(0, 8);
@@ -110,7 +120,18 @@ void Engine::LoadSettings(const std::string& aSettingsFilepath)
             arg.erase(0, 8);
             myWindowPos.y = std::stof(arg, nullptr);
         }
-            
+        if (arg.find(L"WINSIZEX") != std::string::npos)
+        {
+            arg.erase(0, 9);
+            myWindowSize.x = std::stof(arg, nullptr);
+            myResolution.x = myWindowSize.x;
+        }
+        if (arg.find(L"WINSIZEY") != std::string::npos)
+        {
+            arg.erase(0, 9);
+            myWindowSize.y = std::stof(arg, nullptr);
+            myResolution.y = myWindowSize.y;
+        }   
     }
 }
 

@@ -10,12 +10,11 @@ class NetMessage;
 class ClientBase
 {
 public:
-	ClientBase();
 	virtual ~ClientBase();
+	void ConnectClient(const char* aIP);
 
 	virtual void Update();
 protected:
-	void StartReceive(const char* aIP);
 	void Receive();
 	virtual void SendHandshakeRequest() const = 0;
 	virtual void HandleMessage_HandshakeAccept();
@@ -34,5 +33,6 @@ protected:
 
 	std::chrono::system_clock::time_point myLastHandshakeRequestTime;
 	float myTimeBetweenHandshakeRequests = 2.0f;
+	int myMessagesHandledPerTick = 10;
 };
 

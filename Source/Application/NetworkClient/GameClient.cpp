@@ -26,12 +26,6 @@
 
 #include "Controller.h"
 
-GameClient::GameClient()
-{
-    StartReceive("");
-    printf("\nWaiting for server...");
-}
-
 void GameClient::Update()
 {
     ClientBase::Update();

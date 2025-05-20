@@ -28,8 +28,8 @@ class NetMessage;
 class ServerBase
 {
 public:
-    ServerBase();
     virtual ~ServerBase();
+    void StartServer();
 
     virtual void Update();
 protected:

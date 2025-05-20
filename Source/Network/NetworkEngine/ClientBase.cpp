@@ -3,13 +3,18 @@
 #include "NetMessage.h"
 #include <WinSock2.h>
 
-ClientBase::ClientBase()
-{
-}
-
 ClientBase::~ClientBase()
 {
     myComm.Destroy();
+}
+
+void ClientBase::ConnectClient(const char* aIP)
+{
+    myComm.Init(false, false, aIP);
+    SendHandshakeRequest();
+    myLastHandshakeRequestTime = std::chrono::system_clock::now();
+    myShouldReceive = true;
+    printf("\nWaiting for server...");
 }
 
 void ClientBase::Update()
@@ -18,14 +23,6 @@ void ClientBase::Update()
     {
         Receive();
     }
-}
-
-void ClientBase::StartReceive(const char* aIP)
-{
-    myComm.Init(false, false, aIP);
-    SendHandshakeRequest();
-    myLastHandshakeRequestTime = std::chrono::system_clock::now();
-    myShouldReceive = true;
 }
 
 void ClientBase::Receive()
@@ -40,19 +37,26 @@ void ClientBase::Receive()
         }
     }
 
-    sockaddr_in otherAddress = {};
-    NetBuffer receiveBuffer;
-    int bytesReceived = myComm.ReceiveData(receiveBuffer, otherAddress);
-    if (bytesReceived > 0)
+    for (int i = 0; i < myMessagesHandledPerTick; i++)
     {
-        NetMessage* receivedMessage = nullptr;
-        receivedMessage = ReceiveMessage(receiveBuffer);
-
-        if (receivedMessage)
+        sockaddr_in otherAddress = {};
+        NetBuffer receiveBuffer;
+        int bytesReceived = myComm.ReceiveData(receiveBuffer, otherAddress);
+        if (bytesReceived > 0)
         {
-            receivedMessage->Deserialize(receiveBuffer);
-            HandleMessage(receivedMessage);
-            delete receivedMessage;
+            NetMessage* receivedMessage = nullptr;
+            receivedMessage = ReceiveMessage(receiveBuffer);
+
+            if (receivedMessage)
+            {
+                receivedMessage->Deserialize(receiveBuffer);
+                HandleMessage(receivedMessage);
+                delete receivedMessage;
+            }
+        }
+        else
+        {
+            break;
         }
     }
 }

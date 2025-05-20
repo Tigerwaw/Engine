@@ -14,6 +14,7 @@ void NetworkServer::InitializeApplication()
 	GraphicsEngine::Get().RecalculateShadowFrustum = false;
 	GraphicsEngine::Get().DrawColliders = true;
 	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_NetworkingScene.json");
+	myServer.StartServer();
 }
 
 void NetworkServer::UpdateApplication()

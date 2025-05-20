@@ -3,16 +3,16 @@
 
 #include "NetMessage.h"
 
-ServerBase::ServerBase()
-{
-    myComm.Init(true, true, "");
-    myReceiveThread = std::thread(&ServerBase::Receive, this);
-}
-
 ServerBase::~ServerBase()
 {
     myReceiveThread.join();
     myComm.Destroy();
+}
+
+void ServerBase::StartServer()
+{
+    myComm.Init(true, true, "");
+    myReceiveThread = std::thread(&ServerBase::Receive, this);
 }
 
 void ServerBase::Update()

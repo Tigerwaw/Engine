@@ -1,5 +1,6 @@
 #pragma once
 #include "ClientBase.h"
+#include "Utility/CircularArray.hpp"
 
 class NetMessage_Connect;
 class NetMessage_Disconnect;
@@ -14,7 +15,6 @@ class GameObject;
 class GameClient : public ClientBase
 {
 public:
-    GameClient();
     void Update() override;
 
 protected:
@@ -35,4 +35,7 @@ protected:
     void HandleMessage_RemoveCharacter(NetMessage_RemoveCharacter& aMessage);
     void HandleMessage_Position(NetMessage_Position& aMessage);
     void HandleMessage_Test(NetMessage_Test& aMessage);
+
+private:
+    std::unordered_map<unsigned, CircularArray<CU::Vector3f, 16>> myObjectIDPositionHistory;
 };

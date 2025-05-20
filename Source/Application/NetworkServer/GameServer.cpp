@@ -33,17 +33,6 @@ void GameServer::Update()
     {
         myLastUpdateTimestamp = currentTime;
 
-        static int increment = 0;
-        printf("%i\n", increment);
-
-        NetMessage_Test newMsg;
-        newMsg.SetNetworkID(0);
-        newMsg.SetInt(increment);
-        NetBuffer buffer;
-        newMsg.Serialize(buffer);
-        SendToAllClients(buffer);
-        ++increment;
-
         UpdatePositions();
 
         myCurrentTimeSinceLastSpawn += dt;
@@ -253,4 +242,18 @@ void GameServer::UpdatePositions()
     }
 
     //printf("Updated all %i positions!\n\n", static_cast<int>(myObjects.size()));
+}
+
+void GameServer::SendTestMessage()
+{
+    static int increment = 0;
+    printf("%i\n", increment);
+
+    NetMessage_Test newMsg;
+    newMsg.SetNetworkID(0);
+    newMsg.SetInt(increment);
+    NetBuffer buffer;
+    newMsg.Serialize(buffer);
+    SendToAllClients(buffer);
+    ++increment;
 }

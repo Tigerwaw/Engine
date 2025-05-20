@@ -5,14 +5,11 @@ set serverDir=Bin\NetworkServer\
 set clientExe=NetworkClient_Debug.exe
 set serverExe=NetworkServer_Debug.exe
 
-set client1cmd=WINPOSX=100 WINPOSY=0
-set client2cmd=WINPOSX=600 WINPOSY=0
-set client3cmd=WINPOSX=100 WINPOSY=512
-set client4cmd=WINPOSX=600 WINPOSY=512
-set servercmd=WINPOSX=1200 WINPOSY=256
+set clientcmd=FULLSCREEN=0 BORDERLESS=0 WINPOSX=100 WINPOSY=256 WINSIZEX=512 WINSIZEY=512
+set servercmd=FULLSCREEN=0 BORDERLESS=0 WINPOSX=1200 WINPOSY=256 WINSIZEX=512 WINSIZEY=512
 
 pushd %clientDir%
-start %clientExe% %client1cmd%
+start %clientExe% %clientcmd%
 popd
 
 pushd %serverDir%
