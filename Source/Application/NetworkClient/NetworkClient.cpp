@@ -21,6 +21,8 @@ void NetworkClient::InitializeApplication()
 	GraphicsEngine::Get().DrawColliders = true;
 	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_NetworkingScene.json");
 	myClient.ConnectClient("");
+
+	Engine::GetInstance().GetInputHandler().RegisterBinaryAction("ToggleLerp", Keys::SPACE, GenericInput::ActionType::Clicked);
 }
 
 void NetworkClient::UpdateApplication()

@@ -79,7 +79,7 @@ std::shared_ptr<GameObject> Scene::FindGameObjectByName(const std::string& aName
 
 std::shared_ptr<GameObject> Scene::FindGameObjectByID(const unsigned aID)
 {
-	if (auto go = std::find_if(myGameObjects.begin(), myGameObjects.end(), [aID](const std::shared_ptr<GameObject>& object) { return object->GetID() == aID; }); *go != nullptr)
+	if (auto go = std::find_if(myGameObjects.begin(), myGameObjects.end(), [aID](const std::shared_ptr<GameObject>& object) { return object->GetID() == aID; }); go != myGameObjects.end() && *go != nullptr)
 	{
 		return *go;
 	}
@@ -90,7 +90,7 @@ std::shared_ptr<GameObject> Scene::FindGameObjectByID(const unsigned aID)
 
 std::shared_ptr<GameObject> Scene::FindGameObjectByNetworkID(const unsigned aNetworkID)
 {
-	if (auto go = std::find_if(myGameObjects.begin(), myGameObjects.end(), [aNetworkID](const std::shared_ptr<GameObject>& object) { return object->GetNetworkID() == aNetworkID; }); *go != nullptr)
+	if (auto go = std::find_if(myGameObjects.begin(), myGameObjects.end(), [aNetworkID](const std::shared_ptr<GameObject>& object) { return object->GetNetworkID() == aNetworkID; }); go != myGameObjects.end() && *go != nullptr)
 	{
 		return *go;
 	}

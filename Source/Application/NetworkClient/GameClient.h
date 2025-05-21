@@ -12,6 +12,12 @@ class NetMessage_Test;
 
 class GameObject;
 
+struct PositionData
+{
+    CU::Vector3f position;
+    double serverTimestamp;
+};
+
 class GameClient : public ClientBase
 {
 public:
@@ -37,5 +43,8 @@ protected:
     void HandleMessage_Test(NetMessage_Test& aMessage);
 
 private:
-    std::unordered_map<unsigned, CircularArray<CU::Vector3f, 16>> myObjectIDPositionHistory;
+    std::unordered_map<unsigned, CircularArray<PositionData, 16>> myObjectIDPositionHistory;
+    std::unordered_map<unsigned, double> myLastPositionMessageTimestamp;
+
+    bool myShouldLerpPositions = true;
 };

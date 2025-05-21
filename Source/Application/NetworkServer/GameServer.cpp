@@ -236,6 +236,7 @@ void GameServer::UpdatePositions()
         NetMessage_Position newMsg;
         newMsg.SetNetworkID(object->GetNetworkID());
         newMsg.SetPosition(object->GetComponent<Transform>()->GetTranslation());
+        newMsg.SetTimestamp(Engine::GetInstance().GetTimer().GetTotalTime());
         NetBuffer buffer;
         newMsg.Serialize(buffer);
         SendToAllClients(buffer);

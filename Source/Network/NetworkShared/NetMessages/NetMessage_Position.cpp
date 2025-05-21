@@ -12,6 +12,7 @@ void NetMessage_Position::Serialize(NetBuffer& aBuffer)
 	aBuffer.WriteData(myPosition.x);
 	aBuffer.WriteData(myPosition.y);
 	aBuffer.WriteData(myPosition.z);
+	aBuffer.WriteData(myTimestamp);
 }
 
 void NetMessage_Position::Deserialize(NetBuffer& aBuffer)
@@ -21,6 +22,7 @@ void NetMessage_Position::Deserialize(NetBuffer& aBuffer)
 	aBuffer.ReadData(myPosition.x);
 	aBuffer.ReadData(myPosition.y);
 	aBuffer.ReadData(myPosition.z);
+	aBuffer.ReadData(myTimestamp);
 }
 
 void NetMessage_Position::GetStringRepresentation(char* outString, int aBufferSize) const

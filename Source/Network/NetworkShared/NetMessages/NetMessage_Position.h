@@ -10,8 +10,10 @@ public:
 	NetMessage_Position();
 	void SetNetworkID(const unsigned aNetworkID) { myNetworkID = aNetworkID; }
 	void SetPosition(const CU::Vector3f aPosition) { myPosition = aPosition; }
+	void SetTimestamp(double aTimestamp) { myTimestamp = aTimestamp; }
 	const unsigned GetNetworkID() const { return myNetworkID; }
 	const CU::Vector3f GetPosition() const { return myPosition; }
+	const double GetTimestamp() const { return myTimestamp; }
 
 	void Serialize(NetBuffer& aBuffer) override;
 	void Deserialize(NetBuffer& aBuffer) override;
@@ -21,4 +23,5 @@ public:
 protected:
 	unsigned myNetworkID;
 	CU::Vector3f myPosition;
+	double myTimestamp;
 };

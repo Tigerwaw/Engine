@@ -23,17 +23,47 @@
 #include <GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h>
 #include <GameEngine/ComponentSystem/Components/Graphics/Model.h>
 #include <GameEngine/ComponentSystem/Components/Physics/Colliders/BoxCollider.h>
+#include <GameEngine/Input/InputHandler.h>
 
 #include "Controller.h"
 
 void GameClient::Update()
 {
+    if (Engine::GetInstance().GetInputHandler().GetBinaryAction("ToggleLerp"))
+    {
+        myShouldLerpPositions = !myShouldLerpPositions;
+    }
+
     ClientBase::Update();
     if (!myHasEstablishedConnection)
     {
         SendConnectMessage(std::to_string(myComm.GetAddress().sin_addr.S_un.S_addr));
         myHasEstablishedConnection = true;
         return;
+    }
+
+    if (myShouldLerpPositions)
+    {
+        double currentTime = Engine::GetInstance().GetTimer().GetTotalTime();
+
+        for (auto& [clientID, positionDataArray] : myObjectIDPositionHistory)
+        {
+            if (positionDataArray.Size() > 2)
+            {
+                PositionData firstPos = positionDataArray.Pop_Front();
+                PositionData secondPos = positionDataArray.Pop_Front();
+
+                float messageTimeDiff = static_cast<float>(currentTime - myLastPositionMessageTimestamp[clientID]);
+                float positionTimeDiff = static_cast<float>(secondPos.serverTimestamp - firstPos.serverTimestamp);
+                float t = messageTimeDiff / positionTimeDiff;
+
+                CU::Vector3f lerpedPosition = CU::Vector3f::Lerp(firstPos.position, secondPos.position, t);
+                if (auto go = Engine::GetInstance().GetSceneHandler().FindGameObjectByNetworkID(clientID))
+                {
+                    go->GetComponent<Transform>()->SetTranslation(lerpedPosition);
+                }
+            }
+        }
     }
 }
 
@@ -181,9 +211,20 @@ void GameClient::HandleMessage_RemoveCharacter(NetMessage_RemoveCharacter& aMess
 
 void GameClient::HandleMessage_Position(NetMessage_Position& aMessage)
 {
-    if (auto go = Engine::GetInstance().GetSceneHandler().FindGameObjectByNetworkID(aMessage.GetNetworkID()))
+    if (myShouldLerpPositions)
     {
-        go->GetComponent<Transform>()->SetTranslation(aMessage.GetPosition());
+        PositionData data;
+        data.position = aMessage.GetPosition();
+        data.serverTimestamp = aMessage.GetTimestamp();
+        myObjectIDPositionHistory[aMessage.GetNetworkID()].Push_back(data);
+        myLastPositionMessageTimestamp[aMessage.GetNetworkID()] = Engine::GetInstance().GetTimer().GetTotalTime();
+    }
+    else
+    {
+        if (auto go = Engine::GetInstance().GetSceneHandler().FindGameObjectByNetworkID(aMessage.GetNetworkID()))
+        {
+            go->GetComponent<Transform>()->SetTranslation(aMessage.GetPosition());
+        }
     }
 }
 

@@ -7,8 +7,10 @@ class CircularArray
 public:
 	CircularArray();
 	T& Push_back(T& aItem);
+	T Pop_Front();
 	void Clear();
 	int Size() const;
+	int MaxSize() const;
 
 	const T& operator[](int aIndex) const;
 	T& operator[](int aIndex);
@@ -16,30 +18,45 @@ private:
 	std::array<T, MAXSIZE> myArray;
 	int myFirstIndex = 0;
 	int myLastIndex = 0;
-	int mySize = 0;
+	int myMaxSize = 0;
 };
 
 template<typename T, int MAXSIZE>
 inline CircularArray<T, MAXSIZE>::CircularArray()
 {
-	mySize = MAXSIZE;
+	myMaxSize = MAXSIZE;
 }
 
 template<typename T, int MAXSIZE>
 inline T& CircularArray<T, MAXSIZE>::Push_back(T& aItem)
 {
 	int lastIndex = myLastIndex;
-	int newLastIndex = (myLastIndex + 1) % mySize;
+	int newLastIndex = (myLastIndex + 1) % myMaxSize;
 
 	if (newLastIndex == myFirstIndex)
 	{
-		myFirstIndex = (myFirstIndex + 1) % mySize;
+		myFirstIndex = (myFirstIndex + 1) % myMaxSize;
 	}
 
 	myArray[myLastIndex] = aItem;
 	myLastIndex = newLastIndex;
 
 	return myArray[lastIndex];
+}
+
+template<typename T, int MAXSIZE>
+inline T CircularArray<T, MAXSIZE>::Pop_Front()
+{
+	assert(myFirstIndex != myLastIndex);
+
+	T& item = this->operator[](0);
+	++myFirstIndex;
+	if (myFirstIndex >= myMaxSize)
+	{
+		myFirstIndex = 0;
+	}
+
+	return item;
 }
 
 template<typename T, int MAXSIZE>
@@ -52,25 +69,29 @@ inline void CircularArray<T, MAXSIZE>::Clear()
 template<typename T, int MAXSIZE>
 inline int CircularArray<T, MAXSIZE>::Size() const
 {
-	return mySize;
+	return abs(myFirstIndex - myLastIndex);
+}
+
+template<typename T, int MAXSIZE>
+inline int CircularArray<T, MAXSIZE>::MaxSize() const
+{
+	return myMaxSize;
 }
 
 template<typename T, int MAXSIZE>
 inline const T& CircularArray<T, MAXSIZE>::operator[](int aIndex) const
 {
 	assert(aIndex >= 0);
-	assert(aIndex < mySize);
-	assert(myLastIndex != myFirstIndex);
+	assert(aIndex < myMaxSize);
 
-	return myArray[(myFirstIndex + aIndex) % (mySize + myLastIndex)];
+	return myArray[(myFirstIndex + aIndex) % (myMaxSize + myLastIndex)];
 }
 
 template<typename T, int MAXSIZE>
 inline T& CircularArray<T, MAXSIZE>::operator[](int aIndex)
 {
 	assert(aIndex >= 0);
-	assert(aIndex < mySize);
-	assert(myLastIndex != myFirstIndex);
+	assert(aIndex < myMaxSize);
 
-	return myArray[(myFirstIndex + aIndex) % (mySize + myLastIndex)];
+	return myArray[(myFirstIndex + aIndex) % (myMaxSize + myLastIndex)];
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <cassert>
+#include <tuple>
 #include "Utility/ArithmeticUtilities.hpp"
 
 namespace CommonUtilities
