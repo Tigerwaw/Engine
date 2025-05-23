@@ -5,7 +5,7 @@
 
 #include "NetworkEngine/NetMessage.h"
 #include "NetworkShared/NetMessages/NetMessage_Text.h"
-#include "NetworkShared/NetMessages/NetMessage_Connect.h"
+#include "NetworkShared/NetMessages/NetMessage_RequestConnect.h"
 #include "NetworkShared/NetMessages/NetMessage_AcceptConnect.h"
 #include "NetworkShared/NetMessages/NetMessage_Disconnect.h"
 #include "NetworkShared/NetMessages/NetMessage_RequestHandshake.h"
@@ -38,7 +38,7 @@ void GameClient::Update()
     ClientBase::Update();
     if (!myHasEstablishedConnection)
     {
-        SendConnectMessage("user");
+        SendConnectionRequest("");
         return;
     }
 
@@ -81,21 +81,21 @@ void GameClient::SendHandshakeRequest() const
     myComm.SendData(sendBuffer);
 }
 
+void GameClient::SendConnectionRequest(const std::string& aUsername) const
+{
+    NetMessage_RequestConnect msg;
+    msg.SetUsername(aUsername);
+    NetBuffer sendBuffer;
+    msg.Serialize(sendBuffer);
+    myComm.SendData(sendBuffer);
+}
+
 void GameClient::SendTextMessage(const std::string& aMessage) const
 {
     NetMessage_Text textMsg;
     textMsg.SetData(aMessage);
     NetBuffer sendBuffer;
     textMsg.Serialize(sendBuffer);
-    myComm.SendData(sendBuffer);
-}
-
-void GameClient::SendConnectMessage(const std::string& aUsername) const
-{
-    NetMessage_Connect connectMsg;
-    connectMsg.SetUsername(aUsername);
-    NetBuffer sendBuffer;
-    connectMsg.Serialize(sendBuffer);
     myComm.SendData(sendBuffer);
 }
 
@@ -125,15 +125,15 @@ NetMessage* GameClient::ReceiveMessage(const NetBuffer& aBuffer) const
 
     switch (receivedMessageType)
     {
-    case NetMessageType::Connect:
-        return new NetMessage_Connect();
-    case NetMessageType::ConnectAccept:
+    case NetMessageType::RequestConnect:
+        return new NetMessage_RequestConnect();
+    case NetMessageType::AcceptConnect:
         return new NetMessage_AcceptConnect();
     case NetMessageType::Disconnect:
         return new NetMessage_Disconnect();
     case NetMessageType::Text:
         return new NetMessage_Text();
-    case NetMessageType::HandshakeAccept:
+    case NetMessageType::AcceptHandshake:
         return new NetMessage_AcceptHandshake();
     case NetMessageType::CreateCharacter:
         return new NetMessage_CreateCharacter();
@@ -153,11 +153,8 @@ void GameClient::HandleMessage(NetMessage* aMessage)
     NetMessageType type = aMessage->GetType();
     switch (type)
     {
-    case NetMessageType::Connect:
-        HandleMessage_Connect(*static_cast<NetMessage_Connect*>(aMessage));
-        break;
-    case NetMessageType::ConnectAccept:
-        HandleMessage_AcceptConnect(*static_cast<NetMessage_AcceptConnect*>(aMessage));
+    case NetMessageType::AcceptConnect:
+        HandleMessage_AcceptConnect();
         break;
     case NetMessageType::Disconnect:
         HandleMessage_Disconnect(*static_cast<NetMessage_Disconnect*>(aMessage));
@@ -165,8 +162,8 @@ void GameClient::HandleMessage(NetMessage* aMessage)
     case NetMessageType::Text:
         HandleMessage_Text(*static_cast<NetMessage_Text*>(aMessage));
         break;
-    case NetMessageType::HandshakeAccept:
-        HandleMessage_HandshakeAccept();
+    case NetMessageType::AcceptHandshake:
+        HandleMessage_AcceptHandshake();
         break;
     case NetMessageType::CreateCharacter:
         HandleMessage_CreateCharacter(*static_cast<NetMessage_CreateCharacter*>(aMessage));
@@ -181,17 +178,6 @@ void GameClient::HandleMessage(NetMessage* aMessage)
         HandleMessage_Test(*static_cast<NetMessage_Test*>(aMessage));
         break;
     }
-}
-
-void GameClient::HandleMessage_Connect(NetMessage_Connect& aMessage)
-{
-    printf("\n[%s] has joined the game!", aMessage.GetUsername().data());
-}
-
-void GameClient::HandleMessage_AcceptConnect(NetMessage_AcceptConnect&)
-{
-    printf("\nSuccessfully connected to server!");
-    myHasEstablishedConnection = true;
 }
 
 void GameClient::HandleMessage_Disconnect(NetMessage_Disconnect& aMessage)

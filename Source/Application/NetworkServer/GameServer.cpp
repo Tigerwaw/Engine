@@ -4,7 +4,7 @@
 
 #include "NetworkEngine/NetMessage.h"
 #include "NetworkShared/NetMessages/NetMessage_Text.h"
-#include "NetworkShared/NetMessages/NetMessage_Connect.h"
+#include "NetworkShared/NetMessages/NetMessage_RequestConnect.h"
 #include "NetworkShared/NetMessages/NetMessage_AcceptConnect.h"
 #include "NetworkShared/NetMessages/NetMessage_Disconnect.h"
 #include "NetworkShared/NetMessages/NetMessage_RequestHandshake.h"
@@ -56,9 +56,9 @@ NetMessage* GameServer::ReceiveMessage(const NetBuffer& aBuffer) const
 
     switch (receivedMessageType)
     {
-    case NetMessageType::Connect:
+    case NetMessageType::RequestConnect:
     {
-        return new NetMessage_Connect();
+        return new NetMessage_RequestConnect();
         break;
     }
     case NetMessageType::Disconnect:
@@ -71,7 +71,7 @@ NetMessage* GameServer::ReceiveMessage(const NetBuffer& aBuffer) const
         return new NetMessage_Text();
         break;
     }
-    case NetMessageType::HandshakeRequest:
+    case NetMessageType::RequestHandshake:
     {
         return new NetMessage_RequestHandshake();
         break;
@@ -92,13 +92,13 @@ void GameServer::HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress
     NetMessageType type = aMessage->GetType();
     switch (type)
     {
-    case NetMessageType::Connect:
-        HandleMessage_Connect(*static_cast<NetMessage_Connect*>(aMessage), aAddress);
+    case NetMessageType::RequestConnect:
+        HandleMessage_RequestConnect(*static_cast<NetMessage_RequestConnect*>(aMessage), aAddress);
         break;
     case NetMessageType::Disconnect:
         HandleMessage_Disconnect(*static_cast<NetMessage_Disconnect*>(aMessage), aAddress);
         break;
-    case NetMessageType::HandshakeRequest:
+    case NetMessageType::RequestHandshake:
         HandleMessage_HandshakeRequest(aAddress);
         break;
     default:
@@ -106,7 +106,7 @@ void GameServer::HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress
     }
 }
 
-void GameServer::HandleMessage_Connect(NetMessage_Connect& aMessage, const sockaddr_in& aAddress)
+void GameServer::HandleMessage_RequestConnect(NetMessage_RequestConnect& aMessage, const sockaddr_in& aAddress)
 {
     if (DoesClientExist(aAddress)) return;
 
@@ -114,17 +114,6 @@ void GameServer::HandleMessage_Connect(NetMessage_Connect& aMessage, const socka
     newInfo.address = aAddress;
     newInfo.username = aMessage.GetUsername();
     int index = GetClientIndex(newInfo.address);
-
-    printf("\n[User %s connected]\n", newInfo.username.data());
-
-    // Send connect message.
-    {
-        NetMessage_Connect connectMsg;
-        connectMsg.SetUsername(newInfo.username);
-        NetBuffer buffer;
-        connectMsg.Serialize(buffer);
-        SendToAllClients(buffer);
-    }
 
     // Send connect accept.
     {

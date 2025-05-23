@@ -2,7 +2,7 @@
 
 NetMessage_AcceptConnect::NetMessage_AcceptConnect()
 {
-	myMessageType = NetMessageType::ConnectAccept;
+	myMessageType = NetMessageType::AcceptConnect;
 }
 
 void NetMessage_AcceptConnect::Serialize(NetBuffer& aBuffer)

@@ -1,8 +1,7 @@
 #pragma once
 #include "ServerBase.h"
 
-class NetMessage_Connect;
-class NetMessage_AcceptConnect;
+class NetMessage_RequestConnect;
 class NetMessage_Disconnect;
 class NetMessage_Text;
 class NetMessage_CreateCharacter;
@@ -16,7 +15,7 @@ protected:
     NetMessage* ReceiveMessage(const NetBuffer& aBuffer) const override;
     void HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress, const int aBytesReceived) override;
 
-    void HandleMessage_Connect(NetMessage_Connect& aMessage, const sockaddr_in& aAddress);
+    void HandleMessage_RequestConnect(NetMessage_RequestConnect& aMessage, const sockaddr_in& aAddress);
     void HandleMessage_Disconnect(NetMessage_Disconnect& aMessage, const sockaddr_in& aAddress);
 
     void HandleMessage_HandshakeRequest(const sockaddr_in& aAddress);

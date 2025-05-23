@@ -61,7 +61,14 @@ void ClientBase::Receive()
     }
 }
 
-void ClientBase::HandleMessage_HandshakeAccept()
+void ClientBase::HandleMessage_AcceptHandshake()
 {
     myHasEstablishedHandshake = true;
+    printf("\nSuccessfully established handshake!\n");
+}
+
+void ClientBase::HandleMessage_AcceptConnect()
+{
+    myHasEstablishedConnection = true;
+    printf("\nSuccessfully established connection!\n");
 }

@@ -2,7 +2,7 @@
 
 NetMessage_RequestHandshake::NetMessage_RequestHandshake()
 {
-	myMessageType = NetMessageType::HandshakeRequest;
+	myMessageType = NetMessageType::RequestHandshake;
 }
 
 void NetMessage_RequestHandshake::Serialize(NetBuffer& aBuffer)

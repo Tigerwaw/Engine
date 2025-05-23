@@ -30,14 +30,12 @@ protected:
     void HandleMessage(NetMessage* aMessage) override;
 
     void SendHandshakeRequest() const override;
+    void SendConnectionRequest(const std::string& aUsername) const override;
+    void SendDisconnectMessage() const override;
 
     void SendTextMessage(const std::string& aMessage) const;
-    void SendConnectMessage(const std::string& aUsername) const;
-    void SendDisconnectMessage() const;
     void SendPositionMessage(const CU::Vector3f& aPosition) const;
 
-    void HandleMessage_Connect(NetMessage_Connect& aMessage);
-    void HandleMessage_AcceptConnect(NetMessage_AcceptConnect& aMessage);
     void HandleMessage_Disconnect(NetMessage_Disconnect& aMessage);
     void HandleMessage_Text(NetMessage_Text& aMessage);
     void HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMessage);

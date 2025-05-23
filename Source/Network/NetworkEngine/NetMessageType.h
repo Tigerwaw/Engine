@@ -3,10 +3,10 @@
 enum class NetMessageType
 {
 	None,
-	HandshakeRequest,
-	HandshakeAccept,
-	Connect,
-	ConnectAccept,
+	RequestHandshake,
+	AcceptHandshake,
+	RequestConnect,
+	AcceptConnect,
 	Disconnect,
 	Text,
 	CreateCharacter,
