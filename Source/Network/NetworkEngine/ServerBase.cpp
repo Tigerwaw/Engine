@@ -5,27 +5,31 @@
 
 ServerBase::~ServerBase()
 {
-    myReceiveThread.join();
     myComm.Destroy();
 }
 
 void ServerBase::StartServer()
 {
-    myComm.Init(true, true, "");
-    myReceiveThread = std::thread(&ServerBase::Receive, this);
+    myComm.Init(true, false, "");
+    myShouldReceive = true;
 }
 
 void ServerBase::Update()
 {
+    if (myShouldReceive)
+    {
+        Receive();
+    }
 }
 
 void ServerBase::Receive()
 {
-    while (myShouldReceive)
+    for (int i = 0; i < myMessagesHandledPerTick; i++)
     {
         sockaddr_in otherAddress = {};
         NetBuffer receiveBuffer;
-        if (int bytesReceived = myComm.ReceiveData(receiveBuffer, otherAddress); bytesReceived > 0)
+        int bytesReceived = myComm.ReceiveData(receiveBuffer, otherAddress);
+        if (bytesReceived > 0)
         {
             NetMessage* receivedMessage = ReceiveMessage(receiveBuffer);
 
@@ -36,17 +40,23 @@ void ServerBase::Receive()
                 delete receivedMessage;
             }
         }
+        else
+        {
+            break;
+        }
     }
+}
+
+void ServerBase::SendToClient(NetBuffer& aBuffer, int aClientIndex) const
+{
+    myComm.SendData(aBuffer, myClients[aClientIndex].address);
 }
 
 void ServerBase::SendToAllClients(NetBuffer& aBuffer) const
 {
-    int clientIndex = 0;
     for (auto& client : myClients)
     {
         myComm.SendData(aBuffer, client.address);
-        ++clientIndex;
-        //printf("Sent data to client: %i\n", clientIndex);
     }
 }
 

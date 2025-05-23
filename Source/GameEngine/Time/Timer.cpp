@@ -27,6 +27,11 @@ void Timer::Update()
 
 }
 
+double Timer::GetTimeSinceEpoch() const
+{
+	return static_cast<double>(std::chrono::system_clock::now().time_since_epoch().count());
+}
+
 float Timer::GetDeltaTime() const
 {
 	const std::chrono::duration<float, std::ratio<1, 1>> deltaTime = myCurrentFrameTime - myLastFrameTime;
@@ -39,7 +44,7 @@ float Timer::GetUnscaledDeltaTime() const
 	return deltaTime.count();
 }
 
-double Timer::GetTotalTime() const
+double Timer::GetTimeSinceProgramStart() const
 {
 	const std::chrono::duration<double, std::ratio<1, 1>> timeSinceStart = myCurrentFrameTime - myStartTime;
 	return timeSinceStart.count();

@@ -5,6 +5,7 @@
 #include "NetworkEngine/NetMessage.h"
 #include "NetworkShared/NetMessages/NetMessage_Text.h"
 #include "NetworkShared/NetMessages/NetMessage_Connect.h"
+#include "NetworkShared/NetMessages/NetMessage_AcceptConnect.h"
 #include "NetworkShared/NetMessages/NetMessage_Disconnect.h"
 #include "NetworkShared/NetMessages/NetMessage_RequestHandshake.h"
 #include "NetworkShared/NetMessages/NetMessage_AcceptHandshake.h"
@@ -27,7 +28,9 @@
 
 void GameServer::Update()
 {
-    double currentTime = Engine::GetInstance().GetTimer().GetTotalTime();
+    ServerBase::Update();
+
+    double currentTime = Engine::GetInstance().GetTimer().GetTimeSinceProgramStart();
     float dt = static_cast<float>(currentTime - myLastUpdateTimestamp);
     if (dt > (1.0f / myTickRate))
     {
@@ -123,6 +126,14 @@ void GameServer::HandleMessage_Connect(NetMessage_Connect& aMessage, const socka
         SendToAllClients(buffer);
     }
 
+    // Send connect accept.
+    {
+        NetMessage_AcceptConnect acceptConnectMsg;
+        NetBuffer buffer;
+        acceptConnectMsg.Serialize(buffer);
+        SendToClient(buffer, index);
+    }
+
     // Create already existing objects for newly joined user.
     for (auto& object : myObjects)
     {
@@ -204,16 +215,12 @@ void GameServer::CreateNewObject()
 
     myCurrentTimeSinceLastSpawn = 0.0f;
     myCurrentNetworkID++;
-
-    //printf("Finished creating object!\n");
 }
 
 void GameServer::DestroyObject(unsigned aNetworkID)
 {
-    //printf("\nStarted destroying object!\n");
-
     auto it = std::find_if(myObjects.begin(), myObjects.end(), [aNetworkID](const std::shared_ptr<GameObject>& object) { return object->GetNetworkID() == aNetworkID; });
-    if (*it)
+    if (it != myObjects.end() && *it != nullptr)
     {
         myObjects.erase(it);
     }
@@ -223,26 +230,20 @@ void GameServer::DestroyObject(unsigned aNetworkID)
     NetBuffer buffer;
     removeCharacterMsg.Serialize(buffer);
     SendToAllClients(buffer);
-
-    //printf("Finished destroying object!\n");
 }
 
 void GameServer::UpdatePositions()
 {
-    //printf("\nStarted updating all %i positions!\n", static_cast<int>(myObjects.size()));
-
     for (auto& object : myObjects)
     {
         NetMessage_Position newMsg;
         newMsg.SetNetworkID(object->GetNetworkID());
         newMsg.SetPosition(object->GetComponent<Transform>()->GetTranslation());
-        newMsg.SetTimestamp(Engine::GetInstance().GetTimer().GetTotalTime());
+        newMsg.SetTimestamp(Engine::GetInstance().GetTimer().GetTimeSinceEpoch());
         NetBuffer buffer;
         newMsg.Serialize(buffer);
         SendToAllClients(buffer);
     }
-
-    //printf("Updated all %i positions!\n\n", static_cast<int>(myObjects.size()));
 }
 
 void GameServer::SendTestMessage()

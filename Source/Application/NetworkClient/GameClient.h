@@ -3,6 +3,7 @@
 #include "Utility/CircularArray.hpp"
 
 class NetMessage_Connect;
+class NetMessage_AcceptConnect;
 class NetMessage_Disconnect;
 class NetMessage_Text;
 class NetMessage_CreateCharacter;
@@ -15,6 +16,7 @@ class GameObject;
 struct PositionData
 {
     CU::Vector3f position;
+    double clientTimestamp;
     double serverTimestamp;
 };
 
@@ -35,6 +37,7 @@ protected:
     void SendPositionMessage(const CU::Vector3f& aPosition) const;
 
     void HandleMessage_Connect(NetMessage_Connect& aMessage);
+    void HandleMessage_AcceptConnect(NetMessage_AcceptConnect& aMessage);
     void HandleMessage_Disconnect(NetMessage_Disconnect& aMessage);
     void HandleMessage_Text(NetMessage_Text& aMessage);
     void HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMessage);
@@ -44,7 +47,6 @@ protected:
 
 private:
     std::unordered_map<unsigned, CircularArray<PositionData, 16>> myObjectIDPositionHistory;
-    std::unordered_map<unsigned, double> myLastPositionMessageTimestamp;
 
     bool myShouldLerpPositions = true;
 };

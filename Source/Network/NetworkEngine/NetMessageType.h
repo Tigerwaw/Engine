@@ -6,6 +6,7 @@ enum class NetMessageType
 	HandshakeRequest,
 	HandshakeAccept,
 	Connect,
+	ConnectAccept,
 	Disconnect,
 	Text,
 	CreateCharacter,

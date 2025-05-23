@@ -6,6 +6,7 @@
 #include "NetworkEngine/NetMessage.h"
 #include "NetworkShared/NetMessages/NetMessage_Text.h"
 #include "NetworkShared/NetMessages/NetMessage_Connect.h"
+#include "NetworkShared/NetMessages/NetMessage_AcceptConnect.h"
 #include "NetworkShared/NetMessages/NetMessage_Disconnect.h"
 #include "NetworkShared/NetMessages/NetMessage_RequestHandshake.h"
 #include "NetworkShared/NetMessages/NetMessage_AcceptHandshake.h"
@@ -37,27 +38,32 @@ void GameClient::Update()
     ClientBase::Update();
     if (!myHasEstablishedConnection)
     {
-        SendConnectMessage(std::to_string(myComm.GetAddress().sin_addr.S_un.S_addr));
-        myHasEstablishedConnection = true;
+        SendConnectMessage("user");
         return;
     }
 
     if (myShouldLerpPositions)
     {
-        double currentTime = Engine::GetInstance().GetTimer().GetTotalTime();
+        double currentTime = Engine::GetInstance().GetTimer().GetTimeSinceEpoch();
 
         for (auto& [clientID, positionDataArray] : myObjectIDPositionHistory)
         {
-            if (positionDataArray.Size() > 2)
+            if (positionDataArray.Size() >= 2)
             {
-                PositionData firstPos = positionDataArray.Pop_Front();
-                PositionData secondPos = positionDataArray.Pop_Front();
+                PositionData lastPos = positionDataArray.Peek_Front();
+                PositionData nextPos = positionDataArray.Peek_Next();
 
-                float messageTimeDiff = static_cast<float>(currentTime - myLastPositionMessageTimestamp[clientID]);
-                float positionTimeDiff = static_cast<float>(secondPos.serverTimestamp - firstPos.serverTimestamp);
-                float t = messageTimeDiff / positionTimeDiff;
+                float messageTimeDiff = static_cast<float>(currentTime - nextPos.clientTimestamp);
+                float timestampDiff = static_cast<float>(nextPos.serverTimestamp - lastPos.serverTimestamp);
+                if (timestampDiff == 0.0f) return;
 
-                CU::Vector3f lerpedPosition = CU::Vector3f::Lerp(firstPos.position, secondPos.position, t);
+                float t = messageTimeDiff / timestampDiff;
+                if (t >= 1.0f)
+                {
+                    positionDataArray.Pop_Front();
+                }
+
+                CU::Vector3f lerpedPosition = CU::Vector3f::Lerp(lastPos.position, nextPos.position, t);
                 if (auto go = Engine::GetInstance().GetSceneHandler().FindGameObjectByNetworkID(clientID))
                 {
                     go->GetComponent<Transform>()->SetTranslation(lerpedPosition);
@@ -72,7 +78,7 @@ void GameClient::SendHandshakeRequest() const
     NetMessage_RequestHandshake msg;
     NetBuffer sendBuffer;
     msg.Serialize(sendBuffer);
-    myComm.SendData(sendBuffer, myComm.GetAddress());
+    myComm.SendData(sendBuffer);
 }
 
 void GameClient::SendTextMessage(const std::string& aMessage) const
@@ -81,7 +87,7 @@ void GameClient::SendTextMessage(const std::string& aMessage) const
     textMsg.SetData(aMessage);
     NetBuffer sendBuffer;
     textMsg.Serialize(sendBuffer);
-    myComm.SendData(sendBuffer, myComm.GetAddress());
+    myComm.SendData(sendBuffer);
 }
 
 void GameClient::SendConnectMessage(const std::string& aUsername) const
@@ -90,7 +96,7 @@ void GameClient::SendConnectMessage(const std::string& aUsername) const
     connectMsg.SetUsername(aUsername);
     NetBuffer sendBuffer;
     connectMsg.Serialize(sendBuffer);
-    myComm.SendData(sendBuffer, myComm.GetAddress());
+    myComm.SendData(sendBuffer);
 }
 
 void GameClient::SendDisconnectMessage() const
@@ -98,7 +104,7 @@ void GameClient::SendDisconnectMessage() const
     NetMessage_Disconnect disconnectMsg;
     NetBuffer sendBuffer;
     disconnectMsg.Serialize(sendBuffer);
-    myComm.SendData(sendBuffer, myComm.GetAddress());
+    myComm.SendData(sendBuffer);
 }
 
 void GameClient::SendPositionMessage(const CU::Vector3f& aPosition) const
@@ -107,7 +113,7 @@ void GameClient::SendPositionMessage(const CU::Vector3f& aPosition) const
     positionMsg.SetPosition(aPosition);
     NetBuffer sendBuffer;
     positionMsg.Serialize(sendBuffer);
-    myComm.SendData(sendBuffer, myComm.GetAddress());
+    myComm.SendData(sendBuffer);
 
     printf("\nSent position x: %f, y: %f, z: %f", aPosition.x, aPosition.y, aPosition.z);
 }
@@ -121,6 +127,8 @@ NetMessage* GameClient::ReceiveMessage(const NetBuffer& aBuffer) const
     {
     case NetMessageType::Connect:
         return new NetMessage_Connect();
+    case NetMessageType::ConnectAccept:
+        return new NetMessage_AcceptConnect();
     case NetMessageType::Disconnect:
         return new NetMessage_Disconnect();
     case NetMessageType::Text:
@@ -147,6 +155,9 @@ void GameClient::HandleMessage(NetMessage* aMessage)
     {
     case NetMessageType::Connect:
         HandleMessage_Connect(*static_cast<NetMessage_Connect*>(aMessage));
+        break;
+    case NetMessageType::ConnectAccept:
+        HandleMessage_AcceptConnect(*static_cast<NetMessage_AcceptConnect*>(aMessage));
         break;
     case NetMessageType::Disconnect:
         HandleMessage_Disconnect(*static_cast<NetMessage_Disconnect*>(aMessage));
@@ -175,6 +186,12 @@ void GameClient::HandleMessage(NetMessage* aMessage)
 void GameClient::HandleMessage_Connect(NetMessage_Connect& aMessage)
 {
     printf("\n[%s] has joined the game!", aMessage.GetUsername().data());
+}
+
+void GameClient::HandleMessage_AcceptConnect(NetMessage_AcceptConnect&)
+{
+    printf("\nSuccessfully connected to server!");
+    myHasEstablishedConnection = true;
 }
 
 void GameClient::HandleMessage_Disconnect(NetMessage_Disconnect& aMessage)
@@ -216,8 +233,8 @@ void GameClient::HandleMessage_Position(NetMessage_Position& aMessage)
         PositionData data;
         data.position = aMessage.GetPosition();
         data.serverTimestamp = aMessage.GetTimestamp();
+        data.clientTimestamp = Engine::GetInstance().GetTimer().GetTimeSinceEpoch();
         myObjectIDPositionHistory[aMessage.GetNetworkID()].Push_back(data);
-        myLastPositionMessageTimestamp[aMessage.GetNetworkID()] = Engine::GetInstance().GetTimer().GetTotalTime();
     }
     else
     {

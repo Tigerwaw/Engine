@@ -37,6 +37,7 @@ protected:
     virtual NetMessage* ReceiveMessage(const NetBuffer& aBuffer) const = 0;
     virtual void HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress, const int aBytesReceived) = 0;
 
+    void SendToClient(NetBuffer& aBuffer, int aClientIndex) const;
     void SendToAllClients(NetBuffer& aBuffer) const;
     void SendToAllClientsExcluding(NetBuffer& aBuffer, const int aClientIndex) const;
     bool DoesClientExist(const sockaddr_in& aAddress) const;
@@ -45,7 +46,7 @@ protected:
     Communicator myComm;
     std::vector<NetInfo> myClients;
 
-    std::thread myReceiveThread;
-    bool myShouldReceive = true;
+    bool myShouldReceive = false;
+    int myMessagesHandledPerTick = 10;
 };
 

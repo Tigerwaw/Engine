@@ -8,6 +8,8 @@ public:
 	CircularArray();
 	T& Push_back(T& aItem);
 	T Pop_Front();
+	T& Peek_Front();
+	T& Peek_Next();
 	void Clear();
 	int Size() const;
 	int MaxSize() const;
@@ -60,6 +62,22 @@ inline T CircularArray<T, MAXSIZE>::Pop_Front()
 }
 
 template<typename T, int MAXSIZE>
+inline T& CircularArray<T, MAXSIZE>::Peek_Front()
+{
+	assert(myFirstIndex != myLastIndex);
+
+	return this->operator[](0);
+}
+
+template<typename T, int MAXSIZE>
+inline T& CircularArray<T, MAXSIZE>::Peek_Next()
+{
+	assert(myFirstIndex != myLastIndex);
+
+	return this->operator[](1);
+}
+
+template<typename T, int MAXSIZE>
 inline void CircularArray<T, MAXSIZE>::Clear()
 {
 	myFirstIndex = 0;
@@ -69,6 +87,11 @@ inline void CircularArray<T, MAXSIZE>::Clear()
 template<typename T, int MAXSIZE>
 inline int CircularArray<T, MAXSIZE>::Size() const
 {
+	if (myLastIndex < myFirstIndex)
+	{
+		return myMaxSize - abs(myFirstIndex - myLastIndex);
+	}
+
 	return abs(myFirstIndex - myLastIndex);
 }
 
@@ -84,7 +107,7 @@ inline const T& CircularArray<T, MAXSIZE>::operator[](int aIndex) const
 	assert(aIndex >= 0);
 	assert(aIndex < myMaxSize);
 
-	return myArray[(myFirstIndex + aIndex) % (myMaxSize + myLastIndex)];
+	return myArray[(myFirstIndex + aIndex) % myMaxSize];
 }
 
 template<typename T, int MAXSIZE>
@@ -93,5 +116,5 @@ inline T& CircularArray<T, MAXSIZE>::operator[](int aIndex)
 	assert(aIndex >= 0);
 	assert(aIndex < myMaxSize);
 
-	return myArray[(myFirstIndex + aIndex) % (myMaxSize + myLastIndex)];
+	return myArray[(myFirstIndex + aIndex) % myMaxSize];
 }

@@ -2,6 +2,7 @@
 #include "ServerBase.h"
 
 class NetMessage_Connect;
+class NetMessage_AcceptConnect;
 class NetMessage_Disconnect;
 class NetMessage_Text;
 class NetMessage_CreateCharacter;
