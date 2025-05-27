@@ -7,7 +7,7 @@
 
 #define PI 3.14159265358979323846
 
-Camera::Camera(float aFOV, float aNearPlane, float aFarPlane, CU::Vector2<float> aResolution)
+Camera::Camera(float aFOV, float aNearPlane, float aFarPlane, CU::Vector2f aResolution)
 {
 	InitPerspectiveProjection(aFOV, aNearPlane, aFarPlane, aResolution);
 }
@@ -25,7 +25,7 @@ void Camera::Update()
 {
 }
 
-void Camera::InitPerspectiveProjection(float aFOV, float aNearPlane, float aFarPlane, CU::Vector2<float> aResolution)
+void Camera::InitPerspectiveProjection(float aFOV, float aNearPlane, float aFarPlane, CU::Vector2f aResolution)
 {
 	myNearPlane = aNearPlane;
 	myFarPlane = aFarPlane;

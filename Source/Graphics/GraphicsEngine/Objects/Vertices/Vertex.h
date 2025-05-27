@@ -7,19 +7,19 @@ namespace CU = CommonUtilities;
 
 struct Vertex
 {
-	CU::Vector4<float> Position = { 0, 0, 0, 1 };
-	CU::Vector4<float> VertexColor0 = { 0, 0, 0, 1 };
-	CU::Vector4<float> VertexColor1 = { 0, 0, 0, 1 };
-	CU::Vector4<float> VertexColor2 = { 0, 0, 0, 1 };
-	CU::Vector4<float> VertexColor3 = { 0, 0, 0, 1 };
-	CU::Vector2<float> TexCoord0;
-	CU::Vector2<float> TexCoord1;
-	CU::Vector2<float> TexCoord2;
-	CU::Vector2<float> TexCoord3;
-	CU::Vector3<float> Normal = { 0, 0, 0 };
-	CU::Vector3<float> Tangent = { 0, 0, 0 };
+	CU::Vector4f Position = { 0, 0, 0, 1 };
+	CU::Vector4f VertexColor0 = { 0, 0, 0, 1 };
+	CU::Vector4f VertexColor1 = { 0, 0, 0, 1 };
+	CU::Vector4f VertexColor2 = { 0, 0, 0, 1 };
+	CU::Vector4f VertexColor3 = { 0, 0, 0, 1 };
+	CU::Vector2f TexCoord0;
+	CU::Vector2f TexCoord1;
+	CU::Vector2f TexCoord2;
+	CU::Vector2f TexCoord3;
+	CU::Vector3f Normal = { 0, 0, 0 };
+	CU::Vector3f Tangent = { 0, 0, 0 };
 	CU::Vector4<unsigned> BoneIDs;
-	CU::Vector4<float> SkinWeights;
+	CU::Vector4f SkinWeights;
 
 	Vertex(float position[4], float vertexColor[4][4], float UVs[4][2], float normal[3], float tangent[3])
 	{

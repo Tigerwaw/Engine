@@ -8,7 +8,7 @@ struct NavPortal
 	std::array<CU::Vector3f, 2> vertices;
 	float cost = 0;
 
-	const int GetOtherNode(const int& aOwnNodeIndex) const
+	const int GetOtherNode(const int aOwnNodeIndex) const
 	{
 		return (nodes[0] == aOwnNodeIndex) ? nodes[1] : nodes[0];
 	}

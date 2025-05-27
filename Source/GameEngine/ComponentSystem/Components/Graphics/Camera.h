@@ -13,14 +13,14 @@ class Camera : public Component
 {
 public:
 	Camera() = default;
-	Camera(float aFOV, float aNearPlane, float aFarPlane, CU::Vector2<float> aResolution);
+	Camera(float aFOV, float aNearPlane, float aFarPlane, CU::Vector2f aResolution);
 	Camera(float aLeft, float aRight, float aTop, float aBottom, float aNear, float aFar);
 	void Start() override;
 	void Update() override;
 
-	void InitPerspectiveProjection(float aFOV, float aNearPlane, float aFarPlane, CU::Vector2<float> aResolution);
+	void InitPerspectiveProjection(float aFOV, float aNearPlane, float aFarPlane, CU::Vector2f aResolution);
 	void InitOrtographicProjection(float aLeft, float aRight, float aTop, float aBottom, float aNearPlane, float aFarPlane);
-	CU::Matrix4x4<float> GetProjectionMatrix() const { return myProjectionMatrix; }
+	CU::Matrix4x4f GetProjectionMatrix() const { return myProjectionMatrix; }
 	float GetNearPlane() const { return myNearPlane; }
 	float GetFarPlane() const { return myFarPlane; }
 	float GetHorizontalFOV() const { return myHFOV; }
@@ -35,7 +35,7 @@ public:
 	bool Deserialize(nl::json& aJsonObject) override;
 
 protected:
-	CU::Matrix4x4<float> myProjectionMatrix;
+	CU::Matrix4x4f myProjectionMatrix;
 	std::array<CU::Vector3f, 8> myFrustumCorners;
 	float myNearPlane = 0;
 	float myFarPlane = 0;

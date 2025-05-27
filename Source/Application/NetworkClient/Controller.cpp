@@ -31,7 +31,7 @@ void Controller::Update()
 	float deltaTime = Engine::GetInstance().GetTimer().GetDeltaTime();
 	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
 
-	CU::Vector3<float> inputDelta;
+	CU::Vector3f inputDelta;
 
 	inputDelta += gameObject->GetComponent<Transform>()->GetRightVector() * inputHandler.GetAnalogAction("ObjectXMovement");
 	inputDelta += gameObject->GetComponent<Transform>()->GetForwardVector() * inputHandler.GetAnalogAction("ObjectZMovement");

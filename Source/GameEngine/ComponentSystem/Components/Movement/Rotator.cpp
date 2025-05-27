@@ -7,7 +7,7 @@
 #include "GameEngine/Time/Timer.h"
 #include "GameEngine/Utility/SerializationUtils.hpp"
 
-Rotator::Rotator(CU::Vector3<float> aRotationVector)
+Rotator::Rotator(const CU::Vector3f& aRotationVector)
 {
     SetRotationPerSecond(aRotationVector);
 }
@@ -33,7 +33,7 @@ void Rotator::Update()
 	gameObject->GetComponent<Transform>()->SetRotation(rot.GetEulerAnglesDegrees());
 }
 
-void Rotator::SetRotationPerSecond(CU::Vector3<float> aRotationVector)
+void Rotator::SetRotationPerSecond(const CU::Vector3f& aRotationVector)
 {
 	myRotationPerSecond = CU::Quatf(aRotationVector * 3.14f / 180.0f);
 	StartNewRotation();

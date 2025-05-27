@@ -8,12 +8,12 @@ class Rotator : public Component
 {
 public:
 	Rotator() = default;
-    Rotator(CU::Vector3<float> aRotationVector);
+    Rotator(const CU::Vector3f& aRotationVector);
 	
 	void Start() override;
 	void Update() override;
 
-	void SetRotationPerSecond(CU::Vector3<float> aRotationVector);
+	void SetRotationPerSecond(const CU::Vector3f& aRotationVector);
 
 	bool Serialize(nl::json& outJsonObject) override;
 	bool Deserialize(nl::json& aJsonObject) override;

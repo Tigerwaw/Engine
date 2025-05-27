@@ -58,7 +58,7 @@ const void MKBInput::UpdateEvents(UINT message, WPARAM wParam, LPARAM lParam)
 		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_X)] = static_cast<float>(GET_X_LPARAM(lParam));
 		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_Y)] = windowSize.y - static_cast<float>(GET_Y_LPARAM(lParam));
 
-		CU::Vector2<float> ndcPos;
+		CU::Vector2f ndcPos;
 		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePosNDC_X)] = ((myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_X)] / windowSize.x) - 0.5f) * 2;
 		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePosNDC_Y)] = ((myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_Y)] / windowSize.y) - 0.5f) * 2;
 		return;

@@ -6,8 +6,8 @@ namespace CU = CommonUtilities;
 
 struct TextVertex
 {
-	CU::Vector4<float> Position;
-	CU::Vector2<float> TexCoords;
+	CU::Vector4f Position;
+	CU::Vector2f TexCoords;
 
 	TextVertex(float positionX, float positionY, float uvX, float uvY)
 	{

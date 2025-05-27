@@ -9,7 +9,7 @@ struct DebugLineVertex
     CU::Vector4<float> ToPosition = { 0, 0, 0, 1 };
     CU::Vector4<float> Color = { 0, 0, 0, 1 };
 
-	DebugLineVertex(CU::Vector3<float> fromPosition, CU::Vector3<float> toPosition, CU::Vector4<float> color)
+	DebugLineVertex(const CU::Vector3f& fromPosition, const CU::Vector3f& toPosition, const CU::Vector4f& color)
 	{
 		FromPosition = CU::ToVector4(fromPosition, 1.0f);
 		ToPosition = CU::ToVector4(toPosition, 1.0f);

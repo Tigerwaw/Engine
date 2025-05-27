@@ -59,7 +59,7 @@ void FreecamController::Update()
 		gameObject->GetComponent<Transform>()->SetTranslation(0, 0, 0);
 	}
 
-	CU::Vector3<float> inputDelta;
+	CU::Vector3f inputDelta;
 
 	inputDelta += gameObject->GetComponent<Transform>()->GetRightVector() * inputHandler.GetAnalogAction("CameraXMovement");
 	inputDelta += gameObject->GetComponent<Transform>()->GetUpVector() * inputHandler.GetAnalogAction("CameraYMovement");

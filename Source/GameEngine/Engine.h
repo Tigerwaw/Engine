@@ -44,13 +44,13 @@ public:
     void SetWindowSize(float aWidth, float aHeight);
     void SetWindowPos(float aTop, float aLeft);
     void ToggleFullscreen(bool aIsFullscreen);
-    const CU::Vector2f& GetResolution() const { return myResolution; }
-    const CU::Vector2f& GetWindowSize() const { return myWindowSize; }
-    const CU::Vector2f& GetWindowPos() const { return myWindowPos; }
-    const bool& GetIsFullscreen() const { return myIsFullscreen; }
-    const bool& GetIsBorderless() const { return myIsBorderless; }
-    const bool& GetAllowDropFiles() const { return myAllowDropFiles; }
-    const bool& GetAutoRegisterAssets() const { return myAutoRegisterAssets; }
+    CU::Vector2f GetResolution() const { return myResolution; }
+    CU::Vector2f GetWindowSize() const { return myWindowSize; }
+    CU::Vector2f GetWindowPos() const { return myWindowPos; }
+    bool GetIsFullscreen() const { return myIsFullscreen; }
+    bool GetIsBorderless() const { return myIsBorderless; }
+    bool GetAllowDropFiles() const { return myAllowDropFiles; }
+    bool GetAutoRegisterAssets() const { return myAutoRegisterAssets; }
 
     void SetApplicationInstance(Application* aApplication);
 

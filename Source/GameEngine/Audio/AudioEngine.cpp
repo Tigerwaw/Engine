@@ -236,24 +236,25 @@ bool AudioEngine::LoadBankEvents(const std::string& aBankName)
 
     for (auto& eventDesc : eventDescs)
     {
-        std::string eventPath;
-        eventPath.reserve(256);
-        char* charPath = eventPath.data();
-        FMOD_RESULT result = eventDesc->getPath(charPath, 256, nullptr);
+        char charPath[512] = { 0 };
+        int pathLength = 0;
+
+        FMOD_RESULT result = eventDesc->getPath(charPath, 512, &pathLength);
         if (result != FMOD_OK)
         {
             LOG(LogAudioEngine, Error, "Failed to load event path with code {}", static_cast<int>(result));
             return false;
         }
 
-        eventPath.assign(charPath);
-        if (eventPath == "")
+        if (pathLength == 0)
         {
             LOG(LogAudioEngine, Error, "Event path is empty and has been discarded");
             return false;
         }
 
-        std::string cleanedPath = eventPath.substr(strlen("event:/"));
+        std::string_view cleanedPath(charPath, pathLength);
+        cleanedPath.remove_prefix(strlen("event:/"));
+        cleanedPath.remove_suffix(1); // Remove null terminator
         LOG(LogAudioEngine, Log, "Loaded Event Description {}", cleanedPath);
         myEvents.emplace(cleanedPath, eventDesc);
     }

@@ -46,7 +46,7 @@ void ObjectController::Update()
 		gameObject->GetComponent<Transform>()->SetTranslation(0, 0, 0);
 	}
 
-	CU::Vector3<float> inputDelta;
+	CU::Vector3f inputDelta;
 
 	inputDelta += gameObject->GetComponent<Transform>()->GetRightVector() * inputHandler.GetAnalogAction("ObjectXMovement");
 	inputDelta += gameObject->GetComponent<Transform>()->GetUpVector() * inputHandler.GetAnalogAction("ObjectYMovement");
@@ -58,7 +58,7 @@ void ObjectController::Update()
 	}
 
 
-	CU::Vector3<float> rotationDelta;
+	CU::Vector3f rotationDelta;
 	rotationDelta.y = inputHandler.GetAnalogAction("ObjectYRotation");
 
 	rotationDelta *= myRotSpeed * deltaTime;

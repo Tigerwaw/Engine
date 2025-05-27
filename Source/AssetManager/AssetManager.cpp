@@ -11,6 +11,7 @@
 
 #include "Math/Matrix.hpp"
 #include "Math/Vector.hpp"
+#include "Utility/StringUtilities.hpp"
 namespace CU = CommonUtilities;
 
 #include "DefaultTextures/Default_C.h"
@@ -39,37 +40,37 @@ bool AssetManager::UnregisterAsset(const std::shared_ptr<Asset> aAsset)
 // Handle case sensitivity betterer
 bool AssetManager::RegisterAsset(const std::filesystem::path& aPath)
 {
-    std::filesystem::path assetPath = MakeRelative(aPath);
-    const std::string name = assetPath.filename().string();
-    if (name.starts_with("SM") || name.starts_with("sm") || name.starts_with("SK") || name.starts_with("sk"))
+    std::string name = aPath.filename().string();
+    CU::ToLower(name);
+    if (name.starts_with("sm") || name.starts_with("sk"))
     {
         return RegisterMeshAsset(aPath);
     }
-    else if (name.starts_with("A") || name.starts_with("a"))
+    else if (name.starts_with("a"))
     {
         return RegisterAnimationAsset(aPath);
     }
-    else if (name.starts_with("MAT") || name.starts_with("mat"))
+    else if (name.starts_with("mat"))
     {
         return RegisterMaterialAsset(aPath);
     }
-    else if (name.starts_with("T") || name.starts_with("t"))
+    else if (name.starts_with("t"))
     {
         return RegisterTextureAsset(aPath);
     }
-    else if (name.starts_with("SH") || name.starts_with("sh"))
+    else if (name.starts_with("sh"))
     {
         return RegisterShaderAsset(aPath);
     }
-    else if (name.starts_with("PSO") || name.starts_with("pso"))
+    else if (name.starts_with("pso"))
     {
         return RegisterPSOAsset(aPath);
     }
-    else if (name.starts_with("F") || name.starts_with("f"))
+    else if (name.starts_with("f"))
     {
         return RegisterFontAsset(aPath);
     }
-    else if (name.starts_with("NM") || name.starts_with("nm"))
+    else if (name.starts_with("nm"))
     {
         return RegisterNavMeshAsset(aPath);
     }
@@ -196,8 +197,8 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
     std::vector<unsigned> indices;
     std::vector<Mesh::Element> elements;
 
-    CU::Vector3<float> minBBPoint;
-    CU::Vector3<float> maxBBPoint;
+    CU::Vector3f minBBPoint;
+    CU::Vector3f maxBBPoint;
 
     unsigned nextVertexOffset = 0;
     unsigned nextIndexOffset = 0;

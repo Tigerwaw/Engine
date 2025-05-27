@@ -13,7 +13,7 @@ public:
 		GameObjectEventType eventTrigger = GameObjectEventType::None;
 		bool isBillboard = false;
 		bool isSpritesheet = false;
-		CU::Vector2<float> spritesheetSize = { 0, 0 };
+		CU::Vector2f spritesheetSize = { 0, 0 };
 	};
 
 	~VFXModel() override;
