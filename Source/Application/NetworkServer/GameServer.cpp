@@ -139,7 +139,7 @@ void GameServer::HandleMessage_Disconnect(NetMessage_Disconnect&, const sockaddr
     if (!DoesClientExist(aAddress)) return;
 
     int index = GetClientIndex(aAddress);
-    std::string username = myClients[index].username;
+    const std::string& username = myClients[index].username;
     printf("\n[User %s disconnected]", username.data());
     
     myClients.erase(myClients.begin() + index);

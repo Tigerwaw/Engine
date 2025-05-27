@@ -30,20 +30,20 @@ public:
 	const CU::Vector2f GetLeftStickDeadZone() const;
 	const CU::Vector2f GetRightStickDeadZone() const;
 
-	void RegisterBinaryAction(std::string aActionName, Keys aInput, GenericInput::ActionType aActionType);
-	void RegisterBinaryAction(std::string aActionName, ControllerButtons aInput, GenericInput::ActionType aActionType);
-	void RegisterAnalogAction(std::string aActionName, Keys aNegativeInput, Keys aPositiveInput);
-	void RegisterAnalogAction(std::string aActionName, ControllerButtons aNegativeInput, ControllerButtons aPositiveInput);
-	void RegisterAnalogAction(std::string aActionName, MouseMovement aInput);
-	void RegisterAnalogAction(std::string aActionName, ControllerAnalog aInput);
-	void RegisterAnalog2DAction(std::string aActionName, MouseMovement2D aInput);
-	void RegisterAnalog2DAction(std::string aActionName, ControllerAnalog2D aInput);
+	void RegisterBinaryAction(const std::string& aActionName, Keys aInput, GenericInput::ActionType aActionType);
+	void RegisterBinaryAction(const std::string& aActionName, ControllerButtons aInput, GenericInput::ActionType aActionType);
+	void RegisterAnalogAction(const std::string& aActionName, Keys aNegativeInput, Keys aPositiveInput);
+	void RegisterAnalogAction(const std::string& aActionName, ControllerButtons aNegativeInput, ControllerButtons aPositiveInput);
+	void RegisterAnalogAction(const std::string& aActionName, MouseMovement aInput);
+	void RegisterAnalogAction(const std::string& aActionName, ControllerAnalog aInput);
+	void RegisterAnalog2DAction(const std::string& aActionName, MouseMovement2D aInput);
+	void RegisterAnalog2DAction(const std::string& aActionName, ControllerAnalog2D aInput);
 
-	const bool GetBinaryAction(std::string aActionName) const;
-	const float GetAnalogAction(std::string aActionName) const;
-	const CU::Vector2f GetAnalogAction2D(std::string aActionName) const;
+	const bool GetBinaryAction(const std::string& aActionName) const;
+	const float GetAnalogAction(const std::string& aActionName) const;
+	const CU::Vector2f GetAnalogAction2D(const std::string& aActionName) const;
 private:
-	const bool ValidateActionName(std::string aActionName, bool aNoLog = false) const;
+	const bool ValidateActionName(const std::string& aActionName, bool aNoLog = false) const;
 
 	std::unordered_map<InputMode, std::shared_ptr<GenericInput>> myInputModes;
 

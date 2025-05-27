@@ -194,7 +194,7 @@ bool GraphicsEngine::ClearTextureResource_VS(unsigned aSlot)
 	return myRHI->ClearTextureResourceSlot(PIPELINE_STAGE_VERTEX_SHADER, aSlot);
 }
 
-bool GraphicsEngine::LoadShader(std::filesystem::path aFilePath, Shader& outShader)
+bool GraphicsEngine::LoadShader(const std::filesystem::path& aFilePath, Shader& outShader)
 {
 	return myRHI->LoadShaderFromFilePath(aFilePath.stem().string(), outShader, aFilePath.generic_wstring());
 }

@@ -37,13 +37,13 @@ private:
 		std::string tooltip;
 		CU::Vector3f color = { 1.0f, 1.0f, 1.0f };
 
-		Log(std::string aMessage, CU::Vector3f aColor = CU::Vector3f(1.0f, 1.0f, 1.0f))
+		Log(const std::string& aMessage, CU::Vector3f aColor = CU::Vector3f(1.0f, 1.0f, 1.0f))
 		{
 			message = aMessage;
 			color = aColor;
 		}
 
-		Log(std::string aMessage, std::string aTooltip, CU::Vector3f aColor = CU::Vector3f(1.0f, 1.0f, 1.0f))
+		Log(const std::string& aMessage, const std::string& aTooltip, CU::Vector3f aColor = CU::Vector3f(1.0f, 1.0f, 1.0f))
 		{
 			message = aMessage;
 			tooltip = aTooltip;

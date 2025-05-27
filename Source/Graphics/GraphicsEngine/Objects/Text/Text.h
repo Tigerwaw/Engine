@@ -14,7 +14,7 @@ class Text
 public:
     Text();
     ~Text();
-    Text(std::string aTextContent, std::shared_ptr<Font> aFont, const int aSize);
+    Text(const std::string& aTextContent, std::shared_ptr<Font> aFont, const int aSize);
 
     struct TextData
     {
@@ -29,7 +29,7 @@ public:
     void Initialize();
     void UpdateBuffers();
 
-    void SetTextContent(std::string aTextContent);
+    void SetTextContent(const std::string& aTextContent);
     void SetFont(std::shared_ptr<Font> aFont);
     void SetSize(const int aSize);
     void SetPosition(CU::Vector2f aPosition);

@@ -3,7 +3,7 @@
 
 LRESULT CALLBACK WinProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam);
 
-bool Window::InitializeWindow(std::string aWindowTitle, CU::Vector2f aWindowSize, CU::Vector2f aWindowPos, bool aIsFullscreen, bool aIsBorderless, bool aAllowDropFiles)
+bool Window::InitializeWindow(const std::string& aWindowTitle, CU::Vector2f aWindowSize, CU::Vector2f aWindowPos, bool aIsFullscreen, bool aIsBorderless, bool aAllowDropFiles)
 {
     LOG(LogGameEngine, Log, "Initializing window...");
     

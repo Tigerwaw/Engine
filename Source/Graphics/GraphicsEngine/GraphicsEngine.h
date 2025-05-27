@@ -139,7 +139,7 @@ public:
 	bool ClearTextureResource_PS(unsigned aSlot);
 	bool ClearTextureResource_VS(unsigned aSlot);
 
-	bool LoadShader(std::filesystem::path aFilePath, Shader& outShader);
+	bool LoadShader(const std::filesystem::path& aFilePath, Shader& outShader);
 	bool CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, PSODescription& aPSOdesc);
 	std::shared_ptr<PipelineStateObject> GetDefaultPSO() { return myDefaultPSO; }
 

@@ -8,7 +8,7 @@ public:
 	NetMessage_RequestConnect();
 
 	void SetUsername(const std::string& aUsername);
-	std::string GetUsername() const;
+	const std::string& GetUsername() const;
 
 	void Serialize(NetBuffer& aBuffer) override;
 	void Deserialize(NetBuffer& aBuffer) override;

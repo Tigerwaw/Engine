@@ -54,7 +54,7 @@ const CU::Vector2f InputHandler::GetRightStickDeadZone() const
 }
 
 
-void InputHandler::RegisterBinaryAction(std::string aActionName, Keys aInput, GenericInput::ActionType aActionType)
+void InputHandler::RegisterBinaryAction(const std::string& aActionName, Keys aInput, GenericInput::ActionType aActionType)
 {
 	if (!ValidateActionName(aActionName, true))
 	{
@@ -64,7 +64,7 @@ void InputHandler::RegisterBinaryAction(std::string aActionName, Keys aInput, Ge
 	myActions[aActionName].emplace_back(std::make_shared<BinaryAction>(myInputModes.at(InputMode::MKB), static_cast<unsigned>(aInput), aActionType));
 }
 
-void InputHandler::RegisterBinaryAction(std::string aActionName, ControllerButtons aInput, GenericInput::ActionType aActionType)
+void InputHandler::RegisterBinaryAction(const std::string& aActionName, ControllerButtons aInput, GenericInput::ActionType aActionType)
 {
 	if (!ValidateActionName(aActionName, true))
 	{
@@ -74,7 +74,7 @@ void InputHandler::RegisterBinaryAction(std::string aActionName, ControllerButto
 	myActions[aActionName].emplace_back(std::make_shared<BinaryAction>(myInputModes.at(InputMode::Gamepad), static_cast<unsigned>(aInput), aActionType));
 }
 
-void InputHandler::RegisterAnalogAction(std::string aActionName, Keys aNegativeInput, Keys aPositiveInput)
+void InputHandler::RegisterAnalogAction(const std::string& aActionName, Keys aNegativeInput, Keys aPositiveInput)
 {
 	if (!ValidateActionName(aActionName, true))
 	{
@@ -84,7 +84,7 @@ void InputHandler::RegisterAnalogAction(std::string aActionName, Keys aNegativeI
 	myActions[aActionName].emplace_back(std::make_shared<AnalogAction>(myInputModes.at(InputMode::MKB), static_cast<unsigned>(aNegativeInput), static_cast<unsigned>(aPositiveInput)));
 }
 
-void InputHandler::RegisterAnalogAction(std::string aActionName, ControllerButtons aNegativeInput, ControllerButtons aPositiveInput)
+void InputHandler::RegisterAnalogAction(const std::string& aActionName, ControllerButtons aNegativeInput, ControllerButtons aPositiveInput)
 {
 	if (!ValidateActionName(aActionName, true))
 	{
@@ -94,7 +94,7 @@ void InputHandler::RegisterAnalogAction(std::string aActionName, ControllerButto
 	myActions[aActionName].emplace_back(std::make_shared<AnalogAction>(myInputModes.at(InputMode::Gamepad), static_cast<unsigned>(aNegativeInput), static_cast<unsigned>(aPositiveInput)));
 }
 
-void InputHandler::RegisterAnalogAction(std::string aActionName, MouseMovement aInput)
+void InputHandler::RegisterAnalogAction(const std::string& aActionName, MouseMovement aInput)
 {
 	if (!ValidateActionName(aActionName, true))
 	{
@@ -104,7 +104,7 @@ void InputHandler::RegisterAnalogAction(std::string aActionName, MouseMovement a
 	myActions[aActionName].emplace_back(std::make_shared<AnalogAction>(myInputModes.at(InputMode::MKB), static_cast<unsigned>(aInput)));
 }
 
-void InputHandler::RegisterAnalogAction(std::string aActionName, ControllerAnalog aInput)
+void InputHandler::RegisterAnalogAction(const std::string& aActionName, ControllerAnalog aInput)
 {
 	if (!ValidateActionName(aActionName, true))
 	{
@@ -114,7 +114,7 @@ void InputHandler::RegisterAnalogAction(std::string aActionName, ControllerAnalo
 	myActions[aActionName].emplace_back(std::make_shared<AnalogAction>(myInputModes.at(InputMode::Gamepad), static_cast<unsigned>(aInput)));
 }
 
-void InputHandler::RegisterAnalog2DAction(std::string aActionName, MouseMovement2D aInput)
+void InputHandler::RegisterAnalog2DAction(const std::string& aActionName, MouseMovement2D aInput)
 {
 	if (!ValidateActionName(aActionName, true))
 	{
@@ -124,7 +124,7 @@ void InputHandler::RegisterAnalog2DAction(std::string aActionName, MouseMovement
 	myActions[aActionName].emplace_back(std::make_shared<Analog2DAction>(myInputModes.at(InputMode::MKB), static_cast<unsigned>(aInput)));
 }
 
-void InputHandler::RegisterAnalog2DAction(std::string aActionName, ControllerAnalog2D aInput)
+void InputHandler::RegisterAnalog2DAction(const std::string& aActionName, ControllerAnalog2D aInput)
 {
 	if (!ValidateActionName(aActionName, true))
 	{
@@ -135,7 +135,7 @@ void InputHandler::RegisterAnalog2DAction(std::string aActionName, ControllerAna
 }
 
 
-const bool InputHandler::GetBinaryAction(std::string aActionName) const
+const bool InputHandler::GetBinaryAction(const std::string& aActionName) const
 {
 	if (!ValidateActionName(aActionName)) return false;
 
@@ -155,7 +155,7 @@ const bool InputHandler::GetBinaryAction(std::string aActionName) const
 	return result;
 }
 
-const float InputHandler::GetAnalogAction(std::string aActionName) const
+const float InputHandler::GetAnalogAction(const std::string& aActionName) const
 {
 	if (!ValidateActionName(aActionName)) return false;
 
@@ -175,7 +175,7 @@ const float InputHandler::GetAnalogAction(std::string aActionName) const
 	return result;
 }
 
-const CU::Vector2f InputHandler::GetAnalogAction2D(std::string aActionName) const
+const CU::Vector2f InputHandler::GetAnalogAction2D(const std::string& aActionName) const
 {
 	CU::Vector2f result;
 	for (auto& action : myActions.at(aActionName))
@@ -193,7 +193,7 @@ const CU::Vector2f InputHandler::GetAnalogAction2D(std::string aActionName) cons
 	return result;
 }
 
-const bool InputHandler::ValidateActionName(std::string aActionName, bool aNoLog) const
+const bool InputHandler::ValidateActionName(const std::string& aActionName, bool aNoLog) const
 {
 	auto it = myActions.find(aActionName);
 	if (it == myActions.end())

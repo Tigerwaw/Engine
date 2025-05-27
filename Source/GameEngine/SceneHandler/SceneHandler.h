@@ -14,7 +14,7 @@ public:
     void UpdateActiveScene();
     void RenderActiveScene();
     void CreateEmptyScene();
-    void LoadScene(std::string aSceneFilePath);
+    void LoadScene(const std::string& aSceneFilePath);
     void UnloadScene(unsigned aLoadedSceneIndex);
     void ChangeActiveScene(unsigned aLoadedSceneIndex);
 

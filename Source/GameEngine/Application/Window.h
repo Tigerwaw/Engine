@@ -52,7 +52,7 @@ namespace CU = CommonUtilities;
 class Window
 {
 public:
-    bool InitializeWindow(std::string aWindowTitle = "Application", 
+    bool InitializeWindow(const std::string& aWindowTitle = "Application",
         CU::Vector2f aWindowSize = CU::Vector2f(1920.0f, 1080.0f), 
         CU::Vector2f aWindowPos = CU::Vector2f(0, 0),
         bool aIsFullscreen = true, bool aIsBorderless = true, 

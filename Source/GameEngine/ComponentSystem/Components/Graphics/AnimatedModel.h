@@ -67,21 +67,21 @@ public:
     void PlayAnimation();
     void StopAnimation();
     void PlayAnimationOnLayer(unsigned aLayerIndex = 0);
-    void PlayAnimationOnLayer(std::string aStartJoint = "");
+    void PlayAnimationOnLayer(const std::string& aStartJoint = "");
     void StopAnimationOnLayer(unsigned aLayerIndex = 0);
-    void StopAnimationOnLayer(std::string aStartJoint = "");
+    void StopAnimationOnLayer(const std::string& aStartJoint = "");
 
     void AddAnimationLayer(unsigned aJointID = 0);
-    void AddAnimationLayer(std::string aStartJoint = "");
-    void AddAnimationToLayer(std::string aAnimationName, std::shared_ptr<Animation> aNewAnimation, unsigned aLayerIndex = 0, bool aShouldLoop = false);
-    void AddAnimationToLayer(std::string aAnimationName, std::shared_ptr<Animation> aNewAnimation, std::string aStartJoint = "", bool aShouldLoop = false);
-    void SetCurrentAnimationOnLayer(std::string aAnimationName, unsigned aLayerIndex = 0, float aBlendTime = 0, unsigned aStartingFrame = 0);
-    void SetCurrentAnimationOnLayer(std::string aAnimationName, std::string aStartJoint = "", float aBlendTime = 0, unsigned aStartingFrame = 0);
-    void AddAnimationEvent(std::string aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, unsigned aLayerIndex = 0);
-    void AddAnimationEvent(std::string aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, std::string aStartJoint = "");
+    void AddAnimationLayer(const std::string& aStartJoint = "");
+    void AddAnimationToLayer(const std::string& aAnimationName, std::shared_ptr<Animation> aNewAnimation, unsigned aLayerIndex = 0, bool aShouldLoop = false);
+    void AddAnimationToLayer(const std::string& aAnimationName, std::shared_ptr<Animation> aNewAnimation, const std::string& aStartJoint = "", bool aShouldLoop = false);
+    void SetCurrentAnimationOnLayer(const std::string& aAnimationName, unsigned aLayerIndex = 0, float aBlendTime = 0, unsigned aStartingFrame = 0);
+    void SetCurrentAnimationOnLayer(const std::string& aAnimationName, const std::string& aStartJoint = "", float aBlendTime = 0, unsigned aStartingFrame = 0);
+    void AddAnimationEvent(const std::string& aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, unsigned aLayerIndex = 0);
+    void AddAnimationEvent(const std::string& aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, const std::string& aStartJoint = "");
 
-    std::string GetCurrentAnimationNameOnLayer(unsigned aLayerIndex = 0);
-    std::string GetCurrentAnimationNameOnLayer(std::string aStartJoint = "");
+    const std::string GetCurrentAnimationNameOnLayer(unsigned aLayerIndex = 0) const;
+    const std::string GetCurrentAnimationNameOnLayer(const std::string& aStartJoint = "") const;
 
     std::vector<std::shared_ptr<AnimatedModel::AnimationState>> GetAnimationStatesOnLayer(unsigned aLayerIndex = 0);
 
@@ -108,10 +108,10 @@ private:
 
     const bool ValidateMesh() const;
     const bool ValidateJointIndex(unsigned aStartJoint) const;
-    const bool ValidateJointName(std::string aStartJoint) const;
+    const bool ValidateJointName(const std::string& aStartJoint) const;
     const bool ValidateLayerIndex(unsigned aLayerIndex) const;
-    const bool ValidateLayerJointName(std::string aStartJoint) const;
-    const bool ValidateAnimationName(unsigned aLayerIndex, std::string aAnimationName) const;
+    const bool ValidateLayerJointName(const std::string& aStartJoint) const;
+    const bool ValidateAnimationName(unsigned aLayerIndex, const std::string& aAnimationName) const;
 
     std::shared_ptr<Mesh> myMesh = nullptr;
     std::vector<std::shared_ptr<Material>> myMaterials;

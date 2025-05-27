@@ -10,7 +10,7 @@ void NetMessage_RequestConnect::SetUsername(const std::string& aUsername)
 	myUsername = aUsername;
 }
 
-std::string NetMessage_RequestConnect::GetUsername() const
+const std::string& NetMessage_RequestConnect::GetUsername() const
 {
 	return myUsername;
 }

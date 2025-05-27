@@ -5,7 +5,7 @@
 Text::Text() = default;
 Text::~Text() = default;
 
-Text::Text(std::string aTextContent, std::shared_ptr<Font> aFont, const int aSize)
+Text::Text(const std::string& aTextContent, std::shared_ptr<Font> aFont, const int aSize)
 {
 	SetTextContent(aTextContent);
 	SetFont(aFont);
@@ -30,7 +30,7 @@ void Text::UpdateBuffers()
 	GraphicsEngine::Get().UpdateDynamicIndexBuffer(myTextData.indices, myTextData.indexBuffer);
 }
 
-void Text::SetTextContent(std::string aTextContent)
+void Text::SetTextContent(const std::string& aTextContent)
 {
 	myTextContent = aTextContent;
 	float X = 0;

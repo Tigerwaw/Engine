@@ -83,7 +83,7 @@ void AnimatedModel::AddAnimationLayer(unsigned aJointID)
     newAnimLayer.startJointID = aJointID;
 }
 
-void AnimatedModel::AddAnimationLayer(std::string aStartJoint)
+void AnimatedModel::AddAnimationLayer(const std::string& aStartJoint)
 {
     if (!ValidateMesh()) return;
     if (!ValidateJointName(aStartJoint)) return;
@@ -92,7 +92,7 @@ void AnimatedModel::AddAnimationLayer(std::string aStartJoint)
     AddAnimationLayer(index);
 }
 
-void AnimatedModel::AddAnimationToLayer(std::string aAnimationName, std::shared_ptr<Animation> aNewAnimation, unsigned aLayerIndex, bool aShouldLoop)
+void AnimatedModel::AddAnimationToLayer(const std::string& aAnimationName, std::shared_ptr<Animation> aNewAnimation, unsigned aLayerIndex, bool aShouldLoop)
 {
     if (!ValidateLayerIndex(aLayerIndex)) return;
 
@@ -111,7 +111,7 @@ void AnimatedModel::AddAnimationToLayer(std::string aAnimationName, std::shared_
     }
 }
 
-void AnimatedModel::AddAnimationToLayer(std::string aAnimationName, std::shared_ptr<Animation> aNewAnimation, std::string aStartJoint, bool aShouldLoop)
+void AnimatedModel::AddAnimationToLayer(const std::string& aAnimationName, std::shared_ptr<Animation> aNewAnimation, const std::string& aStartJoint, bool aShouldLoop)
 {
     if (aStartJoint == "")
     {
@@ -124,7 +124,7 @@ void AnimatedModel::AddAnimationToLayer(std::string aAnimationName, std::shared_
     AddAnimationToLayer(aAnimationName, aNewAnimation, myJointNameToLayerIndex.at(aStartJoint), aShouldLoop);
 }
 
-void AnimatedModel::SetCurrentAnimationOnLayer(std::string aAnimationName, unsigned aLayerIndex, float aBlendTime, unsigned aStartingFrame)
+void AnimatedModel::SetCurrentAnimationOnLayer(const std::string& aAnimationName, unsigned aLayerIndex, float aBlendTime, unsigned aStartingFrame)
 {
     if (!ValidateLayerIndex(aLayerIndex)) return;
     if (!ValidateAnimationName(aLayerIndex, aAnimationName)) return;
@@ -145,7 +145,7 @@ void AnimatedModel::SetCurrentAnimationOnLayer(std::string aAnimationName, unsig
     }
 }
 
-void AnimatedModel::SetCurrentAnimationOnLayer(std::string aAnimationName, std::string aStartJoint, float aBlendTime, unsigned aStartingFrame)
+void AnimatedModel::SetCurrentAnimationOnLayer(const std::string& aAnimationName, const std::string& aStartJoint, float aBlendTime, unsigned aStartingFrame)
 {
     if (aStartJoint == "")
     {
@@ -158,7 +158,7 @@ void AnimatedModel::SetCurrentAnimationOnLayer(std::string aAnimationName, std::
     SetCurrentAnimationOnLayer(aAnimationName, myJointNameToLayerIndex.at(aStartJoint), aBlendTime, aStartingFrame);
 }
 
-void AnimatedModel::AddAnimationEvent(std::string aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, unsigned aLayerIndex)
+void AnimatedModel::AddAnimationEvent(const std::string& aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, unsigned aLayerIndex)
 {
     if (!ValidateLayerIndex(aLayerIndex)) return;
     if (!ValidateAnimationName(aLayerIndex, aAnimationName)) return;
@@ -175,7 +175,7 @@ void AnimatedModel::AddAnimationEvent(std::string aAnimationName, unsigned aEven
     myAnimationLayers[aLayerIndex].myAnimationStates.at(aAnimationName)->events.emplace_back(newEvent);
 }
 
-void AnimatedModel::AddAnimationEvent(std::string aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, std::string aStartJoint)
+void AnimatedModel::AddAnimationEvent(const std::string& aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, const std::string& aStartJoint)
 {
     if (aStartJoint == "")
     {
@@ -186,7 +186,7 @@ void AnimatedModel::AddAnimationEvent(std::string aAnimationName, unsigned aEven
     AddAnimationEvent(aAnimationName, aEventFrame, aEventTypeToSend, myJointNameToLayerIndex.at(aStartJoint));
 }
 
-std::string AnimatedModel::GetCurrentAnimationNameOnLayer(unsigned aLayerIndex)
+const std::string AnimatedModel::GetCurrentAnimationNameOnLayer(unsigned aLayerIndex) const
 {
     if (!ValidateLayerIndex(aLayerIndex)) return "";
     if (!myAnimationLayers[aLayerIndex].currentState) return "";
@@ -194,7 +194,7 @@ std::string AnimatedModel::GetCurrentAnimationNameOnLayer(unsigned aLayerIndex)
     return myAnimationLayers[aLayerIndex].currentState->name;
 }
 
-std::string AnimatedModel::GetCurrentAnimationNameOnLayer(std::string aStartJoint)
+const std::string AnimatedModel::GetCurrentAnimationNameOnLayer(const std::string& aStartJoint) const
 {
     if (aStartJoint == "")
     {
@@ -257,7 +257,7 @@ void AnimatedModel::PlayAnimationOnLayer(unsigned aLayerIndex)
     myAnimationLayers[aLayerIndex].isPlaying = true;
 }
 
-void AnimatedModel::PlayAnimationOnLayer(std::string aStartJoint)
+void AnimatedModel::PlayAnimationOnLayer(const std::string& aStartJoint)
 {
     if (aStartJoint == "")
     {
@@ -277,7 +277,7 @@ void AnimatedModel::StopAnimationOnLayer(unsigned aLayerIndex)
     myAnimationLayers[aLayerIndex].isPlaying = true;
 }
 
-void AnimatedModel::StopAnimationOnLayer(std::string aStartJoint)
+void AnimatedModel::StopAnimationOnLayer(const std::string& aStartJoint)
 {
     if (aStartJoint == "")
     {
@@ -529,7 +529,7 @@ const bool AnimatedModel::ValidateJointIndex(unsigned aStartJoint) const
     return true;
 }
 
-const bool AnimatedModel::ValidateJointName(std::string aStartJoint) const
+const bool AnimatedModel::ValidateJointName(const std::string& aStartJoint) const
 {
     if (myMesh->GetSkeleton().JointNameToIndex.find(aStartJoint) == myMesh->GetSkeleton().JointNameToIndex.end())
     {
@@ -551,7 +551,7 @@ const bool AnimatedModel::ValidateLayerIndex(unsigned aLayerIndex) const
     return true;
 }
 
-const bool AnimatedModel::ValidateLayerJointName(std::string aStartJoint) const
+const bool AnimatedModel::ValidateLayerJointName(const std::string& aStartJoint) const
 {
     if (myJointNameToLayerIndex.find(aStartJoint) == myJointNameToLayerIndex.end())
     {
@@ -562,7 +562,7 @@ const bool AnimatedModel::ValidateLayerJointName(std::string aStartJoint) const
     return true;
 }
 
-const bool AnimatedModel::ValidateAnimationName(unsigned aLayerIndex, std::string aAnimationName) const
+const bool AnimatedModel::ValidateAnimationName(unsigned aLayerIndex, const std::string& aAnimationName) const
 {
     if (myAnimationLayers[aLayerIndex].myAnimationStates.find(aAnimationName) == myAnimationLayers[aLayerIndex].myAnimationStates.end())
     {

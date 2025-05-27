@@ -28,17 +28,17 @@ public:
     void Destroy();
     void Update();
     void SetListener(std::shared_ptr<GameObject> aGameObject);
-    bool LoadBank(std::string aBankName);
-    bool UnloadBank(std::string aBankName);
-    bool AddBus(BusType aBusType, std::string aBusName);
+    bool LoadBank(const std::string& aBankName);
+    bool UnloadBank(const std::string& aBankName);
+    bool AddBus(BusType aBusType, const std::string& aBusName);
     void SetVolumeOfBus(BusType aBusType, float aVolume);
     const float GetVolumeOfBus(BusType aBusType) const;
     void IncreaseVolumeOfBus(BusType aBusType, float aVolumeIncrease);
     void DecreaseVolumeOfBus(BusType aBusType, float aVolumeDecrease);
 
-    FMOD::Studio::EventInstance* CreateEventInstance(std::string aEventName);
+    FMOD::Studio::EventInstance* CreateEventInstance(const std::string& aEventName);
 private:
-    bool LoadBankEvents(std::string aBankName);
+    bool LoadBankEvents(const std::string& aBankName);
     void UpdateListener();
     FMOD::Studio::System* mySystem = nullptr;
     std::unordered_map<std::string, FMOD::Studio::Bank*> myBanks;

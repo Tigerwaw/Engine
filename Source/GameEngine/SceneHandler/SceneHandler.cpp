@@ -54,7 +54,7 @@ void SceneHandler::CreateEmptyScene()
     }
 }
 
-void SceneHandler::LoadScene(std::string aSceneFilePath)
+void SceneHandler::LoadScene(const std::string& aSceneFilePath)
 {
     std::shared_ptr<Scene> newScene = myLoadedScenes.emplace_back(std::make_shared<Scene>());
 

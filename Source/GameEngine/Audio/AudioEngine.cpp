@@ -94,7 +94,7 @@ void AudioEngine::UpdateListener()
     }
 }
 
-bool AudioEngine::LoadBank(std::string aBankName)
+bool AudioEngine::LoadBank(const std::string& aBankName)
 {
     auto bankIterator = myBanks.find(aBankName);
     if (bankIterator != myBanks.end())
@@ -118,7 +118,7 @@ bool AudioEngine::LoadBank(std::string aBankName)
     return true;
 }
 
-bool AudioEngine::UnloadBank(std::string aBankFileName)
+bool AudioEngine::UnloadBank(const std::string& aBankFileName)
 {
     FMOD_RESULT result = myBanks[aBankFileName]->unload();
     if (result != FMOD_OK)
@@ -130,7 +130,7 @@ bool AudioEngine::UnloadBank(std::string aBankFileName)
     return true;
 }
 
-bool AudioEngine::AddBus(BusType aBusType, std::string aBusName)
+bool AudioEngine::AddBus(BusType aBusType, const std::string& aBusName)
 {
     std::string path = "bus:/" + aBusName;
     FMOD::Studio::Bus* newBus = nullptr;
@@ -200,7 +200,7 @@ void AudioEngine::DecreaseVolumeOfBus(BusType aBusType, float aVolumeDecrease)
     myBuses.at(aBusType)->setVolume(volume - aVolumeDecrease);
 }
 
-FMOD::Studio::EventInstance* AudioEngine::CreateEventInstance(std::string aEventName)
+FMOD::Studio::EventInstance* AudioEngine::CreateEventInstance(const std::string& aEventName)
 {
     auto eventIterator = myEvents.find(aEventName);
     if (eventIterator == myEvents.end())
@@ -221,7 +221,7 @@ FMOD::Studio::EventInstance* AudioEngine::CreateEventInstance(std::string aEvent
     return eventInstance;
 }
 
-bool AudioEngine::LoadBankEvents(std::string aBankName)
+bool AudioEngine::LoadBankEvents(const std::string& aBankName)
 {
     int eventCount = 0;
     myBanks[aBankName]->getEventCount(&eventCount);

@@ -38,7 +38,7 @@ void AudioInstance::AddInstance()
     LOG(LogAudioPlayer, Log, "Added an audio instance of {}", myEventName);
 }
 
-bool AudioInstance::Initialize(std::string aEventName, bool aAllowOverlap)
+bool AudioInstance::Initialize(const std::string& aEventName, bool aAllowOverlap)
 {
     FMOD::Studio::EventInstance* eventInstance = Engine::GetInstance().GetAudioEngine().CreateEventInstance(aEventName);
     if (!eventInstance)
