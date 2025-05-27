@@ -7,6 +7,7 @@ namespace nl = nlohmann;
 #include <wrl.h>
 
 #include <memory>
+#include <mutex>
 #include <cstdint>
 #include <cstring>
 #include <functional>
@@ -20,6 +21,9 @@ namespace nl = nlohmann;
 #include <array>
 #include <unordered_map>
 #include <any>
+#include <future>
+#include <thread>
+#include <chrono>
 
 
 #include "Logger/Logger.h"

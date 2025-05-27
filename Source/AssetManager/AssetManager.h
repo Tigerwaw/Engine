@@ -1,5 +1,7 @@
 #pragma once
 #include <cassert>
+#include <future>
+#include <chrono>
 #include "Asset.h"
 
 class AssetManager
@@ -14,8 +16,8 @@ public:
 	template<typename T>
 	std::shared_ptr<T> GetAsset(const std::filesystem::path& aPath);
 
-	bool UnregisterAsset(const std::filesystem::path& aPath);
-	bool UnregisterAsset(const std::shared_ptr<Asset> aAsset);
+	bool DeregisterAsset(const std::filesystem::path& aPath);
+	bool DeregisterAsset(const std::shared_ptr<Asset> aAsset);
 
 	bool RegisterAsset(const std::filesystem::path& aPath);
 
@@ -47,6 +49,9 @@ private:
 
 	std::unordered_map<std::filesystem::path, std::shared_ptr<Asset>> myAssets;
 	std::filesystem::path myContentRoot;
+
+	std::vector<std::future<bool>> myFutures;
+	std::chrono::system_clock::time_point myLoadStartTime;
 };
 
 template<typename T>

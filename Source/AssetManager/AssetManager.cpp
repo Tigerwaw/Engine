@@ -19,7 +19,10 @@ namespace CU = CommonUtilities;
 #include "DefaultTextures/Default_M.h"
 #include "DefaultTextures/Default_FX.h"
 
-bool AssetManager::UnregisterAsset(const std::filesystem::path& aPath)
+static std::mutex sAssetMutex;
+static std::mutex sImporterMutex;
+
+bool AssetManager::DeregisterAsset(const std::filesystem::path& aPath)
 {
     if (!myAssets.contains(aPath))
     {
@@ -32,12 +35,11 @@ bool AssetManager::UnregisterAsset(const std::filesystem::path& aPath)
     return true;
 }
 
-bool AssetManager::UnregisterAsset(const std::shared_ptr<Asset> aAsset)
+bool AssetManager::DeregisterAsset(const std::shared_ptr<Asset> aAsset)
 {
-    return UnregisterAsset(aAsset->path);
+    return DeregisterAsset(aAsset->path);
 }
 
-// Handle case sensitivity betterer
 bool AssetManager::RegisterAsset(const std::filesystem::path& aPath)
 {
     std::string name = aPath.filename().string();
@@ -173,13 +175,24 @@ void AssetManager::RegisterEngineAssets()
 
 void AssetManager::RegisterAllAssetsInDirectory()
 {
+    myLoadStartTime = std::chrono::system_clock::now();
+
     for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot))
     {
         if (file.path().has_filename() && file.path().has_extension())
         {
-            RegisterAsset(file.path());
+            myFutures.push_back(std::async(std::launch::async, &AssetManager::RegisterAsset, this, file.path()));
         }
     }
+
+    // Game currently has no way of accessing an asset that hasn't finished loading in. This can be removed when that is implemented.
+    for (auto& future : myFutures)
+    {
+        future.wait();
+    }
+
+    std::chrono::duration<float, std::ratio<1, 1>> loadTime = std::chrono::system_clock::now() - myLoadStartTime;
+    LOG(LogAssetManager, Log, "Registered all assets in {} seconds", loadTime.count());
 }
 
 bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
@@ -191,7 +204,10 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
     if (!ext.ends_with("fbx")) return false;
 
     TGA::FBX::Mesh tgaMesh;
-    TGA::FBX::Importer::LoadMesh(aPath, tgaMesh);
+    {
+        std::lock_guard<std::mutex> importerLock(sImporterMutex);
+        TGA::FBX::Importer::LoadMesh(aPath, tgaMesh);
+    }
 
     std::vector<Vertex> vertices;
     std::vector<unsigned> indices;
@@ -261,6 +277,8 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
     asset->mesh = std::make_shared<Mesh>(std::move(mesh));
     asset->path = assetPath;
     asset->name = assetPath.stem();
+
+    std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->path.filename().string());
@@ -276,7 +294,11 @@ bool AssetManager::RegisterAnimationAsset(const std::filesystem::path& aPath)
     if (!ext.ends_with("fbx")) return false;
 
     TGA::FBX::Animation tgaAnimation;
-    TGA::FBX::Importer::LoadAnimation(aPath, tgaAnimation);
+
+    {
+        std::lock_guard<std::mutex> importerLock(sImporterMutex);
+        TGA::FBX::Importer::LoadAnimation(aPath, tgaAnimation);
+    }
 
     Animation animation;
     animation.Duration = static_cast<float>(tgaAnimation.Duration);
@@ -302,6 +324,8 @@ bool AssetManager::RegisterAnimationAsset(const std::filesystem::path& aPath)
     asset->animation = std::make_shared<Animation>(std::move(animation));
     asset->path = assetPath;
     asset->name = assetPath.stem();
+
+    std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered animation asset {}", asset->path.filename().string());
@@ -381,6 +405,8 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
 
     asset->path = assetPath;
     asset->name = assetPath.stem();
+
+    std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered material asset {}", asset->path.filename().string());
@@ -404,6 +430,8 @@ bool AssetManager::RegisterTextureAsset(const std::filesystem::path& aPath)
     }
     asset->path = assetPath;
     asset->name = assetPath.stem();
+
+    std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered texture asset {}", asset->path.filename().string());
@@ -428,6 +456,8 @@ bool AssetManager::RegisterShaderAsset(const std::filesystem::path& aPath)
 
     asset->path = assetPath;
     asset->name = assetPath.stem();
+
+    std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered shader asset {}", asset->path.filename().string());
@@ -624,6 +654,8 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
 
     asset->path = assetPath;
     asset->name = assetPath.stem();
+
+    std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered PSO asset {}", asset->name.string());
@@ -717,6 +749,8 @@ bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
 
     asset->path = assetPath;
     asset->name = assetPath.stem();
+
+    std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered font asset {}", asset->path.filename().string());
@@ -736,7 +770,10 @@ bool AssetManager::RegisterNavMeshAsset(const std::filesystem::path& aPath)
     if (!ext.ends_with("fbx")) return false;
 
     TGA::FBX::NavMesh tgaNavMesh;
-    TGA::FBX::Importer::LoadNavMesh(aPath, tgaNavMesh, true);
+    {
+        std::lock_guard<std::mutex> importerLock(sImporterMutex);
+        TGA::FBX::Importer::LoadNavMesh(aPath, tgaNavMesh, true);
+    }
 
     // Create Nav Polygons.
     std::vector<NavPolygon> navPolygons = CreateNavPolygons(tgaNavMesh);
@@ -763,6 +800,8 @@ bool AssetManager::RegisterNavMeshAsset(const std::filesystem::path& aPath)
     asset->navmesh = std::make_shared<NavMesh>(std::move(navMesh));
     asset->path = assetPath;
     asset->name = assetPath.stem();
+
+    std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered navmesh asset {}", asset->path.filename().string());
@@ -840,6 +879,8 @@ bool AssetManager::RegisterEngineTextureAsset(std::string_view aName, const uint
         return false;
     }
     asset->name = aName;
+
+    std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered default texture asset {}", aName);
@@ -899,6 +940,8 @@ bool AssetManager::RegisterPlanePrimitive()
     std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
     asset->mesh = std::make_shared<Mesh>(std::move(plane));
     asset->name = "SM_PlanePrimitive";
+
+    std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
@@ -1090,6 +1133,8 @@ bool AssetManager::RegisterCubePrimitive()
     std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
     asset->mesh = std::make_shared<Mesh>(std::move(cube));
     asset->name = "SM_CubePrimitive";
+
+    std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
@@ -1246,6 +1291,8 @@ bool AssetManager::RegisterRampPrimitive()
     std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
     asset->mesh = std::make_shared<Mesh>(std::move(ramp));
     asset->name = "SM_RampPrimitive";
+
+    std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
