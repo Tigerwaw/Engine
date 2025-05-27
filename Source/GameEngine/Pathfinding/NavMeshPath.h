@@ -7,7 +7,7 @@ class NavMeshPath
 {
 public:
 	NavMeshPath() = default;
-	NavMeshPath(std::vector<CU::Vector3f> aPath);
+	NavMeshPath(std::vector<CU::Vector3f>&& aPath);
 
 	const int GetSize() const;
 	const bool Empty() const;

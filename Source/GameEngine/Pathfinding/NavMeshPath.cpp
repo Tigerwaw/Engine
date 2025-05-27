@@ -1,8 +1,8 @@
 #include "NavMeshPath.h"
 
-NavMeshPath::NavMeshPath(std::vector<CU::Vector3f> aPath)
+NavMeshPath::NavMeshPath(std::vector<CU::Vector3f>&& aPath)
 {
-	myPath = aPath;
+	myPath = std::move(aPath);
 }
 
 const int NavMeshPath::GetSize() const

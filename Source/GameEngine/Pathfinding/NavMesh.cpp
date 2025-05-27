@@ -153,9 +153,6 @@ CU::Vector3f NavMesh::ClampToNearestEdge(const CU::Vector3f& aStart, const CU::V
 // Should be split into a step-function to allow for time-slicing & threading.
 NavMeshPath NavMesh::FindPath(CU::Vector3f aStartingPos, CU::Vector3f aEndPos)
 {
-	int startIndex = GetClosestPolygon(aStartingPos);
-	int endIndex = GetClosestPolygon(aEndPos);
-
 	std::vector<CU::Vector3f> worldPath;
 
 	if (CanPathStraight(aStartingPos, aEndPos))
@@ -165,6 +162,10 @@ NavMeshPath NavMesh::FindPath(CU::Vector3f aStartingPos, CU::Vector3f aEndPos)
 		return NavMeshPath(std::move(worldPath));
 	}
 
+	int startIndex = GetClosestPolygon(aStartingPos); // can be on own thread
+	int endIndex = GetClosestPolygon(aEndPos); // can be on own thread
+
+	// Wait for results before executing
 	std::vector<int> shortestNodePath = GetShortestNodePath(startIndex, endIndex);
 
 	if (shortestNodePath.empty())
@@ -172,7 +173,8 @@ NavMeshPath NavMesh::FindPath(CU::Vector3f aStartingPos, CU::Vector3f aEndPos)
 		return NavMeshPath();
 	}
 
-	if (worldPath = FunnelPath(aStartingPos, aEndPos, shortestNodePath); !worldPath.empty())
+	worldPath = FunnelPath(aStartingPos, aEndPos, shortestNodePath);
+	if (!worldPath.empty())
 	{
 		return NavMeshPath(std::move(worldPath));
 	}
