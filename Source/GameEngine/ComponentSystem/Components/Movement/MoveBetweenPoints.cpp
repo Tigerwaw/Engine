@@ -26,7 +26,7 @@ void MoveBetweenPoints::Start()
 
 void MoveBetweenPoints::Update()
 {
-	float deltaTime = Engine::GetInstance().GetTimer().GetDeltaTime();
+	float deltaTime = Engine::Get().GetTimer().GetDeltaTime();
 	std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
 
 	myCurrentTimeMoved += deltaTime;

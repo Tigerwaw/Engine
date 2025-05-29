@@ -30,6 +30,6 @@ void WalkToPoint::Update()
 		CU::Vector3f direction = myTargetPosition - transform->GetTranslation();
 		if (direction.LengthSqr() < 1.0f) return;
 
-		transform->SetTranslation(transform->GetTranslation() + direction.GetNormalized() * myMoveSpeed * Engine::GetInstance().GetTimer().GetDeltaTime());
+		transform->SetTranslation(transform->GetTranslation() + direction.GetNormalized() * myMoveSpeed * Engine::Get().GetTimer().GetDeltaTime());
 	}
 }

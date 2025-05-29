@@ -170,6 +170,7 @@ void Logger::Heartbeat()
 	{
 		while(!myLogQueue.empty())
 		{
+			std::lock_guard<std::mutex> logLock(myLogMutex);
 			const LogEntry& entry = myLogQueue.front();
 			LogIntl(*entry.Category, entry.Verbosity, entry.Message.c_str());
 			myLogQueue.pop();

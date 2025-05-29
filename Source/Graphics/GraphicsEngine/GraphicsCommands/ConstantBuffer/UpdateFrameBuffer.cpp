@@ -15,9 +15,9 @@ UpdateFrameBuffer::UpdateFrameBuffer(std::shared_ptr<Camera> aCamera)
 	myViewDirection = CU::ToVector4(aCamera->gameObject->GetComponent<Transform>()->GetForwardVector(true), 1.0f);
 	myNearPlane = aCamera->GetNearPlane();
 	myFarPlane = aCamera->GetFarPlane();
-	myTotalTime = static_cast<float>(Engine::GetInstance().GetTimer().GetTimeSinceProgramStart());
-	myDeltaTime = Engine::GetInstance().GetTimer().GetDeltaTime();
-	myResolution = Engine::GetInstance().GetResolution();
+	myTotalTime = static_cast<float>(Engine::Get().GetTimer().GetTimeSinceProgramStart());
+	myDeltaTime = Engine::Get().GetTimer().GetDeltaTime();
+	myResolution = Engine::Get().GetResolution();
 }
 
 void UpdateFrameBuffer::Execute()

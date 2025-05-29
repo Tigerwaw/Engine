@@ -24,7 +24,7 @@ RenderDebugMesh::RenderDebugMesh(std::shared_ptr<DebugModel> aModel)
 
     if (GraphicsEngine::Get().DrawBoundingBoxes)
     {
-        Engine::GetInstance().GetDebugDrawer().DrawBoundingBox(aModel);
+        Engine::Get().GetDebugDrawer().DrawBoundingBox(aModel);
     }
 }
 

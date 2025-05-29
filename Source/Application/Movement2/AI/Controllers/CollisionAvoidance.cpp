@@ -12,7 +12,7 @@ ControllerBase::SteeringOutput CollisionAvoidance::GetSteering(const SteeringInp
     SteeringOutput output;
     output.velocity = aSteeringInput.velocity;
 
-	auto viewport = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("MainCamera")->GetComponent<Camera>()->GetViewportDimensions();
+	auto viewport = Engine::Get().GetSceneHandler().FindGameObjectByName("MainCamera")->GetComponent<Camera>()->GetViewportDimensions();
 
 	if (aSteeringInput.position.x < -viewport.x + myEdgeMargin)
 	{

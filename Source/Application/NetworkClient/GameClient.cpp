@@ -30,7 +30,7 @@
 
 void GameClient::Update()
 {
-    if (Engine::GetInstance().GetInputHandler().GetBinaryAction("ToggleLerp"))
+    if (Engine::Get().GetInputHandler().GetBinaryAction("ToggleLerp"))
     {
         myShouldLerpPositions = !myShouldLerpPositions;
     }
@@ -44,7 +44,7 @@ void GameClient::Update()
 
     if (myShouldLerpPositions)
     {
-        double currentTime = Engine::GetInstance().GetTimer().GetTimeSinceEpoch();
+        double currentTime = Engine::Get().GetTimer().GetTimeSinceEpoch();
 
         for (auto& [clientID, positionDataArray] : myObjectIDPositionHistory)
         {
@@ -64,7 +64,7 @@ void GameClient::Update()
                 }
 
                 CU::Vector3f lerpedPosition = CU::Vector3f::Lerp(lastPos.position, nextPos.position, t);
-                if (auto go = Engine::GetInstance().GetSceneHandler().FindGameObjectByNetworkID(clientID))
+                if (auto go = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(clientID))
                 {
                     go->GetComponent<Transform>()->SetTranslation(lerpedPosition);
                 }
@@ -200,15 +200,15 @@ void GameClient::HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMess
     auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorBlue.json")->material);
     model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
 
-    Engine::GetInstance().GetSceneHandler().Instantiate(go);
+    Engine::Get().GetSceneHandler().Instantiate(go);
 }
 
 void GameClient::HandleMessage_RemoveCharacter(NetMessage_RemoveCharacter& aMessage)
 {
-    auto& sceneHandler = Engine::GetInstance().GetSceneHandler();
+    auto& sceneHandler = Engine::Get().GetSceneHandler();
     if (auto go = sceneHandler.FindGameObjectByNetworkID(aMessage.GetNetworkID()))
     {
-        Engine::GetInstance().GetSceneHandler().Destroy(go);
+        Engine::Get().GetSceneHandler().Destroy(go);
     }
 }
 
@@ -219,12 +219,12 @@ void GameClient::HandleMessage_Position(NetMessage_Position& aMessage)
         PositionData data;
         data.position = aMessage.GetPosition();
         data.serverTimestamp = aMessage.GetTimestamp();
-        data.clientTimestamp = Engine::GetInstance().GetTimer().GetTimeSinceEpoch();
+        data.clientTimestamp = Engine::Get().GetTimer().GetTimeSinceEpoch();
         myObjectIDPositionHistory[aMessage.GetNetworkID()].Push_back(data);
     }
     else
     {
-        if (auto go = Engine::GetInstance().GetSceneHandler().FindGameObjectByNetworkID(aMessage.GetNetworkID()))
+        if (auto go = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(aMessage.GetNetworkID()))
         {
             go->GetComponent<Transform>()->SetTranslation(aMessage.GetPosition());
         }

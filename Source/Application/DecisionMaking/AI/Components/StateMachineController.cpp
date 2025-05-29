@@ -16,7 +16,7 @@ void StateMachineController::Start()
 
 void StateMachineController::Update()
 {
-	float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
+	float dt = Engine::Get().GetTimer().GetDeltaTime();
 	myCurrentParticleActiveTime += dt;
 	if (myIsShooting && myCurrentParticleActiveTime > myMaxParticleActiveTime)
 	{
@@ -38,7 +38,7 @@ void StateMachineController::Update()
 	{
 	case StateMachineController::State::SeekEnemy:
 	{
-		SetTarget(PollingStation::Get().GetRandomAIActor(Engine::GetInstance().GetSceneHandler().FindGameObjectByName(gameObject->GetName())));
+		SetTarget(PollingStation::Get().GetRandomAIActor(Engine::Get().GetSceneHandler().FindGameObjectByName(gameObject->GetName())));
 		SeekTarget();
 
 		auto transform = gameObject->GetComponent<Transform>();
@@ -61,7 +61,7 @@ void StateMachineController::Update()
 	}
 	case StateMachineController::State::SeekWell:
 	{
-		SetTarget(Engine::GetInstance().GetSceneHandler().FindGameObjectByName("HWell"));
+		SetTarget(Engine::Get().GetSceneHandler().FindGameObjectByName("HWell"));
 		SeekTarget();
 
 		auto transform = gameObject->GetComponent<Transform>();
@@ -115,7 +115,7 @@ void StateMachineController::Update()
 
 					if (targetHealthComp->GetHealth() <= 0)
 					{
-						SetTarget(PollingStation::Get().GetRandomAIActor(Engine::GetInstance().GetSceneHandler().FindGameObjectByName(gameObject->GetName())));
+						SetTarget(PollingStation::Get().GetRandomAIActor(Engine::Get().GetSceneHandler().FindGameObjectByName(gameObject->GetName())));
 					}
 				}
 
@@ -160,7 +160,7 @@ void StateMachineController::Update()
 
 void StateMachineController::SeekTarget()
 {
-	float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
+	float dt = Engine::Get().GetTimer().GetDeltaTime();
 	auto& transform = gameObject->GetComponent<Transform>();
 
 	CU::Vector3f pos = transform->GetTranslation();

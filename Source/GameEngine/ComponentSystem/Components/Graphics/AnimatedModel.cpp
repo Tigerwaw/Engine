@@ -399,7 +399,7 @@ void AnimatedModel::UpdateAnimationLayer(AnimationLayer& aAnimationLayer)
     {
         UpdateAnimationState(*aAnimationLayer.nextState);
 
-        aAnimationLayer.currentBlendTime += Engine::GetInstance().GetTimer().GetDeltaTime();
+        aAnimationLayer.currentBlendTime += Engine::Get().GetTimer().GetDeltaTime();
         float blendFactor = aAnimationLayer.currentBlendTime / aAnimationLayer.maxBlendTime;
         BlendPoses(aAnimationLayer, blendFactor);
         if (aAnimationLayer.currentBlendTime >= aAnimationLayer.maxBlendTime)
@@ -425,7 +425,7 @@ void AnimatedModel::UpdateAnimationLayer(AnimationLayer& aAnimationLayer)
 
 void AnimatedModel::UpdateAnimationState(AnimationState& aAnimationState)
 {
-    aAnimationState.currentTime += Engine::GetInstance().GetTimer().GetDeltaTime();
+    aAnimationState.currentTime += Engine::Get().GetTimer().GetDeltaTime();
     if (aAnimationState.currentTime < aAnimationState.frameTime) return;
 
     aAnimationState.currentTime = 0;

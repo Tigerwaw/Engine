@@ -24,7 +24,7 @@ RenderAnimatedMesh::RenderAnimatedMesh(std::shared_ptr<AnimatedModel> aModel)
     
     if (GraphicsEngine::Get().DrawBoundingBoxes)
     {
-        Engine::GetInstance().GetDebugDrawer().DrawBoundingBox(aModel);
+        Engine::Get().GetDebugDrawer().DrawBoundingBox(aModel);
     }
 }
 

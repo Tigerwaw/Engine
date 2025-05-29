@@ -1,5 +1,6 @@
 #include "Enginepch.h"
 #include "FeatureShowcase.h"
+#include <GameEngine/Application/AppSettings.h>
 #include <GameEngine/Engine.h>
 #include <GameEngine/Time/Timer.h>
 #include <Psapi.h>
@@ -18,26 +19,31 @@
 
 #include <GameEngine/ComponentSystem/Components/Graphics/ParticleSystem.h>
 
+static int sRamUsage = 0;
+static int sRamUsageChange = 0;
+static float sTimeSinceLastMemoryCheck = 0.0f;
+static float sMemoryCheckTimeInterval = 1.0f;
+
 Application* CreateApplication()
 {
-	Engine::GetInstance().LoadSettings(std::filesystem::current_path().string() + "/" + APP_SETTINGS_PATH);
+	AppSettings::LoadSettings(std::filesystem::current_path() / APP_SETTINGS_PATH);
     return new FeatureShowcase();
 }
 
 void FeatureShowcase::InitializeApplication()
 {
-	Engine::GetInstance().GetInputHandler().SetControllerDeadZone(0.1f, 0.06f);
-	Engine::GetInstance().GetAudioEngine().LoadBank("Master");
-	Engine::GetInstance().GetAudioEngine().LoadBank("Master.strings");
-	Engine::GetInstance().GetAudioEngine().LoadBank("Test");
+	Engine::Get().GetInputHandler().SetControllerDeadZone(0.1f, 0.06f);
+	Engine::Get().GetAudioEngine().LoadBank("Master");
+	Engine::Get().GetAudioEngine().LoadBank("Master.strings");
+	Engine::Get().GetAudioEngine().LoadBank("Test");
 
-	Engine::GetInstance().GetAudioEngine().AddBus(BusType::Music, "Music");
-	Engine::GetInstance().GetAudioEngine().AddBus(BusType::Ambience, "Ambience");
-	Engine::GetInstance().GetAudioEngine().AddBus(BusType::SFX, "SFX");
+	Engine::Get().GetAudioEngine().AddBus(BusType::Music, "Music");
+	Engine::Get().GetAudioEngine().AddBus(BusType::Ambience, "Ambience");
+	Engine::Get().GetAudioEngine().AddBus(BusType::SFX, "SFX");
 
-	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_TestScene.json");
+	Engine::Get().GetSceneHandler().LoadScene("Scenes/SC_TestScene.json");
 
-	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
+	InputHandler& inputHandler = Engine::Get().GetInputHandler();
 	inputHandler.RegisterBinaryAction("W", Keys::W, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("A", Keys::A, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("S", Keys::S, GenericInput::ActionType::Held);
@@ -90,12 +96,12 @@ void FeatureShowcase::InitializeApplication()
 		}
 	}
 
-	Engine::GetInstance().GetSceneHandler().Instantiate(instancedModelObj);
+	Engine::Get().GetSceneHandler().Instantiate(instancedModelObj);
 	
-	Engine::GetInstance().GetImGuiHandler().AddNewFunction([]()
+	Engine::Get().GetImGuiHandler().AddNewFunction([]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+			CU::Vector2f resolution = Engine::Get().GetResolution();
 			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.02f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.35f * resolution.y });
 			bool open = true;
@@ -141,7 +147,7 @@ void FeatureShowcase::InitializeApplication()
 			// Animation
 			{
 				ImGui::Text("Animations");
-				std::shared_ptr<AnimatedModel> tgaBroModel = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("TgaBro")->GetComponent<AnimatedModel>();
+				std::shared_ptr<AnimatedModel> tgaBroModel = Engine::Get().GetSceneHandler().FindGameObjectByName("TgaBro")->GetComponent<AnimatedModel>();
 				if (ImGui::BeginCombo("##AnimationDropdown", tgaBroModel->GetCurrentAnimationNameOnLayer(0).c_str()))
 				{
 					if (ImGui::Selectable("Idle")) tgaBroModel->SetCurrentAnimationOnLayer("Idle", "", 0.5f);
@@ -154,16 +160,16 @@ void FeatureShowcase::InitializeApplication()
 
 			// Test Audio
 			{
-				float sfxVolume = Engine::GetInstance().GetAudioEngine().GetVolumeOfBus(BusType::SFX);
-				if (ImGui::SliderFloat("SFX Volume", &sfxVolume, 0, 1.0f)) Engine::GetInstance().GetAudioEngine().SetVolumeOfBus(BusType::SFX, sfxVolume);
+				float sfxVolume = Engine::Get().GetAudioEngine().GetVolumeOfBus(BusType::SFX);
+				if (ImGui::SliderFloat("SFX Volume", &sfxVolume, 0, 1.0f)) Engine::Get().GetAudioEngine().SetVolumeOfBus(BusType::SFX, sfxVolume);
 
-				float musicVolume = Engine::GetInstance().GetAudioEngine().GetVolumeOfBus(BusType::Music);
-				if (ImGui::SliderFloat("Music Volume", &musicVolume, 0, 1.0f)) Engine::GetInstance().GetAudioEngine().SetVolumeOfBus(BusType::Music, musicVolume);
+				float musicVolume = Engine::Get().GetAudioEngine().GetVolumeOfBus(BusType::Music);
+				if (ImGui::SliderFloat("Music Volume", &musicVolume, 0, 1.0f)) Engine::Get().GetAudioEngine().SetVolumeOfBus(BusType::Music, musicVolume);
 			}
 
 			// Test VFX
 			{
-				std::shared_ptr<VFXModel> vfx = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("VFXTest")->GetComponent<VFXModel>();
+				std::shared_ptr<VFXModel> vfx = Engine::Get().GetSceneHandler().FindGameObjectByName("VFXTest")->GetComponent<VFXModel>();
 				if (ImGui::Button("Play VFX"))
 				{
 					if (vfx)
@@ -177,10 +183,10 @@ void FeatureShowcase::InitializeApplication()
 #endif
 		});
 
-	Engine::GetInstance().GetImGuiHandler().AddNewFunction([]()
+	Engine::Get().GetImGuiHandler().AddNewFunction([]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+			CU::Vector2f resolution = Engine::Get().GetResolution();
 			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.4f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.55f * resolution.y });
 			bool open = true;
@@ -190,7 +196,7 @@ void FeatureShowcase::InitializeApplication()
 				{
 					if (ImGui::BeginTabItem("Ambient Light"))
 					{
-						std::shared_ptr<GameObject> ambientLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("A_Light");
+						std::shared_ptr<GameObject> ambientLight = Engine::Get().GetSceneHandler().FindGameObjectByName("A_Light");
 						bool active = ambientLight->GetActive();
 						if (ImGui::Checkbox("Set Active##Ambient", &active)) ambientLight->SetActive(active);
 
@@ -235,7 +241,7 @@ void FeatureShowcase::InitializeApplication()
 
 					if (ImGui::BeginTabItem("Directional Light"))
 					{
-						std::shared_ptr<GameObject> directionalLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light");
+						std::shared_ptr<GameObject> directionalLight = Engine::Get().GetSceneHandler().FindGameObjectByName("D_Light");
 						bool active = directionalLight->GetActive();
 						if (ImGui::Checkbox("Set Active##Directional", &active)) directionalLight->SetActive(active);
 
@@ -263,7 +269,7 @@ void FeatureShowcase::InitializeApplication()
 
 					if (ImGui::BeginTabItem("Pointlight"))
 					{
-						std::shared_ptr<GameObject> pointLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("P_Light");
+						std::shared_ptr<GameObject> pointLight = Engine::Get().GetSceneHandler().FindGameObjectByName("P_Light");
 						bool active = pointLight->GetActive();
 						if (ImGui::Checkbox("Set Active##Point", &active))  pointLight->SetActive(active);
 
@@ -300,7 +306,7 @@ void FeatureShowcase::InitializeApplication()
 
 					if (ImGui::BeginTabItem("Spotlight"))
 					{
-						std::shared_ptr<GameObject> spotLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("S_Light");
+						std::shared_ptr<GameObject> spotLight = Engine::Get().GetSceneHandler().FindGameObjectByName("S_Light");
 						bool active = spotLight->GetActive();
 						if (ImGui::Checkbox("Set Active##Spot", &active)) spotLight->SetActive(active);
 
@@ -351,10 +357,10 @@ void FeatureShowcase::InitializeApplication()
 #endif
 		});
 
-	Engine::GetInstance().GetImGuiHandler().AddNewFunction([]()
+	Engine::Get().GetImGuiHandler().AddNewFunction([]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+			CU::Vector2f resolution = Engine::Get().GetResolution();
 			ImGui::SetNextWindowPos({ 0.18f * resolution.x, 0.02f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.2f * resolution.y });
 			bool open = true;
@@ -367,7 +373,7 @@ void FeatureShowcase::InitializeApplication()
 				// FPS
 				{
 					CU::Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
-					int fps = Engine::GetInstance().GetTimer().GetFPS();
+					int fps = Engine::Get().GetTimer().GetFPS();
 					if (fps < 60) color = { 1.0f, 1.0f, 0.0f, 1.0f };
 					if (fps < 30) color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
@@ -379,7 +385,7 @@ void FeatureShowcase::InitializeApplication()
 
 					ImGui::Text("Frametime (ms):");
 					ImGui::TableNextColumn();
-					ImGui::Text("%.2f", Engine::GetInstance().GetTimer().GetFrameTimeMS());
+					ImGui::Text("%.2f", Engine::Get().GetTimer().GetFrameTimeMS());
 					ImGui::TableNextColumn();
 				}
 
@@ -395,13 +401,13 @@ void FeatureShowcase::InitializeApplication()
 				{
 					ImGui::Text("Scene Objects:");
 					ImGui::TableNextColumn();
-					ImGui::Text(std::string(std::to_string(Engine::GetInstance().GetSceneHandler().GetObjectAmount())).c_str());
+					ImGui::Text(std::string(std::to_string(Engine::Get().GetSceneHandler().GetObjectAmount())).c_str());
 
 					ImGui::TableNextColumn();
 
 					ImGui::Text("Active Scene Objects:");
 					ImGui::TableNextColumn();
-					ImGui::Text(std::to_string(Engine::GetInstance().GetSceneHandler().GetActiveObjectAmount()).c_str());
+					ImGui::Text(std::to_string(Engine::Get().GetSceneHandler().GetActiveObjectAmount()).c_str());
 					ImGui::TableNextColumn();
 				}
 
@@ -409,10 +415,12 @@ void FeatureShowcase::InitializeApplication()
 
 				// Memory Usage
 				{
-					Engine::GetInstance().TimeSinceLastMemoryCheck += Engine::GetInstance().GetTimer().GetDeltaTime();
-					if (Engine::GetInstance().TimeSinceLastMemoryCheck > Engine::GetInstance().MemoryCheckTimeInterval)
+					sTimeSinceLastMemoryCheck += Engine::Get().GetTimer().GetDeltaTime();
+
+					sTimeSinceLastMemoryCheck;
+					if (sTimeSinceLastMemoryCheck > sMemoryCheckTimeInterval)
 					{
-						Engine::GetInstance().TimeSinceLastMemoryCheck = 0;
+						sTimeSinceLastMemoryCheck = 0;
 
 						HANDLE hProcess = {};
 						PROCESS_MEMORY_COUNTERS pmc;
@@ -423,8 +431,8 @@ void FeatureShowcase::InitializeApplication()
 							if (GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc)))
 							{
 								int newRamUsage = static_cast<int>(pmc.WorkingSetSize / (1024.0 * 1024.0));
-								Engine::GetInstance().RamUsageChange = newRamUsage - Engine::GetInstance().RamUsage;
-								Engine::GetInstance().RamUsage = newRamUsage;
+								sRamUsageChange = newRamUsage - sRamUsage;
+								sRamUsage = newRamUsage;
 							}
 
 							CloseHandle(hProcess);
@@ -432,17 +440,17 @@ void FeatureShowcase::InitializeApplication()
 					}
 
 					CU::Vector4f color = { 1.0f, 0.0f, 0.0f, 1.0f };
-					if (Engine::GetInstance().RamUsageChange <= 0) color = { 0.0f, 1.0f, 0.0f, 1.0f };
+					if (sRamUsageChange <= 0) color = { 0.0f, 1.0f, 0.0f, 1.0f };
 
 					ImGui::Text("RAM used:");
 					ImGui::TableNextColumn();
-					ImGui::Text(std::string(std::to_string(Engine::GetInstance().RamUsage) + " Mb").c_str());
+					ImGui::Text(std::string(std::to_string(sRamUsage) + " Mb").c_str());
 
 					ImGui::TableNextColumn();
 
 					ImGui::Text("RAM usage fluctuation:");
 					ImGui::TableNextColumn();
-					ImGui::TextColored({ color.x, color.y, color.z, color.w }, std::string(std::to_string(Engine::GetInstance().RamUsageChange) + " Mb").c_str());
+					ImGui::TextColored({ color.x, color.y, color.z, color.w }, std::string(std::to_string(sRamUsageChange) + " Mb").c_str());
 					ImGui::TableNextColumn();
 				}
 
@@ -452,16 +460,16 @@ void FeatureShowcase::InitializeApplication()
 #endif
 		});
 
-	Engine::GetInstance().GetImGuiHandler().AddNewFunction([]()
+	Engine::Get().GetImGuiHandler().AddNewFunction([]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+			CU::Vector2f resolution = Engine::Get().GetResolution();
 			ImGui::SetNextWindowPos({ 0.85f * resolution.x, 0.02f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.24f * resolution.x, 0.26f * resolution.y });
 			bool open = true;
 			ImGui::Begin("Controller Info", &open, ImGuiWindowFlags_NoSavedSettings);
 
-			InputHandler& cont = Engine::GetInstance().GetInputHandler();
+			InputHandler& cont = Engine::Get().GetInputHandler();
 
 			ImGui::Text("Left Stick: ");
 			ImGui::SameLine();
@@ -583,10 +591,10 @@ void FeatureShowcase::InitializeApplication()
 #endif
 		});
 
-	/*Engine::GetInstance().GetImGuiHandler().AddNewFunction([]()
+	/*Engine::Get().GetImGuiHandler().AddNewFunction([]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+			CU::Vector2f resolution = Engine::Get().GetResolution();
 			ImGui::SetNextWindowPos({ 0.85f * resolution.x, 0.32f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.24f * resolution.x, 0.24f * resolution.y });
 			bool open = true;
@@ -600,43 +608,43 @@ void FeatureShowcase::InitializeApplication()
 			if (ImGui::Button("1280 x 720"))
 			{
 				GraphicsEngine::Get().SetResolution(1280.0f, 720.0f);
-				Engine::GetInstance().SetResolution(1280.0f, 720.0f);
+				Engine::Get().SetResolution(1280.0f, 720.0f);
 			}
 			if (ImGui::Button("1600 x 900"))
 			{
 				GraphicsEngine::Get().SetResolution(1600.0f, 900.0f);
-				Engine::GetInstance().SetResolution(1600.0f, 900.0f);
+				Engine::Get().SetResolution(1600.0f, 900.0f);
 			}
 			if (ImGui::Button("1920 x 1080"))
 			{
 				GraphicsEngine::Get().SetResolution(1920.0f, 1080.0f);
-				Engine::GetInstance().SetResolution(1920.0f, 1080.0f);
+				Engine::Get().SetResolution(1920.0f, 1080.0f);
 			}
 			if (ImGui::Button("2560 x 1440"))
 			{
 				GraphicsEngine::Get().SetResolution(2560.0f, 1440.0f);
-				Engine::GetInstance().SetResolution(2560.0f, 1440.0f);
+				Engine::Get().SetResolution(2560.0f, 1440.0f);
 			}
 			if (ImGui::Button("3840 x 2160"))
 			{
 				GraphicsEngine::Get().SetResolution(3840.0f, 2160.0f);
-				Engine::GetInstance().SetResolution(3840.0f, 2160.0f);
+				Engine::Get().SetResolution(3840.0f, 2160.0f);
 			}
 
 			ImGui::End();
 #endif
 		});*/
 
-	Engine::GetInstance().GetImGuiHandler().AddNewFunction([]()
+	Engine::Get().GetImGuiHandler().AddNewFunction([]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+			CU::Vector2f resolution = Engine::Get().GetResolution();
 			ImGui::SetNextWindowPos({ 0.85f * resolution.x, 0.32f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.24f * resolution.x, 0.24f * resolution.y });
 			bool open = true;
 			ImGui::Begin("Particle Position", &open, ImGuiWindowFlags_NoSavedSettings);
 
-			std::shared_ptr<GameObject> psObject = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("ParticleTest");
+			std::shared_ptr<GameObject> psObject = Engine::Get().GetSceneHandler().FindGameObjectByName("ParticleTest");
 			std::shared_ptr<Transform> psTransform = psObject->GetComponent<Transform>();
 			CU::Vector3f psPos = psTransform->GetTranslation(true);
 			float pos[3] = { psPos.x, psPos.y, psPos.z };
@@ -652,7 +660,7 @@ void FeatureShowcase::InitializeApplication()
 
 void FeatureShowcase::UpdateApplication()
 {
-	if (Engine::GetInstance().GetInputHandler().GetBinaryAction("SPACE") && !Engine::GetInstance().GetInputHandler().GetBinaryAction("RMB"))
+	if (Engine::Get().GetInputHandler().GetBinaryAction("SPACE") && !Engine::Get().GetInputHandler().GetBinaryAction("RMB"))
 	{
 		currentAnimation += 1;
 		if (currentAnimation >= animationNames.size())
@@ -660,11 +668,11 @@ void FeatureShowcase::UpdateApplication()
 			currentAnimation = 0;
 		}
 
-		std::shared_ptr<AnimatedModel> tgaBroModel = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("TgaBro")->GetComponent<AnimatedModel>();
+		std::shared_ptr<AnimatedModel> tgaBroModel = Engine::Get().GetSceneHandler().FindGameObjectByName("TgaBro")->GetComponent<AnimatedModel>();
 		tgaBroModel->SetCurrentAnimationOnLayer(animationNames[currentAnimation], "", 0.5f);
 	}
 
-	if (Engine::GetInstance().GetInputHandler().GetBinaryAction("F6"))
+	if (Engine::Get().GetInputHandler().GetBinaryAction("F6"))
 	{
 		currentDebugMode += 1;
 		if (currentDebugMode >= static_cast<unsigned>(DebugMode::COUNT))
@@ -675,7 +683,7 @@ void FeatureShowcase::UpdateApplication()
 		GraphicsEngine::Get().CurrentDebugMode = static_cast<DebugMode>(currentDebugMode);
 	}
 
-	if (Engine::GetInstance().GetInputHandler().GetBinaryAction("F7"))
+	if (Engine::Get().GetInputHandler().GetBinaryAction("F7"))
 	{
 		GraphicsEngine::Get().SSAOEnabled = !GraphicsEngine::Get().SSAOEnabled;
 	}

@@ -146,7 +146,7 @@ bool Camera::Deserialize(nl::json& aJsonObject)
 			float fov = 0;
 			float nearPlane = 0;
 			float farPlane = 0;
-			CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+			CU::Vector2f resolution = Engine::Get().GetResolution();
 
 			if (aJsonObject.contains("FOV"))
 			{

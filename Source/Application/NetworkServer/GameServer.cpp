@@ -30,7 +30,7 @@ void GameServer::Update()
 {
     ServerBase::Update();
 
-    double currentTime = Engine::GetInstance().GetTimer().GetTimeSinceProgramStart();
+    double currentTime = Engine::Get().GetTimer().GetTimeSinceProgramStart();
     float dt = static_cast<float>(currentTime - myLastUpdateTimestamp);
     if (dt > (1.0f / myTickRate))
     {
@@ -186,9 +186,9 @@ void GameServer::CreateNewObject()
     auto coll = go->AddComponent<BoxCollider>(CU::Vector3f(50.0f, 100.0f, 50.0f), CU::Vector3f(0.0f, 90.0f, 0.0f));
     unsigned id = go->GetNetworkID();
     coll->SetCollisionResponse([this, id] {
-        if (auto gameObject = Engine::GetInstance().GetSceneHandler().FindGameObjectByNetworkID(id))
+        if (auto gameObject = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(id))
         {
-            Engine::GetInstance().GetSceneHandler().Destroy(gameObject);
+            Engine::Get().GetSceneHandler().Destroy(gameObject);
             DestroyObject(id);
             myCurrentlyActiveObjects--;
         }
@@ -200,7 +200,7 @@ void GameServer::CreateNewObject()
 
     myObjects.push_back(go);
 
-    Engine::GetInstance().GetSceneHandler().Instantiate(go);
+    Engine::Get().GetSceneHandler().Instantiate(go);
 
     myCurrentTimeSinceLastSpawn = 0.0f;
     myCurrentNetworkID++;
@@ -228,7 +228,7 @@ void GameServer::UpdatePositions()
         NetMessage_Position newMsg;
         newMsg.SetNetworkID(object->GetNetworkID());
         newMsg.SetPosition(object->GetComponent<Transform>()->GetTranslation());
-        newMsg.SetTimestamp(Engine::GetInstance().GetTimer().GetTimeSinceEpoch());
+        newMsg.SetTimestamp(Engine::Get().GetTimer().GetTimeSinceEpoch());
         NetBuffer buffer;
         newMsg.Serialize(buffer);
         SendToAllClients(buffer);

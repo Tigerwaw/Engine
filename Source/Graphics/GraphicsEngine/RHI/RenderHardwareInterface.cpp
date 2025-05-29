@@ -1080,14 +1080,14 @@ bool RenderHardwareInterface::CreateLUT(std::string_view aName, unsigned aWidth,
 	}
 
 	std::shared_ptr<Shader> LUTshaderVS = std::make_shared<Shader>();
-	if (!LoadShaderFromFilePath("LUT_VS", *LUTshaderVS, Engine::GetInstance().GetContentRootPath() / L"EngineAssets/Shaders/SH_Quad_VS.cso"))
+	if (!LoadShaderFromFilePath("LUT_VS", *LUTshaderVS, Engine::Get().GetContentRootPath() / L"EngineAssets/Shaders/SH_Quad_VS.cso"))
 	{
 		LOG(LogRHI, Error, "Failed to load LUT vertex shader!");
 		return false;
 	}
 
 	std::shared_ptr<Shader> LUTshaderPS = std::make_shared<Shader>();
-	if (!LoadShaderFromFilePath("LUT_PS", *LUTshaderPS, Engine::GetInstance().GetContentRootPath() / L"EngineAssets/Shaders/SH_brdfLUT_PS.cso"))
+	if (!LoadShaderFromFilePath("LUT_PS", *LUTshaderPS, Engine::Get().GetContentRootPath() / L"EngineAssets/Shaders/SH_brdfLUT_PS.cso"))
 	{
 		LOG(LogRHI, Error, "Failed to load LUT pixel shader!");
 		return false;

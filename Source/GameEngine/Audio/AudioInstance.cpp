@@ -27,7 +27,7 @@ void AudioInstance::ClearAllInstances()
 
 void AudioInstance::AddInstance()
 {
-    FMOD::Studio::EventInstance* eventInstance = Engine::GetInstance().GetAudioEngine().CreateEventInstance(myEventName);
+    FMOD::Studio::EventInstance* eventInstance = Engine::Get().GetAudioEngine().CreateEventInstance(myEventName);
     if (!eventInstance)
     {
         LOG(LogAudioPlayer, Error, "Could not initialize audio instance {}", myEventName);
@@ -40,7 +40,7 @@ void AudioInstance::AddInstance()
 
 bool AudioInstance::Initialize(const std::string& aEventName, bool aAllowOverlap)
 {
-    FMOD::Studio::EventInstance* eventInstance = Engine::GetInstance().GetAudioEngine().CreateEventInstance(aEventName);
+    FMOD::Studio::EventInstance* eventInstance = Engine::Get().GetAudioEngine().CreateEventInstance(aEventName);
     if (!eventInstance)
     {
         LOG(LogAudioPlayer, Error, "Could not initialize audio instance {}", aEventName);

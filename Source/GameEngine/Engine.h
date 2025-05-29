@@ -17,14 +17,13 @@ class Window;
 class Engine
 {
 public:
-    static Engine& GetInstance()
-    {
-        static Engine instance;
-        return instance;
-    }
+    static Engine& Get();
+    static void Initialize();
+    static void Shutdown();
 
-    void Destroy();
+    void Prepare();
     void Update();
+    void Render();
 
     Timer& GetTimer() { return *myTimer; }
     InputHandler& GetInputHandler() { return *myInputHandler; }
@@ -33,11 +32,10 @@ public:
     DebugDrawer& GetDebugDrawer() { return *myDebugDrawer; }
     AudioEngine& GetAudioEngine() { return *myAudioEngine; }
     ImGuiHandler& GetImGuiHandler() { return *myImGuiHandler; }
-    WindowsEventHandler& GetWindowsEventHandler();
-    Window& GetApplicationWindow();
+    WindowsEventHandler& GetWindowsEventHandler() { return *myEventHandler; }
+    Window& GetApplicationWindow() { return *myWindow; }
 
-    void LoadSettings(const std::string& aSettingsFilepath);
-    const std::filesystem::path GetContentRootPath();
+    const std::filesystem::path& GetContentRootPath();
     const std::string& GetApplicationTitle();
 
     void SetResolution(float aWidth, float aHeight);
@@ -51,21 +49,14 @@ public:
     bool GetIsBorderless() const { return myIsBorderless; }
     bool GetAllowDropFiles() const { return myAllowDropFiles; }
     bool GetAutoRegisterAssets() const { return myAutoRegisterAssets; }
-
-    void SetApplicationInstance(Application* aApplication);
-
-    // Temp kinda
-    int RamUsage = 0;
-    int RamUsageChange = 0;
-    float TimeSinceLastMemoryCheck = 0;
-    float MemoryCheckTimeInterval = 1.0f;
 private:
     Engine();
     ~Engine();
     Engine(Engine const&) = delete;
     void operator=(Engine const&) = delete;
-    static Engine* myInstance;
-
+    
+    std::unique_ptr<Window> myWindow;
+    std::unique_ptr<WindowsEventHandler> myEventHandler;
     std::unique_ptr<Timer> myTimer;
     std::unique_ptr<InputHandler> myInputHandler;
     std::unique_ptr<GlobalEventHandler> myGlobalEventHandler;
@@ -73,8 +64,6 @@ private:
     std::unique_ptr<DebugDrawer> myDebugDrawer;
     std::unique_ptr<AudioEngine> myAudioEngine;
     std::unique_ptr<ImGuiHandler> myImGuiHandler;
-
-    Application* myApplicationInstance = nullptr;
 
     std::string myTitle;
     std::filesystem::path myContentRoot;

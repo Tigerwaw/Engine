@@ -1,5 +1,6 @@
 #include "Enginepch.h"
 #include "Navigation.h"
+#include <GameEngine/Application/AppSettings.h>
 #include <GameEngine/Engine.h>
 #include "GameEngine/Pathfinding/NavMesh.h"
 #include "GameEngine/Pathfinding/Components/NavMeshAgent.h"
@@ -14,23 +15,23 @@
 
 Application* CreateApplication()
 {
-	Engine::GetInstance().LoadSettings(std::filesystem::current_path().string() + "/" + APP_SETTINGS_PATH);
+	AppSettings::LoadSettings(std::filesystem::current_path() / APP_SETTINGS_PATH);
     return new Navigation();
 }
 
 void Navigation::InitializeApplication()
 {
-	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
+	InputHandler& inputHandler = Engine::Get().GetInputHandler();
 
 	inputHandler.RegisterBinaryAction("LMB", Keys::MOUSELBUTTON, GenericInput::ActionType::Held);
 	inputHandler.RegisterAnalog2DAction("MousePosNDC", MouseMovement2D::MousePosNDC);
 
 	GraphicsEngine::Get().RecalculateShadowFrustum = false;
-	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_Navigation.json");
+	Engine::Get().GetSceneHandler().LoadScene("Scenes/SC_Navigation.json");
 
 	myNavMesh = AssetManager::Get().GetAsset<NavMeshAsset>("NM_Navmesh")->navmesh;
-	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Companion")->AddComponent<NavMeshAgent>(myNavMesh.get(), 150.0f);
-	Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Player")->AddComponent<WalkToPoint>(200.0f);
+	Engine::Get().GetSceneHandler().FindGameObjectByName("Companion")->AddComponent<NavMeshAgent>(myNavMesh.get(), 150.0f);
+	Engine::Get().GetSceneHandler().FindGameObjectByName("Player")->AddComponent<WalkToPoint>(200.0f);
 }
 
 void Navigation::UpdateApplication()
@@ -40,21 +41,21 @@ void Navigation::UpdateApplication()
 	myNavMesh->DrawBoundingBox();
 #endif
 
-	if (Engine::GetInstance().GetInputHandler().GetBinaryAction("LMB"))
+	if (Engine::Get().GetInputHandler().GetBinaryAction("LMB"))
 	{
 		CastRay();
 	}
 
 #ifndef _RETAIL
-	Engine::GetInstance().GetDebugDrawer().DrawLine(myDebugRay);
+	Engine::Get().GetDebugDrawer().DrawLine(myDebugRay);
 #endif
 }
 
 void Navigation::CastRay()
 {
-	CU::Vector2f mousePosNDC = Engine::GetInstance().GetInputHandler().GetAnalogAction2D("MousePosNDC");
+	CU::Vector2f mousePosNDC = Engine::Get().GetInputHandler().GetAnalogAction2D("MousePosNDC");
 
-	auto cam = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("MainCamera")->GetComponent<Camera>();
+	auto cam = Engine::Get().GetSceneHandler().FindGameObjectByName("MainCamera")->GetComponent<Camera>();
 	CU::Matrix4x4f invProj = cam->GetProjectionMatrix().GetInverse();
 	CU::Vector4f eyeCoords = CU::Vector4f{ mousePosNDC.x, mousePosNDC.y, 0.0f, 1.0f } *invProj;
 
@@ -71,7 +72,7 @@ void Navigation::CastRay()
 
 	CU::Ray<float> mouseRay(cameraPos, direction.GetNormalized());
 
-	if (auto collider = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Plane")->GetComponent<BoxCollider>())
+	if (auto collider = Engine::Get().GetSceneHandler().FindGameObjectByName("Plane")->GetComponent<BoxCollider>())
 	{
 		CU::Vector3f hitPoint;
 		bool hit = CU::IntersectionAABBRay(collider->GetAABB(), mouseRay, hitPoint);
@@ -81,8 +82,8 @@ void Navigation::CastRay()
 			myDebugRay.From = mouseRay.GetOrigin();
 			myDebugRay.To = hitPoint;
 			myDebugRay.Color = { 0, 1.0f, 0, 1.0f };
-			Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Player")->GetComponent<WalkToPoint>()->SetTarget(hitPoint);
-			Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Companion")->GetComponent<NavMeshAgent>()->MoveToLocation(hitPoint);
+			Engine::Get().GetSceneHandler().FindGameObjectByName("Player")->GetComponent<WalkToPoint>()->SetTarget(hitPoint);
+			Engine::Get().GetSceneHandler().FindGameObjectByName("Companion")->GetComponent<NavMeshAgent>()->MoveToLocation(hitPoint);
 		}
 		else
 		{

@@ -110,9 +110,13 @@ struct PSODescription
 class GraphicsEngine
 {
 public:
-	static GraphicsEngine& Get();
-
+	static GraphicsEngine& Get()
+	{
+		static GraphicsEngine myInstance;
+		return myInstance;
+	}
 	bool Initialize(HWND aWindowHandle);
+
 #ifndef _RETAIL
 	bool InitializeImGui();
 #endif

@@ -96,7 +96,7 @@ bool NavMeshAgent::MoveToNextPathPoint()
     }
 
     CU::Vector3f direction = (myPath[myCurrentGoalPoint] - position).GetNormalized();
-    CU::Vector3f moveDelta = direction * myMovementSpeed * Engine::GetInstance().GetTimer().GetDeltaTime();
+    CU::Vector3f moveDelta = direction * myMovementSpeed * Engine::Get().GetTimer().GetDeltaTime();
     transform->SetTranslation(transform->GetTranslation() + moveDelta);
 
     RotateTowardsVelocity(direction);
@@ -106,7 +106,7 @@ bool NavMeshAgent::MoveToNextPathPoint()
 
 void NavMeshAgent::RotateTowardsVelocity(CU::Vector3f aDirection)
 {
-    myCurrentRotationTime += Engine::GetInstance().GetTimer().GetDeltaTime();
+    myCurrentRotationTime += Engine::Get().GetTimer().GetDeltaTime();
     float t = myCurrentRotationTime / myMaxRotationTime;
 
     CU::Quatf slerpedRotation = CU::Quatf::Slerp(myStartRotation, myGoalRotation, t);
@@ -142,7 +142,7 @@ void NavMeshAgent::RenderDebugPath()
 {
     for (auto& line : myPathLines)
     {
-        Engine::GetInstance().GetDebugDrawer().DrawLine(line);
+        Engine::Get().GetDebugDrawer().DrawLine(line);
     }
 }
 #endif

@@ -61,8 +61,6 @@
 #include "AssetManager.h"
 
 #include "GraphicsEngine/GraphicsEngine.h"
-#include "Application/Window.h"
-#include "Application/WindowsEventHandler.h"
 
 #include "GameEngine/Engine.h"
 #include "GameEngine/Input/InputHandler.h"
@@ -88,14 +86,7 @@ public:
     virtual void InitializeApplication() {};
     virtual void UpdateApplication() {};
     void Run();
-    void Shutdown();
-    Window& GetWindow();
-    WindowsEventHandler& GetWindowsEventHandler();
 private:
-    bool InitializeEngine();
-
-    std::unique_ptr<Window> myWindow;
-    std::unique_ptr<WindowsEventHandler> myEventHandler;
 
     bool myIsRunning = true;
     bool myIsPaused = false;

@@ -27,12 +27,6 @@
 #include "Objects/GBuffer.h"
 #include "AssetManager/AssetManager.h"
 
-GraphicsEngine& GraphicsEngine::Get()
-{
-	static GraphicsEngine myInstance;
-	return myInstance;
-}
-
 bool GraphicsEngine::Initialize(HWND aWindowHandle)
 {
 	myRHI = std::make_unique<RenderHardwareInterface>();
@@ -45,7 +39,8 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	createDebugLayer = true;
 #endif
 
-	if (!myRHI->Initialize(aWindowHandle, createDebugLayer))
+	RenderHardwareInterface& rhi = *myRHI;
+	if (!rhi.Initialize(aWindowHandle, createDebugLayer))
 	{
 		myRHI.reset();
 		LOG(LogGraphicsEngine, Error, "Failed to initialize graphics engine!");
@@ -54,26 +49,26 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 
 	{
 		PipelineStateObject defaultPSO;
-		defaultPSO.SamplerStates[0] = myRHI->GetSamplerState("LinearWrapSS");
+		defaultPSO.SamplerStates[0] = rhi.GetSamplerState("LinearWrapSS");
 
 		defaultPSO.VertexStride = sizeof(Vertex);
 
-		std::wstring root = Engine::GetInstance().GetContentRootPath().wstring();
-		if (!myRHI->CreateInputLayout(defaultPSO.InputLayout, Vertex::InputLayoutDefinition, root + L"EngineAssets/Shaders/SH_Mesh_VS.cso"))
+		std::wstring root = Engine::Get().GetContentRootPath().wstring();
+		if (!rhi.CreateInputLayout(defaultPSO.InputLayout, Vertex::InputLayoutDefinition, root + L"EngineAssets/Shaders/SH_Mesh_VS.cso"))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to load default input layout!");
 			return false;
 		}
 
 		defaultPSO.VertexShader = std::make_shared<Shader>();
-		if (!myRHI->LoadShaderFromFilePath("Default_VS", *defaultPSO.VertexShader, root + L"EngineAssets/Shaders/SH_Mesh_VS.cso"))
+		if (!rhi.LoadShaderFromFilePath("Default_VS", *defaultPSO.VertexShader, root + L"EngineAssets/Shaders/SH_Mesh_VS.cso"))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to load default vertex shader!");
 			return false;
 		}
 
 		defaultPSO.PixelShader = std::make_shared<Shader>();
-		if (!myRHI->LoadShaderFromFilePath("Default_PS", *defaultPSO.PixelShader, root + L"EngineAssets/Shaders/SH_PBRMesh_PS.cso"))
+		if (!rhi.LoadShaderFromFilePath("Default_PS", *defaultPSO.PixelShader, root + L"EngineAssets/Shaders/SH_PBRMesh_PS.cso"))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to load default pixel shader!");
 			return false;
@@ -84,13 +79,13 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	}
 
 	myLUTtexture = std::make_shared<Texture>();
-	myRHI->CreateLUT("LUT", 512, 512, myLUTtexture);
+	rhi.CreateLUT("LUT", 512, 512, myLUTtexture);
 
 	CreateConstantBuffers();
 	
 	myCommandList = std::make_unique<GraphicsCommandList>();
 	myGBuffer = std::make_unique<GBuffer>();
-	CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+	CU::Vector2f resolution = Engine::Get().GetResolution();
 	myGBuffer->CreateGBuffer(static_cast<unsigned>(resolution.x), static_cast<unsigned>(resolution.y));
 
 	CreateRandomKernel(64);

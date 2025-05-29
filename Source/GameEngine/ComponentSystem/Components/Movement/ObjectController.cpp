@@ -16,7 +16,7 @@ ObjectController::ObjectController(float aMoveSpeed, float aRotSpeed)
 
 void ObjectController::Start()
 {
-	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
+	InputHandler& inputHandler = Engine::Get().GetInputHandler();
 	inputHandler.RegisterBinaryAction("ObjectSpeedUp", Keys::SHIFT, GenericInput::ActionType::Clicked);
 	inputHandler.RegisterBinaryAction("ObjectSpeedDown", Keys::SHIFT, GenericInput::ActionType::Released);
 	inputHandler.RegisterBinaryAction("ObjectReset", Keys::R, GenericInput::ActionType::Clicked);
@@ -28,8 +28,8 @@ void ObjectController::Start()
 
 void ObjectController::Update()
 {
-	float deltaTime = Engine::GetInstance().GetTimer().GetDeltaTime();
-	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
+	float deltaTime = Engine::Get().GetTimer().GetDeltaTime();
+	InputHandler& inputHandler = Engine::Get().GetInputHandler();
 
 	if (inputHandler.GetBinaryAction("ObjectSpeedUp"))
 	{

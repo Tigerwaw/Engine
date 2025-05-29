@@ -20,7 +20,7 @@ void Rotator::Start()
 
 void Rotator::Update()
 {
-	float deltaTime = Engine::GetInstance().GetTimer().GetDeltaTime();
+	float deltaTime = Engine::Get().GetTimer().GetDeltaTime();
     myCurrentRotationTime += deltaTime;
 
 	if (myCurrentRotationTime >= myMaxRotationTime)

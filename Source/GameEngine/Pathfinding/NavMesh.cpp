@@ -23,7 +23,7 @@ void NavMesh::SetBoundingBox(CU::Vector3f aCenter, CU::Vector3f aExtents)
 
 void NavMesh::DrawDebugLines()
 {
-	DebugDrawer& debugDrawer = Engine::GetInstance().GetDebugDrawer();
+	DebugDrawer& debugDrawer = Engine::Get().GetDebugDrawer();
 	CU::Vector3f debugEdgeOffset = { 0, 10.0f, 0 };
 	CU::Vector3f debugConnectionOffset = { 0, 15.0f, 0 };
 
@@ -57,7 +57,7 @@ void NavMesh::DrawDebugLines()
 
 void NavMesh::DrawBoundingBox()
 {
-	Engine::GetInstance().GetDebugDrawer().DrawBoundingBox(myBoundingBox, CU::Matrix4x4f(), { 1.0f, 1.0f, 1.0f, 1.0f });
+	Engine::Get().GetDebugDrawer().DrawBoundingBox(myBoundingBox, CU::Matrix4x4f(), { 1.0f, 1.0f, 1.0f, 1.0f });
 }
 
 void NavMesh::SnapGameObjectToNavMesh(GameObject& aGameObject)

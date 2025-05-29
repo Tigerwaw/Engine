@@ -1,5 +1,6 @@
 #include "Enginepch.h"
 #include "Movement2.h"
+#include <GameEngine/Application/AppSettings.h>
 #include <GameEngine/Engine.h>
 
 #include "GameEngine/ComponentSystem/GameObject.h"
@@ -11,14 +12,14 @@
 
 Application* CreateApplication()
 {
-	Engine::GetInstance().LoadSettings(std::filesystem::current_path().string() + "/" + APP_SETTINGS_PATH);
+	AppSettings::LoadSettings(std::filesystem::current_path() / APP_SETTINGS_PATH);
     return new Movement2();
 }
 
 void Movement2::InitializeApplication()
 {
 	GraphicsEngine::Get().RecalculateShadowFrustum = false;
-	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_Movement.json");
+	Engine::Get().GetSceneHandler().LoadScene("Scenes/SC_Movement.json");
 
 	for (int i = 0; i < 20; i++)
 	{
@@ -33,7 +34,7 @@ void Movement2::InitializeApplication()
 		cont->AddControllerType(ControllerMoveWeighted::ControllerType::CollisionAvoidance, 5.0f);
 
 		PollingStation::Get().AddWatchedActor(go);
-		Engine::GetInstance().GetSceneHandler().Instantiate(go);
+		Engine::Get().GetSceneHandler().Instantiate(go);
 	}
 }
 

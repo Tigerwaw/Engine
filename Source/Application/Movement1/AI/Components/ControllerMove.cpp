@@ -57,7 +57,7 @@ void ControllerMove::Start()
 
 void ControllerMove::Update()
 {
-	float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
+	float dt = Engine::Get().GetTimer().GetDeltaTime();
 	auto& transform = gameObject->GetComponent<Transform>();
 
 	ControllerBase::SteeringInput steeringInput;

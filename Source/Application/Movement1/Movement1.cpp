@@ -1,5 +1,6 @@
 #include "Enginepch.h"
 #include "Movement1.h"
+#include <GameEngine/Application/AppSettings.h>
 #include <GameEngine/Engine.h>
 
 #include "GameEngine/ComponentSystem/GameObject.h"
@@ -11,14 +12,14 @@
 
 Application* CreateApplication()
 {
-	Engine::GetInstance().LoadSettings(std::filesystem::current_path().string() + "/" + APP_SETTINGS_PATH);
+	AppSettings::LoadSettings(std::filesystem::current_path() / APP_SETTINGS_PATH);
     return new Movement1();
 }
 
 void Movement1::InitializeApplication()
 {
 	GraphicsEngine::Get().RecalculateShadowFrustum = false;
-	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_Movement.json");
+	Engine::Get().GetSceneHandler().LoadScene("Scenes/SC_Movement.json");
 
 	{
 		std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
@@ -29,7 +30,7 @@ void Movement1::InitializeApplication()
 		go->AddComponent<ControllerMove>(150.0f, 15.0f, ControllerMove::ControllerType::Wander);
 		PollingStation::Get().SetWanderer(go);
 		PollingStation::Get().AddWatchedActor(go);
-		Engine::GetInstance().GetSceneHandler().Instantiate(go);
+		Engine::Get().GetSceneHandler().Instantiate(go);
 	}
 
 	for (int i = 0; i < 4; i++)
@@ -42,7 +43,7 @@ void Movement1::InitializeApplication()
 		go->AddComponent<ControllerMove>(80.0f, 5.0f, ControllerMove::ControllerType::Seek);
 
 		PollingStation::Get().AddWatchedActor(go);
-		Engine::GetInstance().GetSceneHandler().Instantiate(go);
+		Engine::Get().GetSceneHandler().Instantiate(go);
 	}
 
 	for (int i = 0; i < 10; i++)
@@ -55,7 +56,7 @@ void Movement1::InitializeApplication()
 		go->AddComponent<ControllerMove>(80.0f, 5.0f, ControllerMove::ControllerType::Separate);
 
 		PollingStation::Get().AddWatchedActor(go);
-		Engine::GetInstance().GetSceneHandler().Instantiate(go);
+		Engine::Get().GetSceneHandler().Instantiate(go);
 	}
 }
 

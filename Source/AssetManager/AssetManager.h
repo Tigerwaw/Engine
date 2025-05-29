@@ -51,6 +51,8 @@ private:
 	std::filesystem::path myContentRoot;
 
 	std::vector<std::future<bool>> myFutures;
+	std::mutex myAssetMutex;
+	std::mutex myImporterMutex;
 };
 
 template<typename T>

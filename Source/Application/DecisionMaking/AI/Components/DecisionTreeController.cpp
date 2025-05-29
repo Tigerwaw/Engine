@@ -16,7 +16,7 @@ void DecisionTreeController::Start()
 
 void DecisionTreeController::Update()
 {
-	float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
+	float dt = Engine::Get().GetTimer().GetDeltaTime();
 	myCurrentParticleActiveTime += dt;
 	if (myIsShooting && myCurrentParticleActiveTime > myMaxParticleActiveTime)
 	{
@@ -36,7 +36,7 @@ void DecisionTreeController::Update()
 
 	if (healthComp->GetHealth() / healthComp->GetMaxHealth() > 0.5f)
 	{
-		SetTarget(PollingStation::Get().GetRandomAIActor(Engine::GetInstance().GetSceneHandler().FindGameObjectByName(gameObject->GetName())));
+		SetTarget(PollingStation::Get().GetRandomAIActor(Engine::Get().GetSceneHandler().FindGameObjectByName(gameObject->GetName())));
 		float dot = transform->GetForwardVector().Dot(directionToTarget.GetNormalized());
 		if (directionToTarget.LengthSqr() < myShootingRange * myShootingRange && dot >= mySightAngle && IsLineOfSightClear(pos, directionToTarget))
 		{
@@ -49,7 +49,7 @@ void DecisionTreeController::Update()
 
 				if (targetHealthComp->GetHealth() <= 0)
 				{
-					SetTarget(PollingStation::Get().GetRandomAIActor(Engine::GetInstance().GetSceneHandler().FindGameObjectByName(gameObject->GetName())));
+					SetTarget(PollingStation::Get().GetRandomAIActor(Engine::Get().GetSceneHandler().FindGameObjectByName(gameObject->GetName())));
 				}
 
 				gameObject->GetComponent<ParticleSystem>()->SetActive(true);
@@ -80,7 +80,7 @@ void DecisionTreeController::Update()
 	{
 		if (healthComp->GetHealth() > 0)
 		{
-			SetTarget(Engine::GetInstance().GetSceneHandler().FindGameObjectByName("HWell"));
+			SetTarget(Engine::Get().GetSceneHandler().FindGameObjectByName("HWell"));
 			if (directionToTarget.LengthSqr() < myHealRadius * myHealRadius)
 			{
 				healthComp->Heal(myHPS * dt);
@@ -99,7 +99,7 @@ void DecisionTreeController::Update()
 				myCurrentDeathTime = 0.0f;
 				transform->SetTranslation(-200.0f, 0, 500.0f);
 				healthComp->Heal(healthComp->GetMaxHealth());
-				myTarget = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("SMCont");
+				myTarget = Engine::Get().GetSceneHandler().FindGameObjectByName("SMCont");
 			}
 		}
 	}
@@ -107,7 +107,7 @@ void DecisionTreeController::Update()
 
 void DecisionTreeController::SeekTarget()
 {
-	float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
+	float dt = Engine::Get().GetTimer().GetDeltaTime();
 	auto& transform = gameObject->GetComponent<Transform>();
 
 	CU::Vector3f pos = transform->GetTranslation();

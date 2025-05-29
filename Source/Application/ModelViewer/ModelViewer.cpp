@@ -1,15 +1,18 @@
 #include "Enginepch.h"
 #include "ModelViewer.h"
+#include <GameEngine/Application/AppSettings.h>
 #include "GameEngine/ComponentSystem/GameObject.h"
 #include "GameEngine/ComponentSystem/Components/Transform.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
 #include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
 #include "GameEngine/ComponentSystem/Components/Lights/AmbientLight.h"
 #include "GameEngine/ComponentSystem/Components/Lights/DirectionalLight.h"
+#include "GameEngine/Application/WindowsEventHandler.h"
+#include "GameEngine/Application/Window.h"
 
 Application* CreateApplication()
 {
-	Engine::GetInstance().LoadSettings(std::filesystem::current_path().string() + "/" + APP_SETTINGS_PATH);
+	AppSettings::LoadSettings(std::filesystem::current_path() / APP_SETTINGS_PATH);
     return new ModelViewer();
 }
 
@@ -18,19 +21,19 @@ void ModelViewer::InitializeApplication()
 	myLogs.emplace_back("[LOG] Started ModelViewer");
 	GraphicsEngine::Get().RecalculateShadowFrustum = false;
 	GraphicsEngine::Get().DrawGizmos = true;
-	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_ModelViewerScene.json");
+	Engine::Get().GetSceneHandler().LoadScene("Scenes/SC_ModelViewerScene.json");
 	std::shared_ptr<GameObject> newGO = std::make_shared<GameObject>();
 	newGO->SetName("Model");
 	newGO->AddComponent<Transform>(CU::Vector3f(0, 0, 0), CU::Vector3f(0, -180.0f, 0));
-	Engine::GetInstance().GetSceneHandler().Instantiate(newGO);
+	Engine::Get().GetSceneHandler().Instantiate(newGO);
 
-	std::shared_ptr<Transform> camTransform = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("MainCamera")->GetComponent<Transform>();
+	std::shared_ptr<Transform> camTransform = Engine::Get().GetSceneHandler().FindGameObjectByName("MainCamera")->GetComponent<Transform>();
 	cameraStartingPos = camTransform->GetTranslation();
 	cameraStartingRot = camTransform->GetRotation();
 
-	aLightStartIntensity = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("A_Light")->GetComponent<AmbientLight>()->GetIntensity();
+	aLightStartIntensity = Engine::Get().GetSceneHandler().FindGameObjectByName("A_Light")->GetComponent<AmbientLight>()->GetIntensity();
 
-	std::shared_ptr<GameObject> dLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light");
+	std::shared_ptr<GameObject> dLight = Engine::Get().GetSceneHandler().FindGameObjectByName("D_Light");
 	dLightStartingRot = dLight->GetComponent<Transform>()->GetRotation();
 	dLightStartIntensity = dLight->GetComponent<DirectionalLight>()->GetIntensity();
 
@@ -40,7 +43,7 @@ void ModelViewer::InitializeApplication()
 
 	SetupImguiStyle();
 
-	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
+	InputHandler& inputHandler = Engine::Get().GetInputHandler();
 	inputHandler.RegisterBinaryAction("W", Keys::W, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("A", Keys::A, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("S", Keys::S, GenericInput::ActionType::Held);
@@ -53,7 +56,7 @@ void ModelViewer::InitializeApplication()
 	inputHandler.RegisterAnalog2DAction("MouseNDCPos", MouseMovement2D::MousePosNDC);
 	inputHandler.RegisterAnalog2DAction("MouseDelta", MouseMovement2D::MousePosDelta);
 
-	Engine::GetInstance().GetWindowsEventHandler().AddEvent(WindowsEventHandler::WindowsEvent::DropFiles, [this](MSG aMSG)
+	Engine::Get().GetWindowsEventHandler().AddEvent(WindowsEventHandler::WindowsEvent::DropFiles, [this](MSG aMSG)
 		{
 			TCHAR name[MAX_PATH];
 
@@ -75,7 +78,7 @@ void ModelViewer::InitializeApplication()
 					return;
 				}
 
-				std::shared_ptr<GameObject> go = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model");
+				std::shared_ptr<GameObject> go = Engine::Get().GetSceneHandler().FindGameObjectByName("Model");
 				if (!go)
 				{
 					LOG(LogApplication, Error, "Couldn't find game object");
@@ -156,12 +159,12 @@ void ModelViewer::InitializeApplication()
 		});
 
 
-	Engine::GetInstance().GetImGuiHandler().AddNewFunction([this]()
+	Engine::Get().GetImGuiHandler().AddNewFunction([this]()
 		{
 #ifndef _RETAIL
 			CU::Vector2f size(250.0f, 220.0f);
 			float offset = 15.0f;
-			CU::Vector2f windowPos = Engine::GetInstance().GetApplicationWindow().GetTopLeft();
+			CU::Vector2f windowPos = Engine::Get().GetApplicationWindow().GetTopLeft();
 			windowPos.x -= size.x + offset;
 
 			ImGui::SetNextWindowPos({ windowPos.x, windowPos.y });
@@ -178,13 +181,13 @@ void ModelViewer::InitializeApplication()
 
 			if (ImGui::Button("Toggle Floorplane"))
 			{
-				std::shared_ptr<GameObject> go = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Plane");
+				std::shared_ptr<GameObject> go = Engine::Get().GetSceneHandler().FindGameObjectByName("Plane");
 				go->SetActive(!go->GetActive());
 			};
 
 			if (ImGui::Button("Set Cube Primitive"))
 			{
-				std::shared_ptr<GameObject> go = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model");
+				std::shared_ptr<GameObject> go = Engine::Get().GetSceneHandler().FindGameObjectByName("Model");
 				std::filesystem::path prim = "SM_CubePrimitive";
 				SetModel(go, prim);
 				std::shared_ptr<Transform> transform = go->GetComponent<Transform>();
@@ -194,7 +197,7 @@ void ModelViewer::InitializeApplication()
 
 			if (ImGui::Button("Set Sphere Primitive"))
 			{
-				std::shared_ptr<GameObject> go = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model");
+				std::shared_ptr<GameObject> go = Engine::Get().GetSceneHandler().FindGameObjectByName("Model");
 				std::filesystem::path prim = "EngineAssets/Models/SM_Sphere.fbx";
 				SetModel(go, prim);
 				std::shared_ptr<Transform> transform = go->GetComponent<Transform>();
@@ -204,7 +207,7 @@ void ModelViewer::InitializeApplication()
 
 			if (ImGui::Button("Set Plane Primitive"))
 			{
-				std::shared_ptr<GameObject> go = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model");
+				std::shared_ptr<GameObject> go = Engine::Get().GetSceneHandler().FindGameObjectByName("Model");
 				std::filesystem::path prim = "SM_PlanePrimitive";
 				SetModel(go, prim);
 				std::shared_ptr<Transform> transform = go->GetComponent<Transform>();
@@ -218,12 +221,12 @@ void ModelViewer::InitializeApplication()
 #endif
 		});
 
-	Engine::GetInstance().GetImGuiHandler().AddNewFunction([this]()
+	Engine::Get().GetImGuiHandler().AddNewFunction([this]()
 		{
 #ifndef _RETAIL
 			CU::Vector2f size(250.0f, 440.0f);
 			float offset = 15.0f;
-			CU::Vector2f windowPos = Engine::GetInstance().GetApplicationWindow().GetTopLeft();
+			CU::Vector2f windowPos = Engine::Get().GetApplicationWindow().GetTopLeft();
 			windowPos.x -= size.x + offset;
 			windowPos.y += 270.0f;
 
@@ -313,7 +316,7 @@ void ModelViewer::InitializeApplication()
 						{
 							if (ImGui::BeginTabItem("Ambient Light"))
 							{
-								std::shared_ptr<GameObject> ambientLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("A_Light");
+								std::shared_ptr<GameObject> ambientLight = Engine::Get().GetSceneHandler().FindGameObjectByName("A_Light");
 								bool active = ambientLight->GetActive();
 								if (ImGui::Checkbox("Set Active", &active)) ambientLight->SetActive(active);
 
@@ -331,7 +334,7 @@ void ModelViewer::InitializeApplication()
 
 							if (ImGui::BeginTabItem("Directional Light"))
 							{
-								std::shared_ptr<GameObject> directionalLight = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light");
+								std::shared_ptr<GameObject> directionalLight = Engine::Get().GetSceneHandler().FindGameObjectByName("D_Light");
 								bool active = directionalLight->GetActive();
 								if (ImGui::Checkbox("Set Active", &active)) directionalLight->SetActive(active);
 
@@ -346,7 +349,7 @@ void ModelViewer::InitializeApplication()
 								if (ImGui::ColorPicker3("##DirectionalColor", color, flags)) dLight->SetColor({ color[0], color[1], color[2] });
 								ImGui::Spacing();
 
-								std::shared_ptr<GameObject> dLightParent = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("D_Light_Parent");
+								std::shared_ptr<GameObject> dLightParent = Engine::Get().GetSceneHandler().FindGameObjectByName("D_Light_Parent");
 								std::shared_ptr<Transform> dlptransform = dLightParent->GetComponent<Transform>();
 								std::shared_ptr<Transform> dlightTransform = directionalLight->GetComponent<Transform>();
 								CU::Vector3f dlpRot = dlptransform->GetRotation();
@@ -367,7 +370,7 @@ void ModelViewer::InitializeApplication()
 						ImGui::EndTabItem();
 					}
 					
-					std::shared_ptr<AnimatedModel> animModel = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("Model")->GetComponent<AnimatedModel>();
+					std::shared_ptr<AnimatedModel> animModel = Engine::Get().GetSceneHandler().FindGameObjectByName("Model")->GetComponent<AnimatedModel>();
 					if (animModel)
 					{
 						if (ImGui::BeginTabItem("Animations", 0, switchToAnimationTab ? ImGuiTabItemFlags_SetSelected : 0))
@@ -434,11 +437,11 @@ void ModelViewer::InitializeApplication()
 #endif
 		});
 
-	Engine::GetInstance().GetImGuiHandler().AddNewFunction([this]()
+	Engine::Get().GetImGuiHandler().AddNewFunction([this]()
 		{
 #ifndef _RETAIL
 			CU::Vector2f size(300.0f, 200.0f);
-			CU::Vector2f windowPos = Engine::GetInstance().GetApplicationWindow().GetTopRight();
+			CU::Vector2f windowPos = Engine::Get().GetApplicationWindow().GetTopRight();
 
 			ImGui::SetNextWindowPos({ windowPos.x, windowPos.y });
 			ImGui::SetNextWindowContentSize({ size.x, size.y });
@@ -465,11 +468,11 @@ void ModelViewer::InitializeApplication()
 #endif
 		});
 
-	Engine::GetInstance().GetImGuiHandler().AddNewFunction([this]()
+	Engine::Get().GetImGuiHandler().AddNewFunction([this]()
 		{
 #ifndef _RETAIL
 			CU::Vector2f size(300.0f, 440.0f);
-			CU::Vector2f windowPos = Engine::GetInstance().GetApplicationWindow().GetTopRight();
+			CU::Vector2f windowPos = Engine::Get().GetApplicationWindow().GetTopRight();
 			windowPos.y += 250.0f;
 
 			CU::Vector2f textureSize(32.0f, 32.0f);
@@ -623,7 +626,7 @@ void ModelViewer::UpdateApplication()
 {
 	switchToAnimationTab = false;
 
-	if (Engine::GetInstance().GetInputHandler().GetBinaryAction("F6"))
+	if (Engine::Get().GetInputHandler().GetBinaryAction("F6"))
 	{
 		currentDebugMode += 1;
 		if (currentDebugMode >= static_cast<unsigned>(DebugMode::COUNT))
@@ -634,7 +637,7 @@ void ModelViewer::UpdateApplication()
 		GraphicsEngine::Get().CurrentDebugMode = static_cast<DebugMode>(currentDebugMode);
 	}
 
-	if (Engine::GetInstance().GetInputHandler().GetBinaryAction("F7"))
+	if (Engine::Get().GetInputHandler().GetBinaryAction("F7"))
 	{
 		currentTonemapper += 1;
 		if (currentTonemapper >= static_cast<unsigned>(Tonemapper::COUNT))
@@ -648,7 +651,7 @@ void ModelViewer::UpdateApplication()
 
 void ModelViewer::ResetScene()
 {
-	Engine& engine = Engine::GetInstance();
+	Engine& engine = Engine::Get();
 
 	ResetPSO();
 	ResetMaterial();

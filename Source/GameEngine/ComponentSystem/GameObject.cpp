@@ -17,7 +17,7 @@ void GameObject::Update()
 {
 	if (!GetActive()) return;
 
-	myTimeAlive += Engine::GetInstance().GetTimer().GetDeltaTime();
+	myTimeAlive += Engine::Get().GetTimer().GetDeltaTime();
 
 	for (auto& comp : myComponents)
 	{

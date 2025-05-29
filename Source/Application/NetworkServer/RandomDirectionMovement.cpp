@@ -16,7 +16,7 @@ void RandomDirectionMovement::Update()
 {
 	if (auto transform = gameObject->GetComponent<Transform>())
 	{
-		transform->AddTranslation(myDirection * mySpeed * Engine::GetInstance().GetTimer().GetDeltaTime());
+		transform->AddTranslation(myDirection * mySpeed * Engine::Get().GetTimer().GetDeltaTime());
 	}
 }
 

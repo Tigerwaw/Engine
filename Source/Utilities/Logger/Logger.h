@@ -39,6 +39,7 @@
 #include <queue>
 #include <string>
 #include <thread>
+#include <mutex>
 
 // Define this before including Logger.h to override.
 #ifndef LOGGING_PATH
@@ -148,6 +149,7 @@ private:
 
 	std::atomic_bool myIsRunning;
 	std::thread myLogThread;
+	std::mutex myLogMutex;
 	std::queue<LogEntry> myLogQueue;
 
 public:

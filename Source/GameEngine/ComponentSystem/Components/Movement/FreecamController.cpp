@@ -15,7 +15,7 @@ FreecamController::FreecamController(float aMoveSpeed, float aRotSpeed)
 
 void FreecamController::Start()
 {
-	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
+	InputHandler& inputHandler = Engine::Get().GetInputHandler();
 	inputHandler.RegisterBinaryAction("CameraActivate", Keys::MOUSERBUTTON, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("CameraActivate", ControllerButtons::LEFT_SHOULDER, GenericInput::ActionType::Held);
 	inputHandler.RegisterBinaryAction("CameraSpeedUp", Keys::SHIFT, GenericInput::ActionType::Clicked);
@@ -36,8 +36,8 @@ void FreecamController::Start()
 
 void FreecamController::Update()
 {
-	float deltaTime = Engine::GetInstance().GetTimer().GetDeltaTime();
-	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
+	float deltaTime = Engine::Get().GetTimer().GetDeltaTime();
+	InputHandler& inputHandler = Engine::Get().GetInputHandler();
 
 	if (!inputHandler.GetBinaryAction("CameraActivate"))
 	{

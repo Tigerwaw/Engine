@@ -23,7 +23,7 @@ void VFXModel::Start()
 
 void VFXModel::Update()
 {
-	myCurrentTimeAlive += Engine::GetInstance().GetTimer().GetDeltaTime();
+	myCurrentTimeAlive += Engine::Get().GetTimer().GetDeltaTime();
 	myCustomShaderParameters.y = myCurrentTimeAlive;
 
 	if (myLifetime <= 0)

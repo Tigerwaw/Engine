@@ -17,7 +17,7 @@ void ParticleSystem::Start()
 
 void ParticleSystem::Update()
 {
-	float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
+	float dt = Engine::Get().GetTimer().GetDeltaTime();
 
 	for (auto& emitter : myEmitters)
 	{

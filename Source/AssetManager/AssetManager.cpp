@@ -19,8 +19,15 @@ namespace CU = CommonUtilities;
 #include "DefaultTextures/Default_M.h"
 #include "DefaultTextures/Default_FX.h"
 
-static std::mutex sAssetMutex;
-static std::mutex sImporterMutex;
+AssetManager::AssetManager()
+{
+    TGA::FBX::Importer::InitImporter();
+}
+
+AssetManager::~AssetManager()
+{
+    TGA::FBX::Importer::UninitImporter();
+}
 
 bool AssetManager::DeregisterAsset(const std::filesystem::path& aPath)
 {
@@ -207,7 +214,7 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
 
     TGA::FBX::Mesh tgaMesh;
     {
-        std::lock_guard<std::mutex> importerLock(sImporterMutex);
+        std::lock_guard<std::mutex> importerLock(myImporterMutex);
         TGA::FBX::Importer::LoadMesh(aPath, tgaMesh);
     }
 
@@ -282,7 +289,7 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
     asset->path = assetPath;
     asset->name = assetPath.stem();
 
-    std::lock_guard<std::mutex> assetLock(sAssetMutex);
+    std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
@@ -303,7 +310,7 @@ bool AssetManager::RegisterAnimationAsset(const std::filesystem::path& aPath)
     TGA::FBX::Animation tgaAnimation;
 
     {
-        std::lock_guard<std::mutex> importerLock(sImporterMutex);
+        std::lock_guard<std::mutex> importerLock(myImporterMutex);
         TGA::FBX::Importer::LoadAnimation(aPath, tgaAnimation);
     }
 
@@ -332,7 +339,7 @@ bool AssetManager::RegisterAnimationAsset(const std::filesystem::path& aPath)
     asset->path = assetPath;
     asset->name = assetPath.stem();
 
-    std::lock_guard<std::mutex> assetLock(sAssetMutex);
+    std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
@@ -416,7 +423,7 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
     asset->path = assetPath;
     asset->name = assetPath.stem();
 
-    std::lock_guard<std::mutex> assetLock(sAssetMutex);
+    std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
@@ -445,7 +452,7 @@ bool AssetManager::RegisterTextureAsset(const std::filesystem::path& aPath)
     asset->path = assetPath;
     asset->name = assetPath.stem();
 
-    std::lock_guard<std::mutex> assetLock(sAssetMutex);
+    std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
@@ -475,7 +482,7 @@ bool AssetManager::RegisterShaderAsset(const std::filesystem::path& aPath)
     asset->path = assetPath;
     asset->name = assetPath.stem();
 
-    std::lock_guard<std::mutex> assetLock(sAssetMutex);
+    std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
@@ -676,7 +683,7 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
     asset->path = assetPath;
     asset->name = assetPath.stem();
 
-    std::lock_guard<std::mutex> assetLock(sAssetMutex);
+    std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
@@ -774,7 +781,7 @@ bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
     asset->path = assetPath;
     asset->name = assetPath.stem();
 
-    std::lock_guard<std::mutex> assetLock(sAssetMutex);
+    std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
@@ -798,7 +805,7 @@ bool AssetManager::RegisterNavMeshAsset(const std::filesystem::path& aPath)
 
     TGA::FBX::NavMesh tgaNavMesh;
     {
-        std::lock_guard<std::mutex> importerLock(sImporterMutex);
+        std::lock_guard<std::mutex> importerLock(myImporterMutex);
         TGA::FBX::Importer::LoadNavMesh(aPath, tgaNavMesh, true);
     }
 
@@ -828,22 +835,12 @@ bool AssetManager::RegisterNavMeshAsset(const std::filesystem::path& aPath)
     asset->path = assetPath;
     asset->name = assetPath.stem();
 
-    std::lock_guard<std::mutex> assetLock(sAssetMutex);
+    std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
     LOG(LogAssetManager, Log, "Registered navmesh asset {} in {}ms", asset->path.filename().string(), std::round(loadTime.count()));
     return true;
-}
-
-AssetManager::AssetManager()
-{
-    TGA::FBX::Importer::InitImporter();
-}
-
-AssetManager::~AssetManager()
-{
-    TGA::FBX::Importer::UninitImporter();
 }
 
 bool AssetManager::ValidateAsset(const std::filesystem::path& aPath)
@@ -908,7 +905,7 @@ bool AssetManager::RegisterEngineTextureAsset(std::string_view aName, const uint
     }
     asset->name = aName;
 
-    std::lock_guard<std::mutex> assetLock(sAssetMutex);
+    std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered default texture asset {}", aName);
@@ -970,7 +967,7 @@ bool AssetManager::RegisterPlanePrimitive()
     asset->mesh = std::make_shared<Mesh>(std::move(plane));
     asset->name = "SM_PlanePrimitive";
 
-    std::lock_guard<std::mutex> assetLock(sAssetMutex);
+    std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
@@ -1164,7 +1161,7 @@ bool AssetManager::RegisterCubePrimitive()
     asset->mesh = std::make_shared<Mesh>(std::move(cube));
     asset->name = "SM_CubePrimitive";
 
-    std::lock_guard<std::mutex> assetLock(sAssetMutex);
+    std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
@@ -1324,7 +1321,7 @@ bool AssetManager::RegisterRampPrimitive()
     asset->mesh = std::make_shared<Mesh>(std::move(ramp));
     asset->name = "SM_RampPrimitive";
 
-    std::lock_guard<std::mutex> assetLock(sAssetMutex);
+    std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());

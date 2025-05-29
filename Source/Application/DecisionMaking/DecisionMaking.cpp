@@ -1,5 +1,6 @@
 #include "Enginepch.h"
 #include "DecisionMaking.h"
+#include <GameEngine/Application/AppSettings.h>
 #include <GameEngine/Engine.h>
 
 #include "GameEngine/ComponentSystem/GameObject.h"
@@ -16,14 +17,14 @@
 
 Application* CreateApplication()
 {
-	Engine::GetInstance().LoadSettings(std::filesystem::current_path().string() + "/" + APP_SETTINGS_PATH);
+	AppSettings::LoadSettings(std::filesystem::current_path() / APP_SETTINGS_PATH);
     return new DecisionMaking();
 }
 
 void DecisionMaking::InitializeApplication()
 {
 	GraphicsEngine::Get().RecalculateShadowFrustum = false;
-	Engine::GetInstance().GetSceneHandler().LoadScene("Scenes/SC_BaseScene.json");
+	Engine::Get().GetSceneHandler().LoadScene("Scenes/SC_BaseScene.json");
 
 	for (int x = -2; x < 3; x++)
 	{
@@ -35,7 +36,7 @@ void DecisionMaking::InitializeApplication()
 			auto model = go->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("SM_Sphere.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("MAT_MatballOne.json")->material);
 
 			PollingStation::Get().AddWall(go);
-			Engine::GetInstance().GetSceneHandler().Instantiate(go);
+			Engine::Get().GetSceneHandler().Instantiate(go);
 		}
 	}
 
@@ -73,7 +74,7 @@ void DecisionMaking::InitializeApplication()
 		go->AddComponent<StateMachineController>();
 
 		PollingStation::Get().AddAIActor(go);
-		Engine::GetInstance().GetSceneHandler().Instantiate(go);
+		Engine::Get().GetSceneHandler().Instantiate(go);
 	}
 
 	{
@@ -110,7 +111,7 @@ void DecisionMaking::InitializeApplication()
 		go->AddComponent<DecisionTreeController>();
 
 		PollingStation::Get().AddAIActor(go);
-		Engine::GetInstance().GetSceneHandler().Instantiate(go);
+		Engine::Get().GetSceneHandler().Instantiate(go);
 	}
 	
 	{
@@ -147,12 +148,12 @@ void DecisionMaking::InitializeApplication()
 		go->AddComponent<BehaviourTreeController>();
 
 		PollingStation::Get().AddAIActor(go);
-		Engine::GetInstance().GetSceneHandler().Instantiate(go);
+		Engine::Get().GetSceneHandler().Instantiate(go);
 	}
 
-	auto smCont = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("SMCont");
-	auto dtCont = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("DTCont");
-	auto btCont = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("BTCont");
+	auto smCont = Engine::Get().GetSceneHandler().FindGameObjectByName("SMCont");
+	auto dtCont = Engine::Get().GetSceneHandler().FindGameObjectByName("DTCont");
+	auto btCont = Engine::Get().GetSceneHandler().FindGameObjectByName("BTCont");
 	smCont->GetComponent<StateMachineController>()->SetTarget(dtCont);
 	dtCont->GetComponent<DecisionTreeController>()->SetTarget(btCont);
 	btCont->GetComponent<BehaviourTreeController>()->SetTarget(smCont);
@@ -165,7 +166,7 @@ void DecisionMaking::InitializeApplication()
 		go->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SM_Chest.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_Chest.json")->material);
 
 		PollingStation::Get().SetHealingWell(go);
-		Engine::GetInstance().GetSceneHandler().Instantiate(go);
+		Engine::Get().GetSceneHandler().Instantiate(go);
 	}
 }
 

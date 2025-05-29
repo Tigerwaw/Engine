@@ -63,7 +63,7 @@ void SceneHandler::LoadScene(const std::string& aSceneFilePath)
         myActiveScene = newScene;
     }
 
-    mySceneLoader->LoadScene(newScene, Engine::GetInstance().GetContentRootPath() / aSceneFilePath);
+    mySceneLoader->LoadScene(newScene, Engine::Get().GetContentRootPath() / aSceneFilePath);
     myRenderer->Init();
 }
 

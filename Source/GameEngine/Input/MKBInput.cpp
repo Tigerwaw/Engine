@@ -54,7 +54,7 @@ const void MKBInput::UpdateEvents(UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_MOUSEMOVE:
 	{
-		CU::Vector2f windowSize = Engine::GetInstance().GetWindowSize();
+		CU::Vector2f windowSize = Engine::Get().GetWindowSize();
 		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_X)] = static_cast<float>(GET_X_LPARAM(lParam));
 		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_Y)] = windowSize.y - static_cast<float>(GET_Y_LPARAM(lParam));
 

@@ -25,7 +25,7 @@ RenderInstancedMesh::RenderInstancedMesh(std::shared_ptr<InstancedModel> aInstan
 
     if (GraphicsEngine::Get().DrawBoundingBoxes)
     {
-        Engine::GetInstance().GetDebugDrawer().DrawBoundingBox(aInstancedModel->GetBoundingBox());
+        Engine::Get().GetDebugDrawer().DrawBoundingBox(aInstancedModel->GetBoundingBox());
     }
 }
 

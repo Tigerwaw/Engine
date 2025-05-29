@@ -15,7 +15,7 @@ Controller::Controller(float aMoveSpeed, float aRotSpeed)
 
 void Controller::Start()
 {
-	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
+	InputHandler& inputHandler = Engine::Get().GetInputHandler();
 	inputHandler.RegisterAnalogAction("ObjectZMovement", Keys::S, Keys::W);
 	inputHandler.RegisterAnalogAction("ObjectXMovement", Keys::A, Keys::D);
 	inputHandler.RegisterBinaryAction("LMB", Keys::MOUSELBUTTON, GenericInput::ActionType::Held);
@@ -28,8 +28,8 @@ void Controller::Start()
 
 void Controller::Update()
 {
-	float deltaTime = Engine::GetInstance().GetTimer().GetDeltaTime();
-	InputHandler& inputHandler = Engine::GetInstance().GetInputHandler();
+	float deltaTime = Engine::Get().GetTimer().GetDeltaTime();
+	InputHandler& inputHandler = Engine::Get().GetInputHandler();
 
 	CU::Vector3f inputDelta;
 

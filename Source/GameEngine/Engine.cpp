@@ -9,6 +9,79 @@
 #include "GameEngine/Audio/AudioEngine.h"
 #include "GameEngine/ImGui/ImGuiHandler.h"
 #include "GameEngine/Application/Application.h"
+#include "AssetManager/AssetManager.h"
+#include "Graphics/GraphicsEngine/GraphicsEngine.h"
+#include "Application/Window.h"
+#include "Application/WindowsEventHandler.h"
+#include "Application/AppSettings.h"
+
+static Engine* sInstance = nullptr;
+
+Engine& Engine::Get()
+{
+    assert(sInstance);
+    return *sInstance;
+}
+
+void Engine::Initialize()
+{
+    assert(!sInstance);
+    sInstance = new Engine();
+    LOG(LogGameEngine, Log, "Initializing Game Engine...");
+
+    Engine& instance = *sInstance;
+    instance.myWindow = std::make_unique<Window>();
+    instance.myEventHandler = std::make_unique<WindowsEventHandler>();
+    instance.myTimer = std::make_unique<Timer>();
+    instance.myInputHandler = std::make_unique<InputHandler>();
+    instance.myGlobalEventHandler = std::make_unique<GlobalEventHandler>();
+    instance.mySceneHandler = std::make_unique<SceneHandler>();
+    instance.myDebugDrawer = std::make_unique<DebugDrawer>();
+    instance.myAudioEngine = std::make_unique<AudioEngine>();
+    instance.myImGuiHandler = std::make_unique<ImGuiHandler>();
+
+    instance.myTitle = AppSettings::Get().title;
+    instance.myContentRoot = AppSettings::Get().contentRoot;
+    instance.myResolution = AppSettings::Get().resolution;
+    instance.myWindowSize = AppSettings::Get().windowSize;
+    instance.myWindowPos = AppSettings::Get().windowPos;
+    instance.myIsFullscreen = AppSettings::Get().isFullscreen;
+    instance.myIsBorderless = AppSettings::Get().isBorderless;
+    instance.myAllowDropFiles = AppSettings::Get().allowDropFiles;
+    instance.myAutoRegisterAssets = AppSettings::Get().autoRegisterAssets;
+    AppSettings::Destroy();
+
+    instance.myWindow->InitializeWindow(instance.myTitle, instance.myWindowSize, instance.myWindowPos, instance.myIsFullscreen, instance.myIsBorderless, instance.myAllowDropFiles);
+    GraphicsEngine::Get().Initialize(instance.myWindow->GetWindowHandle());
+    GraphicsEngine::Get().SetResolution(instance.myResolution.x, instance.myResolution.y);
+
+    AssetManager::Get().Initialize(instance.myContentRoot, instance.myAutoRegisterAssets);
+    instance.myAudioEngine->Initialize();
+
+#ifndef _RETAIL
+    instance.myDebugDrawer->InitializeDebugDrawer();
+    instance.myImGuiHandler->Initialize(instance.myWindow->GetWindowHandle());
+    GraphicsEngine::Get().InitializeImGui();
+#endif
+
+    LOG(LogGameEngine, Log, "Game Engine initialized!");
+}
+
+void Engine::Shutdown()
+{
+    assert(sInstance);
+    sInstance->myAudioEngine->Destroy();
+    sInstance->myImGuiHandler->Destroy();
+
+    delete sInstance;
+}
+
+void Engine::Prepare()
+{
+    myImGuiHandler->BeginFrame();
+    GraphicsEngine::Get().BeginFrame();
+    myDebugDrawer->ClearObjects();
+}
 
 void Engine::Update()
 {
@@ -19,123 +92,14 @@ void Engine::Update()
     mySceneHandler->RenderActiveScene();
 }
 
-WindowsEventHandler& Engine::GetWindowsEventHandler()
+void Engine::Render()
 {
-    return myApplicationInstance->GetWindowsEventHandler();
+    GraphicsEngine::Get().RenderFrame();
+    myImGuiHandler->Render();
+    GraphicsEngine::Get().EndFrame();
 }
 
-Window& Engine::GetApplicationWindow()
-{
-    return myApplicationInstance->GetWindow();
-}
-
-void Engine::LoadSettings(const std::string& aSettingsFilepath)
-{
-    std::ifstream path(aSettingsFilepath);
-    nl::json data = nl::json();
-
-    try
-    {
-        data = nl::json::parse(path);
-    }
-    catch (nl::json::parse_error e)
-    {
-        LOG(LogGameEngine, Error, "Couldn't read application settings file, {}!", e.what());
-        return;
-    }
-    path.close();
-
-    if (data.contains("title"))
-    {
-        std::string title = data["title"].get<std::string>();
-        myTitle = title;
-    }
-
-    if (data.contains("assetsDir"))
-    {
-        std::filesystem::path assetsDir = data["assetsDir"].get<std::string>();
-        myContentRoot = assetsDir;
-    }
-
-    if (data.contains("resolution"))
-    {
-        myResolution = { data["resolution"]["width"].get<float>(), data["resolution"]["height"].get<float>() };
-    }
-
-    if (data.contains("windowSize"))
-    {
-        myWindowSize = { data["windowSize"]["width"].get<float>(), data["windowSize"]["height"].get<float>() };
-    }
-
-    if (data.contains("windowPos"))
-    {
-        myWindowPos = { data["windowPos"]["top"].get<float>(), data["windowPos"]["left"].get<float>() };
-    }
-
-    if (data.contains("fullscreen"))
-    {
-        myIsFullscreen = data["fullscreen"].get<bool>();
-    }
-
-    if (data.contains("borderless"))
-    {
-        myIsBorderless = data["borderless"].get<bool>();
-    }
-
-    if (data.contains("allowdropfiles"))
-    {
-        myAllowDropFiles = data["allowdropfiles"].get<bool>();
-    }
-
-    if (data.contains("autoregisterassets"))
-    {
-        myAutoRegisterAssets = data["autoregisterassets"].get<bool>();
-    }
-
-    LPWSTR* szArgList;
-    int argCount;
-    szArgList = CommandLineToArgvW(GetCommandLine(), &argCount);
-
-    for (int i = 0; i < argCount; i++)
-    {
-        std::wstring arg = std::wstring(szArgList[i]);
-
-        if (arg.find(L"FULLSCREEN") != std::string::npos)
-        {
-            arg.erase(0, 11);
-            myIsFullscreen = static_cast<bool>(std::stoi(arg, nullptr));
-        }
-        if (arg.find(L"BORDERLESS") != std::string::npos)
-        {
-            arg.erase(0, 11);
-            myIsBorderless = static_cast<bool>(std::stoi(arg, nullptr));
-        }
-        if (arg.find(L"WINPOSX") != std::string::npos)
-        {
-            arg.erase(0, 8);
-            myWindowPos.x = std::stof(arg, nullptr);
-        }
-        if (arg.find(L"WINPOSY") != std::string::npos)
-        {
-            arg.erase(0, 8);
-            myWindowPos.y = std::stof(arg, nullptr);
-        }
-        if (arg.find(L"WINSIZEX") != std::string::npos)
-        {
-            arg.erase(0, 9);
-            myWindowSize.x = std::stof(arg, nullptr);
-            myResolution.x = myWindowSize.x;
-        }
-        if (arg.find(L"WINSIZEY") != std::string::npos)
-        {
-            arg.erase(0, 9);
-            myWindowSize.y = std::stof(arg, nullptr);
-            myResolution.y = myWindowSize.y;
-        }   
-    }
-}
-
-const std::filesystem::path Engine::GetContentRootPath()
+const std::filesystem::path& Engine::GetContentRootPath()
 {
     return myContentRoot;
 }
@@ -165,44 +129,5 @@ void Engine::ToggleFullscreen(bool aIsFullscreen)
     myIsFullscreen = aIsFullscreen;
 }
 
-void Engine::SetApplicationInstance(Application* aApplication)
-{
-    myApplicationInstance = aApplication;
-}
-
-void Engine::Destroy()
-{
-    myAudioEngine->Destroy();
-    myImGuiHandler->Destroy();
-}
-
-Engine::Engine()
-{
-    LOG(LogGameEngine, Log, "Initializing Game Engine...");
-
-    myTimer = std::make_unique<Timer>();
-    myInputHandler = std::make_unique<InputHandler>();
-    myGlobalEventHandler = std::make_unique<GlobalEventHandler>();
-    mySceneHandler = std::make_unique<SceneHandler>();
-    myDebugDrawer = std::make_unique<DebugDrawer>();
-    myAudioEngine = std::make_unique<AudioEngine>();
-    myImGuiHandler = std::make_unique<ImGuiHandler>();
-
-    myResolution = { 1920.0f, 1080.0f };
-    myWindowSize = { 1920.0f, 1080.0f };
-    myIsFullscreen = false;
-    myIsBorderless = false;
-
-    LOG(LogGameEngine, Log, "Game Engine initialized!");
-}
-
-Engine::~Engine()
-{
-    myTimer = nullptr;
-    myInputHandler = nullptr;
-    myGlobalEventHandler = nullptr;
-    mySceneHandler = nullptr;
-    myDebugDrawer = nullptr;
-    myAudioEngine = nullptr;
-    myImGuiHandler = nullptr;
-}
+Engine::Engine() = default;
+Engine::~Engine() = default;

@@ -27,7 +27,7 @@ void ImGuiHandler::Initialize(HWND aMainWindowHandle)
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
 
-	if (!Engine::GetInstance().GetIsFullscreen())
+	if (!Engine::Get().GetIsFullscreen())
 	{
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 
@@ -55,7 +55,7 @@ void ImGuiHandler::BeginFrame()
 {
 #ifndef _RETAIL
 	ImGuiIO& io = ImGui::GetIO();
-	CU::Vector2f resolution = Engine::GetInstance().GetResolution();
+	CU::Vector2f resolution = Engine::Get().GetResolution();
 	io.DisplaySize = { resolution.x, resolution.y };
 	io.DisplayFramebufferScale = { 1.0f, 1.0f };
 
@@ -74,7 +74,7 @@ void ImGuiHandler::Render()
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-	if (!Engine::GetInstance().GetIsFullscreen())
+	if (!Engine::Get().GetIsFullscreen())
 	{
 		// Update and Render additional Platform Windows
 		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

@@ -94,7 +94,7 @@ void Renderer::RenderForward(Scene& aScene)
 	}
 
 	QueueDebugLines(aScene);
-	Engine::GetInstance().GetDebugDrawer().DrawObjects();
+	Engine::Get().GetDebugDrawer().DrawObjects();
 
 	if (gfx.CurrentDebugMode == DebugMode::None)
 	{
@@ -209,7 +209,7 @@ void Renderer::RenderDeferred(Scene& aScene)
 	}
 
 	QueueDebugLines(aScene);
-	Engine::GetInstance().GetDebugDrawer().DrawObjects();
+	Engine::Get().GetDebugDrawer().DrawObjects();
 
 	std::shared_ptr<Texture> renderTarget;
 	if (gfx.BloomEnabled)
@@ -679,8 +679,8 @@ void Renderer::QueueDebugLines(Scene& aScene)
 {
 	if (GraphicsEngine::Get().DrawBoundingBoxes)
 	{
-		Engine::GetInstance().GetDebugDrawer().DrawBoundingBox(aScene.myBoundingBox);
-		Engine::GetInstance().GetDebugDrawer().DrawBoundingBox(myVisibleObjectsBB);
+		Engine::Get().GetDebugDrawer().DrawBoundingBox(aScene.myBoundingBox);
+		Engine::Get().GetDebugDrawer().DrawBoundingBox(myVisibleObjectsBB);
 	}
 
 	for (auto& gameObject : aScene.myGameObjects)
@@ -692,7 +692,7 @@ void Renderer::QueueDebugLines(Scene& aScene)
 			std::shared_ptr<Camera> cam = gameObject->GetComponent<Camera>();
 			if (cam && cam->GetActive() && gameObject != aScene.myMainCamera)
 			{
-				Engine::GetInstance().GetDebugDrawer().DrawCameraFrustum(cam);
+				Engine::Get().GetDebugDrawer().DrawCameraFrustum(cam);
 			}
 		}
 
@@ -702,14 +702,14 @@ void Renderer::QueueDebugLines(Scene& aScene)
 			if (boxCollider && boxCollider->GetActive())
 			{
 				CU::Vector4f colliderColor = boxCollider->debugColliding ? CU::Vector4f(1.0f, 0, 0, 1.0f) : CU::Vector4f(0, 1.0f, 0, 1.0f);
-				Engine::GetInstance().GetDebugDrawer().DrawBoundingBox(boxCollider->GetAABB(), gameObject->GetComponent<Transform>()->GetWorldMatrix(), colliderColor);
+				Engine::Get().GetDebugDrawer().DrawBoundingBox(boxCollider->GetAABB(), gameObject->GetComponent<Transform>()->GetWorldMatrix(), colliderColor);
 			}
 
 			std::shared_ptr<SphereCollider> sphereCollider = gameObject->GetComponent<SphereCollider>();
 			if (sphereCollider && sphereCollider->GetActive())
 			{
 				CU::Vector4f colliderColor = sphereCollider->debugColliding ? CU::Vector4f(1.0f, 0, 0, 1.0f) : CU::Vector4f(0, 1.0f, 0, 1.0f);
-				Engine::GetInstance().GetDebugDrawer().DrawBoundingSphere(sphereCollider->GetSphere(), gameObject->GetComponent<Transform>()->GetWorldMatrix(), colliderColor);
+				Engine::Get().GetDebugDrawer().DrawBoundingSphere(sphereCollider->GetSphere(), gameObject->GetComponent<Transform>()->GetWorldMatrix(), colliderColor);
 			}
 		}
 	}

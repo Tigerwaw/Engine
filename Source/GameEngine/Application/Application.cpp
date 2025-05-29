@@ -1,5 +1,7 @@
 #include "Enginepch.h"
 #include "Application.h"
+#include "Application/Window.h"
+#include "Application/WindowsEventHandler.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -13,10 +15,8 @@ Application::~Application()
 
 void Application::Run()
 {
-	if (!InitializeEngine())
-	{
-		return;
-	}
+	Engine::Initialize();
+	Engine& engine = Engine::Get();
 
 	InitializeApplication();
 
@@ -28,7 +28,7 @@ void Application::Run()
 		PIXScopedEvent(PIX_COLOR_INDEX(0), "Main Update Loop");
 
 #ifndef _RETAIL
-		if (Engine::GetInstance().GetIsFullscreen())
+		if (engine.GetIsFullscreen())
 		{
 			if (ImGui_ImplWin32_WndProcHandler(msg.hwnd, msg.message, msg.wParam, msg.lParam))
 			{
@@ -59,67 +59,17 @@ void Application::Run()
 				}
 			}
 
-			myEventHandler->HandleMessage(&msg);
-
-			Engine::GetInstance().GetInputHandler().UpdateEvents(msg.message, msg.wParam, msg.lParam);
+			engine.GetWindowsEventHandler().HandleMessage(&msg);
+			engine.GetInputHandler().UpdateEvents(msg.message, msg.wParam, msg.lParam);
 		}
 
-		Engine::GetInstance().GetImGuiHandler().BeginFrame();
-		GraphicsEngine::Get().BeginFrame();
-		Engine::GetInstance().GetImGuiHandler().Update();
-		Engine::GetInstance().GetDebugDrawer().ClearObjects();
+
+		engine.Prepare();
+		engine.GetImGuiHandler().Update();
 		UpdateApplication();
-		Engine::GetInstance().Update();
-		GraphicsEngine::Get().RenderFrame();
-		Engine::GetInstance().GetImGuiHandler().Render();
-		GraphicsEngine::Get().EndFrame();
+		engine.Update();
+		engine.Render();
     }
-}
 
-void Application::Shutdown()
-{
-	Engine::GetInstance().Destroy();
-}
-
-Window& Application::GetWindow()
-{
-	return *myWindow;
-}
-
-WindowsEventHandler& Application::GetWindowsEventHandler()
-{
-	return *myEventHandler;
-}
-
-bool Application::InitializeEngine()
-{
-	myWindow = std::make_unique<Window>();
-	myEventHandler = std::make_unique<WindowsEventHandler>();
-
-	Engine& engine = Engine::GetInstance();
-	std::string title = engine.GetApplicationTitle();
-	CU::Vector2f windowSize = engine.GetWindowSize();
-	CU::Vector2f windowPos = engine.GetWindowPos();
-	bool fullscreen = engine.GetIsFullscreen();
-	bool borderless = engine.GetIsBorderless();
-	bool allowDropFiles = engine.GetAllowDropFiles();
-	myWindow->InitializeWindow(title, windowSize, windowPos, fullscreen, borderless, allowDropFiles);
-
-	engine.SetApplicationInstance(this);
-
-	GraphicsEngine::Get().Initialize(myWindow->GetWindowHandle());
-	CU::Vector2f resolution = engine.GetResolution();
-	GraphicsEngine::Get().SetResolution(resolution.x, resolution.y);
-
-	AssetManager::Get().Initialize(engine.GetContentRootPath(), engine.GetAutoRegisterAssets());
-	Engine::GetInstance().GetAudioEngine().Initialize();
-
-#ifndef _RETAIL
-	Engine::GetInstance().GetDebugDrawer().InitializeDebugDrawer();
-	Engine::GetInstance().GetImGuiHandler().Initialize(myWindow->GetWindowHandle());
-	GraphicsEngine::Get().InitializeImGui();
-#endif
-
-	LOG(LogApplication, Log, "Ready!");
-	return true;
+	engine.Shutdown();
 }

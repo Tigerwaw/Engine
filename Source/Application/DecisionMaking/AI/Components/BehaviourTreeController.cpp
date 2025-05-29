@@ -17,7 +17,7 @@ public:
 
 	Status update() override
 	{
-		auto self = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
+		auto self = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
 		auto healthComp = self->GetComponent<HealthComponent>();
 		if (healthComp->GetHealth() <= 0)
 		{
@@ -38,7 +38,7 @@ public:
 
 	Status update() override
 	{
-		auto self = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
+		auto self = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
 		if (auto healthComp = self->GetComponent<HealthComponent>())
 		{
 			if (healthComp->GetHealth() / healthComp->GetMaxHealth() < 0.5f)
@@ -63,11 +63,11 @@ public:
 	{
 		float myHealRadius = blackboard->getFloat("myHealRadius");
 
-		auto self = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
+		auto self = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
 		auto transform = self->GetComponent<Transform>();
 		CU::Vector3f pos = transform->GetTranslation();
 
-		auto well = Engine::GetInstance().GetSceneHandler().FindGameObjectByName("HWell");
+		auto well = Engine::Get().GetSceneHandler().FindGameObjectByName("HWell");
 		CU::Vector3f targetPos = well->GetComponent<Transform>()->GetTranslation();
 		CU::Vector3f directionToTarget = targetPos - pos;
 		if (directionToTarget.LengthSqr() < myHealRadius * myHealRadius)
@@ -91,11 +91,11 @@ public:
 	{
 		float myShootingRange = blackboard->getFloat("myShootingRange");
 
-		auto self = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
+		auto self = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
 		auto transform = self->GetComponent<Transform>();
 		CU::Vector3f pos = transform->GetTranslation();
 
-		auto target = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(blackboard->getString("myTarget"));
+		auto target = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myTarget"));
 		CU::Vector3f targetPos = target->GetComponent<Transform>()->GetTranslation();
 		CU::Vector3f directionToTarget = targetPos - pos;
 		if (directionToTarget.LengthSqr() < myShootingRange * myShootingRange)
@@ -117,11 +117,11 @@ public:
 
 	Status update() override
 	{
-		auto self = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
+		auto self = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
 		auto transform = self->GetComponent<Transform>();
 		CU::Vector3f pos = transform->GetTranslation();
 
-		auto target = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(blackboard->getString("myTarget"));
+		auto target = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myTarget"));
 		CU::Vector3f targetPos = target->GetComponent<Transform>()->GetTranslation();
 		CU::Vector3f directionToTarget = targetPos - pos;
 
@@ -175,7 +175,7 @@ public:
 		float myCurrentDeathTime = blackboard->getFloat("myCurrentDeathTime");
 		float myDeathTimer = blackboard->getFloat("myDeathTimer");
 
-		float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
+		float dt = Engine::Get().GetTimer().GetDeltaTime();
 		myCurrentDeathTime += dt;
 		blackboard->setFloat("myCurrentDeathTime", myCurrentDeathTime);
 
@@ -183,7 +183,7 @@ public:
 		{
 			myCurrentDeathTime = 0.0f;
 			blackboard->setFloat("myCurrentDeathTime", myCurrentDeathTime);
-			auto self = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
+			auto self = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
 			auto transform = self->GetComponent<Transform>();
 			transform->SetTranslation(300.0f, 0, -500.0f);
 			auto healthComp = self->GetComponent<HealthComponent>();
@@ -211,9 +211,9 @@ public:
 	{
 		float myHPS = blackboard->getFloat("myHPS");
 
-		float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
+		float dt = Engine::Get().GetTimer().GetDeltaTime();
 
-		auto self = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
+		auto self = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
 		auto healthComp = self->GetComponent<HealthComponent>();
 		healthComp->Heal(myHPS * dt);
 		if (healthComp->GetHealth() > (healthComp->GetHealth() / healthComp->GetMaxHealth()) * 0.9f)
@@ -261,8 +261,8 @@ public:
 		float myCurrentRotationTime = blackboard->getFloat("myCurrentRotationTime");
 		float myMaxRotationTime = blackboard->getFloat("myMaxRotationTime");
 
-		float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
-		auto self = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
+		float dt = Engine::Get().GetTimer().GetDeltaTime();
+		auto self = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
 		auto& transform = self->GetComponent<Transform>();
 
 		CU::Vector3f pos = transform->GetTranslation();
@@ -370,15 +370,15 @@ public:
 		float myTimeSinceLastShot = blackboard->getFloat("myTimeSinceLastShot");
 		float myShootingAngle = blackboard->getFloat("myShootingAngle");
 
-		auto self = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
+		auto self = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
 		auto transform = self->GetComponent<Transform>();
 		CU::Vector3f pos = transform->GetTranslation();
 
-		auto target = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(blackboard->getString("myTarget"));
+		auto target = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myTarget"));
 		CU::Vector3f targetPos = target->GetComponent<Transform>()->GetTranslation();
 		CU::Vector3f directionToTarget = targetPos - pos;
 
-		float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
+		float dt = Engine::Get().GetTimer().GetDeltaTime();
 
 		myCurrentRotationTime += dt;
 		blackboard->setFloat("myCurrentRotationTime", myCurrentRotationTime);
@@ -436,8 +436,8 @@ public:
 		{
 			myTimeSinceLastShot = 0;
 			blackboard->setFloat("myTimeSinceLastShot", myTimeSinceLastShot);
-			auto self = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
-			auto target = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(blackboard->getString("myTarget"));
+			auto self = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
+			auto target = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myTarget"));
 			auto healthComp = target->GetComponent<HealthComponent>();
 			healthComp->TakeDamage(myDamage);
 
@@ -493,10 +493,10 @@ public:
 		float myMaxRotationTime = blackboard->getFloat("myMaxRotationTime");
 		float myShootingRange = blackboard->getFloat("myShootingRange");
 
-		float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
+		float dt = Engine::Get().GetTimer().GetDeltaTime();
 
-		auto self = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
-		auto target = Engine::GetInstance().GetSceneHandler().FindGameObjectByName(blackboard->getString("myTarget"));
+		auto self = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
+		auto target = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myTarget"));
 		auto& transform = self->GetComponent<Transform>();
 
 		CU::Vector3f pos = transform->GetTranslation();
@@ -645,7 +645,7 @@ void BehaviourTreeController::Update()
 {
 	myTree.update();
 
-	float dt = Engine::GetInstance().GetTimer().GetDeltaTime();
+	float dt = Engine::Get().GetTimer().GetDeltaTime();
 	myCurrentParticleActiveTime = myBlackboard->getFloat("myCurrentParticleActiveTime");
 	myCurrentParticleActiveTime += dt;
 	myBlackboard->setFloat("myCurrentParticleActiveTime", myCurrentParticleActiveTime);
