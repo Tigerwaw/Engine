@@ -6,7 +6,7 @@ GlobalEventHandler::GlobalEventHandler()
 {
 	for (int i = 0; i < static_cast<int>(GlobalEventType::Count); i++)
 	{
-		mySubscribers.push_back(std::vector<GlobalEventSubscriber*>());
+		mySubscribers.emplace_back();
 	}
 }
 

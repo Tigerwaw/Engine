@@ -51,7 +51,6 @@ private:
 	std::filesystem::path myContentRoot;
 
 	std::vector<std::future<bool>> myFutures;
-	std::chrono::system_clock::time_point myLoadStartTime;
 };
 
 template<typename T>

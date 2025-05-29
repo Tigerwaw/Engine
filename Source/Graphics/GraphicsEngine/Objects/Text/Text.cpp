@@ -56,19 +56,19 @@ void Text::SetTextContent(const std::string& aTextContent)
 			offsets.w += myFont->Atlas.Descender * fontSize;
 		}
 
-		myTextData.vertices.push_back({ myMatrix(4, 1) + X + offsets.x, myMatrix(4, 2) + offsets.y, bounds.x, 1 - bounds.y });
-		myTextData.vertices.push_back({ myMatrix(4, 1) + X + offsets.x, myMatrix(4, 2) + offsets.w, bounds.x, 1 - bounds.w });
-		myTextData.vertices.push_back({ myMatrix(4, 1) + X + offsets.z, myMatrix(4, 2) + offsets.y, bounds.z, 1 - bounds.y });
-		myTextData.vertices.push_back({ myMatrix(4, 1) + X + offsets.z, myMatrix(4, 2) + offsets.w, bounds.z, 1 - bounds.w });
+		myTextData.vertices.emplace_back(myMatrix(4, 1) + X + offsets.x, myMatrix(4, 2) + offsets.y, bounds.x, 1 - bounds.y);
+		myTextData.vertices.emplace_back(myMatrix(4, 1) + X + offsets.x, myMatrix(4, 2) + offsets.w, bounds.x, 1 - bounds.w);
+		myTextData.vertices.emplace_back(myMatrix(4, 1) + X + offsets.z, myMatrix(4, 2) + offsets.y, bounds.z, 1 - bounds.y);
+		myTextData.vertices.emplace_back(myMatrix(4, 1) + X + offsets.z, myMatrix(4, 2) + offsets.w, bounds.z, 1 - bounds.w);
 
 		X += charAdvance + scalarOffset;
 
-		myTextData.indices.push_back(currentVertexCount);
-		myTextData.indices.push_back(currentVertexCount + 1);
-		myTextData.indices.push_back(currentVertexCount + 2);
-		myTextData.indices.push_back(currentVertexCount + 1);
-		myTextData.indices.push_back(currentVertexCount + 3);
-		myTextData.indices.push_back(currentVertexCount + 2);
+		myTextData.indices.emplace_back(currentVertexCount);
+		myTextData.indices.emplace_back(currentVertexCount + 1);
+		myTextData.indices.emplace_back(currentVertexCount + 2);
+		myTextData.indices.emplace_back(currentVertexCount + 1);
+		myTextData.indices.emplace_back(currentVertexCount + 3);
+		myTextData.indices.emplace_back(currentVertexCount + 2);
 	}
 
 	myTextData.numVertices = static_cast<unsigned>(myTextData.vertices.size());

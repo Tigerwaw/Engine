@@ -175,13 +175,13 @@ void AssetManager::RegisterEngineAssets()
 
 void AssetManager::RegisterAllAssetsInDirectory()
 {
-    myLoadStartTime = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
 
     for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot))
     {
         if (file.path().has_filename() && file.path().has_extension())
         {
-            myFutures.push_back(std::async(std::launch::async, &AssetManager::RegisterAsset, this, file.path()));
+            myFutures.emplace_back(std::async(std::launch::async, &AssetManager::RegisterAsset, this, file.path()));
         }
     }
 
@@ -191,13 +191,15 @@ void AssetManager::RegisterAllAssetsInDirectory()
         future.wait();
     }
 
-    std::chrono::duration<float, std::ratio<1, 1>> loadTime = std::chrono::system_clock::now() - myLoadStartTime;
-    LOG(LogAssetManager, Log, "Registered all assets in {} seconds", loadTime.count());
+    std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
+    LOG(LogAssetManager, Log, "Registered all assets in {}ms", std::round(loadTime.count()));
 }
 
 bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
 {
     if (!ValidateAsset(aPath)) return false;
+
+    std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
 
     std::filesystem::path assetPath = MakeRelative(aPath);
     const std::string ext = assetPath.extension().string();
@@ -211,7 +213,7 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
 
     std::vector<Vertex> vertices;
     std::vector<unsigned> indices;
-    std::vector<Mesh::Element> elements;
+    std::vector<Mesh::Element> elements(tgaMesh.Elements.size());
 
     CU::Vector3f minBBPoint;
     CU::Vector3f maxBBPoint;
@@ -221,17 +223,17 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
 
     for (auto& tgaElement : tgaMesh.Elements)
     {
-        Mesh::Element element;
+        Mesh::Element& element = elements.emplace_back();
         element.VertexOffset = nextVertexOffset;
         element.IndexOffset = nextIndexOffset;
         element.NumVertices = static_cast<int>(tgaElement.Vertices.size());
         element.NumIndices = static_cast<int>(tgaElement.Indices.size());
         element.MaterialIndex = tgaElement.MaterialIndex;
-        elements.push_back(element);
 
+        vertices.reserve(vertices.size() + tgaElement.Vertices.size());
         for (auto& v : tgaElement.Vertices)
         {
-            vertices.push_back(Vertex(v.Position, v.VertexColors, v.BoneIDs, v.BoneWeights, v.UVs, v.Normal, v.Tangent));
+            vertices.emplace_back(v.Position, v.VertexColors, v.BoneIDs, v.BoneWeights, v.UVs, v.Normal, v.Tangent);
             nextVertexOffset++;
 
             minBBPoint.x = v.Position[0] < minBBPoint.x ? v.Position[0] : minBBPoint.x;
@@ -243,18 +245,20 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
             maxBBPoint.z = v.Position[2] > maxBBPoint.z ? v.Position[2] : maxBBPoint.z;
         }
 
+        indices.reserve(indices.size() + tgaElement.Indices.size());
         for (auto& i : tgaElement.Indices)
         {
-            indices.push_back(i + element.VertexOffset);
+            indices.emplace_back(i + element.VertexOffset);
             nextIndexOffset++;
         }
     }
 
     Mesh::Skeleton skeleton;
+    skeleton.myJoints.reserve(tgaMesh.Skeleton.Bones.size());
 
     for (auto& tgaJoint : tgaMesh.Skeleton.Bones)
     {
-        Mesh::Skeleton::Joint& joint = skeleton.myJoints.emplace_back(Mesh::Skeleton::Joint());
+        Mesh::Skeleton::Joint& joint = skeleton.myJoints.emplace_back();
         joint.Parent = tgaJoint.ParentIdx;
         joint.Children = tgaJoint.Children;
         joint.Name = tgaJoint.Name;
@@ -281,13 +285,16 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
     std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
-    LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->path.filename().string());
+    std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
+    LOG(LogAssetManager, Log, "Registered mesh asset {} in {}ms", asset->path.filename().string(), std::round(loadTime.count()));
     return true;
 }
 
 bool AssetManager::RegisterAnimationAsset(const std::filesystem::path& aPath)
 {
     if (!ValidateAsset(aPath)) return false;
+
+    std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
 
     std::filesystem::path assetPath = MakeRelative(aPath);
     const std::string ext = assetPath.extension().string();
@@ -328,13 +335,16 @@ bool AssetManager::RegisterAnimationAsset(const std::filesystem::path& aPath)
     std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
-    LOG(LogAssetManager, Log, "Registered animation asset {}", asset->path.filename().string());
+    std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
+    LOG(LogAssetManager, Log, "Registered animation asset {} in {}ms", asset->path.filename().string(), std::round(loadTime.count()));
     return true;
 }
 
 bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
 {
     if (!ValidateAsset(aPath)) return false;
+
+    std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
 
     std::filesystem::path assetPath = MakeRelative(aPath);
     const std::string ext = assetPath.extension().string();
@@ -409,13 +419,17 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
     std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
-    LOG(LogAssetManager, Log, "Registered material asset {}", asset->path.filename().string());
+    std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
+    LOG(LogAssetManager, Log, "Registered material asset {} in {}ms", asset->path.filename().string(), std::round(loadTime.count()));
     return true;
 }
 
 bool AssetManager::RegisterTextureAsset(const std::filesystem::path& aPath)
 {
     if (!ValidateAsset(aPath)) return false;
+
+    std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
+
     std::filesystem::path assetPath = MakeRelative(aPath);
     const std::string ext = assetPath.extension().string();
     if (!ext.ends_with("dds")) return false;
@@ -434,13 +448,17 @@ bool AssetManager::RegisterTextureAsset(const std::filesystem::path& aPath)
     std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
-    LOG(LogAssetManager, Log, "Registered texture asset {}", asset->path.filename().string());
+    std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
+    LOG(LogAssetManager, Log, "Registered texture asset {} in {}ms", asset->path.filename().string(), std::round(loadTime.count()));
     return true;
 }
 
 bool AssetManager::RegisterShaderAsset(const std::filesystem::path& aPath)
 {
     if (!ValidateAsset(aPath)) return false;
+
+    std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
+
     std::filesystem::path assetPath = MakeRelative(aPath);
     const std::string ext = assetPath.extension().string();
     if (!ext.ends_with("cso")) return false;
@@ -460,13 +478,16 @@ bool AssetManager::RegisterShaderAsset(const std::filesystem::path& aPath)
     std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
-    LOG(LogAssetManager, Log, "Registered shader asset {}", asset->path.filename().string());
+    std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
+    LOG(LogAssetManager, Log, "Registered shader asset {} in {}ms", asset->path.filename().string(), std::round(loadTime.count()));
     return true;
 }
 
 bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
 {
     if (!ValidateAsset(aPath)) return false;
+
+    std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
 
     std::filesystem::path assetPath = MakeRelative(aPath);
     const std::string ext = assetPath.extension().string();
@@ -658,13 +679,16 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
     std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
-    LOG(LogAssetManager, Log, "Registered PSO asset {}", asset->name.string());
+    std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
+    LOG(LogAssetManager, Log, "Registered PSO asset {} in {}ms", asset->name.string(), std::round(loadTime.count()));
     return true;
 }
 
 bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
 {
     if (!ValidateAsset(aPath)) return false;
+
+    std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
 
     std::filesystem::path assetPath = MakeRelative(aPath);
     const std::string ext = assetPath.extension().string();
@@ -753,17 +777,20 @@ bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
     std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
-    LOG(LogAssetManager, Log, "Registered font asset {}", asset->path.filename().string());
+    std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
+    LOG(LogAssetManager, Log, "Registered font asset {} in {}ms", asset->path.filename().string(), std::round(loadTime.count()));
     return true;
 }
 
 std::vector<NavPolygon> CreateNavPolygons(const TGA::FBX::NavMesh& tgaNavMesh);
-std::vector<NavNode> CreateNavNodes(const std::vector<NavPolygon> navPolygons);
-std::vector<NavPortal> CreateNavPortals(const std::vector<NavPolygon> navPolygons, const std::vector<NavNode>& aNavNodes);
+std::vector<NavNode> CreateNavNodes(const std::vector<NavPolygon>& navPolygons);
+std::vector<NavPortal> CreateNavPortals(const std::vector<NavPolygon>& navPolygons, const std::vector<NavNode>& aNavNodes);
 
 bool AssetManager::RegisterNavMeshAsset(const std::filesystem::path& aPath)
 {
     if (!ValidateAsset(aPath)) return false;
+
+    std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
 
     std::filesystem::path assetPath = MakeRelative(aPath);
     const std::string ext = assetPath.extension().string();
@@ -804,7 +831,8 @@ bool AssetManager::RegisterNavMeshAsset(const std::filesystem::path& aPath)
     std::lock_guard<std::mutex> assetLock(sAssetMutex);
     myAssets.emplace(asset->name, asset);
 
-    LOG(LogAssetManager, Log, "Registered navmesh asset {}", asset->path.filename().string());
+    std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
+    LOG(LogAssetManager, Log, "Registered navmesh asset {} in {}ms", asset->path.filename().string(), std::round(loadTime.count()));
     return true;
 }
 
@@ -916,22 +944,23 @@ bool AssetManager::RegisterPlanePrimitive()
     };
 
     std::vector<Vertex> vertexList;
-    vertexList.emplace_back(Vertex(pos[0], emptyColor, uv[0], normals[0], tangents[0]));
-    vertexList.emplace_back(Vertex(pos[1], emptyColor, uv[1], normals[1], tangents[1]));
-    vertexList.emplace_back(Vertex(pos[2], emptyColor, uv[2], normals[2], tangents[2]));
-    vertexList.emplace_back(Vertex(pos[3], emptyColor, uv[3], normals[3], tangents[3]));
+    vertexList.reserve(4);
+    vertexList.emplace_back(pos[0], emptyColor, uv[0], normals[0], tangents[0]);
+    vertexList.emplace_back(pos[1], emptyColor, uv[1], normals[1], tangents[1]);
+    vertexList.emplace_back(pos[2], emptyColor, uv[2], normals[2], tangents[2]);
+    vertexList.emplace_back(pos[3], emptyColor, uv[3], normals[3], tangents[3]);
 
     std::vector<unsigned> indexList = {
         0, 1, 2,
         2, 3, 0,
     };
 
-    Mesh::Element element;
+    std::vector<Mesh::Element> elementList;
+    Mesh::Element& element = elementList.emplace_back();
     element.VertexOffset = 0;
     element.IndexOffset = 0;
     element.NumVertices = static_cast<unsigned>(vertexList.size());
     element.NumIndices = static_cast<unsigned>(indexList.size());
-    std::vector<Mesh::Element> elementList = { element };
 
     Mesh plane;
     plane.InitBoundingBox({ -1.0f, -0.001f, -1.0f }, { 1.0f, 0.001f, 1.0f });
@@ -1078,31 +1107,32 @@ bool AssetManager::RegisterCubePrimitive()
     };
 
     std::vector<Vertex> vertexList;
+    vertexList.reserve(24);
 
-    vertexList.emplace_back(Vertex(pos[0], emptyColor, uv[0], normals[0], tangents[0]));
-    vertexList.emplace_back(Vertex(pos[1], emptyColor, uv[1], normals[1], tangents[1]));
-    vertexList.emplace_back(Vertex(pos[2], emptyColor, uv[2], normals[2], tangents[2]));
-    vertexList.emplace_back(Vertex(pos[3], emptyColor, uv[3], normals[3], tangents[3]));
-    vertexList.emplace_back(Vertex(pos[4], emptyColor, uv[4], normals[4], tangents[4]));
-    vertexList.emplace_back(Vertex(pos[5], emptyColor, uv[5], normals[5], tangents[5]));
-    vertexList.emplace_back(Vertex(pos[6], emptyColor, uv[6], normals[6], tangents[6]));
-    vertexList.emplace_back(Vertex(pos[7], emptyColor, uv[7], normals[7], tangents[7]));
-    vertexList.emplace_back(Vertex(pos[8], emptyColor, uv[8], normals[8], tangents[8]));
-    vertexList.emplace_back(Vertex(pos[9], emptyColor, uv[9], normals[9], tangents[9]));
-    vertexList.emplace_back(Vertex(pos[10], emptyColor, uv[10], normals[10], tangents[10]));
-    vertexList.emplace_back(Vertex(pos[11], emptyColor, uv[11], normals[11], tangents[11]));
-    vertexList.emplace_back(Vertex(pos[12], emptyColor, uv[12], normals[12], tangents[12]));
-    vertexList.emplace_back(Vertex(pos[13], emptyColor, uv[13], normals[13], tangents[13]));
-    vertexList.emplace_back(Vertex(pos[14], emptyColor, uv[14], normals[14], tangents[14]));
-    vertexList.emplace_back(Vertex(pos[15], emptyColor, uv[15], normals[15], tangents[15]));
-    vertexList.emplace_back(Vertex(pos[16], emptyColor, uv[16], normals[16], tangents[16]));
-    vertexList.emplace_back(Vertex(pos[17], emptyColor, uv[17], normals[17], tangents[17]));
-    vertexList.emplace_back(Vertex(pos[18], emptyColor, uv[18], normals[18], tangents[18]));
-    vertexList.emplace_back(Vertex(pos[19], emptyColor, uv[19], normals[19], tangents[19]));
-    vertexList.emplace_back(Vertex(pos[20], emptyColor, uv[20], normals[20], tangents[20]));
-    vertexList.emplace_back(Vertex(pos[21], emptyColor, uv[21], normals[21], tangents[21]));
-    vertexList.emplace_back(Vertex(pos[22], emptyColor, uv[22], normals[22], tangents[22]));
-    vertexList.emplace_back(Vertex(pos[23], emptyColor, uv[23], normals[23], tangents[23]));
+    vertexList.emplace_back(pos[0], emptyColor, uv[0], normals[0], tangents[0]);
+    vertexList.emplace_back(pos[1], emptyColor, uv[1], normals[1], tangents[1]);
+    vertexList.emplace_back(pos[2], emptyColor, uv[2], normals[2], tangents[2]);
+    vertexList.emplace_back(pos[3], emptyColor, uv[3], normals[3], tangents[3]);
+    vertexList.emplace_back(pos[4], emptyColor, uv[4], normals[4], tangents[4]);
+    vertexList.emplace_back(pos[5], emptyColor, uv[5], normals[5], tangents[5]);
+    vertexList.emplace_back(pos[6], emptyColor, uv[6], normals[6], tangents[6]);
+    vertexList.emplace_back(pos[7], emptyColor, uv[7], normals[7], tangents[7]);
+    vertexList.emplace_back(pos[8], emptyColor, uv[8], normals[8], tangents[8]);
+    vertexList.emplace_back(pos[9], emptyColor, uv[9], normals[9], tangents[9]);
+    vertexList.emplace_back(pos[10], emptyColor, uv[10], normals[10], tangents[10]);
+    vertexList.emplace_back(pos[11], emptyColor, uv[11], normals[11], tangents[11]);
+    vertexList.emplace_back(pos[12], emptyColor, uv[12], normals[12], tangents[12]);
+    vertexList.emplace_back(pos[13], emptyColor, uv[13], normals[13], tangents[13]);
+    vertexList.emplace_back(pos[14], emptyColor, uv[14], normals[14], tangents[14]);
+    vertexList.emplace_back(pos[15], emptyColor, uv[15], normals[15], tangents[15]);
+    vertexList.emplace_back(pos[16], emptyColor, uv[16], normals[16], tangents[16]);
+    vertexList.emplace_back(pos[17], emptyColor, uv[17], normals[17], tangents[17]);
+    vertexList.emplace_back(pos[18], emptyColor, uv[18], normals[18], tangents[18]);
+    vertexList.emplace_back(pos[19], emptyColor, uv[19], normals[19], tangents[19]);
+    vertexList.emplace_back(pos[20], emptyColor, uv[20], normals[20], tangents[20]);
+    vertexList.emplace_back(pos[21], emptyColor, uv[21], normals[21], tangents[21]);
+    vertexList.emplace_back(pos[22], emptyColor, uv[22], normals[22], tangents[22]);
+    vertexList.emplace_back(pos[23], emptyColor, uv[23], normals[23], tangents[23]);
 
     std::vector<unsigned> indexList = {
         0,1,2,
@@ -1119,12 +1149,12 @@ bool AssetManager::RegisterCubePrimitive()
         20,22,23
     };
 
-    Mesh::Element element;
+    std::vector<Mesh::Element> elementList;
+    Mesh::Element& element = elementList.emplace_back();
     element.VertexOffset = 0;
     element.IndexOffset = 0;
     element.NumVertices = static_cast<unsigned>(vertexList.size());
     element.NumIndices = static_cast<unsigned>(indexList.size());
-    std::vector<Mesh::Element> elementList = { element };
 
     Mesh cube;
     cube.InitBoundingBox({ -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f });
@@ -1244,24 +1274,26 @@ bool AssetManager::RegisterRampPrimitive()
     };
 
     std::vector<Vertex> vertexList;
-    vertexList.emplace_back(Vertex(pos[0], emptyColor, uv[0], normals[0], tangents[0]));
-    vertexList.emplace_back(Vertex(pos[1], emptyColor, uv[1], normals[1], tangents[1]));
-    vertexList.emplace_back(Vertex(pos[2], emptyColor, uv[2], normals[2], tangents[2]));
-    vertexList.emplace_back(Vertex(pos[3], emptyColor, uv[3], normals[3], tangents[3]));
-    vertexList.emplace_back(Vertex(pos[4], emptyColor, uv[4], normals[4], tangents[4]));
-    vertexList.emplace_back(Vertex(pos[5], emptyColor, uv[5], normals[5], tangents[5]));
-    vertexList.emplace_back(Vertex(pos[6], emptyColor, uv[6], normals[6], tangents[6]));
-    vertexList.emplace_back(Vertex(pos[7], emptyColor, uv[7], normals[7], tangents[7]));
-    vertexList.emplace_back(Vertex(pos[8], emptyColor, uv[8], normals[8], tangents[8]));
-    vertexList.emplace_back(Vertex(pos[9], emptyColor, uv[9], normals[9], tangents[9]));
-    vertexList.emplace_back(Vertex(pos[10], emptyColor, uv[10], normals[10], tangents[10]));
-    vertexList.emplace_back(Vertex(pos[11], emptyColor, uv[11], normals[11], tangents[11]));
-    vertexList.emplace_back(Vertex(pos[12], emptyColor, uv[12], normals[12], tangents[12]));
-    vertexList.emplace_back(Vertex(pos[13], emptyColor, uv[13], normals[13], tangents[13]));
-    vertexList.emplace_back(Vertex(pos[14], emptyColor, uv[14], normals[14], tangents[14]));
-    vertexList.emplace_back(Vertex(pos[15], emptyColor, uv[15], normals[15], tangents[15]));
-    vertexList.emplace_back(Vertex(pos[16], emptyColor, uv[16], normals[16], tangents[16]));
-    vertexList.emplace_back(Vertex(pos[17], emptyColor, uv[17], normals[17], tangents[17]));
+    vertexList.reserve(18);
+
+    vertexList.emplace_back(pos[0], emptyColor, uv[0], normals[0], tangents[0]);
+    vertexList.emplace_back(pos[1], emptyColor, uv[1], normals[1], tangents[1]);
+    vertexList.emplace_back(pos[2], emptyColor, uv[2], normals[2], tangents[2]);
+    vertexList.emplace_back(pos[3], emptyColor, uv[3], normals[3], tangents[3]);
+    vertexList.emplace_back(pos[4], emptyColor, uv[4], normals[4], tangents[4]);
+    vertexList.emplace_back(pos[5], emptyColor, uv[5], normals[5], tangents[5]);
+    vertexList.emplace_back(pos[6], emptyColor, uv[6], normals[6], tangents[6]);
+    vertexList.emplace_back(pos[7], emptyColor, uv[7], normals[7], tangents[7]);
+    vertexList.emplace_back(pos[8], emptyColor, uv[8], normals[8], tangents[8]);
+    vertexList.emplace_back(pos[9], emptyColor, uv[9], normals[9], tangents[9]);
+    vertexList.emplace_back(pos[10], emptyColor, uv[10], normals[10], tangents[10]);
+    vertexList.emplace_back(pos[11], emptyColor, uv[11], normals[11], tangents[11]);
+    vertexList.emplace_back(pos[12], emptyColor, uv[12], normals[12], tangents[12]);
+    vertexList.emplace_back(pos[13], emptyColor, uv[13], normals[13], tangents[13]);
+    vertexList.emplace_back(pos[14], emptyColor, uv[14], normals[14], tangents[14]);
+    vertexList.emplace_back(pos[15], emptyColor, uv[15], normals[15], tangents[15]);
+    vertexList.emplace_back(pos[16], emptyColor, uv[16], normals[16], tangents[16]);
+    vertexList.emplace_back(pos[17], emptyColor, uv[17], normals[17], tangents[17]);
 
     std::vector<unsigned> indexList = {
         0, 1, 2,
@@ -1277,12 +1309,12 @@ bool AssetManager::RegisterRampPrimitive()
         15, 16, 17,
     };
 
-    Mesh::Element element;
+    std::vector<Mesh::Element> elementList;
+    Mesh::Element& element = elementList.emplace_back();
     element.VertexOffset = 0;
     element.IndexOffset = 0;
     element.NumVertices = static_cast<unsigned>(vertexList.size());
     element.NumIndices = static_cast<unsigned>(indexList.size());
-    std::vector<Mesh::Element> elementList = { element };
 
     Mesh ramp;
     ramp.InitBoundingBox({ -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f });
@@ -1315,7 +1347,7 @@ std::vector<NavPolygon> CreateNavPolygons(const TGA::FBX::NavMesh& tgaNavMesh)
         for (auto& tgaPolygon : tgaChunk.Polygons)
         {
             assert(tgaPolygon.Indices.size() < 4 && "Navmesh isn't triangulated >:((");
-            NavPolygon& navPolygon = navPolygons.emplace_back(NavPolygon());
+            NavPolygon& navPolygon = navPolygons.emplace_back();
             for (std::size_t i = 0; i < tgaPolygon.Indices.size(); ++i)
             {
                 const int vertexIndex = tgaPolygon.Indices[i];
@@ -1329,13 +1361,13 @@ std::vector<NavPolygon> CreateNavPolygons(const TGA::FBX::NavMesh& tgaNavMesh)
     return navPolygons;
 }
 
-std::vector<NavNode> CreateNavNodes(const std::vector<NavPolygon> navPolygons)
+std::vector<NavNode> CreateNavNodes(const std::vector<NavPolygon>& navPolygons)
 {
-    std::vector<NavNode> navNodes;
+    std::vector<NavNode> navNodes(navPolygons.size());
 
     for (int i = 0; i < static_cast<int>(navPolygons.size()); ++i)
     {
-        NavNode& navNode = navNodes.emplace_back(NavNode());
+        NavNode& navNode = navNodes.emplace_back();
         CU::Vector3f pos;
         int numVertices = static_cast<int>(navPolygons[i].vertexPositions.size());
         for (int vertexPos = 0; vertexPos < numVertices; vertexPos++)
@@ -1353,7 +1385,7 @@ std::vector<NavNode> CreateNavNodes(const std::vector<NavPolygon> navPolygons)
     return navNodes;
 }
 
-std::vector<NavPortal> CreateNavPortals(const std::vector<NavPolygon> navPolygons, const std::vector<NavNode>& aNavNodes)
+std::vector<NavPortal> CreateNavPortals(const std::vector<NavPolygon>& navPolygons, const std::vector<NavNode>& aNavNodes)
 {
     std::vector<NavPortal> navPortals;
 

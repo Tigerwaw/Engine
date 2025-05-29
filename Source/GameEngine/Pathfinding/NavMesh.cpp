@@ -483,11 +483,6 @@ std::vector<CU::Vector3f> NavMesh::PathStraight(CU::Vector3f aStartingPos, CU::V
 {
 	std::vector<CU::Vector3f> result;
 
-	//float dot = CU::Vector3f::Dot(CU::Vector3f::Direction(aStartingPos, aEndPos).GetNormalized(), CU::Vector3f(0, 1.0f, 0));
-	//bool rayIsNotAtASteepAngle = CU::Equal(dot, 0.0f, 0.25f);
-	//if (!rayIsNotAtASteepAngle)
-	//	return result;
-
 	CU::Vector3f startPos = aStartingPos;
 	CU::Vector3f endPos = aEndPos;
 
@@ -546,13 +541,6 @@ std::vector<CU::Vector3f> NavMesh::PathStraight(CU::Vector3f aStartingPos, CU::V
 	if (intersectedEdges.empty())
 		return result;
 
-	//float avg = 0;
-	//for (size_t edgeIndex = 0; edgeIndex < intersectedEdges.size(); edgeIndex++)
-	//{
-	//	CU::Vector3f edgePos = intersectedEdges[edgeIndex][0] - intersectedEdges[edgeIndex][1];
-	//	CU::Vector3f rayToEdge =
-	//}
-
 	int intersectedPortals = 0;
 	for (auto& edge : intersectedEdges)
 	{
@@ -597,7 +585,6 @@ std::vector<CU::Vector3f> NavMesh::PathStraight(CU::Vector3f aStartingPos, CU::V
 			});
 
 		CU::Vector3f prevPoint = pathPoints.front();
-		//result.emplace_back(prevPoint);
 
 		for (int i = 1; i < pathPoints.size() - 1; ++i)
 		{
