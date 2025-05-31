@@ -3,7 +3,7 @@
 
 LRESULT CALLBACK WinProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam);
 
-bool Window::InitializeWindow(const std::string& aWindowTitle, CU::Vector2f aWindowSize, CU::Vector2f aWindowPos, bool aIsFullscreen, bool aIsBorderless, bool aAllowDropFiles)
+bool Window::InitializeWindow(const std::string& aWindowTitle, Math::Vector2f aWindowSize, Math::Vector2f aWindowPos, bool aIsFullscreen, bool aIsBorderless, bool aAllowDropFiles)
 {
     LOG(LogGameEngine, Log, "Initializing window...");
     
@@ -68,17 +68,17 @@ bool Window::InitializeWindow(const std::string& aWindowTitle, CU::Vector2f aWin
 	return true;
 }
 
-const CU::Vector2f Window::GetCenter() const
+const Math::Vector2f Window::GetCenter() const
 {
-	CU::Vector2f pos = GetSize();
+	Math::Vector2f pos = GetSize();
 	pos /= 2.0f;
 
 	return pos;
 }
 
-const CU::Vector2f Window::GetTopLeft() const
+const Math::Vector2f Window::GetTopLeft() const
 {
-	CU::Vector2f pos;
+	Math::Vector2f pos;
 
 	RECT rect;
 	if (GetWindowRect(myMainWindowHandle, &rect))
@@ -90,9 +90,9 @@ const CU::Vector2f Window::GetTopLeft() const
 	return pos;
 }
 
-const CU::Vector2f Window::GetTopRight() const
+const Math::Vector2f Window::GetTopRight() const
 {
-	CU::Vector2f pos;
+	Math::Vector2f pos;
 
 	RECT rect;
 	if (GetWindowRect(myMainWindowHandle, &rect))
@@ -104,9 +104,9 @@ const CU::Vector2f Window::GetTopRight() const
 	return pos;
 }
 
-const CU::Vector2f Window::GetBottomLeft() const
+const Math::Vector2f Window::GetBottomLeft() const
 {
-	CU::Vector2f pos;
+	Math::Vector2f pos;
 
 	RECT rect;
 	if (GetWindowRect(myMainWindowHandle, &rect))
@@ -118,9 +118,9 @@ const CU::Vector2f Window::GetBottomLeft() const
 	return pos;
 }
 
-const CU::Vector2f Window::GetBottomRight() const
+const Math::Vector2f Window::GetBottomRight() const
 {
-	CU::Vector2f pos;
+	Math::Vector2f pos;
 
 	RECT rect;
 	if (GetWindowRect(myMainWindowHandle, &rect))
@@ -132,9 +132,9 @@ const CU::Vector2f Window::GetBottomRight() const
 	return pos;
 }
 
-const CU::Vector2f Window::GetSize() const
+const Math::Vector2f Window::GetSize() const
 {
-	CU::Vector2f size;
+	Math::Vector2f size;
 
 	RECT rect;
 	if (GetWindowRect(myMainWindowHandle, &rect))

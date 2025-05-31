@@ -1,14 +1,14 @@
 #include "Enginepch.h"
 
-#include "GameEngine/ComponentSystem/GameObject.h"
+#include "ComponentSystem/GameObject.h"
 
 #include "AnimatedModel.h"
-#include "GraphicsEngine/Objects/Mesh.h"
-#include "GraphicsEngine/Objects/Animation.h"
-#include "GameEngine/Engine.h"
-#include "GameEngine/Time/Timer.h"
-#include "GameEngine/Math/Quaternion.hpp"
-namespace CU = CommonUtilities;
+#include "Objects/Mesh.h"
+#include "Objects/Animation.h"
+#include "Engine.h"
+#include "Time/Timer.h"
+#include "Math/Quaternion.hpp"
+
 
 AnimatedModel::~AnimatedModel()
 {
@@ -63,11 +63,11 @@ void AnimatedModel::SetMaterialOnSlot(unsigned aSlot, std::shared_ptr<Material> 
     mySlotToIndex.emplace(aSlot, static_cast<unsigned>(myMaterials.size() - 1));
 }
 
-const CU::AABB3D<float> AnimatedModel::GetBoundingBox() const
+const Math::AABB3D<float> AnimatedModel::GetBoundingBox() const
 {
     if (!ValidateMesh())
     {
-        return CU::AABB3D<float>();
+        return Math::AABB3D<float>();
     }
 
     return myMesh->GetBoundingBox();
@@ -413,7 +413,7 @@ void AnimatedModel::UpdateAnimationLayer(AnimationLayer& aAnimationLayer)
         UpdatePose(aAnimationLayer);
     }
 
-    CU::Matrix4x4<float> parentBoneMatrix;
+    Math::Matrix4x4<float> parentBoneMatrix;
     if (aAnimationLayer.startJointID > 0)
     {
         int parentID = myMesh->GetSkeleton().myJoints[aAnimationLayer.startJointID].Parent;
@@ -459,13 +459,13 @@ void AnimatedModel::UpdateAnimationState(AnimationState& aAnimationState)
     }
 }
 
-void AnimatedModel::UpdateAnimation(AnimationLayer& aAnimLayer, unsigned aJointIdx, const CU::Matrix4x4f& aParentJointTransform, std::array<CU::Matrix4x4f, 128>& outTransforms)
+void AnimatedModel::UpdateAnimation(AnimationLayer& aAnimLayer, unsigned aJointIdx, const Math::Matrix4x4f& aParentJointTransform, std::array<Math::Matrix4x4f, 128>& outTransforms)
 {
     Mesh::Skeleton::Joint currentJoint = myMesh->GetSkeleton().myJoints[aJointIdx];
 
-    CU::Matrix4x4f currentFrameJointTransform = aAnimLayer.currentPose[aJointIdx];
+    Math::Matrix4x4f currentFrameJointTransform = aAnimLayer.currentPose[aJointIdx];
     currentFrameJointTransform = currentFrameJointTransform * aParentJointTransform;
-    CU::Matrix4x4f result = currentJoint.BindPoseInverse * currentFrameJointTransform;
+    Math::Matrix4x4f result = currentJoint.BindPoseInverse * currentFrameJointTransform;
 
     outTransforms[aJointIdx] = result;
 
@@ -492,18 +492,18 @@ void AnimatedModel::BlendPoses(AnimationLayer& aAnimLayer, float aBlendFactor)
     for (size_t i = aAnimLayer.startJointID; i < skeleton.myJoints.size(); i++)
     {
         Mesh::Skeleton::Joint currentJoint = myMesh->GetSkeleton().myJoints[i];
-        CU::Matrix4x4f currentStateJointTransform = aAnimLayer.currentState->animation->Frames[aAnimLayer.currentState->currentFrame].BoneTransforms[currentJoint.Name];
-        CU::Matrix4x4f nextStateJointTransform = aAnimLayer.nextState->animation->Frames[aAnimLayer.nextState->currentFrame].BoneTransforms[currentJoint.Name];
+        Math::Matrix4x4f currentStateJointTransform = aAnimLayer.currentState->animation->Frames[aAnimLayer.currentState->currentFrame].BoneTransforms[currentJoint.Name];
+        Math::Matrix4x4f nextStateJointTransform = aAnimLayer.nextState->animation->Frames[aAnimLayer.nextState->currentFrame].BoneTransforms[currentJoint.Name];
          
-        const CU::Vector3f T = CU::Vector3f::Lerp(CU::Matrix4x4f::CreateTranslationVector(currentStateJointTransform), CU::Matrix4x4f::CreateTranslationVector(nextStateJointTransform), aBlendFactor);
-        const CU::Quatf R = CU::Quatf::Slerp(CU::Quatf(currentStateJointTransform), CU::Quatf(nextStateJointTransform), aBlendFactor);
-        //CU::Vector3 currentS = CU::Matrix4x4f::CreateScaleVector(currentStateJointTransform);
-        //CU::Vector3 nextS = CU::Matrix4x4f::CreateScaleVector(nextStateJointTransform);
-        //const CU::Vector3f S = CU::Vector3f::Lerp(currentS, nextS, aBlendFactor);
+        const Math::Vector3f T = Math::Vector3f::Lerp(Math::Matrix4x4f::CreateTranslationVector(currentStateJointTransform), Math::Matrix4x4f::CreateTranslationVector(nextStateJointTransform), aBlendFactor);
+        const Math::Quatf R = Math::Quatf::Slerp(Math::Quatf(currentStateJointTransform), Math::Quatf(nextStateJointTransform), aBlendFactor);
+        //Math::Vector3 currentS = Math::Matrix4x4f::CreateScaleVector(currentStateJointTransform);
+        //Math::Vector3 nextS = Math::Matrix4x4f::CreateScaleVector(nextStateJointTransform);
+        //const Math::Vector3f S = Math::Vector3f::Lerp(currentS, nextS, aBlendFactor);
         //std::cout << S.x << ", " << S.y << ", " << S.z << std::endl;
-        const CU::Vector3f S = { 1.0f, 1.0f, 1.0f };
+        const Math::Vector3f S = { 1.0f, 1.0f, 1.0f };
 
-        aAnimLayer.currentPose[i] = CU::Matrix4x4f::CreateScaleMatrix(S) * R.GetRotationMatrix4x4f() * CU::Matrix4x4f::CreateTranslationMatrix(T);
+        aAnimLayer.currentPose[i] = Math::Matrix4x4f::CreateScaleMatrix(S) * R.GetRotationMatrix4x4f() * Math::Matrix4x4f::CreateTranslationMatrix(T);
     }
 }
 

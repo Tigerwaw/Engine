@@ -166,7 +166,7 @@ void GameServer::CreateNewObject()
 {
     //printf("\nStarted creating object!\n");
 
-    CU::Vector3f startingPos;
+    Math::Vector3f startingPos;
     startingPos.x = static_cast<float>((std::rand() % 1000) - 500);
     startingPos.y = 0.0f;
     startingPos.z = static_cast<float>((std::rand() % 1000) - 500);
@@ -183,7 +183,7 @@ void GameServer::CreateNewObject()
     go->AddComponent<Transform>(createCharacterMsg.GetPosition());
     go->AddComponent<RandomDirectionMovement>();
     go->AddComponent<BounceAgainstWorldEdges>();
-    auto coll = go->AddComponent<BoxCollider>(CU::Vector3f(50.0f, 100.0f, 50.0f), CU::Vector3f(0.0f, 90.0f, 0.0f));
+    auto coll = go->AddComponent<BoxCollider>(Math::Vector3f(50.0f, 100.0f, 50.0f), Math::Vector3f(0.0f, 90.0f, 0.0f));
     unsigned id = go->GetNetworkID();
     coll->SetCollisionResponse([this, id] {
         if (auto gameObject = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(id))

@@ -8,7 +8,7 @@
 #include "GameEngine/ComponentSystem/Components/Graphics/ParticleSystem.h"
 #include "../PollingStation.h"
 #include "DecisionMaking/HealthComponent.h"
-#include "GameEngine/Intersections/Intersection3D.hpp"
+#include "Math/Intersection3D.hpp"
 
 void DecisionTreeController::Start()
 {
@@ -27,10 +27,10 @@ void DecisionTreeController::Update()
 	if (!myTarget) return;
 
 	auto transform = gameObject->GetComponent<Transform>();
-	CU::Vector3f pos = transform->GetTranslation();
+	Math::Vector3f pos = transform->GetTranslation();
 
-	CU::Vector3f targetPos = myTarget->GetComponent<Transform>()->GetTranslation();
-	CU::Vector3f directionToTarget = targetPos - pos;
+	Math::Vector3f targetPos = myTarget->GetComponent<Transform>()->GetTranslation();
+	Math::Vector3f directionToTarget = targetPos - pos;
 
 	auto healthComp = gameObject->GetComponent<HealthComponent>();
 
@@ -63,11 +63,11 @@ void DecisionTreeController::Update()
 				{
 					myCurrentRotationTime = 0;
 					myCurrentRot = myGoalRot;
-					myGoalRot = CU::Quatf(CU::Vector3f(0, std::atan2(directionToTarget.x, directionToTarget.z), 0));
+					myGoalRot = Math::Quatf(Math::Vector3f(0, std::atan2(directionToTarget.x, directionToTarget.z), 0));
 				}
 
 				float rotTimeDelta = myCurrentRotationTime / myMaxRotationTime;
-				CU::Quatf rot = CU::Quatf::Slerp(myCurrentRot, myGoalRot, rotTimeDelta);
+				Math::Quatf rot = Math::Quatf::Slerp(myCurrentRot, myGoalRot, rotTimeDelta);
 				transform->SetRotation(rot.GetEulerAnglesDegrees());
 			}
 		}
@@ -110,8 +110,8 @@ void DecisionTreeController::SeekTarget()
 	float dt = Engine::Get().GetTimer().GetDeltaTime();
 	auto& transform = gameObject->GetComponent<Transform>();
 
-	CU::Vector3f pos = transform->GetTranslation();
-	CU::Vector3f velocity;
+	Math::Vector3f pos = transform->GetTranslation();
+	Math::Vector3f velocity;
 
 	// Seek Target
 	{
@@ -120,10 +120,10 @@ void DecisionTreeController::SeekTarget()
 
 	// Avoid walls
 	{
-		CU::Vector3f avoidVelocity;
+		Math::Vector3f avoidVelocity;
 		for (auto& wallPos : PollingStation::Get().GetWallPositions())
 		{
-			CU::Vector3f diff = pos - wallPos;
+			Math::Vector3f diff = pos - wallPos;
 			if (diff.LengthSqr() > myAvoidRadius * myAvoidRadius) continue;
 			avoidVelocity += diff;
 		}
@@ -149,27 +149,27 @@ void DecisionTreeController::SeekTarget()
 		{
 			myCurrentRotationTime = 0;
 			myCurrentRot = myGoalRot;
-			myGoalRot = CU::Quatf(CU::Vector3f(0, std::atan2(myVelocity.x, myVelocity.z), 0));
+			myGoalRot = Math::Quatf(Math::Vector3f(0, std::atan2(myVelocity.x, myVelocity.z), 0));
 		}
 
 		float rotTimeDelta = myCurrentRotationTime / myMaxRotationTime;
-		CU::Quatf rot = CU::Quatf::Slerp(myCurrentRot, myGoalRot, rotTimeDelta);
+		Math::Quatf rot = Math::Quatf::Slerp(myCurrentRot, myGoalRot, rotTimeDelta);
 		gameObject->GetComponent<Transform>()->SetRotation(rot.GetEulerAnglesDegrees());
 	}
 
 	myVelocity = myVelocity * (1 - myDeceleration);
 }
 
-bool DecisionTreeController::IsLineOfSightClear(CU::Vector3f aOrigin, CU::Vector3f aDiff)
+bool DecisionTreeController::IsLineOfSightClear(Math::Vector3f aOrigin, Math::Vector3f aDiff)
 {
 	for (auto& wallPos : PollingStation::Get().GetWallPositions())
 	{
 		if ((wallPos - aOrigin).LengthSqr() > aDiff.LengthSqr()) continue;
 
-		CU::Sphere<float> sphere(wallPos, myAvoidRadius);
-		CU::Ray<float> ray(aOrigin, aDiff.GetNormalized());
+		Math::Sphere<float> sphere(wallPos, myAvoidRadius);
+		Math::Ray<float> ray(aOrigin, aDiff.GetNormalized());
 
-		if (CU::IntersectionSphereRay(sphere, ray))
+		if (Math::IntersectionSphereRay(sphere, ray))
 		{
 			return false;
 		}

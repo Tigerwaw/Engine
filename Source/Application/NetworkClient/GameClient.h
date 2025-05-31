@@ -1,6 +1,6 @@
 #pragma once
 #include "ClientBase.h"
-#include "Utility/CircularArray.hpp"
+#include "CommonUtilities/CircularArray.hpp"
 
 class NetMessage_Connect;
 class NetMessage_AcceptConnect;
@@ -15,7 +15,7 @@ class GameObject;
 
 struct PositionData
 {
-    CU::Vector3f position;
+    Math::Vector3f position;
     double clientTimestamp;
     double serverTimestamp;
 };
@@ -34,7 +34,7 @@ protected:
     void SendDisconnectMessage() const override;
 
     void SendTextMessage(const std::string& aMessage) const;
-    void SendPositionMessage(const CU::Vector3f& aPosition) const;
+    void SendPositionMessage(const Math::Vector3f& aPosition) const;
 
     void HandleMessage_Disconnect(NetMessage_Disconnect& aMessage);
     void HandleMessage_Text(NetMessage_Text& aMessage);
@@ -44,7 +44,7 @@ protected:
     void HandleMessage_Test(NetMessage_Test& aMessage);
 
 private:
-    std::unordered_map<unsigned, CircularArray<PositionData, 16>> myObjectIDPositionHistory;
+    std::unordered_map<unsigned, Utilities::CircularArray<PositionData, 16>> myObjectIDPositionHistory;
 
     bool myShouldLerpPositions = true;
 };

@@ -1,7 +1,7 @@
 #pragma once
 #include "GraphicsCommandBase.h"
 #include "Math/Matrix.hpp"
-namespace CU = CommonUtilities;
+
 
 class Sprite;
 class Texture;
@@ -16,6 +16,6 @@ public:
 private:
 	std::shared_ptr<Material> material;
 	std::shared_ptr<Texture> texture;
-	CU::Matrix4x4f matrix;
+	Math::Matrix4x4f matrix;
 };
 

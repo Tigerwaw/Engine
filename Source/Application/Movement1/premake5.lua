@@ -15,12 +15,7 @@ project "Movement1"
   conformancemode "On"
 
   dependson { 
-    "GameEngine", 
-    "GraphicsEngine", 
-    "GraphicsEngineShaders", 
-    "AssetManager",
-    "Imgui",
-    "Logger"
+    "GameEngine"
   }
 
   debugdir "%{dirs.bin}/%{prj.name}"
@@ -55,6 +50,8 @@ project "Movement1"
     "GraphicsEngine_%{cfg.buildcfg}", 
     "Imgui_%{cfg.buildcfg}", 
     "Logger_%{cfg.buildcfg}",
+    --"Math_%{cfg.buildcfg}",
+    --"CommonUtilities_%{cfg.buildcfg}",
     "TGAFbx",
     "d3d11",
     "dxguid",

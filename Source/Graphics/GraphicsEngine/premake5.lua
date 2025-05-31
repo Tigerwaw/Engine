@@ -27,14 +27,22 @@ project "GraphicsEngine"
 		"**.cpp"
 	}
 
+    dependson {
+    "GraphicsEngineShaders",
+    "Math",
+    "CommonUtilities",
+    "Imgui",
+    "Logger"
+  }
+
   includedirs {
-    dirs.source,
-    dirs.graphics,
     dirs.graphicsengine,
-    dirs.engine,
     dirs.assetmanager,
     dirs.utilities,
-    dirs.imgui
+    dirs.imgui,
+    dirs.commonutilities,
+    dirs.math,
+    dirs.engine -- Remove
   }
 
   filter "system:windows"

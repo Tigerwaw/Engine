@@ -2,35 +2,35 @@
 
 #include "SceneLoader.h"
 
-#include "GameEngine/ComponentSystem/Scene.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Component.h"
+#include "ComponentSystem/Scene.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Component.h"
 
 #include "AssetManager.h"
-#include "GameEngine/Engine.h"
-#include "GameEngine/Audio/AudioEngine.h"
+#include "Engine.h"
+#include "Audio/AudioEngine.h"
 
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/DebugModel.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/VFXModel.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/Camera.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/ParticleSystem.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/TrailSystem.h"
+#include "ComponentSystem/Components/Transform.h"
+#include "ComponentSystem/Components/Graphics/Model.h"
+#include "ComponentSystem/Components/Graphics/AnimatedModel.h"
+#include "ComponentSystem/Components/Graphics/DebugModel.h"
+#include "ComponentSystem/Components/Graphics/VFXModel.h"
+#include "ComponentSystem/Components/Graphics/Camera.h"
+#include "ComponentSystem/Components/Graphics/ParticleSystem.h"
+#include "ComponentSystem/Components/Graphics/TrailSystem.h"
 
-#include "GameEngine/ComponentSystem/Components/Lights/AmbientLight.h"
-#include "GameEngine/ComponentSystem/Components/Lights/DirectionalLight.h"
-#include "GameEngine/ComponentSystem/Components/Lights/PointLight.h"
-#include "GameEngine/ComponentSystem/Components/Lights/SpotLight.h"
+#include "ComponentSystem/Components/Lights/AmbientLight.h"
+#include "ComponentSystem/Components/Lights/DirectionalLight.h"
+#include "ComponentSystem/Components/Lights/PointLight.h"
+#include "ComponentSystem/Components/Lights/SpotLight.h"
 
-#include "GameEngine/ComponentSystem/Components/Physics/Colliders/BoxCollider.h"
-#include "GameEngine/ComponentSystem/Components/Physics/Colliders/SphereCollider.h"
+#include "ComponentSystem/Components/Physics/Colliders/BoxCollider.h"
+#include "ComponentSystem/Components/Physics/Colliders/SphereCollider.h"
 
-#include "GameEngine/ComponentSystem/Components/Movement/Rotator.h"
-#include "GameEngine/ComponentSystem/Components/Movement/MoveBetweenPoints.h"
-#include "GameEngine/ComponentSystem/Components/Movement/FreecamController.h"
-#include "GameEngine/ComponentSystem/Components/AudioSource.h"
+#include "ComponentSystem/Components/Movement/Rotator.h"
+#include "ComponentSystem/Components/Movement/MoveBetweenPoints.h"
+#include "ComponentSystem/Components/Movement/FreecamController.h"
+#include "ComponentSystem/Components/AudioSource.h"
 
 SceneLoader::SceneLoader() = default;
 SceneLoader::~SceneLoader() = default;

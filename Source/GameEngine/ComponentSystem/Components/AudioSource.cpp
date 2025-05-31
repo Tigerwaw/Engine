@@ -1,9 +1,9 @@
 #include "Enginepch.h"
 
 #include "AudioSource.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/Audio/AudioInstance.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
+#include "ComponentSystem/GameObject.h"
+#include "Audio/AudioInstance.h"
+#include "ComponentSystem/Components/Transform.h"
 
 void AudioSource::Start()
 {

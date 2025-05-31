@@ -43,12 +43,12 @@ void InputHandler::SetRightStickDeadZone(float aDeadZoneX, float aDeadZoneY)
 	std::dynamic_pointer_cast<ControllerInput>(myInputModes[InputMode::Gamepad])->SetRightStickDeadZone(aDeadZoneX, aDeadZoneY);
 }
 
-const CU::Vector2f InputHandler::GetLeftStickDeadZone() const
+const Math::Vector2f InputHandler::GetLeftStickDeadZone() const
 {
 	return std::dynamic_pointer_cast<ControllerInput>(myInputModes.at(InputMode::Gamepad))->GetLeftStickDeadZone();
 }
 
-const CU::Vector2f InputHandler::GetRightStickDeadZone() const
+const Math::Vector2f InputHandler::GetRightStickDeadZone() const
 {
 	return std::dynamic_pointer_cast<ControllerInput>(myInputModes.at(InputMode::Gamepad))->GetRightStickDeadZone();
 }
@@ -175,9 +175,9 @@ const float InputHandler::GetAnalogAction(const std::string& aActionName) const
 	return result;
 }
 
-const CU::Vector2f InputHandler::GetAnalogAction2D(const std::string& aActionName) const
+const Math::Vector2f InputHandler::GetAnalogAction2D(const std::string& aActionName) const
 {
-	CU::Vector2f result;
+	Math::Vector2f result;
 	for (auto& action : myActions.at(aActionName))
 	{
 		std::shared_ptr<Analog2DAction> castedAction = std::dynamic_pointer_cast<Analog2DAction>(action);

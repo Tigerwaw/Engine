@@ -1,6 +1,5 @@
 #pragma once
 #include "Math/Vector.hpp"
-namespace CU = CommonUtilities;
 
 class PollingStation
 {
@@ -24,9 +23,9 @@ public:
 	void SetHealingWell(std::shared_ptr<GameObject> aGameObject) { myHealingWell = aGameObject; }
 	void AddWall(std::shared_ptr<GameObject> aGameObject) { myWalls.emplace_back(aGameObject); }
 
-	const CU::Vector3f GetHealingWellPosition();
+	const Math::Vector3f GetHealingWellPosition();
 	const std::vector<std::shared_ptr<GameObject>>& GetWalls() { return myWalls; }
-	const std::vector<CU::Vector3f> GetWallPositions() const;
+	const std::vector<Math::Vector3f> GetWallPositions() const;
 private:
 	std::vector<std::shared_ptr<GameObject>> myWalls;
 	std::vector<std::shared_ptr<GameObject>> myAIActors;

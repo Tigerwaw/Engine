@@ -12,7 +12,7 @@ ControllerBase::SteeringOutput CollisionAvoidance::GetSteering(const SteeringInp
 
     for (auto& wallPos : PollingStation::Get().GetWallPositions())
     {
-        CU::Vector3f diff = aSteeringInput.position - wallPos;
+        Math::Vector3f diff = aSteeringInput.position - wallPos;
         if (diff.LengthSqr() > myAvoidRadius * myAvoidRadius) continue;
         output.velocity += diff;
     }

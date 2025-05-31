@@ -34,7 +34,7 @@
 #include "Debug/EndEvent.h"
 #include "Debug/SetMarker.h"
 
-namespace CU = CommonUtilities;
+
 
 class Mesh;
 

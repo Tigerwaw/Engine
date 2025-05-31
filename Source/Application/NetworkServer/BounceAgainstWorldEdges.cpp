@@ -12,7 +12,7 @@ void BounceAgainstWorldEdges::Update()
 	auto transform = gameObject->GetComponent<Transform>();
 	auto pos = transform->GetTranslation(true);
 	auto randomDir = gameObject->GetComponent<RandomDirectionMovement>();
-	CU::Vector3f dir = randomDir->GetDirection();
+	Math::Vector3f dir = randomDir->GetDirection();
 
 	if (pos.x < -myExtents.x || pos.x > myExtents.x)
 	{

@@ -1,22 +1,22 @@
 #pragma once
-#include "GameEngine/Math/Vector.hpp"
-#include "GameEngine/Math/Curve.h"
-namespace CU = CommonUtilities;
+#include "Math/Vector.hpp"
+#include "Math/Curve.h"
+
 
 struct ParticleEmitterSettings
 {
-	CU::Vector3f EmitterSize;
+	Math::Vector3f EmitterSize;
 	float SpawnRate = 1.0f;
-	CU::Curve<CU::Vector4f> Color;
+	Math::Curve<Math::Vector4f> Color;
 
-	CU::Curve<CU::Vector2f> Size;
-	CU::Vector3f Velocity;
+	Math::Curve<Math::Vector2f> Size;
+	Math::Vector3f Velocity;
 	bool RandomVelocity = false;
-	CU::Vector3f VelocityRangeMin;
-	CU::Vector3f VelocityRangeMax;
+	Math::Vector3f VelocityRangeMin;
+	Math::Vector3f VelocityRangeMax;
 
 	float Lifetime = 5.0f;
 	float GravityScale = 1.0f;
-	CU::Curve<float> Angle;
-	CU::Vector4f ChannelMask = { 1.0f, 0, 0, 0 };
+	Math::Curve<float> Angle;
+	Math::Vector4f ChannelMask = { 1.0f, 0, 0, 0 };
 };

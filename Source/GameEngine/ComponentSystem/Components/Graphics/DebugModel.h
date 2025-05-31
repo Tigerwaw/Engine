@@ -1,9 +1,9 @@
 #pragma once
-#include "GameEngine/ComponentSystem/Component.h"
+#include "ComponentSystem/Component.h"
 
-#include "GameEngine/EngineDefines.h"
-#include "GameEngine/Intersections/AABB3D.hpp"
-namespace CU = CommonUtilities;
+#include "EngineDefines.h"
+#include "Math/AABB3D.hpp"
+
 
 class Mesh;
 class Material;
@@ -25,7 +25,7 @@ public:
     void SetMaterialOnSlot(unsigned aSlot, std::shared_ptr<Material> aMaterial);
     std::shared_ptr<Material> GetMaterialOnSlot(unsigned aSlot) { return myMaterials[mySlotToIndex[aSlot]]; }
     std::vector<std::shared_ptr<Material>> GetMaterials() { return myMaterials; }
-    const CU::AABB3D<float> GetBoundingBox() const;
+    const Math::AABB3D<float> GetBoundingBox() const;
 
 protected:
     std::shared_ptr<Mesh> myMesh = nullptr;

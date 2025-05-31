@@ -1,10 +1,10 @@
 #include "GraphicsEngine.pch.h"
 #include "RenderParticles.h"
 
-#include "GraphicsEngine/Objects/ConstantBuffers/ObjectBuffer.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/ParticleSystem.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
+#include "Objects/ConstantBuffers/ObjectBuffer.h"
+#include "ComponentSystem/Components/Graphics/ParticleSystem.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
 
 RenderParticles::RenderParticles(std::shared_ptr<ParticleSystem> aParticleSystem)
 {

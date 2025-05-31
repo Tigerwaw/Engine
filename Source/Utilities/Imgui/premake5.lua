@@ -7,7 +7,7 @@ workspace "TGPGameEngine"
 
 group "Utilities"
 project "Imgui"
-  location "%{dirs.utilities}/%{prj.name}/"
+  location "%{dirs.imgui}"
   kind "StaticLib"
   language "C++"
   cppdialect "C++20"
@@ -17,16 +17,16 @@ project "Imgui"
 	objdir ("%{dirs.temp}/%{cfg.buildcfg}/%{prj.name}")
 
   files {
-    "%{dirs.imgui}/backends/imgui_impl_win32.h",
-    "%{dirs.imgui}/backends/imgui_impl_win32.cpp",
-    "%{dirs.imgui}/backends/imgui_impl_dx11.h",
-    "%{dirs.imgui}/backends/imgui_impl_dx11.cpp",
-    "%{dirs.imgui}/misc/debuggers/imgui.natvis",
-    "%{dirs.imgui}/misc/debuggers/imgui.natstepfilter",
-    "%{dirs.imgui}/misc/cpp/imgui_stdlib.h",
-    "%{dirs.imgui}/misc/cpp/imgui_stdlib.cpp",
-	"%{dirs.imgui}/*.h",
-	"%{dirs.imgui}/*.cpp"
+    "backends/imgui_impl_win32.h",
+    "backends/imgui_impl_win32.cpp",
+    "backends/imgui_impl_dx11.h",
+    "backends/imgui_impl_dx11.cpp",
+    "misc/debuggers/imgui.natvis",
+    "misc/debuggers/imgui.natstepfilter",
+    "misc/cpp/imgui_stdlib.h",
+    "misc/cpp/imgui_stdlib.cpp",
+	"*.h",
+	"*.cpp"
 	}
 
   includedirs { 

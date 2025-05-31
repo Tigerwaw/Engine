@@ -15,9 +15,11 @@ project "AssetManager"
   conformancemode "On"
 
 	dependson {
-	"GameEngine",
-    "GraphicsEngine",
-    "Logger"
+    "Math",
+    "CommonUtilities",
+    "Logger",
+    "GameEngine", -- Remove
+    "GraphicsEngine" -- Remove
   }
 
   targetdir ("%{dirs.lib}/%{cfg.buildcfg}/%{prj.name}")
@@ -34,11 +36,10 @@ project "AssetManager"
 	}
 
   includedirs { 
-    dirs.source,
     dirs.assetmanager,
-    dirs.graphicsengine,
     dirs.utilities,
-    dirs.engine
+    dirs.graphicsengine, -- Remove
+    dirs.engine -- Remove
   }
 
   filter "system:windows"

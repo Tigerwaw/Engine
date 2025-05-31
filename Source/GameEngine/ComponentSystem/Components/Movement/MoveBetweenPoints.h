@@ -2,15 +2,15 @@
 #include "ComponentSystem/Component.h"
 #include "Math/Vector.hpp"
 
-namespace CU = CommonUtilities;
+
 
 class MoveBetweenPoints :public Component
 {
 public:
 	MoveBetweenPoints() = default;
-	MoveBetweenPoints(std::vector<CU::Vector3f> aPointList, float aMoveSpeed);
+	MoveBetweenPoints(std::vector<Math::Vector3f> aPointList, float aMoveSpeed);
 
-	void SetPointList(std::vector<CU::Vector3f> aPointList);
+	void SetPointList(std::vector<Math::Vector3f> aPointList);
 	void SetMoveSpeed(float aMoveSpeed);
 
 	void Start() override;
@@ -21,7 +21,7 @@ public:
 
 private:
 	float myMoveSpeed = 1.0f;
-	std::vector<CU::Vector3f> myPointList;
+	std::vector<Math::Vector3f> myPointList;
 	int myLastGoal = 0;
 	int myCurrentGoal = 1;
 	float myCurrentTimeMoved = 0;

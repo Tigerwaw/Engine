@@ -54,11 +54,11 @@ const void MKBInput::UpdateEvents(UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_MOUSEMOVE:
 	{
-		CU::Vector2f windowSize = Engine::Get().GetWindowSize();
+		Math::Vector2f windowSize = Engine::Get().GetWindowSize();
 		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_X)] = static_cast<float>(GET_X_LPARAM(lParam));
 		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_Y)] = windowSize.y - static_cast<float>(GET_Y_LPARAM(lParam));
 
-		CU::Vector2f ndcPos;
+		Math::Vector2f ndcPos;
 		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePosNDC_X)] = ((myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_X)] / windowSize.x) - 0.5f) * 2;
 		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePosNDC_Y)] = ((myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_Y)] / windowSize.y) - 0.5f) * 2;
 		return;
@@ -137,7 +137,7 @@ const float MKBInput::GetAnalog(const unsigned aKeyCode) const
 	return 0;
 }
 
-const CU::Vector2f MKBInput::GetAnalog2D(const unsigned aKeyCode) const
+const Math::Vector2f MKBInput::GetAnalog2D(const unsigned aKeyCode) const
 {
 	switch (static_cast<MouseMovement2D>(aKeyCode))
 	{
@@ -152,5 +152,5 @@ const CU::Vector2f MKBInput::GetAnalog2D(const unsigned aKeyCode) const
 		break;
 	}
 
-	return CU::Vector2f();
+	return Math::Vector2f();
 }

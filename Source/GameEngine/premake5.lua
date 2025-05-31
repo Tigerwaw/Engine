@@ -27,10 +27,17 @@ project "GameEngine"
 		"**.cpp"
 	}
 
+  dependson {
+    "CommonUtilities",
+    "Math",
+    "Imgui",
+    "Logger",
+    "GraphicsEngine",
+    "AssetManager"
+  }
+
   includedirs { 
-    dirs.source,
     dirs.engine,
-    dirs.graphics,
     dirs.graphicsengine,
     dirs.assetmanager,
     dirs.utilities,

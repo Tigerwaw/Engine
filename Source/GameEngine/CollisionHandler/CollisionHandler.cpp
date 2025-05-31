@@ -1,11 +1,11 @@
 #include "Enginepch.h"
 #include "CollisionHandler.h"
-#include "GameEngine/ComponentSystem/Scene.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Component.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "GameEngine/ComponentSystem/Components/Physics/Colliders/Collider.h"
-#include "Intersections\Intersection3D.hpp"
+#include "ComponentSystem/Scene.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Component.h"
+#include "ComponentSystem/Components/Transform.h"
+#include "ComponentSystem/Components/Physics/Colliders/Collider.h"
+#include "Math/Intersection3D.hpp"
 
 CollisionHandler::CollisionHandler()
 {
@@ -49,7 +49,7 @@ void CollisionHandler::TestCollisions(Scene& aScene)
     }
 }
 
-bool CollisionHandler::Raycast(Scene& aScene, CU::Vector3f aOrigin, CU::Vector3f aDirection, CU::Vector3f& aHitPoint)
+bool CollisionHandler::Raycast(Scene& aScene, Math::Vector3f aOrigin, Math::Vector3f aDirection, Math::Vector3f& aHitPoint)
 {
 	for (auto& goA : aScene.myGameObjects)
 	{
@@ -58,8 +58,8 @@ bool CollisionHandler::Raycast(Scene& aScene, CU::Vector3f aOrigin, CU::Vector3f
 		std::shared_ptr<Collider> colliderA = goA->GetComponent<Collider>();
 		if (!colliderA || !colliderA->GetActive()) continue;
 
-		CU::Ray<float> aRay(aOrigin, aDirection);
-		CU::Vector3f hitPoint;
+		Math::Ray<float> aRay(aOrigin, aDirection);
+		Math::Vector3f hitPoint;
 		if (colliderA->TestCollision(aRay, hitPoint))
 		{
 			return true;

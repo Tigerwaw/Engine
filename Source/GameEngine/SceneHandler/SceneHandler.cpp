@@ -2,10 +2,10 @@
 
 #include "SceneHandler.h"
 #include "SceneLoader.h"
-#include "GameEngine/Renderer/Renderer.h"
-#include "GameEngine/CollisionHandler/CollisionHandler.h"
-#include "GameEngine/ComponentSystem/Scene.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
+#include "Renderer/Renderer.h"
+#include "CollisionHandler/CollisionHandler.h"
+#include "ComponentSystem/Scene.h"
+#include "ComponentSystem/GameObject.h"
 
 #include "Engine.h"
 
@@ -120,7 +120,7 @@ void SceneHandler::Destroy(std::shared_ptr<GameObject> aGameObject)
     myActiveScene->Destroy(aGameObject);
 }
 
-bool SceneHandler::Raycast(CU::Vector3f aOrigin, CU::Vector3f aDirection, CU::Vector3f& aHitPoint)
+bool SceneHandler::Raycast(Math::Vector3f aOrigin, Math::Vector3f aDirection, Math::Vector3f& aHitPoint)
 {
     return myCollisionHandler->Raycast(*myActiveScene, aOrigin, aDirection, aHitPoint);
 }

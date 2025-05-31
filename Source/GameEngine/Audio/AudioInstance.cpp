@@ -1,8 +1,8 @@
 #include "Enginepch.h"
 
 #include "AudioInstance.h"
-#include "GameEngine/Engine.h"
-#include "GameEngine/Audio/AudioEngine.h"
+#include "Engine.h"
+#include "Audio/AudioEngine.h"
 
 AudioInstance::~AudioInstance()
 {
@@ -120,7 +120,7 @@ void AudioInstance::SetVolume(float aVolume)
     }
 }
 
-void AudioInstance::Set3dPosition(CU::Vector3f aPosition, CU::Vector3f aVelocity, CU::Vector3f aForward, CU::Vector3f aUp)
+void AudioInstance::Set3dPosition(Math::Vector3f aPosition, Math::Vector3f aVelocity, Math::Vector3f aForward, Math::Vector3f aUp)
 {
     const FMOD_3D_ATTRIBUTES attributes = { static_cast<FMOD_VECTOR>(aPosition), static_cast<FMOD_VECTOR>(aVelocity), static_cast<FMOD_VECTOR>(aForward), static_cast<FMOD_VECTOR>(aUp) };
 

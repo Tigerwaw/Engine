@@ -15,12 +15,7 @@ project "NetworkServer"
   conformancemode "On"
 
   dependson { 
-    "GameEngine", 
-    "GraphicsEngine", 
-    "GraphicsEngineShaders", 
-    "AssetManager",
-    "Imgui",
-    "Logger",
+    "GameEngine",
     "NetworkShared",
     "NetworkEngine"
   }
@@ -59,6 +54,8 @@ project "NetworkServer"
     "GraphicsEngine_%{cfg.buildcfg}", 
     "Imgui_%{cfg.buildcfg}", 
     "Logger_%{cfg.buildcfg}",
+    --"Math_%{cfg.buildcfg}",
+    --"CommonUtilities_%{cfg.buildcfg}",
     "NetworkShared_%{cfg.buildcfg}",
     "NetworkEngine_%{cfg.buildcfg}",
     "TGAFbx",

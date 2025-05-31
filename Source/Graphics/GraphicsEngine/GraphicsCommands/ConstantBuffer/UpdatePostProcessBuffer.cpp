@@ -10,9 +10,9 @@ void UpdatePostProcessBuffer::Execute()
 	GraphicsEngine& gfx = GraphicsEngine::Get();
 
 	PostProcessBuffer ppBufferData;
-	const std::vector<CU::Vector4f>& randomKernel = gfx.GetRandomKernel();
+	const std::vector<Math::Vector4f>& randomKernel = gfx.GetRandomKernel();
 	unsigned kernelSize = static_cast<unsigned>(randomKernel.size());
-	unsigned dataSize = sizeof(CU::Vector4f) * kernelSize;
+	unsigned dataSize = sizeof(Math::Vector4f) * kernelSize;
 	
 	memcpy_s(ppBufferData.RandomKernel, dataSize, randomKernel.data(), dataSize);
 

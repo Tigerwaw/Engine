@@ -1,5 +1,5 @@
 #pragma once
-#include "GameEngine/ComponentSystem/Component.h"
+#include "ComponentSystem/Component.h"
 #include "Objects/DynamicVertexBuffer.h"
 
 class Model;
@@ -18,12 +18,12 @@ public:
     unsigned GetMeshCount() { return static_cast<unsigned>(myMeshTransforms.size()); }
     DynamicVertexBuffer& GetInstanceBuffer() { return myMeshTransformBuffer; }
 
-    void AddInstance(CU::Matrix4x4f aTransform);
+    void AddInstance(Math::Matrix4x4f aTransform);
 
     void SetMaterialOnSlot(unsigned aSlot, std::shared_ptr<Material> aMaterial);
     std::shared_ptr<Material>& GetMaterialOnSlot(unsigned aSlot) { return myMaterials[mySlotToIndex[aSlot]]; }
     std::vector<std::shared_ptr<Material>>& GetMaterials() { return myMaterials; }
-    const CU::AABB3D<float> GetBoundingBox() const { return myBoundingBox; }
+    const Math::AABB3D<float> GetBoundingBox() const { return myBoundingBox; }
 
     void SetViewcull(bool aShouldViewcull) { myShouldViewcull = aShouldViewcull; }
     const bool GetShouldViewcull() const { return myShouldViewcull; }
@@ -41,7 +41,7 @@ private:
     bool myCastShadows = true;
 
     DynamicVertexBuffer myMeshTransformBuffer;
-    std::vector<CU::Matrix4x4f> myMeshTransforms;
+    std::vector<Math::Matrix4x4f> myMeshTransforms;
 
-    CU::AABB3D<float> myBoundingBox;
+    Math::AABB3D<float> myBoundingBox;
 };

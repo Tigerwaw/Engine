@@ -24,14 +24,14 @@ namespace nl = nlohmann;
 #include <shared_mutex>
 #include <thread>
 
-#include "AssetManager/AssetManager.h"
-#include "GameEngine/Engine.h"
-#include "GameEngine/Audio/AudioEngine.h"
+#include "AssetManager.h"
+#include "Engine.h"
+#include "Audio/AudioEngine.h"
 
-#include "utilities/Imgui/imgui.h"
-#include "utilities/Imgui/backends/imgui_impl_win32.h"
-#include "utilities/Imgui/backends/imgui_impl_dx11.h"
-#include "utilities/Imgui/misc/cpp/imgui_stdlib.h"
+#include "Imgui/imgui.h"
+#include "Imgui/backends/imgui_impl_win32.h"
+#include "Imgui/backends/imgui_impl_dx11.h"
+#include "Imgui/misc/cpp/imgui_stdlib.h"
 #include "fmod/fmod.hpp"
 #include "fmod/fmod_studio.hpp"
 #include "fmod/fmod_common.h"

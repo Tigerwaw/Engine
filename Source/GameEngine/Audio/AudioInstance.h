@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GameEngine/Math/Vector.hpp"
-namespace CU = CommonUtilities;
+#include "Math/Vector.hpp"
+
 
 namespace FMOD
 {
@@ -23,7 +23,7 @@ public:
     void Pause();
     void Unpause();
     void SetVolume(float aVolume);
-    void Set3dPosition(CU::Vector3f aPosition, CU::Vector3f aVelocity = { 0, 0, 0 }, CU::Vector3f aForward = { 0, 0, 1.0f }, CU::Vector3f aUp = { 0, 1.0f, 0 });
+    void Set3dPosition(Math::Vector3f aPosition, Math::Vector3f aVelocity = { 0, 0, 0 }, Math::Vector3f aForward = { 0, 0, 1.0f }, Math::Vector3f aUp = { 0, 1.0f, 0 });
     const float GetVolume() const;
     const bool GetIsPlaying() const;
     const std::string& GetEventName() const { return myEventName; }

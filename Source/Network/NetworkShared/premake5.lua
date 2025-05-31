@@ -32,8 +32,8 @@ project "NetworkShared"
     dirs.assetmanager,
     dirs.utilities,
     dirs.imgui,
-	dirs.network,
-	dirs.networkengine
+	  dirs.network,
+	  dirs.networkengine
   }
 
   filter "system:windows"

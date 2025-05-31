@@ -2,14 +2,14 @@
 #include "NavMeshAgent.h"
 #include "Pathfinding/NavMesh.h"
 
-#include "GameEngine/Engine.h"
-#include "GameEngine/Time/Timer.h"
+#include "Engine.h"
+#include "Time/Timer.h"
 
-#include "GameEngine/DebugDrawer/DebugDrawer.h"
-#include "GameEngine/Intersections/Intersection3D.hpp"
+#include "DebugDrawer/DebugDrawer.h"
+#include "Math/Intersection3D.hpp"
 
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
 
 NavMeshAgent::NavMeshAgent(NavMesh* aNavMesh, float aMovementSpeed)
 {
@@ -53,7 +53,7 @@ float NavMeshAgent::GetMovementSpeed() const
     return myMovementSpeed;
 }
 
-void NavMeshAgent::MoveToLocation(CU::Vector3f aPosition)
+void NavMeshAgent::MoveToLocation(Math::Vector3f aPosition)
 {
     if (!myNavMesh)
     {
@@ -81,7 +81,7 @@ bool NavMeshAgent::MoveToNextPathPoint()
 {
     auto transform = gameObject->GetComponent<Transform>();
 
-    CU::Vector3f position = transform->GetTranslation();
+    Math::Vector3f position = transform->GetTranslation();
     float distanceToNextVertex = (myPath[myCurrentGoalPoint] - position).LengthSqr();
 
     if (distanceToNextVertex < myGoalTolerance)
@@ -95,8 +95,8 @@ bool NavMeshAgent::MoveToNextPathPoint()
         }
     }
 
-    CU::Vector3f direction = (myPath[myCurrentGoalPoint] - position).GetNormalized();
-    CU::Vector3f moveDelta = direction * myMovementSpeed * Engine::Get().GetTimer().GetDeltaTime();
+    Math::Vector3f direction = (myPath[myCurrentGoalPoint] - position).GetNormalized();
+    Math::Vector3f moveDelta = direction * myMovementSpeed * Engine::Get().GetTimer().GetDeltaTime();
     transform->SetTranslation(transform->GetTranslation() + moveDelta);
 
     RotateTowardsVelocity(direction);
@@ -104,12 +104,12 @@ bool NavMeshAgent::MoveToNextPathPoint()
     return true;
 }
 
-void NavMeshAgent::RotateTowardsVelocity(CU::Vector3f aDirection)
+void NavMeshAgent::RotateTowardsVelocity(Math::Vector3f aDirection)
 {
     myCurrentRotationTime += Engine::Get().GetTimer().GetDeltaTime();
     float t = myCurrentRotationTime / myMaxRotationTime;
 
-    CU::Quatf slerpedRotation = CU::Quatf::Slerp(myStartRotation, myGoalRotation, t);
+    Math::Quatf slerpedRotation = Math::Quatf::Slerp(myStartRotation, myGoalRotation, t);
     gameObject->GetComponent<Transform>()->SetRotation(slerpedRotation.GetEulerAnglesDegrees());
 
     if (t >= 0.99f)
@@ -118,7 +118,7 @@ void NavMeshAgent::RotateTowardsVelocity(CU::Vector3f aDirection)
         myMaxRotationTime = 1 / myRotationSpeed;
 
         myStartRotation = myGoalRotation;
-        myGoalRotation = CU::Quatf(CU::Vector3f(0, atan2(aDirection.x, aDirection.z), 0));
+        myGoalRotation = Math::Quatf(Math::Vector3f(0, atan2(aDirection.x, aDirection.z), 0));
     }
 }
 
@@ -129,7 +129,7 @@ void NavMeshAgent::CreateDebugPath()
 
     for (int i = 0; i < static_cast<int>(myPath.GetSize()) - 1; i++)
     {
-        CU::Vector3f offset = { 0, 15.0f, 0 };
+        Math::Vector3f offset = { 0, 15.0f, 0 };
         DebugLine pathLine;
         pathLine.Color = { 1.0f, 0.0f, 0.0f, 1.0f };
         pathLine.From = myPath[i] + offset;

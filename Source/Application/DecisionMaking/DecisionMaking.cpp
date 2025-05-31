@@ -31,7 +31,7 @@ void DecisionMaking::InitializeApplication()
 		for (int y = -2; y < 3; y++)
 		{
 			std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
-			auto transform = go->AddComponent<Transform>(CU::Vector3f(500.0f * x, 0, 500.0f * y));
+			auto transform = go->AddComponent<Transform>(Math::Vector3f(500.0f * x, 0, 500.0f * y));
 			transform->SetUniformScale(100.0f);
 			auto model = go->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("SM_Sphere.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("MAT_MatballOne.json")->material);
 
@@ -43,7 +43,7 @@ void DecisionMaking::InitializeApplication()
 	{
 		std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
 		go->SetName("SMCont");
-		go->AddComponent<Transform>(CU::Vector3f(300.0f, 0, -500.0f));
+		go->AddComponent<Transform>(Math::Vector3f(300.0f, 0, -500.0f));
 		auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorGreen.json")->material);
 		model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
 		go->AddComponent<HealthComponent>();
@@ -54,14 +54,14 @@ void DecisionMaking::InitializeApplication()
 			psSettings.EmitterSize = { 100.0f, 100.0f, 100.0f };
 			psSettings.Lifetime = 1.0f;
 			psSettings.SpawnRate = 100.0f;
-			CU::Curve<CU::Vector2f> sizeCurve;
+			Math::Curve<Math::Vector2f> sizeCurve;
 			sizeCurve.AddKey(0.0f, { 1.0f, 1.0f });
 			sizeCurve.AddKey(1.0f, { 80.0f, 80.0f });
 			psSettings.Size = sizeCurve;
 			psSettings.VelocityRangeMin = { -50.0, 100.0, -50.0 };
 			psSettings.VelocityRangeMax = { 50.0, 300.0, 50.0 };
 			psSettings.GravityScale = 10.0f;
-			CU::Curve<CU::Vector4f> colorCurve;
+			Math::Curve<Math::Vector4f> colorCurve;
 			colorCurve.AddKey(0.0f, { 1.0, 1.0, 1.0, 0.0 });
 			colorCurve.AddKey(0.5f, { 1.0, 1.0, 1.0, 0.75 });
 			colorCurve.AddKey(1.0f, { 1.0, 1.0, 1.0, 0.0 });
@@ -80,7 +80,7 @@ void DecisionMaking::InitializeApplication()
 	{
 		std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
 		go->SetName("DTCont");
-		go->AddComponent<Transform>(CU::Vector3f(-200.0f, 0, 500.0f), CU::Vector3f(0, 180.0f, 0));
+		go->AddComponent<Transform>(Math::Vector3f(-200.0f, 0, 500.0f), Math::Vector3f(0, 180.0f, 0));
 		auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorGreen.json")->material);
 		model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
 		go->AddComponent<HealthComponent>();
@@ -91,14 +91,14 @@ void DecisionMaking::InitializeApplication()
 			psSettings.EmitterSize = { 100.0f, 100.0f, 100.0f };
 			psSettings.Lifetime = 1.0f;
 			psSettings.SpawnRate = 100.0f;
-			CU::Curve<CU::Vector2f> sizeCurve;
+			Math::Curve<Math::Vector2f> sizeCurve;
 			sizeCurve.AddKey(0.0f, { 1.0f, 1.0f });
 			sizeCurve.AddKey(1.0f, { 80.0f, 80.0f });
 			psSettings.Size = sizeCurve;
 			psSettings.VelocityRangeMin = { -50.0, 100.0, -50.0 };
 			psSettings.VelocityRangeMax = { 50.0, 300.0, 50.0 };
 			psSettings.GravityScale = 10.0f;
-			CU::Curve<CU::Vector4f> colorCurve;
+			Math::Curve<Math::Vector4f> colorCurve;
 			colorCurve.AddKey(0.0f, { 1.0, 1.0, 1.0, 0.0 });
 			colorCurve.AddKey(0.5f, { 1.0, 1.0, 1.0, 0.75 });
 			colorCurve.AddKey(1.0f, { 1.0, 1.0, 1.0, 0.0 });
@@ -117,7 +117,7 @@ void DecisionMaking::InitializeApplication()
 	{
 		std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
 		go->SetName("BTCont");
-		go->AddComponent<Transform>(CU::Vector3f(400.0f, 0, 300.0f), CU::Vector3f(0, -90.0f, 0));
+		go->AddComponent<Transform>(Math::Vector3f(400.0f, 0, 300.0f), Math::Vector3f(0, -90.0f, 0));
 		auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorGreen.json")->material);
 		model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
 		go->AddComponent<HealthComponent>();
@@ -128,14 +128,14 @@ void DecisionMaking::InitializeApplication()
 			psSettings.EmitterSize = { 100.0f, 100.0f, 100.0f };
 			psSettings.Lifetime = 1.0f;
 			psSettings.SpawnRate = 100.0f;
-			CU::Curve<CU::Vector2f> sizeCurve;
+			Math::Curve<Math::Vector2f> sizeCurve;
 			sizeCurve.AddKey(0.0f, { 1.0f, 1.0f });
 			sizeCurve.AddKey(1.0f, { 80.0f, 80.0f });
 			psSettings.Size = sizeCurve;
 			psSettings.VelocityRangeMin = { -50.0, 100.0, -50.0 };
 			psSettings.VelocityRangeMax = { 50.0, 300.0, 50.0 };
 			psSettings.GravityScale = 10.0f;
-			CU::Curve<CU::Vector4f> colorCurve;
+			Math::Curve<Math::Vector4f> colorCurve;
 			colorCurve.AddKey(0.0f, { 1.0, 1.0, 1.0, 0.0 });
 			colorCurve.AddKey(0.5f, { 1.0, 1.0, 1.0, 0.75 });
 			colorCurve.AddKey(1.0f, { 1.0, 1.0, 1.0, 0.0 });
@@ -161,7 +161,7 @@ void DecisionMaking::InitializeApplication()
 	{
 		std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
 		go->SetName("HWell");
-		auto transform = go->AddComponent<Transform>(CU::Vector3f(-800.0f, 0, 0.0f));
+		auto transform = go->AddComponent<Transform>(Math::Vector3f(-800.0f, 0, 0.0f));
 		transform->SetRotation(0, 90.0f, 0);
 		go->AddComponent<Model>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SM_Chest.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_Chest.json")->material);
 

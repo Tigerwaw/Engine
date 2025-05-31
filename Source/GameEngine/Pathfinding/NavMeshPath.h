@@ -1,19 +1,19 @@
 #pragma once
 #include <vector>
-#include "GameEngine/Math/Vector.hpp"
-namespace CU = CommonUtilities;
+#include "Math/Vector.hpp"
+
 
 class NavMeshPath
 {
 public:
 	NavMeshPath() = default;
-	NavMeshPath(std::vector<CU::Vector3f>&& aPath);
+	NavMeshPath(std::vector<Math::Vector3f>&& aPath);
 
 	const int GetSize() const;
 	const bool Empty() const;
 
-	CU::Vector3f operator[](int aPoint) const;
-	const CU::Vector3f& operator[](int aPoint);
+	Math::Vector3f operator[](int aPoint) const;
+	const Math::Vector3f& operator[](int aPoint);
 private:
-	std::vector<CU::Vector3f> myPath;
+	std::vector<Math::Vector3f> myPath;
 };

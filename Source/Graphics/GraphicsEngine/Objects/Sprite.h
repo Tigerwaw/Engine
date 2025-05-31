@@ -1,7 +1,7 @@
 #pragma once
-#include "GameEngine\Math\Vector.hpp"
-#include "GameEngine\Math\Matrix.hpp"
-namespace CU = CommonUtilities;
+#include "Math/Vector.hpp"
+#include "Math/Matrix.hpp"
+
 
 class Texture;
 class Material;
@@ -9,7 +9,7 @@ class Material;
 class Sprite
 {
 public:
-    Sprite(CU::Vector2f aPosition = CU::Vector2f(), CU::Vector2f aSize = CU::Vector2f(1.0f, 1.0f));
+    Sprite(Math::Vector2f aPosition = Math::Vector2f(), Math::Vector2f aSize = Math::Vector2f(1.0f, 1.0f));
     ~Sprite();
 
     // Allows a sprite to be rendered with a custom PSO, texture does not need to be set.
@@ -17,15 +17,15 @@ public:
 
     // Set just a texture and render like a regular sprite.
     void SetTexture(std::shared_ptr<Texture> aTexture);
-    void SetPosition(CU::Vector2f aPosition);
-    void SetSize(CU::Vector2f aSize);
+    void SetPosition(Math::Vector2f aPosition);
+    void SetSize(Math::Vector2f aSize);
 
     std::shared_ptr<Material> GetMaterial() const { return myMaterial; }
     std::shared_ptr<Texture> GetTexture() const { return myTexture; }
-    const CU::Matrix4x4f GetMatrix() const { return myMatrix; }
+    const Math::Matrix4x4f GetMatrix() const { return myMatrix; }
 private:
     std::shared_ptr<Material> myMaterial;
     std::shared_ptr<Texture> myTexture;
 
-    CU::Matrix4x4f myMatrix;
+    Math::Matrix4x4f myMatrix;
 };

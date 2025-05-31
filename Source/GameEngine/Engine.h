@@ -1,7 +1,7 @@
 #pragma once
 #include "Math/Vector.hpp"
 
-namespace CU = CommonUtilities;
+
 
 class GlobalEventHandler;
 class SceneHandler;
@@ -42,9 +42,9 @@ public:
     void SetWindowSize(float aWidth, float aHeight);
     void SetWindowPos(float aTop, float aLeft);
     void ToggleFullscreen(bool aIsFullscreen);
-    CU::Vector2f GetResolution() const { return myResolution; }
-    CU::Vector2f GetWindowSize() const { return myWindowSize; }
-    CU::Vector2f GetWindowPos() const { return myWindowPos; }
+    Math::Vector2f GetResolution() const { return myResolution; }
+    Math::Vector2f GetWindowSize() const { return myWindowSize; }
+    Math::Vector2f GetWindowPos() const { return myWindowPos; }
     bool GetIsFullscreen() const { return myIsFullscreen; }
     bool GetIsBorderless() const { return myIsBorderless; }
     bool GetAllowDropFiles() const { return myAllowDropFiles; }
@@ -67,9 +67,9 @@ private:
 
     std::string myTitle;
     std::filesystem::path myContentRoot;
-    CU::Vector2f myResolution;
-    CU::Vector2f myWindowSize;
-    CU::Vector2f myWindowPos;
+    Math::Vector2f myResolution;
+    Math::Vector2f myWindowSize;
+    Math::Vector2f myWindowPos;
     bool myIsFullscreen = true;
     bool myIsBorderless = true;
     bool myAllowDropFiles = false;

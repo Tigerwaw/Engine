@@ -12,11 +12,11 @@ ControllerBase::SteeringOutput Cohesion::GetSteering(const SteeringInput& aSteer
     SteeringOutput output;
 
     auto otherActors = PollingStation::Get().GetOtherActorPositions();
-    CU::Vector3f averagePos;
+    Math::Vector3f averagePos;
     float nearbyCount = 0;
     for (auto& actorPos : otherActors)
     {
-        CU::Vector3f diff = actorPos - aSteeringInput.position;
+        Math::Vector3f diff = actorPos - aSteeringInput.position;
         if (diff.LengthSqr() > myNeighbourhoodRadius * myNeighbourhoodRadius) continue;
 
         averagePos += actorPos;

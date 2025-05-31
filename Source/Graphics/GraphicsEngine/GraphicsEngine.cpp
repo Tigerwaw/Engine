@@ -3,29 +3,29 @@
 
 #include "ShaderReflection/ShaderInfo.h"
 
-#include "GameEngine/Engine.h"
-#include "GraphicsEngine/Objects/Shader.h"
-#include "GraphicsEngine/Objects/Vertices/Vertex.h"
-#include "GraphicsEngine/Objects/Vertices/DebugLineVertex.h"
-#include "GraphicsEngine/Objects/Mesh.h"
-#include "GraphicsEngine/Objects/Text/Text.h"
-#include "GraphicsEngine/Objects/Sprite.h"
-#include "GraphicsEngine/Objects/Material.h"
-#include "GraphicsEngine/Objects/Texture.h"
-#include "GraphicsEngine/Objects/ParticleSystem/ParticleEmitter.h"
-#include "GraphicsEngine/Objects/ParticleSystem/TrailEmitter.h"
-#include "GraphicsEngine/Objects/ConstantBuffers/FrameBuffer.h"
-#include "GraphicsEngine/Objects/ConstantBuffers/ObjectBuffer.h"
-#include "GraphicsEngine/Objects/ConstantBuffers/AnimationBuffer.h"
-#include "GraphicsEngine/Objects/ConstantBuffers/MaterialBuffer.h"
-#include "GraphicsEngine/Objects/ConstantBuffers/LightBuffer.h"
-#include "GraphicsEngine/Objects/ConstantBuffers/ShadowBuffer.h"
-#include "GraphicsEngine/Objects/ConstantBuffers/SpriteBuffer.h"
-#include "GraphicsEngine/Objects/ConstantBuffers/PostProcessBuffer.h"
+#include "Engine.h"
+#include "Objects/Shader.h"
+#include "Objects/Vertices/Vertex.h"
+#include "Objects/Vertices/DebugLineVertex.h"
+#include "Objects/Mesh.h"
+#include "Objects/Text/Text.h"
+#include "Objects/Sprite.h"
+#include "Objects/Material.h"
+#include "Objects/Texture.h"
+#include "Objects/ParticleSystem/ParticleEmitter.h"
+#include "Objects/ParticleSystem/TrailEmitter.h"
+#include "Objects/ConstantBuffers/FrameBuffer.h"
+#include "Objects/ConstantBuffers/ObjectBuffer.h"
+#include "Objects/ConstantBuffers/AnimationBuffer.h"
+#include "Objects/ConstantBuffers/MaterialBuffer.h"
+#include "Objects/ConstantBuffers/LightBuffer.h"
+#include "Objects/ConstantBuffers/ShadowBuffer.h"
+#include "Objects/ConstantBuffers/SpriteBuffer.h"
+#include "Objects/ConstantBuffers/PostProcessBuffer.h"
 
-#include "GraphicsEngine/Objects/DynamicVertexBuffer.h"
+#include "Objects/DynamicVertexBuffer.h"
 #include "Objects/GBuffer.h"
-#include "AssetManager/AssetManager.h"
+#include "AssetManager.h"
 
 bool GraphicsEngine::Initialize(HWND aWindowHandle)
 {
@@ -85,7 +85,7 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	
 	myCommandList = std::make_unique<GraphicsCommandList>();
 	myGBuffer = std::make_unique<GBuffer>();
-	CU::Vector2f resolution = Engine::Get().GetResolution();
+	Math::Vector2f resolution = Engine::Get().GetResolution();
 	myGBuffer->CreateGBuffer(static_cast<unsigned>(resolution.x), static_cast<unsigned>(resolution.y));
 
 	CreateRandomKernel(64);
@@ -425,7 +425,7 @@ void GraphicsEngine::RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount,
 	buffers.emplace_back(*aInstanceBuffer.GetVertexBuffer().GetAddressOf());
 
 	strides.emplace_back(myCurrentPSO->VertexStride);
-	strides.emplace_back(static_cast<unsigned>(sizeof(CU::Matrix4x4f)));
+	strides.emplace_back(static_cast<unsigned>(sizeof(Math::Matrix4x4f)));
 
 	offsets.emplace_back(0);
 	offsets.emplace_back(0);
@@ -598,7 +598,7 @@ void GraphicsEngine::CreateRandomKernel(unsigned aKernelSize)
 
 	for (unsigned i = 0; i < aKernelSize; ++i)
 	{
-		CU::Vector4f v = {
+		Math::Vector4f v = {
 		randomValues(rng) * 2.0f - 1.0f,
 		randomValues(rng) * 2.0f - 1.0f,
 		randomValues(rng),

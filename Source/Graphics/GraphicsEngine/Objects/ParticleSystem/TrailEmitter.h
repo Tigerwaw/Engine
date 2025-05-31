@@ -11,7 +11,7 @@ class TrailEmitter
 public:
 	TrailEmitter();
 	virtual ~TrailEmitter();
-	void Update(CU::Vector3f aFollowTarget, float aDeltaTime);
+	void Update(Math::Vector3f aFollowTarget, float aDeltaTime);
 
 	void SetMaterial(std::shared_ptr<Material> aMaterial) { myMaterial = aMaterial; }
 	std::shared_ptr<Material> GetMaterial() { return myMaterial; }
@@ -28,7 +28,7 @@ private:
 	DynamicVertexBuffer myVertexBuffer;
 	std::shared_ptr<Material> myMaterial;
 	TrailEmitterSettings mySettings;
-	std::vector<CU::Vector3f> myPreviousPositions;
+	std::vector<Math::Vector3f> myPreviousPositions;
 	unsigned myCurrentLength = 0;
 };
 

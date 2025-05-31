@@ -1,16 +1,16 @@
 #include "Enginepch.h"
 #include "Navigation.h"
-#include <GameEngine/Application/AppSettings.h>
-#include <GameEngine/Engine.h>
-#include "GameEngine/Pathfinding/NavMesh.h"
-#include "GameEngine/Pathfinding/Components/NavMeshAgent.h"
+#include <Application/AppSettings.h>
+#include <Engine.h>
+#include <Pathfinding/NavMesh.h>
+#include <Pathfinding/Components/NavMeshAgent.h>
 
-#include "GameEngine/SceneHandler/SceneHandler.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/Camera.h"
-#include "GameEngine/ComponentSystem/Components/Physics/Colliders/BoxCollider.h"
-#include "Intersections/Intersection3D.hpp"
+#include <SceneHandler/SceneHandler.h>
+#include <ComponentSystem/GameObject.h>
+#include <ComponentSystem/Components/Transform.h>
+#include <ComponentSystem/Components/Graphics/Camera.h>
+#include <ComponentSystem/Components/Physics/Colliders/BoxCollider.h>
+#include <Math/Intersection3D.hpp>
 #include "WalkToPoint.h"
 
 Application* CreateApplication()
@@ -53,29 +53,29 @@ void Navigation::UpdateApplication()
 
 void Navigation::CastRay()
 {
-	CU::Vector2f mousePosNDC = Engine::Get().GetInputHandler().GetAnalogAction2D("MousePosNDC");
+	Math::Vector2f mousePosNDC = Engine::Get().GetInputHandler().GetAnalogAction2D("MousePosNDC");
 
 	auto cam = Engine::Get().GetSceneHandler().FindGameObjectByName("MainCamera")->GetComponent<Camera>();
-	CU::Matrix4x4f invProj = cam->GetProjectionMatrix().GetInverse();
-	CU::Vector4f eyeCoords = CU::Vector4f{ mousePosNDC.x, mousePosNDC.y, 0.0f, 1.0f } *invProj;
+	Math::Matrix4x4f invProj = cam->GetProjectionMatrix().GetInverse();
+	Math::Vector4f eyeCoords = Math::Vector4f{ mousePosNDC.x, mousePosNDC.y, 0.0f, 1.0f } *invProj;
 
 	eyeCoords /= eyeCoords.w;
 
 	auto camTransform = cam->gameObject->GetComponent<Transform>();
-	CU::Matrix4x4f camView = camTransform->GetWorldMatrix();
-	CU::Vector4f rayWorld = eyeCoords * camView;
+	Math::Matrix4x4f camView = camTransform->GetWorldMatrix();
+	Math::Vector4f rayWorld = eyeCoords * camView;
 
-	CU::Vector3f mousePosWorld = { rayWorld.x, rayWorld.y, rayWorld.z };
+	Math::Vector3f mousePosWorld = { rayWorld.x, rayWorld.y, rayWorld.z };
 
-	const CU::Vector3f cameraPos = camTransform->GetTranslation(true);
-	const CU::Vector3f direction = mousePosWorld - cameraPos;
+	const Math::Vector3f cameraPos = camTransform->GetTranslation(true);
+	const Math::Vector3f direction = mousePosWorld - cameraPos;
 
-	CU::Ray<float> mouseRay(cameraPos, direction.GetNormalized());
+	Math::Ray<float> mouseRay(cameraPos, direction.GetNormalized());
 
 	if (auto collider = Engine::Get().GetSceneHandler().FindGameObjectByName("Plane")->GetComponent<BoxCollider>())
 	{
-		CU::Vector3f hitPoint;
-		bool hit = CU::IntersectionAABBRay(collider->GetAABB(), mouseRay, hitPoint);
+		Math::Vector3f hitPoint;
+		bool hit = Math::IntersectionAABBRay(collider->GetAABB(), mouseRay, hitPoint);
 
 		if (hit)
 		{

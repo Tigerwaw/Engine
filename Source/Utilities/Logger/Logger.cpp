@@ -189,6 +189,7 @@ void Logger::Log(const LogCategoryBase& aCategory, LogVerbosity::Type aVerbosity
 		entry.Verbosity = aVerbosity;
 		entry.Message = aMessage;
 
+		std::lock_guard<std::mutex> logLock(Get().myLogMutex);
 		Get().myLogQueue.emplace(std::move(entry));
 	}
 }

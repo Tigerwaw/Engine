@@ -1,7 +1,7 @@
 #pragma once
 #include "GenericInput.h"
 #include "Math/Vector.hpp"
-namespace CU = CommonUtilities;
+
 #include "EnumKeys.h"
 
 typedef unsigned UINT;
@@ -17,7 +17,7 @@ public:
 
 	const bool GetBinary(const GenericInput::ActionType aActionType, const unsigned aKeyCode) const override;
 	const float GetAnalog(const unsigned aKeyCode) const override;
-	const CU::Vector2f GetAnalog2D(const unsigned aKeyCode) const override;
+	const Math::Vector2f GetAnalog2D(const unsigned aKeyCode) const override;
 private:
 	std::array<bool, static_cast<int>(Keys::COUNT)> myCurrentBinaryState;
 	std::array<bool, static_cast<int>(Keys::COUNT)> myPreviousBinaryState;

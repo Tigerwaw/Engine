@@ -2,11 +2,11 @@
 #include "TrailSystem.h"
 #include <d3d11.h>
 
-#include "GameEngine/Engine.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "GameEngine/Time/Timer.h"
-#include "GameEngine/Utility/SerializationUtils.hpp"
+#include "Engine.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
+#include "Time/Timer.h"
+#include "CommonUtilities/SerializationUtils.hpp"
 
 TrailSystem::~TrailSystem()
 {
@@ -68,13 +68,13 @@ bool TrailSystem::Deserialize(nl::json& aJsonObject)
 			{
 				for (auto& key : emitter["Color"])
 				{
-					teSettings.Color.AddKey(key["Time"].get<float>(), Utility::DeserializeVector4<float>(key["Value"]));
+					teSettings.Color.AddKey(key["Time"].get<float>(), Utilities::DeserializeVector4<float>(key["Value"]));
 				}
 			}
 
 			if (emitter.contains("ChannelMask"))
 			{
-				teSettings.ChannelMask = Utility::DeserializeVector4<float>(emitter["ChannelMask"]);
+				teSettings.ChannelMask = Utilities::DeserializeVector4<float>(emitter["ChannelMask"]);
 			}
 
 			TrailEmitter& te = AddEmitter(teSettings);

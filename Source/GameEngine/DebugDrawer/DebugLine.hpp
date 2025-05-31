@@ -1,10 +1,10 @@
 #pragma once
-#include "GameEngine/Math/Vector.hpp"
-namespace CU = CommonUtilities;
+#include "Math/Vector.hpp"
+
 
 struct DebugLine
 {
-	CU::Vector3f From;
-	CU::Vector3f To;
-	CU::Vector4f Color;
+	Math::Vector3f From;
+	Math::Vector3f To;
+	Math::Vector4f Color;
 };

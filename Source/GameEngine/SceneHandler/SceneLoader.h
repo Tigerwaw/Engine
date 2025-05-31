@@ -1,6 +1,6 @@
 #pragma once
-#include "GameEngine/Math/Vector.hpp"
-namespace CU = CommonUtilities;
+#include "Math/Vector.hpp"
+
 
 class Scene;
 class GameObject;

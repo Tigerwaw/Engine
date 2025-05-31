@@ -1,12 +1,12 @@
 #include "GraphicsEngine.pch.h"
 #include "RenderSpritesheet.h"
 
-#include "GraphicsEngine/GraphicsEngine.h"
-#include "GraphicsEngine/Objects/ConstantBuffers/SpriteBuffer.h"
-#include "GraphicsEngine/Objects/Spritesheet.h"
-#include "GraphicsEngine/Objects/Texture.h"
-#include "GraphicsEngine/Objects/Material.h"
-#include "AssetManager/AssetManager.h"
+#include "GraphicsEngine.h"
+#include "Objects/ConstantBuffers/SpriteBuffer.h"
+#include "Objects/Spritesheet.h"
+#include "Objects/Texture.h"
+#include "Objects/Material.h"
+#include "AssetManager.h"
 
 RenderSpritesheet::RenderSpritesheet(std::shared_ptr<Spritesheet> aSpritesheet)
 {

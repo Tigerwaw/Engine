@@ -2,7 +2,7 @@
 
 #include "ComponentSystem/GameObject.h"
 #include "Engine.h"
-#include "GameEngine/Time/Timer.h"
+#include "Time/Timer.h"
 
 GameObject::GameObject()
 {

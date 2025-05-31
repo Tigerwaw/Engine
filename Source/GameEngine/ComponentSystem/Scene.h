@@ -1,6 +1,6 @@
 #pragma once
-#include "GameEngine/Intersections/AABB3D.hpp"
-namespace CU = CommonUtilities;
+#include "Math/AABB3D.hpp"
+
 
 class GameObject;
 class Camera;
@@ -41,7 +41,7 @@ private:
 	std::vector<std::shared_ptr<GameObject>> myGameObjectsToDestroy;
 	unsigned myActiveGameObjectAmount = 0;
 	bool myIsActive = false;
-	CU::AABB3D<float> myBoundingBox;
+	Math::AABB3D<float> myBoundingBox;
 
 	unsigned myCurrentGameObjectID = 0;
 

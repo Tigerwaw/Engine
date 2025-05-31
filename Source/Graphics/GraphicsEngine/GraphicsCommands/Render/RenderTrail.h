@@ -1,7 +1,7 @@
 #pragma once
-#include "Graphics/GraphicsEngine/GraphicsCommands/GraphicsCommandBase.h"
-#include "GameEngine/Math/Matrix4x4.hpp"
-namespace CU = CommonUtilities;
+#include "GraphicsCommands/GraphicsCommandBase.h"
+#include "Math/Matrix4x4.hpp"
+
 
 class TrailSystem;
 
@@ -13,6 +13,6 @@ public:
 	void Destroy() override;
 private:
 	std::shared_ptr<TrailSystem> trailSystem;
-	CU::Matrix4x4f transform;
+	Math::Matrix4x4f transform;
 };
 

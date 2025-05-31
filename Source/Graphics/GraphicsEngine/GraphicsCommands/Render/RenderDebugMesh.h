@@ -1,8 +1,8 @@
 #pragma once
-#include "Graphics/GraphicsEngine/GraphicsCommands/GraphicsCommandBase.h"
-#include "GameEngine/Math/Matrix4x4.hpp"
+#include "GraphicsCommands/GraphicsCommandBase.h"
+#include "Math/Matrix4x4.hpp"
 
-namespace CU = CommonUtilities;
+
 
 class Mesh;
 class Material;
@@ -16,6 +16,6 @@ public:
 	void Destroy() override;
 private:
 	std::shared_ptr<Mesh> mesh;
-	CU::Matrix4x4f transform;
+	Math::Matrix4x4f transform;
 	std::vector<std::shared_ptr<Material>> materialList;
 };

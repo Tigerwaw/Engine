@@ -1,11 +1,11 @@
 #include "Enginepch.h"
 
 #include "SpotLight.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/Math/MathConstants.hpp"
-#include "GameEngine/Utility/SerializationUtils.hpp"
+#include "ComponentSystem/GameObject.h"
+#include "Math/MathConstants.hpp"
+#include "CommonUtilities/SerializationUtils.hpp"
 
-SpotLight::SpotLight(float aConeAngle, float aIntensity, CU::Vector3f aColor) : LightSource(aIntensity, aColor)
+SpotLight::SpotLight(float aConeAngle, float aIntensity, Math::Vector3f aColor) : LightSource(aIntensity, aColor)
 {
     SetConeAngle(aConeAngle);
 }
@@ -13,7 +13,7 @@ SpotLight::SpotLight(float aConeAngle, float aIntensity, CU::Vector3f aColor) : 
 void SpotLight::SetConeAngle(float aConeAngle)
 {
     myConeAngleDegrees = aConeAngle;
-    myConeAngleRadians = aConeAngle * CU::DEGREES_TO_RADIANS;
+    myConeAngleRadians = aConeAngle * Math::DEGREES_TO_RADIANS;
 }
 
 bool SpotLight::Serialize(nl::json& outJsonObject)
@@ -31,7 +31,7 @@ bool SpotLight::Deserialize(nl::json& aJsonObject)
 
     if (aJsonObject.contains("Color"))
     {
-        SetColor(Utility::DeserializeVector3<float>(aJsonObject["Color"]));
+        SetColor(Utilities::DeserializeVector3<float>(aJsonObject["Color"]));
     }
 
     if (aJsonObject.contains("ConeAngle"))

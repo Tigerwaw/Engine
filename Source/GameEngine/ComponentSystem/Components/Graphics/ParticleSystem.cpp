@@ -2,9 +2,9 @@
 #include "ParticleSystem.h"
 #include <d3d11.h>
 
-#include "GameEngine/Engine.h"
-#include "GameEngine/Time/Timer.h"
-#include "GameEngine/Utility/SerializationUtils.hpp"
+#include "Engine.h"
+#include "Time/Timer.h"
+#include "CommonUtilities/SerializationUtils.hpp"
 
 ParticleSystem::~ParticleSystem()
 {
@@ -49,7 +49,7 @@ bool ParticleSystem::Deserialize(nl::json& aJsonObject)
 
 			if (emitter.contains("EmitterSize"))
 			{
-				peSettings.EmitterSize = Utility::DeserializeVector3<float>(emitter["EmitterSize"]);
+				peSettings.EmitterSize = Utilities::DeserializeVector3<float>(emitter["EmitterSize"]);
 			}
 
 			if (emitter.contains("SpawnRate"))
@@ -66,7 +66,7 @@ bool ParticleSystem::Deserialize(nl::json& aJsonObject)
 			{
 				for (auto& key : emitter["Size"])
 				{
-					peSettings.Size.AddKey(key["Time"].get<float>(), Utility::DeserializeVector2<float>(key["Value"]));
+					peSettings.Size.AddKey(key["Time"].get<float>(), Utilities::DeserializeVector2<float>(key["Value"]));
 				}
 			}
 
@@ -83,12 +83,12 @@ bool ParticleSystem::Deserialize(nl::json& aJsonObject)
 				if (emitter["Velocity"].contains("Min") && emitter["Velocity"].contains("Max"))
 				{
 					peSettings.RandomVelocity = true;
-					peSettings.VelocityRangeMin = Utility::DeserializeVector3<float>(emitter["Velocity"]["Min"]);
-					peSettings.VelocityRangeMax = Utility::DeserializeVector3<float>(emitter["Velocity"]["Max"]);
+					peSettings.VelocityRangeMin = Utilities::DeserializeVector3<float>(emitter["Velocity"]["Min"]);
+					peSettings.VelocityRangeMax = Utilities::DeserializeVector3<float>(emitter["Velocity"]["Max"]);
 				}
 				else
 				{
-					peSettings.Velocity = Utility::DeserializeVector3<float>(emitter["Velocity"]);
+					peSettings.Velocity = Utilities::DeserializeVector3<float>(emitter["Velocity"]);
 				}
 			}
 
@@ -101,13 +101,13 @@ bool ParticleSystem::Deserialize(nl::json& aJsonObject)
 			{
 				for (auto& key : emitter["Color"])
 				{
-					peSettings.Color.AddKey(key["Time"].get<float>(), Utility::DeserializeVector4<float>(key["Value"]));
+					peSettings.Color.AddKey(key["Time"].get<float>(), Utilities::DeserializeVector4<float>(key["Value"]));
 				}
 			}
 
 			if (emitter.contains("ChannelMask"))
 			{
-				peSettings.ChannelMask = Utility::DeserializeVector4<float>(emitter["ChannelMask"]);
+				peSettings.ChannelMask = Utilities::DeserializeVector4<float>(emitter["ChannelMask"]);
 			}
 
 			ParticleEmitter& pe = AddEmitter(peSettings);

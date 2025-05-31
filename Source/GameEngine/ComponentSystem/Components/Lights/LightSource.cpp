@@ -1,12 +1,12 @@
 #include "Enginepch.h"
 
 #include "LightSource.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "Graphics/GraphicsEngine/GraphicsEngine.h"
-#include "Graphics/GraphicsEngine/Objects/Texture.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
+#include "GraphicsEngine.h"
+#include "Objects/Texture.h"
 
-LightSource::LightSource(float aIntensity, CU::Vector3f aColor)
+LightSource::LightSource(float aIntensity, Math::Vector3f aColor)
 {
     SetColor(aColor);
     SetIntensity(aIntensity);
@@ -32,7 +32,7 @@ void LightSource::EnableShadowCasting(unsigned aShadowMapWidth, unsigned aShadow
     myCastsShadows = GraphicsEngine::Get().CreateShadowMap(gameObject->GetName() + "_ShadowMap", aShadowMapWidth, aShadowMapHeight, *myShadowMap);
 }
 
-void LightSource::SetColor(CU::Vector3f aColor)
+void LightSource::SetColor(Math::Vector3f aColor)
 {
     myColor = aColor;
 }
@@ -42,12 +42,12 @@ void LightSource::SetIntensity(float aIntensity)
     myIntensity = aIntensity;
 }
 
-CU::Vector3f LightSource::GetDirection() const
+Math::Vector3f LightSource::GetDirection() const
 {
     return gameObject->GetComponent<Transform>()->GetForwardVector(true);
 }
 
-CU::Vector3f LightSource::GetPosition() const
+Math::Vector3f LightSource::GetPosition() const
 {
     return gameObject->GetComponent<Transform>()->GetTranslation(true);
 }

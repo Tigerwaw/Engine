@@ -31,7 +31,7 @@ void Controller::Update()
 	float deltaTime = Engine::Get().GetTimer().GetDeltaTime();
 	InputHandler& inputHandler = Engine::Get().GetInputHandler();
 
-	CU::Vector3f inputDelta;
+	Math::Vector3f inputDelta;
 
 	inputDelta += gameObject->GetComponent<Transform>()->GetRightVector() * inputHandler.GetAnalogAction("ObjectXMovement");
 	inputDelta += gameObject->GetComponent<Transform>()->GetForwardVector() * inputHandler.GetAnalogAction("ObjectZMovement");
@@ -42,7 +42,7 @@ void Controller::Update()
 	}
 
 
-	//CU::Vector3<float> rotationDelta;
+	//Math::Vector3<float> rotationDelta;
 	//rotationDelta.y = inputHandler.GetAnalogAction("ObjectYRotation");
 
 	//rotationDelta *= myRotSpeed * deltaTime;

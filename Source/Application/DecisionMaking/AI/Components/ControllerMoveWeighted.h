@@ -1,7 +1,6 @@
 #pragma once
 #include "GameEngine/ComponentSystem/Component.h"
 #include "Math/Vector.hpp"
-namespace CU = CommonUtilities;
 
 class ControllerBase;
 
@@ -29,10 +28,10 @@ public:
 	void Start() override;
 	void Update() override;
 
-	const CU::Vector3f& GetVelocity() const { return myVelocity; }
+	const Math::Vector3f& GetVelocity() const { return myVelocity; }
 
 protected:
-	CU::Vector3f myVelocity;
+	Math::Vector3f myVelocity;
 
 private:
 	std::unordered_map<ControllerType, ControllerBase*> mySteeringBehaviours;
@@ -45,6 +44,6 @@ private:
 	bool myOrientTowardsVelocity = true;
 	float myCurrentRotationTime = 0;
 	float myMaxRotationTime = 0.25f;
-	CU::Quatf myCurrentRot;
-	CU::Quatf myGoalRot;
+	Math::Quatf myCurrentRot;
+	Math::Quatf myGoalRot;
 };

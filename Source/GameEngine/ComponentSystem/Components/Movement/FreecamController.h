@@ -1,8 +1,8 @@
 #pragma once
-#include "GameEngine/ComponentSystem/Component.h"
+#include "ComponentSystem/Component.h"
 #include "Math/Vector.hpp"
 
-namespace CU = CommonUtilities;
+
 
 class FreecamController : public Component
 {
@@ -21,6 +21,6 @@ public:
 private:
 	float myMoveSpeed = 0;
 	float myMoveSpeedMultiplier = 1.0f;
-	CU::Vector2f myRotSpeed;
+	Math::Vector2f myRotSpeed;
 };
 

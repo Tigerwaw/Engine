@@ -1,10 +1,10 @@
 #pragma once
-#include "GameEngine/ComponentSystem/Component.h"
-#include "GameEngine/Intersections/AABB3D.hpp"
-#include "GameEngine/Math/Matrix4x4.hpp"
-namespace CU = CommonUtilities;
+#include "ComponentSystem/Component.h"
+#include "Math/AABB3D.hpp"
+#include "Math/Matrix4x4.hpp"
 
-#include "GameEngine/ComponentSystem/GameObjectEventType.h"
+
+#include "ComponentSystem/GameObjectEventType.h"
 
 // The reason why this class doesn't inherit from the Model class is that it creates problems with type-casting.
 // (Calling GetComponent<Model> would return a pointer to an instance of AnimatedModel, which may not be desired)
@@ -40,7 +40,7 @@ public:
         std::shared_ptr<AnimationState> currentState;
         std::shared_ptr<AnimationState> nextState;
         std::unordered_map<std::string, std::shared_ptr<AnimationState>> myAnimationStates;
-        std::array<CU::Matrix4x4f, 128> currentPose;
+        std::array<Math::Matrix4x4f, 128> currentPose;
         unsigned startJointID = 0;
         bool isBlending = false;
         float currentBlendTime = 0;
@@ -62,7 +62,7 @@ public:
     void SetMaterialOnSlot(unsigned aSlot, std::shared_ptr<Material> aMaterial);
     std::shared_ptr<Material> GetMaterialOnSlot(unsigned aSlot) { return myMaterials[mySlotToIndex[aSlot]]; }
     std::vector<std::shared_ptr<Material>> GetMaterials() { return myMaterials; }
-    const CU::AABB3D<float> GetBoundingBox() const;
+    const Math::AABB3D<float> GetBoundingBox() const;
 
     void PlayAnimation();
     void StopAnimation();
@@ -88,7 +88,7 @@ public:
     const bool IsLayerCurrentlyBlending(unsigned aLayerIndex = 0) const;
     const float GetCurrentBlendFactorOnLayer(unsigned aLayerIndex = 0) const;
 
-    std::array<CU::Matrix4x4f, 128> GetCurrentPose() { return myJointTransforms; }
+    std::array<Math::Matrix4x4f, 128> GetCurrentPose() { return myJointTransforms; }
 
     void SetViewcull(bool aShouldViewcull) { myShouldViewcull = aShouldViewcull; }
     const bool GetShouldViewcull() const { return myShouldViewcull; }
@@ -102,7 +102,7 @@ public:
 private:
     void UpdateAnimationLayer(AnimationLayer& aAnimationLayer);
     void UpdateAnimationState(AnimationState& aAnimationState);
-    void UpdateAnimation(AnimationLayer& aAnimLayer, unsigned aJointIdx, const CU::Matrix4x4f& aParentJointTransform, std::array<CU::Matrix4x4f, 128>& outTransforms);
+    void UpdateAnimation(AnimationLayer& aAnimLayer, unsigned aJointIdx, const Math::Matrix4x4f& aParentJointTransform, std::array<Math::Matrix4x4f, 128>& outTransforms);
     void UpdatePose(AnimationLayer& aAnimLayer);
     void BlendPoses(AnimationLayer& aAnimLayer, float aBlendFactor);
 
@@ -122,6 +122,6 @@ private:
     std::vector<AnimationLayer> myAnimationLayers;
     std::unordered_map<std::string, unsigned> myJointNameToLayerIndex;
 
-    std::array<CU::Matrix4x4f, 128> myJointTransforms;
+    std::array<Math::Matrix4x4f, 128> myJointTransforms;
 };
 

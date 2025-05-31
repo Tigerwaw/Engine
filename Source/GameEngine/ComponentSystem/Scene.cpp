@@ -1,25 +1,25 @@
 #include "Enginepch.h"
 
 #include "Scene.h"
-#include "GraphicsEngine/GraphicsEngine.h"
-#include "GraphicsEngine/Objects/Sprite.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/DebugModel.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/Camera.h"
-#include "GameEngine/ComponentSystem/Components/Lights/AmbientLight.h"
-#include "GameEngine/ComponentSystem/Components/Lights/DirectionalLight.h"
-#include "GameEngine/ComponentSystem/Components/Lights/PointLight.h"
-#include "GameEngine/ComponentSystem/Components/Lights/SpotLight.h"
+#include "GraphicsEngine.h"
+#include "Objects/Sprite.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
+#include "ComponentSystem/Components/Graphics/Model.h"
+#include "ComponentSystem/Components/Graphics/AnimatedModel.h"
+#include "ComponentSystem/Components/Graphics/DebugModel.h"
+#include "ComponentSystem/Components/Graphics/Camera.h"
+#include "ComponentSystem/Components/Lights/AmbientLight.h"
+#include "ComponentSystem/Components/Lights/DirectionalLight.h"
+#include "ComponentSystem/Components/Lights/PointLight.h"
+#include "ComponentSystem/Components/Lights/SpotLight.h"
 
-#include "GameEngine/Renderer/Renderer.h"
-#include "GameEngine/Engine.h"
-#include "GameEngine/DebugDrawer/DebugDrawer.h"
-#include "AssetManager/AssetManager.h"
+#include "Renderer/Renderer.h"
+#include "Engine.h"
+#include "DebugDrawer/DebugDrawer.h"
+#include "AssetManager.h"
 
-#include "GameEngine/Math/Vector.hpp"
+#include "Math/Vector.hpp"
 
 Scene::Scene()
 {
@@ -174,7 +174,7 @@ void Scene::Destroy(std::shared_ptr<GameObject> aGameObject)
 void Scene::SortGameObjects()
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(8), "Sort GameObjects in Scene");
-	CU::Vector3f camPos = myMainCamera->GetComponent<Transform>()->GetTranslation(true);
+	Math::Vector3f camPos = myMainCamera->GetComponent<Transform>()->GetTranslation(true);
 
 	std::stable_sort(myGameObjects.begin(), myGameObjects.end(), [this, camPos](const std::shared_ptr<GameObject> lhs, const std::shared_ptr<GameObject> rhs)
 		{
@@ -218,8 +218,8 @@ void Scene::SortGameObjects()
 				std::shared_ptr<Transform> transform2 = rhs->GetComponent<Transform>();
 				if (transform1 && transform2)
 				{
-					float distTo1 = CU::Vector3f(camPos - transform1->GetTranslation(true)).LengthSqr();
-					float distTo2 = CU::Vector3f(camPos - transform2->GetTranslation(true)).LengthSqr();
+					float distTo1 = Math::Vector3f(camPos - transform1->GetTranslation(true)).LengthSqr();
+					float distTo2 = Math::Vector3f(camPos - transform2->GetTranslation(true)).LengthSqr();
 
 					return distTo1 > distTo2;
 				}
@@ -230,8 +230,8 @@ void Scene::SortGameObjects()
 				std::shared_ptr<Transform> transform2 = rhs->GetComponent<Transform>();
 				if (transform1 && transform2)
 				{
-					float distTo1 = CU::Vector3f(camPos - transform1->GetTranslation(true)).LengthSqr();
-					float distTo2 = CU::Vector3f(camPos - transform2->GetTranslation(true)).LengthSqr();
+					float distTo1 = Math::Vector3f(camPos - transform1->GetTranslation(true)).LengthSqr();
+					float distTo2 = Math::Vector3f(camPos - transform2->GetTranslation(true)).LengthSqr();
 
 					return distTo1 < distTo2;
 				}
@@ -268,17 +268,17 @@ void Scene::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
 {
 	if (aGameObject->GetComponent<Transform>())
 	{
-		CU::Vector3f bbMin = myBoundingBox.GetMin();
-		CU::Vector3f bbMax = myBoundingBox.GetMax();
+		Math::Vector3f bbMin = myBoundingBox.GetMin();
+		Math::Vector3f bbMax = myBoundingBox.GetMax();
 		std::shared_ptr<Transform> objectTransform = aGameObject->GetComponent<Transform>();
 
 		if (aGameObject->GetComponent<Model>())
 		{
 			auto& corners = aGameObject->GetComponent<Model>()->GetBoundingBox().GetCorners();
 
-			for (CU::Vector3f corner : corners)
+			for (Math::Vector3f corner : corners)
 			{
-				corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * objectTransform->GetWorldMatrix());
+				corner = Math::ToVector3(Math::ToVector4(corner, 1.0f) * objectTransform->GetWorldMatrix());
 
 				bbMin.x = std::fminf(corner.x, bbMin.x);
 				bbMax.x = std::fmaxf(corner.x, bbMax.x);
@@ -291,9 +291,9 @@ void Scene::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
 		else if (aGameObject->GetComponent<AnimatedModel>())
 		{
 			auto& corners = aGameObject->GetComponent<AnimatedModel>()->GetBoundingBox().GetCorners();
-			for (CU::Vector3f corner : corners)
+			for (Math::Vector3f corner : corners)
 			{
-				corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * objectTransform->GetWorldMatrix());
+				corner = Math::ToVector3(Math::ToVector4(corner, 1.0f) * objectTransform->GetWorldMatrix());
 
 				bbMin.x = std::fminf(corner.x, bbMin.x);
 				bbMax.x = std::fmaxf(corner.x, bbMax.x);
@@ -305,7 +305,7 @@ void Scene::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
 		}
 		else
 		{
-			CU::Vector3f point = objectTransform->GetTranslation(true);
+			Math::Vector3f point = objectTransform->GetTranslation(true);
 
 			bbMin.x = std::fminf(point.x, bbMin.x);
 			bbMax.x = std::fmaxf(point.x, bbMax.x);

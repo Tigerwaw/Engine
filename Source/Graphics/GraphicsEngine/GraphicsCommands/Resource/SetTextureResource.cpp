@@ -1,7 +1,7 @@
 #include "GraphicsEngine.pch.h"
 #include "SetTextureResource.h"
 
-#include "GraphicsEngine/Objects/Texture.h"
+#include "Objects/Texture.h"
 
 SetTextureResource::SetTextureResource(unsigned aSlot, std::shared_ptr<Texture> aTexture)
 {

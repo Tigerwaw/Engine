@@ -24,7 +24,7 @@ void ModelViewer::InitializeApplication()
 	Engine::Get().GetSceneHandler().LoadScene("Scenes/SC_ModelViewerScene.json");
 	std::shared_ptr<GameObject> newGO = std::make_shared<GameObject>();
 	newGO->SetName("Model");
-	newGO->AddComponent<Transform>(CU::Vector3f(0, 0, 0), CU::Vector3f(0, -180.0f, 0));
+	newGO->AddComponent<Transform>(Math::Vector3f(0, 0, 0), Math::Vector3f(0, -180.0f, 0));
 	Engine::Get().GetSceneHandler().Instantiate(newGO);
 
 	std::shared_ptr<Transform> camTransform = Engine::Get().GetSceneHandler().FindGameObjectByName("MainCamera")->GetComponent<Transform>();
@@ -74,7 +74,7 @@ void ModelViewer::InitializeApplication()
 				if (assetPath == "")
 				{
 					LOG(LogApplication, Error, "Couldn't find asset path!");
-					myLogs.emplace_back("[ERROR] Couldn't find asset path!", CU::Vector3f(1.0f, 0, 0));
+					myLogs.emplace_back("[ERROR] Couldn't find asset path!", Math::Vector3f(1.0f, 0, 0));
 					return;
 				}
 
@@ -82,7 +82,7 @@ void ModelViewer::InitializeApplication()
 				if (!go)
 				{
 					LOG(LogApplication, Error, "Couldn't find game object");
-					myLogs.emplace_back("[ERROR] Couldn't find game object!", CU::Vector3f(1.0f, 0, 0));
+					myLogs.emplace_back("[ERROR] Couldn't find game object!", Math::Vector3f(1.0f, 0, 0));
 				}
 
 				const std::string assetExt = assetPath.extension().string();
@@ -104,7 +104,7 @@ void ModelViewer::InitializeApplication()
 					else
 					{
 						LOG(LogApplication, Error, "A file of type '.fbx' must be prefixed by 'SM_' or 'SK_'");
-						myLogs.emplace_back("[ERROR] A file of type '.fbx' must be prefixed by 'SM_' or 'SK_'", CU::Vector3f(1.0f, 0, 0));
+						myLogs.emplace_back("[ERROR] A file of type '.fbx' must be prefixed by 'SM_' or 'SK_'", Math::Vector3f(1.0f, 0, 0));
 					}
 				}
 				else if (assetExt == ".dds")
@@ -116,7 +116,7 @@ void ModelViewer::InitializeApplication()
 					else
 					{
 						LOG(LogApplication, Error, "A file of type '.dds' must be prefixed by 'T_'");
-						myLogs.emplace_back("[ERROR] A file of type '.dds' must be prefixed by 'T_'", CU::Vector3f(1.0f, 0, 0));
+						myLogs.emplace_back("[ERROR] A file of type '.dds' must be prefixed by 'T_'", Math::Vector3f(1.0f, 0, 0));
 					}
 				}
 				else if (assetExt == ".json")
@@ -132,26 +132,26 @@ void ModelViewer::InitializeApplication()
 					else
 					{
 						LOG(LogApplication, Error, "A file of type '.json' must be prefixed by 'MAT_' or 'PSO_'");
-						myLogs.emplace_back("[ERROR] A file of type '.json' must be prefixed by 'MAT_' or 'PSO_'", CU::Vector3f(1.0f, 0, 0));
+						myLogs.emplace_back("[ERROR] A file of type '.json' must be prefixed by 'MAT_' or 'PSO_'", Math::Vector3f(1.0f, 0, 0));
 					}
 				}
 				else if (assetExt == ".cso")
 				{
 					if (assetName.starts_with("SH") || assetName.starts_with("sh"))
 					{
-						//myLogs.emplace_back("[ERROR] Modelviewer does not support loading in individual shaders currently!", CU::Vector3f(1.0f, 0, 0));
+						//myLogs.emplace_back("[ERROR] Modelviewer does not support loading in individual shaders currently!", Math::Vector3f(1.0f, 0, 0));
 						SetShader(assetPath);
 					}
 					else
 					{
 						LOG(LogApplication, Error, "A file of type '.cso' must be prefixed by 'SH_'");
-						myLogs.emplace_back("[ERROR] A file of type '.cso' must be prefixed by 'SH_'", CU::Vector3f(1.0f, 0, 0));
+						myLogs.emplace_back("[ERROR] A file of type '.cso' must be prefixed by 'SH_'", Math::Vector3f(1.0f, 0, 0));
 					}
 				}
 				else
 				{
 					LOG(LogApplication, Error, "Can't load filetype {}", assetExt.c_str());
-					myLogs.emplace_back("[ERROR] Can't load filetype " + assetExt + "!", CU::Vector3f(1.0f, 0, 0));
+					myLogs.emplace_back("[ERROR] Can't load filetype " + assetExt + "!", Math::Vector3f(1.0f, 0, 0));
 				}
 			}
 
@@ -162,9 +162,9 @@ void ModelViewer::InitializeApplication()
 	Engine::Get().GetImGuiHandler().AddNewFunction([this]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f size(250.0f, 220.0f);
+			Math::Vector2f size(250.0f, 220.0f);
 			float offset = 15.0f;
-			CU::Vector2f windowPos = Engine::Get().GetApplicationWindow().GetTopLeft();
+			Math::Vector2f windowPos = Engine::Get().GetApplicationWindow().GetTopLeft();
 			windowPos.x -= size.x + offset;
 
 			ImGui::SetNextWindowPos({ windowPos.x, windowPos.y });
@@ -224,9 +224,9 @@ void ModelViewer::InitializeApplication()
 	Engine::Get().GetImGuiHandler().AddNewFunction([this]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f size(250.0f, 440.0f);
+			Math::Vector2f size(250.0f, 440.0f);
 			float offset = 15.0f;
-			CU::Vector2f windowPos = Engine::Get().GetApplicationWindow().GetTopLeft();
+			Math::Vector2f windowPos = Engine::Get().GetApplicationWindow().GetTopLeft();
 			windowPos.x -= size.x + offset;
 			windowPos.y += 270.0f;
 
@@ -352,8 +352,8 @@ void ModelViewer::InitializeApplication()
 								std::shared_ptr<GameObject> dLightParent = Engine::Get().GetSceneHandler().FindGameObjectByName("D_Light_Parent");
 								std::shared_ptr<Transform> dlptransform = dLightParent->GetComponent<Transform>();
 								std::shared_ptr<Transform> dlightTransform = directionalLight->GetComponent<Transform>();
-								CU::Vector3f dlpRot = dlptransform->GetRotation();
-								CU::Vector3f dlightRot = dlightTransform->GetRotation();
+								Math::Vector3f dlpRot = dlptransform->GetRotation();
+								Math::Vector3f dlightRot = dlightTransform->GetRotation();
 								ImGui::Text("Rotation");
 								ImGui::Text("Pitch:");
 								ImGui::SameLine();
@@ -379,8 +379,8 @@ void ModelViewer::InitializeApplication()
 
 							ImVec4 buttonColor = ImGui::GetStyle().Colors[ImGuiCol_Button];
 							ImVec4 hoveredButtonColor = ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered];
-							CU::Vector3f buttonColorCU = { buttonColor.x, buttonColor.y, buttonColor.z };
-							CU::Vector3f hoveredButtonColorCU = { hoveredButtonColor.x, hoveredButtonColor.y, hoveredButtonColor.z };
+							Math::Vector3f buttonColorCU = { buttonColor.x, buttonColor.y, buttonColor.z };
+							Math::Vector3f hoveredButtonColorCU = { hoveredButtonColor.x, hoveredButtonColor.y, hoveredButtonColor.z };
 
 							std::vector<std::shared_ptr<AnimatedModel::AnimationState>> states = animModel->GetAnimationStatesOnLayer(0);
 							for (auto& state : states)
@@ -395,7 +395,7 @@ void ModelViewer::InitializeApplication()
 									{
 										float blendFactor = animModel->GetCurrentBlendFactorOnLayer(0);
 
-										CU::Vector3f lerpedColor = CU::Vector3f::Lerp(buttonColorCU, hoveredButtonColorCU, blendFactor);
+										Math::Vector3f lerpedColor = Math::Vector3f::Lerp(buttonColorCU, hoveredButtonColorCU, blendFactor);
 
 										selectedAnimColor = { lerpedColor.x, lerpedColor.y, lerpedColor.z, 1.0f };
 									}
@@ -408,7 +408,7 @@ void ModelViewer::InitializeApplication()
 									{
 										float blendFactor = animModel->GetCurrentBlendFactorOnLayer(0);
 
-										CU::Vector3f lerpedColor = CU::Vector3f::Lerp(buttonColorCU, hoveredButtonColorCU, 1 - blendFactor);
+										Math::Vector3f lerpedColor = Math::Vector3f::Lerp(buttonColorCU, hoveredButtonColorCU, 1 - blendFactor);
 
 										selectedAnimColor = { lerpedColor.x, lerpedColor.y, lerpedColor.z, 1.0f };
 									}
@@ -440,8 +440,8 @@ void ModelViewer::InitializeApplication()
 	Engine::Get().GetImGuiHandler().AddNewFunction([this]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f size(300.0f, 200.0f);
-			CU::Vector2f windowPos = Engine::Get().GetApplicationWindow().GetTopRight();
+			Math::Vector2f size(300.0f, 200.0f);
+			Math::Vector2f windowPos = Engine::Get().GetApplicationWindow().GetTopRight();
 
 			ImGui::SetNextWindowPos({ windowPos.x, windowPos.y });
 			ImGui::SetNextWindowContentSize({ size.x, size.y });
@@ -471,12 +471,12 @@ void ModelViewer::InitializeApplication()
 	Engine::Get().GetImGuiHandler().AddNewFunction([this]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f size(300.0f, 440.0f);
-			CU::Vector2f windowPos = Engine::Get().GetApplicationWindow().GetTopRight();
+			Math::Vector2f size(300.0f, 440.0f);
+			Math::Vector2f windowPos = Engine::Get().GetApplicationWindow().GetTopRight();
 			windowPos.y += 250.0f;
 
-			CU::Vector2f textureSize(32.0f, 32.0f);
-			CU::Vector2f textureHoverSize(256.0f, 256.0f);
+			Math::Vector2f textureSize(32.0f, 32.0f);
+			Math::Vector2f textureHoverSize(256.0f, 256.0f);
 
 			ImGui::SetNextWindowPos({ windowPos.x, windowPos.y });
 			ImGui::SetNextWindowContentSize({ size.x, size.y });
@@ -661,7 +661,7 @@ void ModelViewer::ResetScene()
 
 	std::shared_ptr<GameObject> aLight = engine.GetSceneHandler().FindGameObjectByName("A_Light");
 	std::shared_ptr<AmbientLight> aLightComp = aLight->GetComponent<AmbientLight>();
-	aLightComp->SetColor(CU::Vector3f(1.0f, 1.0f, 1.0f));
+	aLightComp->SetColor(Math::Vector3f(1.0f, 1.0f, 1.0f));
 	aLightComp->SetIntensity(aLightStartIntensity);
 	aLight->SetActive(true);
 
@@ -669,7 +669,7 @@ void ModelViewer::ResetScene()
 
 	std::shared_ptr<GameObject> dLight = engine.GetSceneHandler().FindGameObjectByName("D_Light");
 	std::shared_ptr<DirectionalLight> dLightComp = dLight->GetComponent<DirectionalLight>();
-	dLightComp->SetColor(CU::Vector3f(1.0f, 1.0f, 1.0f));
+	dLightComp->SetColor(Math::Vector3f(1.0f, 1.0f, 1.0f));
 	dLightComp->SetIntensity(dLightStartIntensity);
 	dLight->GetComponent<Transform>()->SetRotation(dLightStartingRot);
 	dLight->SetActive(true);
@@ -784,7 +784,7 @@ void ModelViewer::SetAnimation(std::shared_ptr<GameObject> aGO, std::filesystem:
 	if (!animModel)
 	{
 		LOG(LogApplication, Warning, "The currently loaded model does not support animations!");
-		myLogs.emplace_back("[ERROR] The currently loaded model does not support animations!", CU::Vector3f(1.0f, 0, 0));
+		myLogs.emplace_back("[ERROR] The currently loaded model does not support animations!", Math::Vector3f(1.0f, 0, 0));
 		return;
 	}
 
@@ -893,7 +893,7 @@ void ModelViewer::SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::p
 	else
 	{
 		LOG(LogApplication, Warning, "No recognized texture suffix detected!");
-		myLogs.emplace_back("[ERROR] No recognized texture suffix detected! (Hover for more info)", "A texture used in a material needs to be ended with _C for basecolor, _N for normal, or _M for a material texture", CU::Vector3f(1.0f, 0, 0));
+		myLogs.emplace_back("[ERROR] No recognized texture suffix detected! (Hover for more info)", "A texture used in a material needs to be ended with _C for basecolor, _N for normal, or _M for a material texture", Math::Vector3f(1.0f, 0, 0));
 	}
 }
 
@@ -957,7 +957,7 @@ void ModelViewer::SetShader(std::filesystem::path& aAssetPath)
 	if (!shaderAsset)
 	{
 		LOG(LogApplication, Warning, "Could not find asset at path {}!", aAssetPath.string());
-		myLogs.emplace_back("[ERROR] Could not find asset at path " + aAssetPath.string(), CU::Vector3f(1.0f, 0, 0));
+		myLogs.emplace_back("[ERROR] Could not find asset at path " + aAssetPath.string(), Math::Vector3f(1.0f, 0, 0));
 		return;
 	}
 
@@ -985,7 +985,7 @@ void ModelViewer::SetShader(std::filesystem::path& aAssetPath)
 	else
 	{
 		LOG(LogApplication, Warning, "No recognized filename suffix detected!");
-		myLogs.emplace_back("[ERROR] No recognized filename suffix detected!", CU::Vector3f(1.0f, 0, 0));
+		myLogs.emplace_back("[ERROR] No recognized filename suffix detected!", Math::Vector3f(1.0f, 0, 0));
 	}
 }
 

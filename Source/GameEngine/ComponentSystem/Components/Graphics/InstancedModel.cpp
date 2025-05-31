@@ -1,8 +1,8 @@
 #include "Enginepch.h"
 #include "InstancedModel.h"
 #include "Model.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
 
 #undef min
 #undef max
@@ -25,16 +25,16 @@ void InstancedModel::SetMesh(std::shared_ptr<Mesh> aMesh)
 	myMesh = aMesh;
 }
 
-void InstancedModel::AddInstance(CU::Matrix4x4f aTransform)
+void InstancedModel::AddInstance(Math::Matrix4x4f aTransform)
 {
 	myMeshTransforms.emplace_back(aTransform);
 
 	myMeshTransformBuffer.UpdateVertexBuffer(myMeshTransforms);
 
-	CU::AABB3D<float> meshAABB = myMesh->GetBoundingBox().GetAABBinNewSpace(gameObject->GetComponent<Transform>()->GetWorldMatrix());
+	Math::AABB3D<float> meshAABB = myMesh->GetBoundingBox().GetAABBinNewSpace(gameObject->GetComponent<Transform>()->GetWorldMatrix());
 	meshAABB = meshAABB.GetAABBinNewSpace(myMeshTransforms.back());
-	CU::Vector3f aabbMin = myBoundingBox.GetMin();
-	CU::Vector3f aabbMax = myBoundingBox.GetMax();
+	Math::Vector3f aabbMin = myBoundingBox.GetMin();
+	Math::Vector3f aabbMax = myBoundingBox.GetMax();
 	aabbMin.x = std::min(aabbMin.x, meshAABB.GetMin().x);
 	aabbMin.y = std::min(aabbMin.y, meshAABB.GetMin().y);
 	aabbMin.z = std::min(aabbMin.z, meshAABB.GetMin().z);

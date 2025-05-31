@@ -1,6 +1,6 @@
 #pragma once
-#include "GameEngine/ComponentSystem/Component.h"
-#include "Graphics/GraphicsEngine/Objects/ParticleSystem/ParticleEmitter.h"
+#include "ComponentSystem/Component.h"
+#include "Objects/ParticleSystem/ParticleEmitter.h"
 
 class ParticleSystem : public Component
 {

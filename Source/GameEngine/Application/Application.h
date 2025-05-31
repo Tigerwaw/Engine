@@ -60,18 +60,18 @@
 
 #include "AssetManager.h"
 
-#include "GraphicsEngine/GraphicsEngine.h"
+#include "GraphicsEngine.h"
 
-#include "GameEngine/Engine.h"
-#include "GameEngine/Input/InputHandler.h"
-#include "GameEngine/SceneHandler/SceneHandler.h"
-#include "GameEngine/DebugDrawer/DebugDrawer.h"
-#include "GameEngine/Audio/AudioEngine.h"
-#include "GameEngine/ImGui/ImGuiHandler.h"
+#include "Engine.h"
+#include "Input/InputHandler.h"
+#include "SceneHandler/SceneHandler.h"
+#include "DebugDrawer/DebugDrawer.h"
+#include "Audio/AudioEngine.h"
+#include "ImGui/ImGuiHandler.h"
 
 #ifndef _RETAIL
 #include "imgui.h"
-#include "utilities/Imgui/misc/cpp/imgui_stdlib.h"
+#include "Imgui/misc/cpp/imgui_stdlib.h"
 #define USE_PIX
 #endif
 #include "WinPixEventRuntime/pix3.h"

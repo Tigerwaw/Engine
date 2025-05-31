@@ -1,5 +1,5 @@
 #include "GraphicsEngine.pch.h"
-#include "Graphics\GraphicsEngine\GraphicsEngine.h"
+#include "GraphicsEngine.h"
 #include "Mesh.h"
 #include "Vertices/Vertex.h"
 
@@ -18,7 +18,7 @@ void Mesh::Initialize(std::vector<Vertex>&& aVertexList, std::vector<unsigned>&&
 	GraphicsEngine::Get().CreateIndexBuffer("Index Buffer", myIndices, myIndexBuffer);
 }
 
-void Mesh::InitBoundingBox(CU::Vector3f aMinPoint, CU::Vector3f aMaxPoint)
+void Mesh::InitBoundingBox(Math::Vector3f aMinPoint, Math::Vector3f aMaxPoint)
 {
 	myBoundingBox.InitWithMinAndMax(aMinPoint, aMaxPoint);
 }

@@ -1,4 +1,4 @@
 #include "Enginepch.h"
 
 #include "Component.h"
-#include "GameEngine/Utility/SerializationUtils.hpp"
+#include "CommonUtilities/SerializationUtils.hpp"

@@ -2,17 +2,17 @@
 
 #include "ImGuiHandler.h"
 
-#include "Graphics/GraphicsEngine/GraphicsEngine.h"
-#include "GameEngine/Engine.h"
-#include "GameEngine/Time/Timer.h"
-#include "GameEngine/Input/InputHandler.h"
-#include "GameEngine/SceneHandler/SceneHandler.h"
-#include "GameEngine/Audio/AudioEngine.h"
+#include "GraphicsEngine.h"
+#include "Engine.h"
+#include "Time/Timer.h"
+#include "Input/InputHandler.h"
+#include "SceneHandler/SceneHandler.h"
+#include "Audio/AudioEngine.h"
 
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/Camera.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Graphics/Model.h"
+#include "ComponentSystem/Components/Graphics/AnimatedModel.h"
+#include "ComponentSystem/Components/Graphics/Camera.h"
 
 
 void ImGuiHandler::Initialize(HWND aMainWindowHandle)
@@ -55,7 +55,7 @@ void ImGuiHandler::BeginFrame()
 {
 #ifndef _RETAIL
 	ImGuiIO& io = ImGui::GetIO();
-	CU::Vector2f resolution = Engine::Get().GetResolution();
+	Math::Vector2f resolution = Engine::Get().GetResolution();
 	io.DisplaySize = { resolution.x, resolution.y };
 	io.DisplayFramebufferScale = { 1.0f, 1.0f };
 

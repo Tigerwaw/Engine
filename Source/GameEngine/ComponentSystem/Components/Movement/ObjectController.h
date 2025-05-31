@@ -1,8 +1,8 @@
 #pragma once
-#include "GameEngine/ComponentSystem/Component.h"
+#include "ComponentSystem/Component.h"
 #include "Math/Vector.hpp"
 
-namespace CU = CommonUtilities;
+
 
 class ObjectController : public Component
 {

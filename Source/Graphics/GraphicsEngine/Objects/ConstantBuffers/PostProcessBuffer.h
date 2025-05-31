@@ -1,10 +1,10 @@
 #pragma once
-#include "GameEngine/Math/Vector.hpp"
-namespace CU = CommonUtilities;
+#include "Math/Vector.hpp"
+
 
 struct PostProcessBuffer
 {
-	CU::Vector4f RandomKernel[64];
+	Math::Vector4f RandomKernel[64];
 	unsigned KernelSize = 64;
 	unsigned SSAOEnabled = 1;
 	unsigned BloomFunction = 0;

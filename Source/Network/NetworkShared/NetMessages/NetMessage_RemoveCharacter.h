@@ -2,7 +2,7 @@
 #include "NetworkEngine/NetMessage.h"
 #include <tuple>
 #include <Math/Vector3.hpp>
-namespace CU = CommonUtilities;
+
 
 class NetMessage_RemoveCharacter : public NetMessage
 {

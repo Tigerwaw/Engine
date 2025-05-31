@@ -1,13 +1,13 @@
 #include "Enginepch.h"
 #include "BoxCollider.h"
 #include "SphereCollider.h"
-#include "GameEngine/Intersections/Intersection3D.hpp"
-#include "GameEngine/Math/Vector.hpp"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "GameEngine/Utility/SerializationUtils.hpp"
+#include "Math/Intersection3D.hpp"
+#include "Math/Vector.hpp"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
+#include "CommonUtilities/SerializationUtils.hpp"
 
-BoxCollider::BoxCollider(CU::Vector3f aExtents, CU::Vector3f aCenterOffset)
+BoxCollider::BoxCollider(Math::Vector3f aExtents, Math::Vector3f aCenterOffset)
 {
     myAABB.InitWithCenterAndExtents(aCenterOffset, aExtents);
 }
@@ -21,31 +21,31 @@ bool BoxCollider::TestCollision(const BoxCollider* aCollider) const
 {
     std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
     std::shared_ptr<Transform> collTransform = aCollider->gameObject->GetComponent<Transform>();
-    CU::AABB3D<float> otherAABBinMySpace = aCollider->GetAABB().GetAABBinNewSpace(collTransform->GetWorldMatrix() * transform->GetWorldMatrix().GetFastInverse());
+    Math::AABB3D<float> otherAABBinMySpace = aCollider->GetAABB().GetAABBinNewSpace(collTransform->GetWorldMatrix() * transform->GetWorldMatrix().GetFastInverse());
 
-    return CU::IntersectionBetweenAABBS(GetAABB(), otherAABBinMySpace);
+    return Math::IntersectionBetweenAABBS(GetAABB(), otherAABBinMySpace);
 }
 
 bool BoxCollider::TestCollision(const SphereCollider* aCollider) const
 {
     std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
     std::shared_ptr<Transform> collTransform = aCollider->gameObject->GetComponent<Transform>();
-    CU::Sphere<float> sphereInMySpace = aCollider->GetSphere().GetSphereinNewSpace(collTransform->GetWorldMatrix() * transform->GetWorldMatrix().GetFastInverse());
+    Math::Sphere<float> sphereInMySpace = aCollider->GetSphere().GetSphereinNewSpace(collTransform->GetWorldMatrix() * transform->GetWorldMatrix().GetFastInverse());
 
-    CU::Vector3f intersectionPoint;
-    return CU::IntersectionSphereAABB(sphereInMySpace, GetAABB(), intersectionPoint);
+    Math::Vector3f intersectionPoint;
+    return Math::IntersectionSphereAABB(sphereInMySpace, GetAABB(), intersectionPoint);
 }
 
-bool BoxCollider::TestCollision(const CU::Ray<float> aRay, CU::Vector3f& outHitPoint) const
+bool BoxCollider::TestCollision(const Math::Ray<float> aRay, Math::Vector3f& outHitPoint) const
 {
     std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
-    CU::Ray<float> rayInMySpace = aRay.GetRayinNewSpace(transform->GetWorldMatrix().GetFastInverse());
+    Math::Ray<float> rayInMySpace = aRay.GetRayinNewSpace(transform->GetWorldMatrix().GetFastInverse());
 
     outHitPoint;
-    return CU::IntersectionAABBRay(myAABB, rayInMySpace);
+    return Math::IntersectionAABBRay(myAABB, rayInMySpace);
 }
 
-const CU::AABB3D<float>& BoxCollider::GetAABB() const
+const Math::AABB3D<float>& BoxCollider::GetAABB() const
 {
     return myAABB;
 }
@@ -58,12 +58,12 @@ bool BoxCollider::Serialize(nl::json& outJsonObject)
 
 bool BoxCollider::Deserialize(nl::json& aJsonObject)
 {
-    CU::Vector3f centerOffset;
-    CU::Vector3f extents;
+    Math::Vector3f centerOffset;
+    Math::Vector3f extents;
 
     if (aJsonObject.contains("CenterOffset"))
     {
-        centerOffset = Utility::DeserializeVector3<float>(aJsonObject["CenterOffset"]);
+        centerOffset = Utilities::DeserializeVector3<float>(aJsonObject["CenterOffset"]);
     }
 
     if (aJsonObject.contains("Extents"))

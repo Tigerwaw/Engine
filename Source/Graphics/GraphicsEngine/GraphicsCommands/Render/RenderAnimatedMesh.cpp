@@ -1,17 +1,17 @@
 #include "GraphicsEngine.pch.h"
 #include "RenderAnimatedMesh.h"
 
-#include "GraphicsEngine/GraphicsEngine.h"
-#include "GraphicsEngine/Objects/Mesh.h"
-#include "GraphicsEngine/Objects/Material.h"
-#include "GraphicsEngine/Objects/ConstantBuffers/ObjectBuffer.h"
-#include "GraphicsEngine/Objects/ConstantBuffers/AnimationBuffer.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
+#include "GraphicsEngine.h"
+#include "Objects/Mesh.h"
+#include "Objects/Material.h"
+#include "Objects/ConstantBuffers/ObjectBuffer.h"
+#include "Objects/ConstantBuffers/AnimationBuffer.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
+#include "ComponentSystem/Components/Graphics/AnimatedModel.h"
 
-#include "GameEngine/Engine.h"
-#include "GameEngine/DebugDrawer/DebugDrawer.h"
+#include "Engine.h"
+#include "DebugDrawer/DebugDrawer.h"
 
 RenderAnimatedMesh::RenderAnimatedMesh(std::shared_ptr<AnimatedModel> aModel)
 {
@@ -44,7 +44,7 @@ void RenderAnimatedMesh::Execute()
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
     AnimationBuffer animBufferData;
-    memcpy_s(animBufferData.JointTransforms, sizeof(CU::Matrix4x4<float>) * 128, jointTransforms.data(), sizeof(CU::Matrix4x4<float>) * 128);
+    memcpy_s(animBufferData.JointTransforms, sizeof(Math::Matrix4x4<float>) * 128, jointTransforms.data(), sizeof(Math::Matrix4x4<float>) * 128);
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::AnimationBuffer, animBufferData);
 
     if (psoOverride)

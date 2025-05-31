@@ -8,5 +8,5 @@ public:
 	void Update() override;
 
 private:
-	CU::Vector3f myExtents = { 800.0f, 0.0f, 800.0f };
+	Math::Vector3f myExtents = { 800.0f, 0.0f, 800.0f };
 };

@@ -63,7 +63,7 @@ void GameClient::Update()
                     positionDataArray.Pop_Front();
                 }
 
-                CU::Vector3f lerpedPosition = CU::Vector3f::Lerp(lastPos.position, nextPos.position, t);
+                Math::Vector3f lerpedPosition = Math::Vector3f::Lerp(lastPos.position, nextPos.position, t);
                 if (auto go = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(clientID))
                 {
                     go->GetComponent<Transform>()->SetTranslation(lerpedPosition);
@@ -107,7 +107,7 @@ void GameClient::SendDisconnectMessage() const
     myComm.SendData(sendBuffer);
 }
 
-void GameClient::SendPositionMessage(const CU::Vector3f& aPosition) const
+void GameClient::SendPositionMessage(const Math::Vector3f& aPosition) const
 {
     NetMessage_Position positionMsg;
     positionMsg.SetPosition(aPosition);
@@ -195,7 +195,7 @@ void GameClient::HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMess
     std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
     go->SetNetworkID(aMessage.GetNetworkID());
     go->AddComponent<Transform>(aMessage.GetPosition());
-    go->AddComponent<BoxCollider>(CU::Vector3f(50.0f, 100.0f, 50.0f), CU::Vector3f(0.0f, 90.0f, 0.0f));
+    go->AddComponent<BoxCollider>(Math::Vector3f(50.0f, 100.0f, 50.0f), Math::Vector3f(0.0f, 90.0f, 0.0f));
 
     auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorBlue.json")->material);
     model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);

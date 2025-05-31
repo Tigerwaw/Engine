@@ -32,7 +32,7 @@ project "NetworkEngine"
     dirs.assetmanager,
     dirs.utilities,
     dirs.imgui,
-	dirs.network
+	  dirs.network
   }
 
   filter "system:windows"

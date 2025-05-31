@@ -1,9 +1,9 @@
 #include "Enginepch.h"
 
 #include "AudioEngine.h"
-#include "GameEngine/Engine.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
+#include "Engine.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
 
 void AudioEngine::Initialize()
 {

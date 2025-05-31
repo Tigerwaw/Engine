@@ -1,7 +1,7 @@
 #pragma once
 #include "GenericInput.h"
 #include "Math/Vector.hpp"
-namespace CU = CommonUtilities;
+
 #include "EnumControllerButtons.h"
 
 typedef unsigned UINT;
@@ -17,13 +17,13 @@ public:
 
     const bool GetBinary(const GenericInput::ActionType aActionType, const unsigned aKeyCode) const override;
     const float GetAnalog(const unsigned aKeyCode) const override;
-    const CU::Vector2f GetAnalog2D(const unsigned aKeyCode) const override;
+    const Math::Vector2f GetAnalog2D(const unsigned aKeyCode) const override;
 
     void SetDeadZone(float aDeadZoneX, float aDeadZoneY);
     void SetLeftStickDeadZone(float aDeadZoneX, float aDeadZoneY);
     void SetRightStickDeadZone(float aDeadZoneX, float aDeadZoneY);
-    const CU::Vector2f GetLeftStickDeadZone() const { return myLeftStickDeadZone; }
-    const CU::Vector2f GetRightStickDeadZone() const { return myRightStickDeadZone; }
+    const Math::Vector2f GetLeftStickDeadZone() const { return myLeftStickDeadZone; }
+    const Math::Vector2f GetRightStickDeadZone() const { return myRightStickDeadZone; }
 private:
     std::array<bool, static_cast<int>(ControllerButtons::COUNT)> myCurrentBinaryState;
     std::array<bool, static_cast<int>(ControllerButtons::COUNT)> myPreviousBinaryState;
@@ -31,6 +31,6 @@ private:
     std::array<float, static_cast<int>(ControllerAnalog::COUNT)> myPreviousAnalogState;
     std::array<float, static_cast<int>(ControllerAnalog::COUNT)> myDeltaAnalogState;
 
-    CU::Vector2f myLeftStickDeadZone;
-    CU::Vector2f myRightStickDeadZone;
+    Math::Vector2f myLeftStickDeadZone;
+    Math::Vector2f myRightStickDeadZone;
 };

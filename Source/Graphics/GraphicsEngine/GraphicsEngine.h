@@ -188,7 +188,7 @@ public:
 	std::shared_ptr<Texture> GetIntermediateTexture(IntermediateTexture aIntermediateTexture);
 	GBuffer& GetGBuffer() { return *myGBuffer; }
 
-	const std::vector<CU::Vector4f>& GetRandomKernel() const { return myRandomKernel; }
+	const std::vector<Math::Vector4f>& GetRandomKernel() const { return myRandomKernel; }
 
 	GraphicsCommandList& GetGraphicsCommandList() const { return *myCommandList; }
 
@@ -263,7 +263,7 @@ private:
 	std::shared_ptr<PipelineStateObject> myDefaultPSO;
 
 	std::shared_ptr<Texture> myLUTtexture;
-	std::vector<CU::Vector4f> myRandomKernel;
+	std::vector<Math::Vector4f> myRandomKernel;
 	
 	std::unique_ptr<GBuffer> myGBuffer;
 	std::unique_ptr<GraphicsCommandList> myCommandList;

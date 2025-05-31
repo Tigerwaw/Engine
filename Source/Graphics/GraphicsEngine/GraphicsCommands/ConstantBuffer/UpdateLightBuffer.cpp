@@ -1,13 +1,13 @@
 #include "GraphicsEngine.pch.h"
 #include "UpdateLightBuffer.h"
-#include "Graphics/GraphicsEngine/Objects/ConstantBuffers/LightBuffer.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/Camera.h"
-#include "GameEngine/ComponentSystem/Components/Lights/AmbientLight.h"
-#include "GameEngine/ComponentSystem/Components/Lights/DirectionalLight.h"
-#include "GameEngine/ComponentSystem/Components/Lights/PointLight.h"
-#include "GameEngine/ComponentSystem/Components/Lights/SpotLight.h"
+#include "Objects/ConstantBuffers/LightBuffer.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
+#include "ComponentSystem/Components/Graphics/Camera.h"
+#include "ComponentSystem/Components/Lights/AmbientLight.h"
+#include "ComponentSystem/Components/Lights/DirectionalLight.h"
+#include "ComponentSystem/Components/Lights/PointLight.h"
+#include "ComponentSystem/Components/Lights/SpotLight.h"
 
 UpdateLightBuffer::UpdateLightBuffer(std::shared_ptr<AmbientLight> aAmbientLight, std::shared_ptr<DirectionalLight> aDirLight, std::vector<std::shared_ptr<PointLight>> aPointLights, std::vector<std::shared_ptr<SpotLight>> aSpotLights)
 {

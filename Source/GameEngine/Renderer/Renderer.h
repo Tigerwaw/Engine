@@ -1,6 +1,6 @@
 #pragma once
-#include "GameEngine/Intersections/AABB3D.hpp"
-namespace CU = CommonUtilities;
+#include "Math/AABB3D.hpp"
+
 
 class GameObject;
 class Scene;
@@ -38,11 +38,11 @@ private:
     void QueueGameObjects(Scene& aScene, std::shared_ptr<PointLight> aPointLight, bool aDisableViewCulling = false, std::shared_ptr<PipelineStateObject> aPSOoverride = nullptr);
     void QueueDebugLines(Scene& aScene);
 
-    bool IsInsideFrustum(std::shared_ptr<Camera> aRenderCamera, std::shared_ptr<Transform> aObjectTransform, CU::AABB3D<float> aObjectAABB);
-    bool IsInsideRadius(std::shared_ptr<PointLight> aPointLight, std::shared_ptr<Transform> aObjectTransform, CU::AABB3D<float> aObjectAABB);
+    bool IsInsideFrustum(std::shared_ptr<Camera> aRenderCamera, std::shared_ptr<Transform> aObjectTransform, Math::AABB3D<float> aObjectAABB);
+    bool IsInsideRadius(std::shared_ptr<PointLight> aPointLight, std::shared_ptr<Transform> aObjectTransform, Math::AABB3D<float> aObjectAABB);
 
     void UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject);
-    CU::AABB3D<float> myVisibleObjectsBB;
+    Math::AABB3D<float> myVisibleObjectsBB;
 
     // TEMP
     void DrawTestUI();

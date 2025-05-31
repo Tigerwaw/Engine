@@ -1,7 +1,7 @@
 #include "GraphicsEngine.pch.h"
 #include "ParticleEmitter.h"
-#include "GameEngine/EngineDefines.h"
-#include "GameEngine/Math/Random.hpp"
+#include "EngineDefines.h"
+#include "Math/Random.hpp"
 
 ParticleEmitter::ParticleEmitter()
 {
@@ -36,8 +36,8 @@ void ParticleEmitter::InitParticle(ParticleVertex& aParticle, size_t aIndex)
 	const float spawnRateInv = 1.0f / mySettings.SpawnRate;
 	aParticle.Lifetime = 0.0f - static_cast<float>(aIndex) * spawnRateInv;
 
-	CU::Vector3f emitterHalfSize = mySettings.EmitterSize * 0.5f;
-	aParticle.Position = CU::ToVector4(Random(-emitterHalfSize, emitterHalfSize), 1.0f);
+	Math::Vector3f emitterHalfSize = mySettings.EmitterSize * 0.5f;
+	aParticle.Position = Math::ToVector4(Random(-emitterHalfSize, emitterHalfSize), 1.0f);
 
 	aParticle.Velocity = mySettings.Velocity;
 	if (mySettings.RandomVelocity)
@@ -56,8 +56,8 @@ void ParticleEmitter::UpdateParticle(ParticleVertex& aParticle, float aDeltaTime
 {
 	float lifeTimePercentage = aParticle.Lifetime / mySettings.Lifetime;
 
-	aParticle.Velocity += CU::Vector3f(0, -9.81f * mySettings.GravityScale * aDeltaTime, 0);
-	aParticle.Position += CU::ToVector4(aParticle.Velocity * aDeltaTime);
+	aParticle.Velocity += Math::Vector3f(0, -9.81f * mySettings.GravityScale * aDeltaTime, 0);
+	aParticle.Position += Math::ToVector4(aParticle.Velocity * aDeltaTime);
 	aParticle.Angle = mySettings.Angle.Get(lifeTimePercentage);
 	aParticle.Size = mySettings.Size.Get(lifeTimePercentage);
 	aParticle.Color = mySettings.Color.Get(lifeTimePercentage);

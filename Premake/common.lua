@@ -15,6 +15,8 @@ dirs["assetmanager"]			= os.realpath(dirs.source .. "AssetManager/")
 dirs["utilities"] 	= os.realpath(dirs.source .. "Utilities/")
 dirs["imgui"] 	= os.realpath(dirs.utilities .. "Imgui/")
 dirs["logger"] 	= os.realpath(dirs.utilities .. "Logger/")
+dirs["math"] 	= os.realpath(dirs.utilities .. "Math/")
+dirs["commonutilities"] 	= os.realpath(dirs.utilities .. "CommonUtilities/")
 dirs["projectcreator"] 	= os.realpath(dirs.utilities .. "ProjectCreator/")
 
 dirs["application"]			= os.realpath(dirs.source .. "Application/")

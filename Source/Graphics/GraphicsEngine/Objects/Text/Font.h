@@ -1,8 +1,8 @@
 #pragma once
-#include "GameEngine/Math/Vector.hpp"
-namespace CU = CommonUtilities;
+#include "Math/Vector.hpp"
 
-#include "Graphics/GraphicsEngine/Objects/Texture.h"
+
+#include "Objects/Texture.h"
 
 struct Font
 {
@@ -26,8 +26,8 @@ struct Font
 	{
 		char Character = 'x';
 		float Advance = 0;
-		CU::Vector4f PlaneBounds;
-		CU::Vector4f UVBounds;
+		Math::Vector4f PlaneBounds;
+		Math::Vector4f UVBounds;
 	};
 
 	std::unordered_map<unsigned, Glyph> Glyphs;

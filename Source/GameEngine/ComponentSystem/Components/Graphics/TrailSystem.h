@@ -1,6 +1,6 @@
 #pragma once
-#include "GameEngine/ComponentSystem/Component.h"
-#include "Graphics/GraphicsEngine/Objects/ParticleSystem/TrailEmitter.h"
+#include "ComponentSystem/Component.h"
+#include "Objects/ParticleSystem/TrailEmitter.h"
 
 class TrailSystem : public Component
 {

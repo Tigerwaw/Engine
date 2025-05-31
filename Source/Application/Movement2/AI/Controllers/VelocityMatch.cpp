@@ -14,11 +14,11 @@ ControllerBase::SteeringOutput VelocityMatch::GetSteering(const SteeringInput& a
     aSteeringInput;
 
     auto otherActors = PollingStation::Get().GetOtherActorPositions();
-    CU::Vector3f averageVelocity;
+    Math::Vector3f averageVelocity;
     float nearbyCount = 0;
     for (auto& actor : PollingStation::Get().GetOtherActors())
     {
-        CU::Vector3f diff = aSteeringInput.position - actor->GetComponent<Transform>()->GetTranslation();
+        Math::Vector3f diff = aSteeringInput.position - actor->GetComponent<Transform>()->GetTranslation();
         if (diff.LengthSqr() > myNeighbourhoodRadius * myNeighbourhoodRadius) continue;
         if (auto& cont = actor->GetComponent<ControllerMoveWeighted>())
         {

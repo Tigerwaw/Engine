@@ -1,8 +1,8 @@
 #pragma once
-#include "GameEngine/ComponentSystem/Component.h"
-#include "GameEngine/ComponentSystem/GameObjectEventType.h"
-#include "GameEngine/Math/Vector.hpp"
-namespace CU = CommonUtilities;
+#include "ComponentSystem/Component.h"
+#include "ComponentSystem/GameObjectEventType.h"
+#include "Math/Vector.hpp"
+
 
 class AudioInstance;
 

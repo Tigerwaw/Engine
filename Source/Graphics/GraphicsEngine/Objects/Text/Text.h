@@ -1,10 +1,10 @@
 #pragma once
 #include "Font.h"
-#include "GameEngine/Math/Matrix.hpp"
-#include "GameEngine/Math/Vector.hpp"
-namespace CU = CommonUtilities;
+#include "Math/Matrix.hpp"
+#include "Math/Vector.hpp"
 
-#include "Graphics\GraphicsEngine\Objects\Vertices\TextVertex.h"
+
+#include "Objects/Vertices/TextVertex.h"
 
 struct ID3D11Buffer;
 class DynamicVertexBuffer;
@@ -32,7 +32,7 @@ public:
     void SetTextContent(const std::string& aTextContent);
     void SetFont(std::shared_ptr<Font> aFont);
     void SetSize(const int aSize);
-    void SetPosition(CU::Vector2f aPosition);
+    void SetPosition(Math::Vector2f aPosition);
 
     const std::shared_ptr<Texture> GetTexture() const { return myFont->Texture; }
     const TextData& GetTextData() const { return myTextData; }
@@ -42,6 +42,6 @@ private:
     TextData myTextData;
 
     std::string myTextContent;
-    CU::Matrix4x4f myMatrix;
+    Math::Matrix4x4f myMatrix;
     int mySize = 0;
 };

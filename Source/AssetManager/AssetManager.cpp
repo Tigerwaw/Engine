@@ -11,8 +11,8 @@
 
 #include "Math/Matrix.hpp"
 #include "Math/Vector.hpp"
-#include "Utility/StringUtilities.hpp"
-namespace CU = CommonUtilities;
+#include "CommonUtilities/StringUtilities.hpp"
+
 
 #include "DefaultTextures/Default_C.h"
 #include "DefaultTextures/Default_N.h"
@@ -50,7 +50,7 @@ bool AssetManager::DeregisterAsset(const std::shared_ptr<Asset> aAsset)
 bool AssetManager::RegisterAsset(const std::filesystem::path& aPath)
 {
     std::string name = aPath.filename().string();
-    CU::ToLower(name);
+    Utilities::ToLower(name);
     if (name.starts_with("sm") || name.starts_with("sk"))
     {
         return RegisterMeshAsset(aPath);
@@ -222,8 +222,8 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
     std::vector<unsigned> indices;
     std::vector<Mesh::Element> elements(tgaMesh.Elements.size());
 
-    CU::Vector3f minBBPoint;
-    CU::Vector3f maxBBPoint;
+    Math::Vector3f minBBPoint;
+    Math::Vector3f maxBBPoint;
 
     unsigned nextVertexOffset = 0;
     unsigned nextIndexOffset = 0;
@@ -324,7 +324,7 @@ bool AssetManager::RegisterAnimationAsset(const std::filesystem::path& aPath)
         for (auto& tgaAnimFrameJoint : tgaAnimFrame.LocalTransforms)
         {
             auto& matrix = tgaAnimFrameJoint.second.Data;
-            CommonUtilities::Matrix4x4<float> jointTransform = { matrix[0], matrix[1], matrix[2], matrix[3],
+            Math::Matrix4x4<float> jointTransform = { matrix[0], matrix[1], matrix[2], matrix[3],
                                                                  matrix[4], matrix[5], matrix[6], matrix[7],
                                                                  matrix[8], matrix[9], matrix[10], matrix[11],
                                                                  matrix[12], matrix[13], matrix[14], matrix[15] };
@@ -749,7 +749,7 @@ bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
         unsigned unicode = glyph.value("unicode", 0);
         float advance = glyph.value("advance", -1.0f);
 
-        CU::Vector4f planeBounds;
+        Math::Vector4f planeBounds;
         if (glyph.contains("planeBounds"))
         {
             planeBounds.x = glyph["planeBounds"]["left"].get<float>();
@@ -758,7 +758,7 @@ bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
             planeBounds.w = glyph["planeBounds"]["top"].get<float>();
         }
 
-        CU::Vector4f uvBounds;
+        Math::Vector4f uvBounds;
         float atlasWidth = static_cast<float>(font.Atlas.Width);
         float atlasHeight = static_cast<float>(font.Atlas.Height);
         if (glyph.contains("atlasBounds"))
@@ -826,8 +826,8 @@ bool AssetManager::RegisterNavMeshAsset(const std::filesystem::path& aPath)
 
     NavMesh navMesh;
     navMesh.Init(navNodes, navPolygons, navPortals);
-    CU::Vector3f boxExtents = { tgaNavMesh.BoxSphereBounds.BoxExtents[0], tgaNavMesh.BoxSphereBounds.BoxExtents[1], tgaNavMesh.BoxSphereBounds.BoxExtents[2] };
-    CU::Vector3f boxCenter = { tgaNavMesh.BoxSphereBounds.Center[0], tgaNavMesh.BoxSphereBounds.Center[1], tgaNavMesh.BoxSphereBounds.Center[2] };
+    Math::Vector3f boxExtents = { tgaNavMesh.BoxSphereBounds.BoxExtents[0], tgaNavMesh.BoxSphereBounds.BoxExtents[1], tgaNavMesh.BoxSphereBounds.BoxExtents[2] };
+    Math::Vector3f boxCenter = { tgaNavMesh.BoxSphereBounds.Center[0], tgaNavMesh.BoxSphereBounds.Center[1], tgaNavMesh.BoxSphereBounds.Center[2] };
     navMesh.SetBoundingBox(boxCenter, boxExtents * 2.0f);
 
     std::shared_ptr<NavMeshAsset> asset = std::make_shared<NavMeshAsset>();
@@ -1349,7 +1349,7 @@ std::vector<NavPolygon> CreateNavPolygons(const TGA::FBX::NavMesh& tgaNavMesh)
             {
                 const int vertexIndex = tgaPolygon.Indices[i];
 
-                CU::Vector3f vertexPos = { tgaChunk.Vertices[vertexIndex].Position[0], tgaChunk.Vertices[vertexIndex].Position[1], tgaChunk.Vertices[vertexIndex].Position[2] };
+                Math::Vector3f vertexPos = { tgaChunk.Vertices[vertexIndex].Position[0], tgaChunk.Vertices[vertexIndex].Position[1], tgaChunk.Vertices[vertexIndex].Position[2] };
                 navPolygon.vertexPositions[i] = vertexPos;
             }
         }
@@ -1365,7 +1365,7 @@ std::vector<NavNode> CreateNavNodes(const std::vector<NavPolygon>& navPolygons)
     for (int i = 0; i < static_cast<int>(navPolygons.size()); ++i)
     {
         NavNode& navNode = navNodes.emplace_back();
-        CU::Vector3f pos;
+        Math::Vector3f pos;
         int numVertices = static_cast<int>(navPolygons[i].vertexPositions.size());
         for (int vertexPos = 0; vertexPos < numVertices; vertexPos++)
         {
@@ -1396,12 +1396,12 @@ std::vector<NavPortal> CreateNavPortals(const std::vector<NavPolygon>& navPolygo
 
             const NavPolygon& navPoly2 = navPolygons[j];
 
-            std::array<CU::Vector3f, 2> sharedVertices;
+            std::array<Math::Vector3f, 2> sharedVertices;
             int sharedCount = 0;
 
             for (int vertexPos = 0; vertexPos < static_cast<int>(navPoly2.vertexPositions.size()); vertexPos++)
             {
-                const CU::Vector3f& vertexPosToTest = navPoly2.vertexPositions[vertexPos];
+                const Math::Vector3f& vertexPosToTest = navPoly2.vertexPositions[vertexPos];
                 if (std::find(navPoly1.vertexPositions.begin(), navPoly1.vertexPositions.end(), vertexPosToTest) != navPoly1.vertexPositions.end())
                 {
                     assert(sharedCount < 2 && "More than 2 shared vertices means mesh is not triangulated, or polygon is really damn small");

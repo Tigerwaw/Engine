@@ -20,14 +20,14 @@ void RandomDirectionMovement::Update()
 	}
 }
 
-void RandomDirectionMovement::SetDirection(CU::Vector3f aNewDirection)
+void RandomDirectionMovement::SetDirection(Math::Vector3f aNewDirection)
 {
 	myDirection = aNewDirection;
 	myDirection.y = 0.0f;
 	myDirection.Normalize();
 }
 
-const CU::Vector3f& RandomDirectionMovement::GetDirection() const
+const Math::Vector3f& RandomDirectionMovement::GetDirection() const
 {
 	return myDirection;
 }

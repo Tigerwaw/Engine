@@ -8,9 +8,9 @@ public:
 
     std::string title;
     std::filesystem::path contentRoot;
-    CU::Vector2f resolution;
-    CU::Vector2f windowSize;
-    CU::Vector2f windowPos;
+    Math::Vector2f resolution;
+    Math::Vector2f windowSize;
+    Math::Vector2f windowPos;
     bool isFullscreen = true;
     bool isBorderless = true;
     bool allowDropFiles = false;

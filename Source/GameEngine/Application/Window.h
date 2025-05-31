@@ -47,25 +47,25 @@
 #pragma endregion
 
 #include "Math/Vector.hpp"
-namespace CU = CommonUtilities;
+
 
 class Window
 {
 public:
     bool InitializeWindow(const std::string& aWindowTitle = "Application",
-        CU::Vector2f aWindowSize = CU::Vector2f(1920.0f, 1080.0f), 
-        CU::Vector2f aWindowPos = CU::Vector2f(0, 0),
+        Math::Vector2f aWindowSize = Math::Vector2f(1920.0f, 1080.0f), 
+        Math::Vector2f aWindowPos = Math::Vector2f(0, 0),
         bool aIsFullscreen = true, bool aIsBorderless = true, 
         bool aAllowDropFiles = false);
 
     HWND GetWindowHandle() const { return myMainWindowHandle; }
 
-    const CU::Vector2f GetCenter() const;
-    const CU::Vector2f GetTopLeft() const;
-    const CU::Vector2f GetTopRight() const;
-    const CU::Vector2f GetBottomLeft() const;
-    const CU::Vector2f GetBottomRight() const;
-    const CU::Vector2f GetSize() const;
+    const Math::Vector2f GetCenter() const;
+    const Math::Vector2f GetTopLeft() const;
+    const Math::Vector2f GetTopRight() const;
+    const Math::Vector2f GetBottomLeft() const;
+    const Math::Vector2f GetBottomRight() const;
+    const Math::Vector2f GetSize() const;
 private:
     HWND myMainWindowHandle = nullptr;
 };

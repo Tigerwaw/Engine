@@ -1,9 +1,9 @@
 #include "Enginepch.h"
 
 #include "DebugModel.h"
-#include "GraphicsEngine/Objects/Mesh.h"
-#include "GraphicsEngine/Objects/Material.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
+#include "Objects/Mesh.h"
+#include "Objects/Material.h"
+#include "ComponentSystem/GameObject.h"
 
 DebugModel::~DebugModel()
 {
@@ -42,11 +42,11 @@ void DebugModel::SetMaterialOnSlot(unsigned aSlot, std::shared_ptr<Material> aMa
     mySlotToIndex.emplace(aSlot, static_cast<unsigned>(myMaterials.size() - 1));
 }
 
-const CU::AABB3D<float> DebugModel::GetBoundingBox() const
+const Math::AABB3D<float> DebugModel::GetBoundingBox() const
 {
     if (!myMesh)
     {
-        return CU::AABB3D<float>();
+        return Math::AABB3D<float>();
     }
 
     return myMesh->GetBoundingBox();

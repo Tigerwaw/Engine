@@ -1,21 +1,20 @@
 #pragma once
-#include "GameEngine/Math/Vector.hpp"
-namespace CU = CommonUtilities;
+#include "Math/Vector.hpp"
 
 class ControllerBase
 {
 public:
 	struct SteeringInput
 	{
-		CU::Vector3f velocity;
-		CU::Vector3f position;
-		CU::Vector3f orientation;
-		CU::Vector3f target;
+		Math::Vector3f velocity;
+		Math::Vector3f position;
+		Math::Vector3f orientation;
+		Math::Vector3f target;
 	};
 
 	struct SteeringOutput
 	{
-		CU::Vector3f velocity;
+		Math::Vector3f velocity;
 		float rotation = 0;
 
 		SteeringOutput operator+=(SteeringOutput output)

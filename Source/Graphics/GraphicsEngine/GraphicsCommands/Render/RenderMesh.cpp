@@ -1,17 +1,17 @@
 #include "GraphicsEngine.pch.h"
 #include "RenderMesh.h"
 
-#include "GraphicsEngine/GraphicsEngine.h"
-#include "GraphicsEngine/Objects/Mesh.h"
-#include "GraphicsEngine/Objects/Material.h"
-#include "GraphicsEngine/Objects/ConstantBuffers/ObjectBuffer.h"
-#include "GraphicsEngine/Objects/ConstantBuffers/MaterialBuffer.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
+#include "GraphicsEngine.h"
+#include "Objects/Mesh.h"
+#include "Objects/Material.h"
+#include "Objects/ConstantBuffers/ObjectBuffer.h"
+#include "Objects/ConstantBuffers/MaterialBuffer.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
+#include "ComponentSystem/Components/Graphics/Model.h"
 
-#include "GameEngine/Engine.h"
-#include "GameEngine/DebugDrawer/DebugDrawer.h"
+#include "Engine.h"
+#include "DebugDrawer/DebugDrawer.h"
 
 RenderMesh::RenderMesh(std::shared_ptr<Model> aModel)
 {

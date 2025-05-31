@@ -106,7 +106,7 @@ void ControllerMoveWeighted::Update()
 	// Clamp velocity min speed
 	if (myVelocity.LengthSqr() < myMinMoveSpeed * myMinMoveSpeed)
 	{
-		CU::Vector3f randomVelocity;
+		Math::Vector3f randomVelocity;
 		randomVelocity.x = static_cast<float>((std::rand() % 100) - (std::rand() % 100));
 		randomVelocity.z = static_cast<float>((std::rand() % 100) - (std::rand() % 100));
 		myVelocity += randomVelocity.GetNormalized() * myMinMoveSpeed;
@@ -130,11 +130,11 @@ void ControllerMoveWeighted::Update()
 			{
 				myCurrentRotationTime = 0;
 				myCurrentRot = myGoalRot;
-				myGoalRot = CU::Quatf(CU::Vector3f(0, std::atan2(myVelocity.x, myVelocity.z), 0));
+				myGoalRot = Math::Quatf(Math::Vector3f(0, std::atan2(myVelocity.x, myVelocity.z), 0));
 			}
 
 			float rotTimeDelta = myCurrentRotationTime / myMaxRotationTime;
-			CU::Quatf rot = CU::Quatf::Slerp(myCurrentRot, myGoalRot, rotTimeDelta);
+			Math::Quatf rot = Math::Quatf::Slerp(myCurrentRot, myGoalRot, rotTimeDelta);
 			gameObject->GetComponent<Transform>()->SetRotation(rot.GetEulerAnglesDegrees());
 		}
 	}

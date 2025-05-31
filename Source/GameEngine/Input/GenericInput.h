@@ -1,6 +1,6 @@
 #pragma once
 #include "Math/Vector.hpp"
-namespace CU = CommonUtilities;
+
 
 typedef unsigned UINT;
 typedef unsigned __int64 WPARAM;
@@ -20,6 +20,6 @@ public:
 	const virtual void UpdateInput() = 0;
 	const virtual bool GetBinary(const ActionType aActionType, const unsigned aKeyCode) const = 0;
 	const virtual float GetAnalog(const unsigned aKeyCode) const = 0;
-	const virtual CU::Vector2f GetAnalog2D(const unsigned aKeyCode) const = 0;
+	const virtual Math::Vector2f GetAnalog2D(const unsigned aKeyCode) const = 0;
 };
 

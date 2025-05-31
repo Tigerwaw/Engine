@@ -2,12 +2,12 @@
 #include "NavMesh.h"
 #include "NavMeshPath.h"
 
-#include "GameEngine/DebugDrawer/DebugDrawer.h"
-#include "GameEngine/Intersections/Intersection3D.hpp"
-#include "GameEngine/Intersections/Triangle.hpp"
+#include "DebugDrawer/DebugDrawer.h"
+#include "Math/Intersection3D.hpp"
+#include "Math/Triangle.hpp"
 
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
 
 void NavMesh::Init(std::vector<NavNode> aNavNodeList, std::vector<NavPolygon> aNavPolygonList, std::vector<NavPortal> aNavPortalList)
 {
@@ -16,7 +16,7 @@ void NavMesh::Init(std::vector<NavNode> aNavNodeList, std::vector<NavPolygon> aN
 	myPortals = aNavPortalList;
 }
 
-void NavMesh::SetBoundingBox(CU::Vector3f aCenter, CU::Vector3f aExtents)
+void NavMesh::SetBoundingBox(Math::Vector3f aCenter, Math::Vector3f aExtents)
 {
 	myBoundingBox.InitWithCenterAndExtents(aCenter, aExtents);
 }
@@ -24,8 +24,8 @@ void NavMesh::SetBoundingBox(CU::Vector3f aCenter, CU::Vector3f aExtents)
 void NavMesh::DrawDebugLines()
 {
 	DebugDrawer& debugDrawer = Engine::Get().GetDebugDrawer();
-	CU::Vector3f debugEdgeOffset = { 0, 10.0f, 0 };
-	CU::Vector3f debugConnectionOffset = { 0, 15.0f, 0 };
+	Math::Vector3f debugEdgeOffset = { 0, 10.0f, 0 };
+	Math::Vector3f debugConnectionOffset = { 0, 15.0f, 0 };
 
 	int nodeIndex = 0;
 	for (auto& navNode : myNodes)
@@ -57,7 +57,7 @@ void NavMesh::DrawDebugLines()
 
 void NavMesh::DrawBoundingBox()
 {
-	Engine::Get().GetDebugDrawer().DrawBoundingBox(myBoundingBox, CU::Matrix4x4f(), { 1.0f, 1.0f, 1.0f, 1.0f });
+	Engine::Get().GetDebugDrawer().DrawBoundingBox(myBoundingBox, Math::Matrix4x4f(), { 1.0f, 1.0f, 1.0f, 1.0f });
 }
 
 void NavMesh::SnapGameObjectToNavMesh(GameObject& aGameObject)
@@ -67,13 +67,13 @@ void NavMesh::SnapGameObjectToNavMesh(GameObject& aGameObject)
 	transform->SetTranslation(myNodes[closestNode].position);
 }
 
-CU::Vector3f NavMesh::ClampToNavMesh(const CU::Vector3f& aPos) const
+Math::Vector3f NavMesh::ClampToNavMesh(const Math::Vector3f& aPos) const
 {
 	for (int i = 0; i < (int)myPolygons.size(); ++i)
 	{
 		const NavPolygon& polygon = myPolygons[i];
 
-		CU::Plane<float> plane;
+		Math::Plane<float> plane;
 		plane.InitWith3Points(
 			polygon.vertexPositions[0],
 			polygon.vertexPositions[1],
@@ -81,9 +81,9 @@ CU::Vector3f NavMesh::ClampToNavMesh(const CU::Vector3f& aPos) const
 
 		// essentially we offset ray 50 cm upwards, and then have a threshold of 100cm of snapping to closest node downwards
 
-		CU::Vector3f posOffset = aPos + CU::Vector3f(0.0f, 50.0f, 0.0);
-		CU::Vector3f polyIntersectionPoint;
-		bool polyIntersection = CU::IntersectionPlaneRay(plane, CU::Ray<float>(posOffset, CU::Vector3f(0, -1.0f, 0)), polyIntersectionPoint);
+		Math::Vector3f posOffset = aPos + Math::Vector3f(0.0f, 50.0f, 0.0);
+		Math::Vector3f polyIntersectionPoint;
+		bool polyIntersection = Math::IntersectionPlaneRay(plane, Math::Ray<float>(posOffset, Math::Vector3f(0, -1.0f, 0)), polyIntersectionPoint);
 
 		if (polyIntersection &&  IsPointInsidePolygon(myPolygons[i], polyIntersectionPoint))
 		{
@@ -91,7 +91,7 @@ CU::Vector3f NavMesh::ClampToNavMesh(const CU::Vector3f& aPos) const
 		}
 	}
 
-	CU::Vector3f closestPoint = aPos;
+	Math::Vector3f closestPoint = aPos;
 	float closestPointDist = FLT_MAX;
 
 	for (int i = 0; i < (int)myPolygons.size(); ++i)
@@ -101,10 +101,10 @@ CU::Vector3f NavMesh::ClampToNavMesh(const CU::Vector3f& aPos) const
 		for (int vertexIndex = 0; vertexIndex < polygon.vertexPositions.size(); ++vertexIndex)
 		{
 			int nextIndex = vertexIndex + 1 >= polygon.vertexPositions.size() ? 0 : vertexIndex + 1;
-			const CU::Vector3f& vertexPos1 = polygon.vertexPositions[vertexIndex];
-			const CU::Vector3f& vertexPos2 = polygon.vertexPositions[nextIndex];
+			const Math::Vector3f& vertexPos1 = polygon.vertexPositions[vertexIndex];
+			const Math::Vector3f& vertexPos2 = polygon.vertexPositions[nextIndex];
 
-			const auto point = CU::Vector3f::ClosestPointOnSegment(vertexPos1, vertexPos2, aPos);
+			const auto point = Math::Vector3f::ClosestPointOnSegment(vertexPos1, vertexPos2, aPos);
 			const float dist = (aPos - point).LengthSqr();
 
 			if (dist < closestPointDist)
@@ -118,9 +118,9 @@ CU::Vector3f NavMesh::ClampToNavMesh(const CU::Vector3f& aPos) const
 	return closestPoint;
 }
 
-CU::Vector3f NavMesh::ClampToNearestEdge(const CU::Vector3f& aStart, const CU::Vector3f& aEnd) const
+Math::Vector3f NavMesh::ClampToNearestEdge(const Math::Vector3f& aStart, const Math::Vector3f& aEnd) const
 {
-	CU::Vector3f closestPoint;
+	Math::Vector3f closestPoint;
 	float closestPointDist = FLT_MAX;
 
 	for (int i = 0; i < (int)myPolygons.size(); ++i)
@@ -130,13 +130,13 @@ CU::Vector3f NavMesh::ClampToNearestEdge(const CU::Vector3f& aStart, const CU::V
 		for (int vertexIndex = 0; vertexIndex < polygon.vertexPositions.size(); ++vertexIndex)
 		{
 			int nextIndex = vertexIndex + 1 >= polygon.vertexPositions.size() ? 0 : vertexIndex + 1;
-			const CU::Vector3f& vertexPos1 = polygon.vertexPositions[vertexIndex];
-			const CU::Vector3f& vertexPos2 = polygon.vertexPositions[nextIndex];
+			const Math::Vector3f& vertexPos1 = polygon.vertexPositions[vertexIndex];
+			const Math::Vector3f& vertexPos2 = polygon.vertexPositions[nextIndex];
 
-			auto closestPoints = CU::Vector3f::ClosestPointsSegmentSegment(aStart, aEnd, vertexPos1, vertexPos2);
+			auto closestPoints = Math::Vector3f::ClosestPointsSegmentSegment(aStart, aEnd, vertexPos1, vertexPos2);
 
-			CU::Vector3f point1 = std::get<0>(closestPoints);
-			CU::Vector3f point2 = std::get<1>(closestPoints);
+			Math::Vector3f point1 = std::get<0>(closestPoints);
+			Math::Vector3f point2 = std::get<1>(closestPoints);
 			const float dist = (point1 - point2).LengthSqr();
 
 			if (dist < closestPointDist)
@@ -151,9 +151,9 @@ CU::Vector3f NavMesh::ClampToNearestEdge(const CU::Vector3f& aStart, const CU::V
 }
 
 // Should be split into a step-function to allow for time-slicing & threading.
-NavMeshPath NavMesh::FindPath(CU::Vector3f aStartingPos, CU::Vector3f aEndPos)
+NavMeshPath NavMesh::FindPath(Math::Vector3f aStartingPos, Math::Vector3f aEndPos)
 {
-	std::vector<CU::Vector3f> worldPath;
+	std::vector<Math::Vector3f> worldPath;
 
 	if (CanPathStraight(aStartingPos, aEndPos))
 	{
@@ -182,9 +182,9 @@ NavMeshPath NavMesh::FindPath(CU::Vector3f aStartingPos, CU::Vector3f aEndPos)
 	return NavMeshPath();
 }
 
-const bool NavMesh::RayCast(CU::Ray<float> aRay, CU::Vector3f& outHitPoint, bool aClampToNavMesh) const
+const bool NavMesh::RayCast(Math::Ray<float> aRay, Math::Vector3f& outHitPoint, bool aClampToNavMesh) const
 {
-	if (!CU::IntersectionAABBRay<float>(myBoundingBox, aRay, outHitPoint))
+	if (!Math::IntersectionAABBRay<float>(myBoundingBox, aRay, outHitPoint))
 	{
 		if (!myBoundingBox.IsInside(aRay.GetOrigin()))
 		{
@@ -197,10 +197,10 @@ const bool NavMesh::RayCast(CU::Ray<float> aRay, CU::Vector3f& outHitPoint, bool
 	bool hitNavMesh = false;
 	for (auto& polygon : myPolygons)
 	{
-		CU::Plane<float> polygonPlane(polygon.vertexPositions[0], polygon.vertexPositions[1], polygon.vertexPositions[2]);
+		Math::Plane<float> polygonPlane(polygon.vertexPositions[0], polygon.vertexPositions[1], polygon.vertexPositions[2]);
 
-		CU::Vector3f polyIntersectionPoint;
-		bool polyIntersection = CU::IntersectionPlaneRay(polygonPlane, aRay, polyIntersectionPoint);
+		Math::Vector3f polyIntersectionPoint;
+		bool polyIntersection = Math::IntersectionPlaneRay(polygonPlane, aRay, polyIntersectionPoint);
 		float intersectionDistance = polyIntersectionPoint.LengthSqr();
 		if (polyIntersection && IsPointInsidePolygon(polygon, polyIntersectionPoint))
 		{
@@ -222,7 +222,7 @@ const bool NavMesh::RayCast(CU::Ray<float> aRay, CU::Vector3f& outHitPoint, bool
 	return hitNavMesh;
 }
 
-const bool NavMesh::IsGoalInSameOrNeighbouringPolygon(CU::Vector3f aStartingPos, CU::Vector3f aEndPos) const
+const bool NavMesh::IsGoalInSameOrNeighbouringPolygon(Math::Vector3f aStartingPos, Math::Vector3f aEndPos) const
 {
 	int startingNodeIndex = GetClosestPolygon(aStartingPos);
 	if (IsPointInsidePolygon(myPolygons[startingNodeIndex], aEndPos)) return true;
@@ -244,7 +244,7 @@ const bool NavMesh::IsGoalInSameOrNeighbouringPolygon(CU::Vector3f aStartingPos,
 	return hasConnection;
 }
 
-const bool NavMesh::IsGoalInSameOrNeighbouringPolygon(int aStartPolyIndex, int aEndPolyIndex, CU::Vector3f aEndPos) const
+const bool NavMesh::IsGoalInSameOrNeighbouringPolygon(int aStartPolyIndex, int aEndPolyIndex, Math::Vector3f aEndPos) const
 {
 	if (IsPointInsidePolygon(myPolygons[aStartPolyIndex], aEndPos))
 		return true;
@@ -349,7 +349,7 @@ std::vector<int> NavMesh::GetShortestNodePath(int aStartingNode, int aEndNode) c
 	return shortestPath;
 }
 
-const int NavMesh::GetClosestNode(const CU::Vector3f& aPosition) const
+const int NavMesh::GetClosestNode(const Math::Vector3f& aPosition) const
 {
 	// Needs to be optimized lol
 
@@ -371,7 +371,7 @@ const int NavMesh::GetClosestNode(const CU::Vector3f& aPosition) const
 	return nodeIndex;
 }
 
-const int NavMesh::GetClosestPolygon(const CU::Vector3f& aPosition) const
+const int NavMesh::GetClosestPolygon(const Math::Vector3f& aPosition) const
 {
 	int polyIndex = 0;
 	for (auto& poly : myPolygons)
@@ -383,20 +383,20 @@ const int NavMesh::GetClosestPolygon(const CU::Vector3f& aPosition) const
 	return GetClosestNode(aPosition);
 }
 
-const CU::Vector3f NavMesh::GetClosestPointInNavMesh(const CU::Vector3f& aPosition) const
+const Math::Vector3f NavMesh::GetClosestPointInNavMesh(const Math::Vector3f& aPosition) const
 {
 	int closestNodeIndex = GetClosestNode(aPosition);
 	const NavPolygon& closestPoly = myPolygons[closestNodeIndex];
-	CU::Triangle<float> tri(closestPoly.vertexPositions[0], closestPoly.vertexPositions[1], closestPoly.vertexPositions[2]);
+	Math::Triangle<float> tri(closestPoly.vertexPositions[0], closestPoly.vertexPositions[1], closestPoly.vertexPositions[2]);
 
-	CU::Vector3f closestPoint = tri.ClosestPointOnTriangle(aPosition);
+	Math::Vector3f closestPoint = tri.ClosestPointOnTriangle(aPosition);
 
 	return closestPoint;
 }
 
-std::vector<CU::Vector3f> NavMesh::ConvertPathIndexToWorldPos(std::vector<int> aPath)
+std::vector<Math::Vector3f> NavMesh::ConvertPathIndexToWorldPos(std::vector<int> aPath)
 {
-	std::vector<CU::Vector3f> vector;
+	std::vector<Math::Vector3f> vector;
 
 	for (auto& index : aPath)
 	{
@@ -406,15 +406,15 @@ std::vector<CU::Vector3f> NavMesh::ConvertPathIndexToWorldPos(std::vector<int> a
 	return vector;
 }
 
-const bool NavMesh::IsPointInsidePolygon(NavPolygon aPolygon, CU::Vector3f aPosition) const
+const bool NavMesh::IsPointInsidePolygon(NavPolygon aPolygon, Math::Vector3f aPosition) const
 {
-	CU::Vector3f vertex0 = aPolygon.vertexPositions[0] - aPosition;
-	CU::Vector3f vertex1 = aPolygon.vertexPositions[1] - aPosition;
-	CU::Vector3f vertex2 = aPolygon.vertexPositions[2] - aPosition;
+	Math::Vector3f vertex0 = aPolygon.vertexPositions[0] - aPosition;
+	Math::Vector3f vertex1 = aPolygon.vertexPositions[1] - aPosition;
+	Math::Vector3f vertex2 = aPolygon.vertexPositions[2] - aPosition;
 
-	CU::Vector3f u = vertex1.Cross(vertex2);
-	CU::Vector3f v = vertex2.Cross(vertex0);
-	CU::Vector3f w = vertex0.Cross(vertex1);
+	Math::Vector3f u = vertex1.Cross(vertex2);
+	Math::Vector3f v = vertex2.Cross(vertex0);
+	Math::Vector3f w = vertex0.Cross(vertex1);
 
 	if (u.Dot(v) < 0.0f)
 	{
@@ -443,7 +443,7 @@ const bool NavMesh::NodesAreConnected(int aNodeIndexOne, int aNodeIndexTwo, int&
 	return false;
 }
 
-void NavMesh::ShortenEndNodes(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos, std::vector<CU::Vector3f>& inoutWorldPath)
+void NavMesh::ShortenEndNodes(const Math::Vector3f& aStartingPos, const Math::Vector3f& aEndPos, std::vector<Math::Vector3f>& inoutWorldPath)
 {
 	if (inoutWorldPath.empty()) return;
 
@@ -461,8 +461,8 @@ void NavMesh::ShortenEndNodes(const CU::Vector3f& aStartingPos, const CU::Vector
 
 	if (inoutWorldPath.size() >= 2)
 	{
-		CU::Vector3f lastNode = inoutWorldPath[inoutWorldPath.size() - 1];
-		CU::Vector3f secondLastNode = inoutWorldPath[inoutWorldPath.size() - 2];
+		Math::Vector3f lastNode = inoutWorldPath[inoutWorldPath.size() - 1];
+		Math::Vector3f secondLastNode = inoutWorldPath[inoutWorldPath.size() - 2];
 		float endToLastNode = (aEndPos - lastNode).LengthSqr();
 		float endToSecondLastNode = (aEndPos - secondLastNode).LengthSqr();
 		float lastNodeToSecondLastNode = (secondLastNode - lastNode).LengthSqr();
@@ -479,17 +479,17 @@ void NavMesh::ShortenEndNodes(const CU::Vector3f& aStartingPos, const CU::Vector
 	}
 }
 
-std::vector<CU::Vector3f> NavMesh::PathStraight(CU::Vector3f aStartingPos, CU::Vector3f aEndPos, const std::vector<int>& aNavNodePath) const
+std::vector<Math::Vector3f> NavMesh::PathStraight(Math::Vector3f aStartingPos, Math::Vector3f aEndPos, const std::vector<int>& aNavNodePath) const
 {
-	std::vector<CU::Vector3f> result;
+	std::vector<Math::Vector3f> result;
 
-	CU::Vector3f startPos = aStartingPos;
-	CU::Vector3f endPos = aEndPos;
+	Math::Vector3f startPos = aStartingPos;
+	Math::Vector3f endPos = aEndPos;
 
 	startPos.y = 0.0f;
 	endPos.y = 0.0f;
 
-	std::vector<std::array<CU::Vector3f, 2>> intersectedEdges;
+	std::vector<std::array<Math::Vector3f, 2>> intersectedEdges;
 
 	const auto FindIntersections =
 		[&intersectedEdges, startPos, endPos](const NavPolygon& aPolygon)
@@ -498,19 +498,19 @@ std::vector<CU::Vector3f> NavMesh::PathStraight(CU::Vector3f aStartingPos, CU::V
 			{
 				int nextIndex = (vertexIndex + 1) >= aPolygon.vertexPositions.size() ? 0 : vertexIndex + 1;
 
-				CU::Vector3f vertexPos1 = aPolygon.vertexPositions[vertexIndex];
-				CU::Vector3f vertexPos2 = aPolygon.vertexPositions[nextIndex];
+				Math::Vector3f vertexPos1 = aPolygon.vertexPositions[vertexIndex];
+				Math::Vector3f vertexPos2 = aPolygon.vertexPositions[nextIndex];
 
-				CU::Vector3f v0 = vertexPos1;
-				CU::Vector3f v1 = vertexPos2;
+				Math::Vector3f v0 = vertexPos1;
+				Math::Vector3f v1 = vertexPos2;
 
 				v0.y = 0.0f;
 				v1.y = 0.0f;
 
-				auto closestPoints = CU::Vector3f::ClosestPointsSegmentSegment(startPos, endPos, v0, v1);
+				auto closestPoints = Math::Vector3f::ClosestPointsSegmentSegment(startPos, endPos, v0, v1);
 
-				CU::Vector3f point1 = std::get<0>(closestPoints);
-				CU::Vector3f point2 = std::get<1>(closestPoints);
+				Math::Vector3f point1 = std::get<0>(closestPoints);
+				Math::Vector3f point2 = std::get<1>(closestPoints);
 
 				if (point1 == point2)
 				{
@@ -558,7 +558,7 @@ std::vector<CU::Vector3f> NavMesh::PathStraight(CU::Vector3f aStartingPos, CU::V
 	{
 		result.emplace_back(ClampToNavMesh(aStartingPos));
 
-		std::vector<CU::Vector3f> pathPoints;
+		std::vector<Math::Vector3f> pathPoints;
 		pathPoints.reserve(intersectedEdges.size() + 2);
 
 		pathPoints.emplace_back(aStartingPos);
@@ -567,8 +567,8 @@ std::vector<CU::Vector3f> NavMesh::PathStraight(CU::Vector3f aStartingPos, CU::V
 		{
 			const auto& edge = intersectedEdges[i];
 
-			auto closestPoints = CU::Vector3f::ClosestPointsSegmentSegment(aStartingPos, aEndPos, edge[0], edge[1]);
-			CU::Vector3f point2 = std::get<1>(closestPoints);
+			auto closestPoints = Math::Vector3f::ClosestPointsSegmentSegment(aStartingPos, aEndPos, edge[0], edge[1]);
+			Math::Vector3f point2 = std::get<1>(closestPoints);
 
 			pathPoints.emplace_back(point2);
 		}
@@ -578,20 +578,20 @@ std::vector<CU::Vector3f> NavMesh::PathStraight(CU::Vector3f aStartingPos, CU::V
 		std::sort(pathPoints.begin(), pathPoints.end(),
 			[aStartingPos](const auto& aLeft, const auto& aRight)
 			{
-				const float leftDistToStart = CU::Vector3f::DistanceSqr(aStartingPos, aLeft);
-				const float rightDistToStart = CU::Vector3f::DistanceSqr(aStartingPos, aRight);
+				const float leftDistToStart = Math::Vector3f::DistanceSqr(aStartingPos, aLeft);
+				const float rightDistToStart = Math::Vector3f::DistanceSqr(aStartingPos, aRight);
 
 				return leftDistToStart < rightDistToStart;
 			});
 
-		CU::Vector3f prevPoint = pathPoints.front();
+		Math::Vector3f prevPoint = pathPoints.front();
 
 		for (int i = 1; i < pathPoints.size() - 1; ++i)
 		{
-			const CU::Vector3f currPoint = pathPoints[i];
-			const CU::Vector3f nextPoint = pathPoints[i + 1];
+			const Math::Vector3f currPoint = pathPoints[i];
+			const Math::Vector3f nextPoint = pathPoints[i + 1];
 
-			float distSqr = CU::Vector3f::DistanceSqrToLine(prevPoint, nextPoint, currPoint);
+			float distSqr = Math::Vector3f::DistanceSqrToLine(prevPoint, nextPoint, currPoint);
 
 			static constexpr float tolerance = 1.0f;
 			if (distSqr > tolerance)
@@ -609,16 +609,16 @@ std::vector<CU::Vector3f> NavMesh::PathStraight(CU::Vector3f aStartingPos, CU::V
 	return result;
 }
 
-const bool NavMesh::CanPathStraight(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos) const
+const bool NavMesh::CanPathStraight(const Math::Vector3f& aStartingPos, const Math::Vector3f& aEndPos) const
 {
 	if (IsGoalInSameOrNeighbouringPolygon(aStartingPos, aEndPos)) return true;
 
-	CU::Vector3f direction = (aEndPos - aStartingPos).GetNormalized();
-	float dot = direction.Dot(CU::Vector3f(0, 1.0f, 0));
+	Math::Vector3f direction = (aEndPos - aStartingPos).GetNormalized();
+	float dot = direction.Dot(Math::Vector3f(0, 1.0f, 0));
 	bool rayIsNotAtASteepAngle = dot > -0.25f && dot < 0.25f;
 	if (!rayIsNotAtASteepAngle) return false;
 
-	std::vector<std::array<CU::Vector3f, 2>> intersectedEdges;
+	std::vector<std::array<Math::Vector3f, 2>> intersectedEdges;
 
 
 	for (auto& polygon : myPolygons)
@@ -626,12 +626,12 @@ const bool NavMesh::CanPathStraight(const CU::Vector3f& aStartingPos, const CU::
 		for (int vertexIndex = 0; vertexIndex < polygon.vertexPositions.size(); ++vertexIndex)
 		{
 			int nextIndex = vertexIndex + 1 >= polygon.vertexPositions.size() ? 0 : vertexIndex + 1;
-			const CU::Vector3f& vertexPos1 = polygon.vertexPositions[vertexIndex];
-			const CU::Vector3f& vertexPos2 = polygon.vertexPositions[nextIndex];
-			auto closestPoints = CU::Vector3f::ClosestPointsSegmentSegment(aStartingPos, aEndPos, vertexPos1, vertexPos2);
+			const Math::Vector3f& vertexPos1 = polygon.vertexPositions[vertexIndex];
+			const Math::Vector3f& vertexPos2 = polygon.vertexPositions[nextIndex];
+			auto closestPoints = Math::Vector3f::ClosestPointsSegmentSegment(aStartingPos, aEndPos, vertexPos1, vertexPos2);
 			float tolerance = 10.0f;
-			CU::Vector3f point1 = std::get<0>(closestPoints);
-			CU::Vector3f point2 = std::get<1>(closestPoints);
+			Math::Vector3f point1 = std::get<0>(closestPoints);
+			Math::Vector3f point2 = std::get<1>(closestPoints);
 			if ((point1 - point2).LengthSqr() < tolerance)
 			{
 				intersectedEdges.push_back({ vertexPos1, vertexPos2 });
@@ -657,21 +657,21 @@ const bool NavMesh::CanPathStraight(const CU::Vector3f& aStartingPos, const CU::
 	return intersectedPortals == intersectedEdges.size();
 }
 
-std::vector<CU::Vector3f> NavMesh::FunnelPath(const CU::Vector3f& aStartingPos, const CU::Vector3f& aEndPos, const std::vector<int>& aNavNodePath)
+std::vector<Math::Vector3f> NavMesh::FunnelPath(const Math::Vector3f& aStartingPos, const Math::Vector3f& aEndPos, const std::vector<int>& aNavNodePath)
 {
 	if (aNavNodePath.size() <= 2)
 		return { aEndPos };
 
 	const auto Vec2Right =
-		[](const CU::Vector3f& aLeft, const CU::Vector3f& aRight) -> float
+		[](const Math::Vector3f& aLeft, const Math::Vector3f& aRight) -> float
 		{
-			return (CU::Vector2f(-aLeft.z, aLeft.x).GetNormalized()
-				.Dot(CU::Vector2f(aRight.x, aRight.z).GetNormalized())) > 0.0f ? 1.0f : -1.0f;
+			return (Math::Vector2f(-aLeft.z, aLeft.x).GetNormalized()
+				.Dot(Math::Vector2f(aRight.x, aRight.z).GetNormalized())) > 0.0f ? 1.0f : -1.0f;
 		};
 
-	std::vector<CU::Vector3f> path{};
-	std::vector<CU::Vector3f> leftVertices;
-	std::vector<CU::Vector3f> rightVertices;
+	std::vector<Math::Vector3f> path{};
+	std::vector<Math::Vector3f> leftVertices;
+	std::vector<Math::Vector3f> rightVertices;
 
 	leftVertices.resize(aNavNodePath.size() + 1);
 	rightVertices.resize(aNavNodePath.size() + 1);
@@ -691,10 +691,10 @@ std::vector<CU::Vector3f> NavMesh::FunnelPath(const CU::Vector3f& aStartingPos, 
 			{
 				const NavNode& connectionNode = myNodes[neighbourIndex];
 
-				const CU::Vector3f leftVertex = portal.vertices[0];
-				const CU::Vector3f rightVertex = portal.vertices[1];
+				const Math::Vector3f leftVertex = portal.vertices[0];
+				const Math::Vector3f rightVertex = portal.vertices[1];
 
-				const CU::Vector3f dir = connectionNode.position - node.position;
+				const Math::Vector3f dir = connectionNode.position - node.position;
 
 				if (Vec2Right(dir, leftVertex - node.position) < 0.0f)
 				{
@@ -718,18 +718,18 @@ std::vector<CU::Vector3f> NavMesh::FunnelPath(const CU::Vector3f& aStartingPos, 
 	leftVertices[aNavNodePath.size()] = aEndPos;
 	rightVertices[aNavNodePath.size()] = aEndPos;
 
-	CU::Vector3f	apex = aStartingPos;
+	Math::Vector3f	apex = aStartingPos;
 	int				left = 1;
 	int				right = 1;
 
 	for (int i = 2; i <= (int)aNavNodePath.size() && path.size() < aNavNodePath.size(); ++i)
 	{
-		if (!CU::Vector3f::Equal(leftVertices[i], leftVertices[left]) && i > left)
+		if (!Math::Vector3f::Equal(leftVertices[i], leftVertices[left]) && i > left)
 		{
-			CU::Vector3f newSide = leftVertices[i] - apex;
+			Math::Vector3f newSide = leftVertices[i] - apex;
 
 			// If new side does not widen funnel, update.
-			if (Vec2Right(newSide, leftVertices[left] - apex) > 0.0f && !CU::Vector3f::Equal(apex, leftVertices[left], 0.00001f))
+			if (Vec2Right(newSide, leftVertices[left] - apex) > 0.0f && !Math::Vector3f::Equal(apex, leftVertices[left], 0.00001f))
 			{
 				// If new side crosses other side, update apex.
 				if (Vec2Right(newSide, rightVertices[right] - apex) > 0.0f)
@@ -738,7 +738,7 @@ std::vector<CU::Vector3f> NavMesh::FunnelPath(const CU::Vector3f& aStartingPos, 
 					int next = right;
 					for (int j = next; j <= (int)aNavNodePath.size(); j++)
 					{
-						if (!CU::Vector3f::Equal(rightVertices[j], rightVertices[next]))
+						if (!Math::Vector3f::Equal(rightVertices[j], rightVertices[next]))
 						{
 							next = j;
 							break;
@@ -760,18 +760,18 @@ std::vector<CU::Vector3f> NavMesh::FunnelPath(const CU::Vector3f& aStartingPos, 
 			}
 		}
 
-		if (!CU::Vector3f::Equal(rightVertices[i], rightVertices[right]) && i > right)
+		if (!Math::Vector3f::Equal(rightVertices[i], rightVertices[right]) && i > right)
 		{
-			CU::Vector3f newSide = rightVertices[i] - apex;
+			Math::Vector3f newSide = rightVertices[i] - apex;
 
-			if (Vec2Right(newSide, rightVertices[right] - apex) < 0.0f && !CU::Vector3f::Equal(apex, rightVertices[right], 0.00001f))
+			if (Vec2Right(newSide, rightVertices[right] - apex) < 0.0f && !Math::Vector3f::Equal(apex, rightVertices[right], 0.00001f))
 			{
 				if (Vec2Right(newSide, leftVertices[left] - apex) < 0.0f)
 				{
 					int next = left;
 					for (int j = next; j <= (int)aNavNodePath.size(); j++)
 					{
-						if (!CU::Vector3f::Equal(leftVertices[j], leftVertices[next]))
+						if (!Math::Vector3f::Equal(leftVertices[j], leftVertices[next]))
 						{
 							next = j;
 							break;

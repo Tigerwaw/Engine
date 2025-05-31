@@ -1,6 +1,6 @@
 #pragma once
-#include "GameEngine/Application/Application.h"
-#include "GameEngine/Application/EntryPoint.h"
+#include "Application/Application.h"
+#include "Application/EntryPoint.h"
 
 class FeatureShowcase : public Application
 {

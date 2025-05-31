@@ -1,5 +1,5 @@
 #pragma once
-#include "GameEngine/EngineDefines.h"
+#include "EngineDefines.h"
 
 #include "Component.h"
 #include "GameObjectEvent.h"

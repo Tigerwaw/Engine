@@ -35,15 +35,15 @@ private:
 	{
 		std::string message;
 		std::string tooltip;
-		CU::Vector3f color = { 1.0f, 1.0f, 1.0f };
+		Math::Vector3f color = { 1.0f, 1.0f, 1.0f };
 
-		Log(const std::string& aMessage, CU::Vector3f aColor = CU::Vector3f(1.0f, 1.0f, 1.0f))
+		Log(const std::string& aMessage, Math::Vector3f aColor = Math::Vector3f(1.0f, 1.0f, 1.0f))
 		{
 			message = aMessage;
 			color = aColor;
 		}
 
-		Log(const std::string& aMessage, const std::string& aTooltip, CU::Vector3f aColor = CU::Vector3f(1.0f, 1.0f, 1.0f))
+		Log(const std::string& aMessage, const std::string& aTooltip, Math::Vector3f aColor = Math::Vector3f(1.0f, 1.0f, 1.0f))
 		{
 			message = aMessage;
 			tooltip = aTooltip;
@@ -100,9 +100,9 @@ private:
 		"Lottes"
 	};
 
-	CU::Vector3f cameraStartingPos;
-	CU::Vector3f cameraStartingRot;
-	CU::Vector3f dLightStartingRot;
+	Math::Vector3f cameraStartingPos;
+	Math::Vector3f cameraStartingRot;
+	Math::Vector3f dLightStartingRot;
 	float dLightStartIntensity = 0;
 	float aLightStartIntensity = 0;
 	bool switchToAnimationTab = false;

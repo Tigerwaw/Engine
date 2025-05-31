@@ -2,10 +2,10 @@
 
 #include "FreecamController.h"
 #include "Engine.h"
-#include "GameEngine/Time/Timer.h"
-#include "GameEngine/Input/InputHandler.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
+#include "Time/Timer.h"
+#include "Input/InputHandler.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
 
 FreecamController::FreecamController(float aMoveSpeed, float aRotSpeed)
 {
@@ -59,7 +59,7 @@ void FreecamController::Update()
 		gameObject->GetComponent<Transform>()->SetTranslation(0, 0, 0);
 	}
 
-	CU::Vector3f inputDelta;
+	Math::Vector3f inputDelta;
 
 	inputDelta += gameObject->GetComponent<Transform>()->GetRightVector() * inputHandler.GetAnalogAction("CameraXMovement");
 	inputDelta += gameObject->GetComponent<Transform>()->GetUpVector() * inputHandler.GetAnalogAction("CameraYMovement");
@@ -71,8 +71,8 @@ void FreecamController::Update()
 	}
 
 
-	CU::Vector2f rotInput = inputHandler.GetAnalogAction2D("CameraRotation");
-	CU::Vector3f rotationDelta;
+	Math::Vector2f rotInput = inputHandler.GetAnalogAction2D("CameraRotation");
+	Math::Vector3f rotationDelta;
 	rotationDelta.x = -rotInput.y * myRotSpeed.y * deltaTime;
 	rotationDelta.y = rotInput.x * myRotSpeed.x * deltaTime;
 

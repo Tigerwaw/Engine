@@ -1,6 +1,6 @@
 #include "GraphicsEngine.pch.h"
 #include "TrailEmitter.h"
-#include "GameEngine/EngineDefines.h"
+#include "EngineDefines.h"
 
 TrailEmitter::TrailEmitter()
 {
@@ -10,17 +10,17 @@ TrailEmitter::~TrailEmitter()
 {
 }
 
-void TrailEmitter::Update(CU::Vector3f aFollowTarget, float aDeltaTime)
+void TrailEmitter::Update(Math::Vector3f aFollowTarget, float aDeltaTime)
 {
 	myCurrentLength = 0;
-	myTrailVertices[0].Position = CU::ToVector4(aFollowTarget, 1.0f);
+	myTrailVertices[0].Position = Math::ToVector4(aFollowTarget, 1.0f);
 	myPreviousPositions[0] = aFollowTarget;
 	UpdateTrailVertex(myTrailVertices[0], aDeltaTime, 0);
 
 	for (unsigned i = 1; i < static_cast<unsigned>(myTrailVertices.size()); i++)
 	{
 		TrailVertex& trailVertex = myTrailVertices[i];
-		trailVertex.Position = CU::ToVector4(myPreviousPositions[i * mySettings.Length], 1.0f);
+		trailVertex.Position = Math::ToVector4(myPreviousPositions[i * mySettings.Length], 1.0f);
 		if (trailVertex.Position.LengthSqr() > 1.0f)
 		{
 			myCurrentLength++;

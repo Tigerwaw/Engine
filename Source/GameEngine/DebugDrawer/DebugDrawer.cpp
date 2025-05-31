@@ -1,17 +1,17 @@
 #include "Enginepch.h"
 
 #include "DebugDrawer.h"
-#include "Graphics/GraphicsEngine/GraphicsEngine.h"
-#include "Graphics/GraphicsEngine/Objects/DynamicVertexBuffer.h"
-#include "Graphics/GraphicsEngine/GraphicsCommands/GraphicsCommandList.h"
-#include "GameEngine/EngineDefines.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/Camera.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/DebugModel.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "GameEngine/Math/MathConstants.hpp"
+#include "GraphicsEngine.h"
+#include "Objects/DynamicVertexBuffer.h"
+#include "GraphicsCommands/GraphicsCommandList.h"
+#include "EngineDefines.h"
+#include "ComponentSystem/Components/Graphics/Camera.h"
+#include "ComponentSystem/Components/Graphics/Model.h"
+#include "ComponentSystem/Components/Graphics/AnimatedModel.h"
+#include "ComponentSystem/Components/Graphics/DebugModel.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
+#include "Math/MathConstants.hpp"
 
 void DebugDrawer::InitializeDebugDrawer()
 {
@@ -44,7 +44,7 @@ void DebugDrawer::ClearObjects()
     }
 }
 
-void DebugDrawer::DrawLine(CU::Vector3f aFromPosition, CU::Vector3f aToPosition, CU::Vector4f aColor)
+void DebugDrawer::DrawLine(Math::Vector3f aFromPosition, Math::Vector3f aToPosition, Math::Vector4f aColor)
 {
     if (myLineVertices.size() >= MAX_DEBUG_LINES)
     {
@@ -65,14 +65,14 @@ void DebugDrawer::DrawLine(DebugLine aLine)
     DrawLine(aLine.From, aLine.To, aLine.Color);
 }
 
-void DebugDrawer::DrawCameraFrustum(std::shared_ptr<Camera> aCamera, CU::Vector4f aColor)
+void DebugDrawer::DrawCameraFrustum(std::shared_ptr<Camera> aCamera, Math::Vector4f aColor)
 {
-    CU::Matrix4x4f camMatrix = aCamera->gameObject->GetComponent<Transform>()->GetMatrix();
-    std::array<CU::Vector3f, 8> frustumVolume = aCamera->GetFrustumCorners();
+    Math::Matrix4x4f camMatrix = aCamera->gameObject->GetComponent<Transform>()->GetMatrix();
+    std::array<Math::Vector3f, 8> frustumVolume = aCamera->GetFrustumCorners();
 
     for (auto& pos : frustumVolume)
     {
-        pos = CU::ToVector3(CU::ToVector4(pos, 1.0f) * camMatrix);
+        pos = Math::ToVector3(Math::ToVector4(pos, 1.0f) * camMatrix);
     }
 
     DrawLine(frustumVolume[0], frustumVolume[1], aColor);
@@ -91,43 +91,43 @@ void DebugDrawer::DrawCameraFrustum(std::shared_ptr<Camera> aCamera, CU::Vector4
     DrawLine(frustumVolume[3], frustumVolume[7], aColor);
 }
 
-void DebugDrawer::DrawBoundingBox(std::shared_ptr<Model> aModel, CU::Vector4f aColor)
+void DebugDrawer::DrawBoundingBox(std::shared_ptr<Model> aModel, Math::Vector4f aColor)
 {
-    CU::Matrix4x4f objectMatrix = aModel->gameObject->GetComponent<Transform>()->GetWorldMatrix();
-    CU::AABB3D<float> boundingBox = aModel->GetBoundingBox();
+    Math::Matrix4x4f objectMatrix = aModel->gameObject->GetComponent<Transform>()->GetWorldMatrix();
+    Math::AABB3D<float> boundingBox = aModel->GetBoundingBox();
     DrawBoundingBox(boundingBox, objectMatrix, aColor);
 }
 
-void DebugDrawer::DrawBoundingBox(std::shared_ptr<AnimatedModel> aModel, CU::Vector4f aColor)
+void DebugDrawer::DrawBoundingBox(std::shared_ptr<AnimatedModel> aModel, Math::Vector4f aColor)
 {
-    CU::Matrix4x4f objectMatrix = aModel->gameObject->GetComponent<Transform>()->GetWorldMatrix();
-    CU::AABB3D<float> boundingBox = aModel->GetBoundingBox();
+    Math::Matrix4x4f objectMatrix = aModel->gameObject->GetComponent<Transform>()->GetWorldMatrix();
+    Math::AABB3D<float> boundingBox = aModel->GetBoundingBox();
     DrawBoundingBox(boundingBox, objectMatrix, aColor);
 }
 
-void DebugDrawer::DrawBoundingBox(std::shared_ptr<DebugModel> aModel, CU::Vector4f aColor)
+void DebugDrawer::DrawBoundingBox(std::shared_ptr<DebugModel> aModel, Math::Vector4f aColor)
 {
-    CU::Matrix4x4f objectMatrix = aModel->gameObject->GetComponent<Transform>()->GetWorldMatrix();
-    CU::AABB3D<float> boundingBox = aModel->GetBoundingBox();
+    Math::Matrix4x4f objectMatrix = aModel->gameObject->GetComponent<Transform>()->GetWorldMatrix();
+    Math::AABB3D<float> boundingBox = aModel->GetBoundingBox();
     DrawBoundingBox(boundingBox, objectMatrix, aColor);
 }
 
-void DebugDrawer::DrawBoundingSphere(CU::Sphere<float> aSphere, CU::Matrix4x4f aWorldMatrix, CU::Vector4f aColor)
+void DebugDrawer::DrawBoundingSphere(Math::Sphere<float> aSphere, Math::Matrix4x4f aWorldMatrix, Math::Vector4f aColor)
 {
     int numPoints = 20;
-    float angleinc = 2.0f * CU::PI / static_cast<float>(numPoints);
+    float angleinc = 2.0f * Math::PI / static_cast<float>(numPoints);
     float radius = aSphere.GetRadius();
-    CU::Vector3f center = aSphere.GetSphereinNewSpace(aWorldMatrix).GetPoint();
+    Math::Vector3f center = aSphere.GetSphereinNewSpace(aWorldMatrix).GetPoint();
 
     {
-        CU::Vector3f previousPointRight;
-        CU::Vector3f nextPointRight = center;
+        Math::Vector3f previousPointRight;
+        Math::Vector3f nextPointRight = center;
         nextPointRight.x += radius;
-        CU::Vector3f previousPointUp;
-        CU::Vector3f nextPointUp = center;
+        Math::Vector3f previousPointUp;
+        Math::Vector3f nextPointUp = center;
         nextPointUp.y += radius;
-        CU::Vector3f previousPointForward;
-        CU::Vector3f nextPointForward = center;
+        Math::Vector3f previousPointForward;
+        Math::Vector3f nextPointForward = center;
         nextPointForward.z += radius;
 
         for (int i = 0; i <= numPoints; i++)
@@ -139,9 +139,9 @@ void DebugDrawer::DrawBoundingSphere(CU::Sphere<float> aSphere, CU::Matrix4x4f a
             float c = cos(angleinc * i) * radius;
             float s = sin(angleinc * i) * radius;
 
-            nextPointRight = center + CU::Vector3f(c, s, 0);
-            nextPointUp = center + CU::Vector3f(0, c, s);
-            nextPointForward = center + CU::Vector3f(s, 0, c);
+            nextPointRight = center + Math::Vector3f(c, s, 0);
+            nextPointUp = center + Math::Vector3f(0, c, s);
+            nextPointForward = center + Math::Vector3f(s, 0, c);
             DrawLine(previousPointRight, nextPointRight, aColor);
             DrawLine(previousPointUp, nextPointUp, aColor);
             DrawLine(previousPointForward, nextPointForward, aColor);
@@ -149,14 +149,14 @@ void DebugDrawer::DrawBoundingSphere(CU::Sphere<float> aSphere, CU::Matrix4x4f a
     }
 }
 
-void DebugDrawer::DrawBoundingBox(CU::AABB3D<float> aAABB, CU::Matrix4x4f aWorldMatrix, CU::Vector4f aColor)
+void DebugDrawer::DrawBoundingBox(Math::AABB3D<float> aAABB, Math::Matrix4x4f aWorldMatrix, Math::Vector4f aColor)
 {
     //aAABB = aAABB.GetAABBinNewSpace(aWorldMatrix);
-    std::vector<CU::Vector3f> corners = aAABB.GetCorners();
+    std::vector<Math::Vector3f> corners = aAABB.GetCorners();
 
     for (auto& corner : corners)
     {
-        corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * aWorldMatrix);
+        corner = Math::ToVector3(Math::ToVector4(corner, 1.0f) * aWorldMatrix);
     }
 
     DrawLine(corners[0], corners[1], aColor);

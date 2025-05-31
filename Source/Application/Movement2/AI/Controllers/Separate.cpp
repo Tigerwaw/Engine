@@ -16,7 +16,7 @@ ControllerBase::SteeringOutput Separate::GetSteering(const SteeringInput& aSteer
     auto otherActors = PollingStation::Get().GetOtherActorPositions();
     for (auto& actorPos : otherActors)
     {
-        CU::Vector3f diff = aSteeringInput.position - actorPos;
+        Math::Vector3f diff = aSteeringInput.position - actorPos;
         if (diff.LengthSqr() > myAvoidRadius * myAvoidRadius) continue;
         output.velocity += diff;
     }

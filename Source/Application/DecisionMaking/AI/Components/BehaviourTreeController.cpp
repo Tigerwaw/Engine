@@ -8,7 +8,7 @@
 #include "GameEngine/ComponentSystem/Components/Graphics/ParticleSystem.h"
 #include "../PollingStation.h"
 #include "DecisionMaking/HealthComponent.h"
-#include "GameEngine/Intersections/Intersection3D.hpp"
+#include "Math/Intersection3D.hpp"
 
 class IsDead : public BrainTree::Decorator
 {
@@ -65,11 +65,11 @@ public:
 
 		auto self = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
 		auto transform = self->GetComponent<Transform>();
-		CU::Vector3f pos = transform->GetTranslation();
+		Math::Vector3f pos = transform->GetTranslation();
 
 		auto well = Engine::Get().GetSceneHandler().FindGameObjectByName("HWell");
-		CU::Vector3f targetPos = well->GetComponent<Transform>()->GetTranslation();
-		CU::Vector3f directionToTarget = targetPos - pos;
+		Math::Vector3f targetPos = well->GetComponent<Transform>()->GetTranslation();
+		Math::Vector3f directionToTarget = targetPos - pos;
 		if (directionToTarget.LengthSqr() < myHealRadius * myHealRadius)
 		{
 			return child->tick();
@@ -93,11 +93,11 @@ public:
 
 		auto self = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
 		auto transform = self->GetComponent<Transform>();
-		CU::Vector3f pos = transform->GetTranslation();
+		Math::Vector3f pos = transform->GetTranslation();
 
 		auto target = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myTarget"));
-		CU::Vector3f targetPos = target->GetComponent<Transform>()->GetTranslation();
-		CU::Vector3f directionToTarget = targetPos - pos;
+		Math::Vector3f targetPos = target->GetComponent<Transform>()->GetTranslation();
+		Math::Vector3f directionToTarget = targetPos - pos;
 		if (directionToTarget.LengthSqr() < myShootingRange * myShootingRange)
 		{
 			return child->tick();
@@ -119,11 +119,11 @@ public:
 	{
 		auto self = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
 		auto transform = self->GetComponent<Transform>();
-		CU::Vector3f pos = transform->GetTranslation();
+		Math::Vector3f pos = transform->GetTranslation();
 
 		auto target = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myTarget"));
-		CU::Vector3f targetPos = target->GetComponent<Transform>()->GetTranslation();
-		CU::Vector3f directionToTarget = targetPos - pos;
+		Math::Vector3f targetPos = target->GetComponent<Transform>()->GetTranslation();
+		Math::Vector3f directionToTarget = targetPos - pos;
 
 		float mySightAngle = blackboard->getFloat("mySightAngle");
 		float myAvoidRadius = blackboard->getFloat("myAvoidRadius");
@@ -137,10 +137,10 @@ public:
 			{
 				if ((wallPos - pos).LengthSqr() > directionToTarget.LengthSqr()) continue;
 
-				CU::Sphere<float> sphere(wallPos, myAvoidRadius);
-				CU::Ray<float> ray(pos, directionToTarget.GetNormalized());
+				Math::Sphere<float> sphere(wallPos, myAvoidRadius);
+				Math::Ray<float> ray(pos, directionToTarget.GetNormalized());
 
-				if (CU::IntersectionSphereRay(sphere, ray))
+				if (Math::IntersectionSphereRay(sphere, ray))
 				{
 					return Status::Failure;
 				}
@@ -244,16 +244,16 @@ public:
 		float myHealRadius = blackboard->getFloat("myHealRadius");
 		float myMaxAcceleration = blackboard->getFloat("myMaxAcceleration");
 		float myDeceleration = blackboard->getFloat("myDeceleration");
-		CU::Vector3f myVelocity;
+		Math::Vector3f myVelocity;
 		myVelocity.x = blackboard->getFloat("myVelocityX");
 		myVelocity.y = blackboard->getFloat("myVelocityY");
 		myVelocity.z = blackboard->getFloat("myVelocityZ");
-		CU::Quatf myCurrentRotation;
+		Math::Quatf myCurrentRotation;
 		myCurrentRotation.x = blackboard->getFloat("myCurrentRotationX");
 		myCurrentRotation.y = blackboard->getFloat("myCurrentRotationY");
 		myCurrentRotation.z = blackboard->getFloat("myCurrentRotationZ");
 		myCurrentRotation.w = blackboard->getFloat("myCurrentRotationW");
-		CU::Quatf myGoalRotation;
+		Math::Quatf myGoalRotation;
 		myGoalRotation.x = blackboard->getFloat("myGoalRotationX");
 		myGoalRotation.y = blackboard->getFloat("myGoalRotationY");
 		myGoalRotation.z = blackboard->getFloat("myGoalRotationZ");
@@ -265,9 +265,9 @@ public:
 		auto self = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
 		auto& transform = self->GetComponent<Transform>();
 
-		CU::Vector3f pos = transform->GetTranslation();
-		CU::Vector3f targetPos = PollingStation::Get().GetHealingWellPosition();
-		CU::Vector3f velocity;
+		Math::Vector3f pos = transform->GetTranslation();
+		Math::Vector3f targetPos = PollingStation::Get().GetHealingWellPosition();
+		Math::Vector3f velocity;
 
 		// Seek Target
 		{
@@ -276,10 +276,10 @@ public:
 
 		// Avoid walls
 		{
-			CU::Vector3f avoidVelocity;
+			Math::Vector3f avoidVelocity;
 			for (auto& wallPos : PollingStation::Get().GetWallPositions())
 			{
-				CU::Vector3f diff = pos - wallPos;
+				Math::Vector3f diff = pos - wallPos;
 				if (diff.LengthSqr() > myAvoidRadius * myAvoidRadius) continue;
 				avoidVelocity += diff;
 			}
@@ -314,7 +314,7 @@ public:
 				blackboard->setFloat("myCurrentRotationY", myCurrentRotation.y);
 				blackboard->setFloat("myCurrentRotationZ", myCurrentRotation.z);
 				blackboard->setFloat("myCurrentRotationW", myCurrentRotation.w);
-				myGoalRotation = CU::Quatf(CU::Vector3f(0, std::atan2(myVelocity.x, myVelocity.z), 0));
+				myGoalRotation = Math::Quatf(Math::Vector3f(0, std::atan2(myVelocity.x, myVelocity.z), 0));
 				blackboard->setFloat("myGoalRotationX", myGoalRotation.x);
 				blackboard->setFloat("myGoalRotationY", myGoalRotation.y);
 				blackboard->setFloat("myGoalRotationZ", myGoalRotation.z);
@@ -322,7 +322,7 @@ public:
 			}
 
 			float rotTimeDelta = myCurrentRotationTime / myMaxRotationTime;
-			CU::Quatf rot = CU::Quatf::Slerp(myCurrentRotation, myGoalRotation, rotTimeDelta);
+			Math::Quatf rot = Math::Quatf::Slerp(myCurrentRotation, myGoalRotation, rotTimeDelta);
 			self->GetComponent<Transform>()->SetRotation(rot.GetEulerAnglesDegrees());
 		}
 
@@ -356,12 +356,12 @@ public:
 	{
 		float myCurrentRotationTime = blackboard->getFloat("myCurrentRotationTime");
 		float myMaxRotationTime = blackboard->getFloat("myMaxRotationTime");
-		CU::Quatf myCurrentRotation;
+		Math::Quatf myCurrentRotation;
 		myCurrentRotation.x = blackboard->getFloat("myCurrentRotationX");
 		myCurrentRotation.y = blackboard->getFloat("myCurrentRotationY");
 		myCurrentRotation.z = blackboard->getFloat("myCurrentRotationZ");
 		myCurrentRotation.w = blackboard->getFloat("myCurrentRotationW");
-		CU::Quatf myGoalRotation;
+		Math::Quatf myGoalRotation;
 		myGoalRotation.x = blackboard->getFloat("myGoalRotationX");
 		myGoalRotation.y = blackboard->getFloat("myGoalRotationY");
 		myGoalRotation.z = blackboard->getFloat("myGoalRotationZ");
@@ -372,11 +372,11 @@ public:
 
 		auto self = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myName"));
 		auto transform = self->GetComponent<Transform>();
-		CU::Vector3f pos = transform->GetTranslation();
+		Math::Vector3f pos = transform->GetTranslation();
 
 		auto target = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myTarget"));
-		CU::Vector3f targetPos = target->GetComponent<Transform>()->GetTranslation();
-		CU::Vector3f directionToTarget = targetPos - pos;
+		Math::Vector3f targetPos = target->GetComponent<Transform>()->GetTranslation();
+		Math::Vector3f directionToTarget = targetPos - pos;
 
 		float dt = Engine::Get().GetTimer().GetDeltaTime();
 
@@ -391,7 +391,7 @@ public:
 			blackboard->setFloat("myCurrentRotationY", myCurrentRotation.y);
 			blackboard->setFloat("myCurrentRotationZ", myCurrentRotation.z);
 			blackboard->setFloat("myCurrentRotationW", myCurrentRotation.w);
-			myGoalRotation = CU::Quatf(CU::Vector3f(0, std::atan2(directionToTarget.x, directionToTarget.z), 0));
+			myGoalRotation = Math::Quatf(Math::Vector3f(0, std::atan2(directionToTarget.x, directionToTarget.z), 0));
 			blackboard->setFloat("myGoalRotationX", myGoalRotation.x);
 			blackboard->setFloat("myGoalRotationY", myGoalRotation.y);
 			blackboard->setFloat("myGoalRotationZ", myGoalRotation.z);
@@ -399,7 +399,7 @@ public:
 		}
 
 		float rotTimeDelta = myCurrentRotationTime / myMaxRotationTime;
-		CU::Quatf rot = CU::Quatf::Slerp(myCurrentRotation, myGoalRotation, rotTimeDelta);
+		Math::Quatf rot = Math::Quatf::Slerp(myCurrentRotation, myGoalRotation, rotTimeDelta);
 		transform->SetRotation(rot.GetEulerAnglesDegrees());
 		float dot = transform->GetForwardVector().Dot(directionToTarget.GetNormalized());
 		myTimeSinceLastShot += dt;
@@ -475,16 +475,16 @@ public:
 		float myAvoidFactor = blackboard->getFloat("myAvoidFactor");
 		float myMaxAcceleration = blackboard->getFloat("myMaxAcceleration");
 		float myDeceleration = blackboard->getFloat("myDeceleration");
-		CU::Vector3f myVelocity;
+		Math::Vector3f myVelocity;
 		myVelocity.x = blackboard->getFloat("myVelocityX");
 		myVelocity.y = blackboard->getFloat("myVelocityY");
 		myVelocity.z = blackboard->getFloat("myVelocityZ");
-		CU::Quatf myCurrentRotation;
+		Math::Quatf myCurrentRotation;
 		myCurrentRotation.x = blackboard->getFloat("myCurrentRotationX");
 		myCurrentRotation.y = blackboard->getFloat("myCurrentRotationY");
 		myCurrentRotation.z = blackboard->getFloat("myCurrentRotationZ");
 		myCurrentRotation.w = blackboard->getFloat("myCurrentRotationW");
-		CU::Quatf myGoalRotation;
+		Math::Quatf myGoalRotation;
 		myGoalRotation.x = blackboard->getFloat("myGoalRotationX");
 		myGoalRotation.y = blackboard->getFloat("myGoalRotationY");
 		myGoalRotation.z = blackboard->getFloat("myGoalRotationZ");
@@ -499,9 +499,9 @@ public:
 		auto target = Engine::Get().GetSceneHandler().FindGameObjectByName(blackboard->getString("myTarget"));
 		auto& transform = self->GetComponent<Transform>();
 
-		CU::Vector3f pos = transform->GetTranslation();
-		CU::Vector3f targetPos = target->GetComponent<Transform>()->GetTranslation();
-		CU::Vector3f velocity;
+		Math::Vector3f pos = transform->GetTranslation();
+		Math::Vector3f targetPos = target->GetComponent<Transform>()->GetTranslation();
+		Math::Vector3f velocity;
 
 		if ((targetPos - self->GetComponent<Transform>()->GetTranslation()).LengthSqr() < myShootingRange * myShootingRange)
 		{
@@ -515,10 +515,10 @@ public:
 
 		// Avoid walls
 		{
-			CU::Vector3f avoidVelocity;
+			Math::Vector3f avoidVelocity;
 			for (auto& wallPos : PollingStation::Get().GetWallPositions())
 			{
-				CU::Vector3f diff = pos - wallPos;
+				Math::Vector3f diff = pos - wallPos;
 				if (diff.LengthSqr() > myAvoidRadius * myAvoidRadius) continue;
 				avoidVelocity += diff;
 			}
@@ -553,7 +553,7 @@ public:
 				blackboard->setFloat("myCurrentRotationY", myCurrentRotation.y);
 				blackboard->setFloat("myCurrentRotationZ", myCurrentRotation.z);
 				blackboard->setFloat("myCurrentRotationW", myCurrentRotation.w);
-				myGoalRotation = CU::Quatf(CU::Vector3f(0, std::atan2(myVelocity.x, myVelocity.z), 0));
+				myGoalRotation = Math::Quatf(Math::Vector3f(0, std::atan2(myVelocity.x, myVelocity.z), 0));
 				blackboard->setFloat("myGoalRotationX", myGoalRotation.x);
 				blackboard->setFloat("myGoalRotationY", myGoalRotation.y);
 				blackboard->setFloat("myGoalRotationZ", myGoalRotation.z);
@@ -561,7 +561,7 @@ public:
 			}
 
 			float rotTimeDelta = myCurrentRotationTime / myMaxRotationTime;
-			CU::Quatf rot = CU::Quatf::Slerp(myCurrentRotation, myGoalRotation, rotTimeDelta);
+			Math::Quatf rot = Math::Quatf::Slerp(myCurrentRotation, myGoalRotation, rotTimeDelta);
 			self->GetComponent<Transform>()->SetRotation(rot.GetEulerAnglesDegrees());
 		}
 

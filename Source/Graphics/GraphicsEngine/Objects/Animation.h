@@ -1,12 +1,12 @@
 #pragma once
-#include "GameEngine/Math/Matrix.hpp"
-namespace CU = CommonUtilities;
+#include "Math/Matrix.hpp"
+
 
 struct Animation
 {
 	struct Frame
 	{
-		std::unordered_map<std::string, CU::Matrix4x4f> BoneTransforms;
+		std::unordered_map<std::string, Math::Matrix4x4f> BoneTransforms;
 	};
 
 	std::vector<Frame> Frames;

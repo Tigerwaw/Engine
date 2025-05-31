@@ -16,8 +16,8 @@ ControllerBase::SteeringOutput Separate::GetSteering(const SteeringInput& aSteer
     auto otherActors = PollingStation::Get().GetOtherActorPositions();
     for (auto& actorPos : otherActors)
     {
-        if (CU::Vector3f::Equal(aSteeringInput.position, actorPos, 1.0f)) continue;
-        CU::Vector3f diff = aSteeringInput.position - actorPos;
+        if (Math::Vector3f::Equal(aSteeringInput.position, actorPos, 1.0f)) continue;
+        Math::Vector3f diff = aSteeringInput.position - actorPos;
         if (diff.LengthSqr() < myThreshold * myThreshold)
         {
             output.velocity += diff;

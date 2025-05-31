@@ -1,20 +1,20 @@
 #include "Enginepch.h"
 
 #include "Rotator.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "GameEngine/Engine.h"
-#include "GameEngine/Time/Timer.h"
-#include "GameEngine/Utility/SerializationUtils.hpp"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
+#include "Engine.h"
+#include "Time/Timer.h"
+#include "CommonUtilities/SerializationUtils.hpp"
 
-Rotator::Rotator(const CU::Vector3f& aRotationVector)
+Rotator::Rotator(const Math::Vector3f& aRotationVector)
 {
     SetRotationPerSecond(aRotationVector);
 }
 
 void Rotator::Start()
 {
-	myCurrentRot = CU::Quatf(gameObject->GetComponent<Transform>()->GetRotation() * 3.14f / 180.0f);
+	myCurrentRot = Math::Quatf(gameObject->GetComponent<Transform>()->GetRotation() * 3.14f / 180.0f);
 	myGoalRot = myCurrentRot;
 }
 
@@ -29,13 +29,13 @@ void Rotator::Update()
 	}
 
 	float rotTimeDelta = myCurrentRotationTime / myMaxRotationTime;
-	CU::Quatf rot = CU::Quatf::Slerp(myCurrentRot, myGoalRot, rotTimeDelta);
+	Math::Quatf rot = Math::Quatf::Slerp(myCurrentRot, myGoalRot, rotTimeDelta);
 	gameObject->GetComponent<Transform>()->SetRotation(rot.GetEulerAnglesDegrees());
 }
 
-void Rotator::SetRotationPerSecond(const CU::Vector3f& aRotationVector)
+void Rotator::SetRotationPerSecond(const Math::Vector3f& aRotationVector)
 {
-	myRotationPerSecond = CU::Quatf(aRotationVector * 3.14f / 180.0f);
+	myRotationPerSecond = Math::Quatf(aRotationVector * 3.14f / 180.0f);
 	StartNewRotation();
 }
 
@@ -49,7 +49,7 @@ bool Rotator::Deserialize(nl::json& aJsonObject)
 {
 	if (aJsonObject.contains("RotationPerSecond"))
 	{
-		SetRotationPerSecond(Utility::DeserializeVector3<float>(aJsonObject["RotationPerSecond"]));
+		SetRotationPerSecond(Utilities::DeserializeVector3<float>(aJsonObject["RotationPerSecond"]));
 	}
 
 	return true;

@@ -1,12 +1,12 @@
 #include "Enginepch.h"
 
 #include "PointLight.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "Graphics/GraphicsEngine/GraphicsEngine.h"
-#include "Graphics/GraphicsEngine/Objects/Texture.h"
-#include "GameEngine/Utility/SerializationUtils.hpp"
+#include "ComponentSystem/GameObject.h"
+#include "GraphicsEngine.h"
+#include "Objects/Texture.h"
+#include "CommonUtilities/SerializationUtils.hpp"
 
-PointLight::PointLight(float aIntensity, CU::Vector3f aColor) : LightSource(aIntensity, aColor)
+PointLight::PointLight(float aIntensity, Math::Vector3f aColor) : LightSource(aIntensity, aColor)
 {
 }
 
@@ -31,7 +31,7 @@ bool PointLight::Deserialize(nl::json& aJsonObject)
 
     if (aJsonObject.contains("Color"))
     {
-        SetColor(Utility::DeserializeVector3<float>(aJsonObject["Color"]));
+        SetColor(Utilities::DeserializeVector3<float>(aJsonObject["Color"]));
     }
 
     if (aJsonObject.contains("CastShadows") && aJsonObject["CastShadows"].get<bool>())

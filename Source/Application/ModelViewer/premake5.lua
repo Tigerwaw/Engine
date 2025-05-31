@@ -15,11 +15,7 @@ project "ModelViewer"
   conformancemode "On"
 
   dependson { 
-    "GameEngine", 
-    "GraphicsEngine",
-    "AssetManager",
-    "Imgui",
-    "Logger"
+    "GameEngine"
   }
 
   debugdir "%{dirs.bin}/%{prj.name}"
@@ -54,6 +50,8 @@ project "ModelViewer"
     "GraphicsEngine_%{cfg.buildcfg}", 
     "Imgui_%{cfg.buildcfg}", 
     "Logger_%{cfg.buildcfg}",
+    --"Math_%{cfg.buildcfg}",
+    --"CommonUtilities_%{cfg.buildcfg}",
     "TGAFbx",
     "d3d11",
     "dxguid",

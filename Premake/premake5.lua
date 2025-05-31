@@ -12,6 +12,8 @@ include (dirs.graphicsengineshaders)
 include (dirs.assetmanager)
 include (dirs.imgui)
 include (dirs.logger)
+include (dirs.math)
+include (dirs.commonutilities)
 include (dirs.projectcreator)
 include (dirs.networkengine)
 

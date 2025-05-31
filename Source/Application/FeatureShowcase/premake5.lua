@@ -15,11 +15,7 @@ project "FeatureShowcase"
   conformancemode "On"
 
   dependson { 
-    "GameEngine", 
-    "GraphicsEngine",
-    "AssetManager",
-    "Imgui",
-    "Logger"
+    "GameEngine"
   }
 
   debugdir "%{dirs.bin}/%{prj.name}"
@@ -37,7 +33,6 @@ project "FeatureShowcase"
 	}
 
   includedirs { 
-    dirs.source,
     dirs.application,
     dirs.engine,
     dirs.graphics,
@@ -54,6 +49,8 @@ project "FeatureShowcase"
     "GraphicsEngine_%{cfg.buildcfg}", 
     "Imgui_%{cfg.buildcfg}", 
     "Logger_%{cfg.buildcfg}",
+    --"Math_%{cfg.buildcfg}",
+    --"CommonUtilities_%{cfg.buildcfg}",
     "TGAFbx",
     "d3d11",
     "dxguid",

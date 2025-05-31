@@ -31,7 +31,7 @@ private:
 	float myAvoidRadius = 200.0f;
 	float myAvoidFactor = 6.0f;
 
-	CU::Vector3f myVelocity;
+	Math::Vector3f myVelocity;
 	float myMaxAcceleration = 1.5f;
 	float myDeceleration = 0.01f;
 	float myMaxMoveSpeed = 50.0f;
@@ -40,8 +40,8 @@ private:
 	bool myOrientTowardsVelocity = true;
 	float myCurrentRotationTime = 0;
 	float myMaxRotationTime = 0.25f;
-	CU::Quatf myCurrentRot;
-	CU::Quatf myGoalRot;
+	Math::Quatf myCurrentRot;
+	Math::Quatf myGoalRot;
 
 	float myMaxParticleActiveTime = 0.5f;
 	float myCurrentParticleActiveTime = 0;

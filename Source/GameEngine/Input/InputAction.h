@@ -1,6 +1,6 @@
 #pragma once
-#include "GameEngine/Math/Vector.hpp"
-namespace CU = CommonUtilities;
+#include "Math/Vector.hpp"
+
 
 #include "GenericInput.h"
 #include "MKBInput.h"
@@ -84,9 +84,9 @@ class Analog2DAction : public InputAction
 public:
     Analog2DAction(std::shared_ptr<GenericInput> aInputHandler, unsigned aKeyCode) : InputAction(aInputHandler, aKeyCode) {}
 
-    const virtual CU::Vector2f GetAction()
+    const virtual Math::Vector2f GetAction()
     {
-        if (!myInputHandler) return CU::Vector2f();
+        if (!myInputHandler) return Math::Vector2f();
 
         return myInputHandler->GetAnalog2D(myKeyCode);
     }

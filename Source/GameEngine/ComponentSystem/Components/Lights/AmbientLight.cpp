@@ -1,10 +1,10 @@
 #include "Enginepch.h"
 
 #include "AmbientLight.h"
-#include "Graphics/GraphicsEngine/GraphicsEngine.h"
-#include "Graphics/GraphicsEngine/Objects/Texture.h"
+#include "GraphicsEngine.h"
+#include "Objects/Texture.h"
 
-AmbientLight::AmbientLight(std::shared_ptr<Texture> aCubemap, CU::Vector3f aColor, float aIntensity)
+AmbientLight::AmbientLight(std::shared_ptr<Texture> aCubemap, Math::Vector3f aColor, float aIntensity)
 {
 	myCubemap = aCubemap;
 	myColor = aColor;
@@ -24,7 +24,7 @@ void AmbientLight::Update()
 {
 }
 
-void AmbientLight::SetColor(CU::Vector3f aColor)
+void AmbientLight::SetColor(Math::Vector3f aColor)
 {
 	myColor = aColor;
 }

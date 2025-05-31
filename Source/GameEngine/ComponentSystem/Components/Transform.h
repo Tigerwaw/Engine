@@ -1,15 +1,15 @@
 #pragma once
-#include "GameEngine/ComponentSystem/Component.h"
-#include "GameEngine/Math/Matrix4x4.hpp"
-#include "GameEngine/Math/Vector.hpp"
-#include "GameEngine/Math/Quaternion.hpp"
+#include "ComponentSystem/Component.h"
+#include "Math/Matrix4x4.hpp"
+#include "Math/Vector.hpp"
+#include "Math/Quaternion.hpp"
 
-namespace CU = CommonUtilities;
+
 
 class Transform : public Component
 {
 public:
-	Transform(CU::Vector3f aPosition = { 0, 0, 0 }, CU::Vector3f aRotation = { 0, 0, 0 }, CU::Vector3f aScale = { 1, 1, 1 });
+	Transform(Math::Vector3f aPosition = { 0, 0, 0 }, Math::Vector3f aRotation = { 0, 0, 0 }, Math::Vector3f aScale = { 1, 1, 1 });
 
     void Start() override;
     void Update() override;
@@ -21,31 +21,31 @@ public:
 	const Transform* GetParent() const { return myParent; }
 	const std::vector<Transform*> GetChildren() const { return myChildren; }
 
-	const CU::Matrix4x4f& GetMatrix(bool aNoScale = false);
-	const CU::Matrix4x4f GetWorldMatrix(bool aNoScale = false);
-	const CU::Matrix4x4f GetToWorldMatrix(bool aNoScale = false);
+	const Math::Matrix4x4f& GetMatrix(bool aNoScale = false);
+	const Math::Matrix4x4f GetWorldMatrix(bool aNoScale = false);
+	const Math::Matrix4x4f GetToWorldMatrix(bool aNoScale = false);
 
-	const CU::Vector3f GetRightVector(bool aInWorldSpace = false);
-	const CU::Vector3f GetUpVector(bool aInWorldSpace = false);
-	const CU::Vector3f GetForwardVector(bool aInWorldSpace = false);
-	const CU::Vector3f GetTranslation(bool aInWorldSpace = false) const;
-	const CU::Vector3f GetRotation(bool aInWorldSpace = false) const;
-	const CU::Vector3f GetScale(bool aInWorldSpace = false) const;
+	const Math::Vector3f GetRightVector(bool aInWorldSpace = false);
+	const Math::Vector3f GetUpVector(bool aInWorldSpace = false);
+	const Math::Vector3f GetForwardVector(bool aInWorldSpace = false);
+	const Math::Vector3f GetTranslation(bool aInWorldSpace = false) const;
+	const Math::Vector3f GetRotation(bool aInWorldSpace = false) const;
+	const Math::Vector3f GetScale(bool aInWorldSpace = false) const;
 
-	void SetTranslation(const CU::Vector3f aTranslation);
+	void SetTranslation(const Math::Vector3f aTranslation);
 	void SetTranslation(const float aX, const float aY, const float aZ);
-	void AddTranslation(const CU::Vector3f aTranslation);
+	void AddTranslation(const Math::Vector3f aTranslation);
 	void AddTranslation(const float aX, const float aY, const float aZ);
 
-	void SetRotation(const CU::Vector3f aRotationInDegrees);
+	void SetRotation(const Math::Vector3f aRotationInDegrees);
 	void SetRotation(const float aPitch, const float aYaw, const float aRoll);
-	void AddRotation(const CU::Vector3f aRotationInDegrees);
+	void AddRotation(const Math::Vector3f aRotationInDegrees);
 	void AddRotation(const float aPitch, const float aYaw, const float aRoll);
 
-	void SetScale(const CU::Vector3f aScale);
+	void SetScale(const Math::Vector3f aScale);
 	void SetScale(const float aX, const float aY, const float aZ);
 	void SetUniformScale(float aScale);
-	void AddScale(const CU::Vector3f aScale);
+	void AddScale(const Math::Vector3f aScale);
 	void AddScale(const float aX, const float aY, const float aZ);
 	void AddUniformScale(float aScale);
 
@@ -54,20 +54,20 @@ public:
 	bool Serialize(nl::json& outJsonObject) override;
 	bool Deserialize(nl::json& aJsonObject) override;
 private:
-	void UpdateToWorldMatrix(CU::Matrix4x4f aToWorldMatrix, CU::Matrix4x4f aToWorldMatrixNoScale);
+	void UpdateToWorldMatrix(Math::Matrix4x4f aToWorldMatrix, Math::Matrix4x4f aToWorldMatrixNoScale);
 	void UpdateChildrenToWorldMatrix();
 	void SetIsDirty();
 	void SetParentInternal(Transform* aTransform);
-	CU::Matrix4x4f myCachedMatrix;
-	CU::Matrix4x4f myCachedMatrixNoScale;
+	Math::Matrix4x4f myCachedMatrix;
+	Math::Matrix4x4f myCachedMatrixNoScale;
 	bool myIsDirty = true;
 
-	CU::Matrix4x4f myToWorldMatrix;
-	CU::Matrix4x4f myToWorldMatrixNoScale;
+	Math::Matrix4x4f myToWorldMatrix;
+	Math::Matrix4x4f myToWorldMatrixNoScale;
 
-	CU::Vector3f myPosition;
-	CU::Vector3f myRotation;
-	CU::Vector3f myScale;
+	Math::Vector3f myPosition;
+	Math::Vector3f myRotation;
+	Math::Vector3f myScale;
 
 	Transform* myParent = nullptr;
 	std::vector<Transform*> myChildren;

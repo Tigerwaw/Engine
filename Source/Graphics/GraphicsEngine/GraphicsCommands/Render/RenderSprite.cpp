@@ -1,12 +1,12 @@
 #include "GraphicsEngine.pch.h"
 #include "RenderSprite.h"
 
-#include "GraphicsEngine/GraphicsEngine.h"
-#include "GraphicsEngine/Objects/ConstantBuffers/SpriteBuffer.h"
-#include "GraphicsEngine/Objects/Sprite.h"
-#include "GraphicsEngine/Objects/Texture.h"
-#include "GraphicsEngine/Objects/Material.h"
-#include "AssetManager/AssetManager.h"
+#include "GraphicsEngine.h"
+#include "Objects/ConstantBuffers/SpriteBuffer.h"
+#include "Objects/Sprite.h"
+#include "Objects/Texture.h"
+#include "Objects/Material.h"
+#include "AssetManager.h"
 
 RenderSprite::RenderSprite(std::shared_ptr<Sprite> aSprite)
 {

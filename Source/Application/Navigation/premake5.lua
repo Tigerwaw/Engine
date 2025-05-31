@@ -15,12 +15,7 @@ project "Navigation"
   conformancemode "On"
 
   dependson { 
-    "GameEngine", 
-    "GraphicsEngine", 
-    "GraphicsEngineShaders", 
-    "AssetManager",
-    "Imgui",
-    "Logger"
+    "GameEngine"
   }
 
   debugdir "%{dirs.bin}/%{prj.name}"
@@ -55,6 +50,8 @@ project "Navigation"
     "GraphicsEngine_%{cfg.buildcfg}", 
     "Imgui_%{cfg.buildcfg}", 
     "Logger_%{cfg.buildcfg}",
+    --"Math_%{cfg.buildcfg}",
+    --"CommonUtilities_%{cfg.buildcfg}",
     "TGAFbx",
     "d3d11",
     "dxguid",

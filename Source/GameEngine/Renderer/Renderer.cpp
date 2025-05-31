@@ -1,33 +1,33 @@
 #include "Enginepch.h"
 #include "Renderer.h"
 
-#include "GameEngine/Engine.h"
-#include "GameEngine/DebugDrawer/DebugDrawer.h"
-#include "AssetManager/AssetManager.h"
-#include "GraphicsEngine/GraphicsEngine.h"
-#include "GraphicsEngine/Objects/Sprite.h"
-#include "GraphicsEngine/Objects/Text/Text.h"
-#include "GameEngine/Math/Vector.hpp"
-#include "GameEngine/Intersections/AABB3D.hpp"
-#include "GameEngine/Intersections/Intersection3D.hpp"
-namespace CU = CommonUtilities;
+#include "Engine.h"
+#include "DebugDrawer/DebugDrawer.h"
+#include "AssetManager.h"
+#include "GraphicsEngine.h"
+#include "Objects/Sprite.h"
+#include "Objects/Text/Text.h"
+#include "Math/Vector.hpp"
+#include "Math/AABB3D.hpp"
+#include "Math/Intersection3D.hpp"
 
-#include "GameEngine/ComponentSystem/Scene.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/InstancedModel.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/DebugModel.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/ParticleSystem.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/TrailSystem.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/Camera.h"
-#include "GameEngine/ComponentSystem/Components/Lights/AmbientLight.h"
-#include "GameEngine/ComponentSystem/Components/Lights/DirectionalLight.h"
-#include "GameEngine/ComponentSystem/Components/Lights/PointLight.h"
-#include "GameEngine/ComponentSystem/Components/Lights/SpotLight.h"
-#include "GameEngine/ComponentSystem/Components/Physics/Colliders/BoxCollider.h"
-#include "GameEngine/ComponentSystem/Components/Physics/Colliders/SphereCollider.h"
+
+#include "ComponentSystem/Scene.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
+#include "ComponentSystem/Components/Graphics/Model.h"
+#include "ComponentSystem/Components/Graphics/AnimatedModel.h"
+#include "ComponentSystem/Components/Graphics/InstancedModel.h"
+#include "ComponentSystem/Components/Graphics/DebugModel.h"
+#include "ComponentSystem/Components/Graphics/ParticleSystem.h"
+#include "ComponentSystem/Components/Graphics/TrailSystem.h"
+#include "ComponentSystem/Components/Graphics/Camera.h"
+#include "ComponentSystem/Components/Lights/AmbientLight.h"
+#include "ComponentSystem/Components/Lights/DirectionalLight.h"
+#include "ComponentSystem/Components/Lights/PointLight.h"
+#include "ComponentSystem/Components/Lights/SpotLight.h"
+#include "ComponentSystem/Components/Physics/Colliders/BoxCollider.h"
+#include "ComponentSystem/Components/Physics/Colliders/SphereCollider.h"
 
 Renderer::Renderer() = default;
 Renderer::~Renderer() = default;
@@ -56,7 +56,7 @@ void Renderer::RenderForward(Scene& aScene)
 	if (gfx.RecalculateShadowFrustum)
 	{
 		aScene.myDirectionalLight->GetComponent<DirectionalLight>()->RecalculateShadowFrustum(aScene.myMainCamera, myVisibleObjectsBB);
-		myVisibleObjectsBB.InitWithCenterAndExtents(CU::Vector3f(), CU::Vector3f());
+		myVisibleObjectsBB.InitWithCenterAndExtents(Math::Vector3f(), Math::Vector3f());
 	}
 
 	gfxList.Enqueue<UpdatePostProcessBuffer>();
@@ -115,7 +115,7 @@ void Renderer::RenderDeferred(Scene& aScene)
 	if (gfx.RecalculateShadowFrustum)
 	{
 		aScene.myDirectionalLight->GetComponent<DirectionalLight>()->RecalculateShadowFrustum(aScene.myMainCamera, myVisibleObjectsBB);
-		myVisibleObjectsBB.InitWithCenterAndExtents(CU::Vector3f(), CU::Vector3f());
+		myVisibleObjectsBB.InitWithCenterAndExtents(Math::Vector3f(), Math::Vector3f());
 	}
 
 	gfxList.Enqueue<UpdatePostProcessBuffer>();
@@ -556,7 +556,7 @@ void Renderer::QueueDebugGizmos(Scene& aScene, std::shared_ptr<Camera> aRenderCa
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<BeginEvent>("Draw Debug Gizmos");
 
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Gizmo")->pso);
-	CU::PlaneVolume<float> frustumVolume = aRenderCamera->GetFrustumPlaneVolume();
+	Math::PlaneVolume<float> frustumVolume = aRenderCamera->GetFrustumPlaneVolume();
 
 	for (auto& gameObject : aScene.myGameObjects)
 	{
@@ -701,28 +701,28 @@ void Renderer::QueueDebugLines(Scene& aScene)
 			std::shared_ptr<BoxCollider> boxCollider = gameObject->GetComponent<BoxCollider>();
 			if (boxCollider && boxCollider->GetActive())
 			{
-				CU::Vector4f colliderColor = boxCollider->debugColliding ? CU::Vector4f(1.0f, 0, 0, 1.0f) : CU::Vector4f(0, 1.0f, 0, 1.0f);
+				Math::Vector4f colliderColor = boxCollider->debugColliding ? Math::Vector4f(1.0f, 0, 0, 1.0f) : Math::Vector4f(0, 1.0f, 0, 1.0f);
 				Engine::Get().GetDebugDrawer().DrawBoundingBox(boxCollider->GetAABB(), gameObject->GetComponent<Transform>()->GetWorldMatrix(), colliderColor);
 			}
 
 			std::shared_ptr<SphereCollider> sphereCollider = gameObject->GetComponent<SphereCollider>();
 			if (sphereCollider && sphereCollider->GetActive())
 			{
-				CU::Vector4f colliderColor = sphereCollider->debugColliding ? CU::Vector4f(1.0f, 0, 0, 1.0f) : CU::Vector4f(0, 1.0f, 0, 1.0f);
+				Math::Vector4f colliderColor = sphereCollider->debugColliding ? Math::Vector4f(1.0f, 0, 0, 1.0f) : Math::Vector4f(0, 1.0f, 0, 1.0f);
 				Engine::Get().GetDebugDrawer().DrawBoundingSphere(sphereCollider->GetSphere(), gameObject->GetComponent<Transform>()->GetWorldMatrix(), colliderColor);
 			}
 		}
 	}
 }
 
-bool Renderer::IsInsideFrustum(std::shared_ptr<Camera> aRenderCamera, std::shared_ptr<Transform> aObjectTransform, CU::AABB3D<float> aObjectAABB)
+bool Renderer::IsInsideFrustum(std::shared_ptr<Camera> aRenderCamera, std::shared_ptr<Transform> aObjectTransform, Math::AABB3D<float> aObjectAABB)
 {
 	if (!GraphicsEngine::Get().UseViewCulling) return true;
 
 	return aRenderCamera->GetViewcullingIntersection(aObjectTransform, aObjectAABB);
 }
 
-bool Renderer::IsInsideRadius(std::shared_ptr<PointLight> aPointLight, std::shared_ptr<Transform> aObjectTransform, CU::AABB3D<float> aObjectAABB)
+bool Renderer::IsInsideRadius(std::shared_ptr<PointLight> aPointLight, std::shared_ptr<Transform> aObjectTransform, Math::AABB3D<float> aObjectAABB)
 {
 	if (!GraphicsEngine::Get().UseViewCulling) return true;
 
@@ -730,7 +730,7 @@ bool Renderer::IsInsideRadius(std::shared_ptr<PointLight> aPointLight, std::shar
 	std::shared_ptr<Camera> pointLightCam = aPointLight->gameObject->GetComponent<Camera>();
 	if (!pointLightTransform) return true;
 
-	CU::Matrix4x4f objectMatrix = aObjectTransform->GetWorldMatrix();
+	Math::Matrix4x4f objectMatrix = aObjectTransform->GetWorldMatrix();
 
 	if (aObjectTransform->IsScaled())
 	{
@@ -741,17 +741,17 @@ bool Renderer::IsInsideRadius(std::shared_ptr<PointLight> aPointLight, std::shar
 		objectMatrix = objectMatrix.GetFastInverse();
 	}
 
-	CU::Sphere<float> sphere(pointLightTransform->GetTranslation(), pointLightCam->GetFarPlane());
+	Math::Sphere<float> sphere(pointLightTransform->GetTranslation(), pointLightCam->GetFarPlane());
 	sphere = sphere.GetSphereinNewSpace(pointLightTransform->GetWorldMatrix() * objectMatrix);
-	return CU::IntersectionSphereAABB(sphere, aObjectAABB);
+	return Math::IntersectionSphereAABB(sphere, aObjectAABB);
 }
 
 void Renderer::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
 {
 	if (aGameObject->GetComponent<Transform>())
 	{
-		CU::Vector3f bbMin = myVisibleObjectsBB.GetMin();
-		CU::Vector3f bbMax = myVisibleObjectsBB.GetMax();
+		Math::Vector3f bbMin = myVisibleObjectsBB.GetMin();
+		Math::Vector3f bbMax = myVisibleObjectsBB.GetMax();
 		std::shared_ptr<Transform> objectTransform = aGameObject->GetComponent<Transform>();
 
 		std::shared_ptr<Model> model = aGameObject->GetComponent<Model>();
@@ -763,9 +763,9 @@ void Renderer::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
 
 			auto& corners = model->GetBoundingBox().GetCorners();
 
-			for (CU::Vector3f corner : corners)
+			for (Math::Vector3f corner : corners)
 			{
-				corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * objectTransform->GetWorldMatrix());
+				corner = Math::ToVector3(Math::ToVector4(corner, 1.0f) * objectTransform->GetWorldMatrix());
 
 				bbMin.x = std::fminf(corner.x, bbMin.x);
 				bbMax.x = std::fmaxf(corner.x, bbMax.x);
@@ -780,9 +780,9 @@ void Renderer::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
 			if (!animModel->GetShouldViewcull()) return;
 
 			auto& corners = animModel->GetBoundingBox().GetCorners();
-			for (CU::Vector3f corner : corners)
+			for (Math::Vector3f corner : corners)
 			{
-				corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * objectTransform->GetWorldMatrix());
+				corner = Math::ToVector3(Math::ToVector4(corner, 1.0f) * objectTransform->GetWorldMatrix());
 
 				bbMin.x = std::fminf(corner.x, bbMin.x);
 				bbMax.x = std::fmaxf(corner.x, bbMax.x);
@@ -797,9 +797,9 @@ void Renderer::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
 			if (!instancedModel->GetShouldViewcull()) return;
 
 			auto& corners = instancedModel->GetBoundingBox().GetCorners();
-			for (CU::Vector3f corner : corners)
+			for (Math::Vector3f corner : corners)
 			{
-				corner = CU::ToVector3(CU::ToVector4(corner, 1.0f) * objectTransform->GetWorldMatrix());
+				corner = Math::ToVector3(Math::ToVector4(corner, 1.0f) * objectTransform->GetWorldMatrix());
 
 				bbMin.x = std::fminf(corner.x, bbMin.x);
 				bbMax.x = std::fmaxf(corner.x, bbMax.x);
@@ -811,7 +811,7 @@ void Renderer::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
 		}
 		else
 		{
-			CU::Vector3f point = objectTransform->GetTranslation(true);
+			Math::Vector3f point = objectTransform->GetTranslation(true);
 
 			bbMin.x = std::fminf(point.x, bbMin.x);
 			bbMax.x = std::fmaxf(point.x, bbMax.x);
@@ -832,16 +832,16 @@ void Renderer::Init()
 	//myTestText = std::make_shared<Text>();
 
 	//myTestText->SetFont(AssetManager::Get().GetAsset<FontAsset>("Fonts/F_RobotoRegular.json")->font);
-	//myTestText->SetPosition(CU::Vector2f(-500.0f, 700.0f));
+	//myTestText->SetPosition(Math::Vector2f(-500.0f, 700.0f));
 	//myTestText->SetSize(5);
 	//myTestText->SetTextContent("Test");
 }
 
 void Renderer::DrawTestUI()
 {
-	//myTestSprite->SetTexture(AssetManager::Get().GetAsset<TextureAsset>("EngineAssets/Textures/Utility/T_perlin_C.dds")->texture);
-	//myTestSprite->SetPosition(CU::Vector2f(500.0f, 500.0f));
-	//myTestSprite->SetSize(CU::Vector2f(600.0f, 600.0f));
+	//myTestSprite->SetTexture(AssetManager::Get().GetAsset<TextureAsset>("EngineAssets/Textures/CommonUtilitiesT_perlin_C.dds")->texture);
+	//myTestSprite->SetPosition(Math::Vector2f(500.0f, 500.0f));
+	//myTestSprite->SetSize(Math::Vector2f(600.0f, 600.0f));
 	//GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(GraphicsEngine::Get().GetBackBuffer(), nullptr, false, false);
 	//GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderSprite>(myTestSprite);
 

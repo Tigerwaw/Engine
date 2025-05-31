@@ -5,8 +5,8 @@
 #include <d3dcompiler.h>
 #include <d3d11shader.h>
 #include "DDSTextureLoader/DDSTextureLoader11.h"
-#include "StringHelpers.h"
 #include "ShaderReflection/ShaderInfo.h"
+#include "StringHelpers.h"
 
 #ifndef _RETAIL
 #include "imgui/imgui.h"
@@ -14,13 +14,13 @@
 #include "imgui/backends/imgui_impl_dx11.h"
 #endif
 
-#include "GraphicsEngine/Objects/Texture.h"
-#include "GraphicsEngine/Objects/Shader.h"
-#include "GraphicsEngine/Objects/PipelineStateObject.h"
-#include "GraphicsEngine/Objects/ConstantBuffers/ConstantBuffer.h"
-#include "GraphicsEngine/Objects/DynamicVertexBuffer.h"
+#include "Objects/Texture.h"
+#include "Objects/Shader.h"
+#include "Objects/PipelineStateObject.h"
+#include "Objects/ConstantBuffers/ConstantBuffer.h"
+#include "Objects/DynamicVertexBuffer.h"
 
-#include "GameEngine/Engine.h"
+#include "Engine.h"
 
 using namespace Microsoft::WRL;
 
@@ -67,7 +67,7 @@ bool RenderHardwareInterface::Initialize(HWND aWindowHandle, bool aEnableDebug)
 	}
 
 	const wchar_t* wideAdapterName = selectedAdapterDesc.Description;
-	const std::string adapterName = str::wide_to_utf8(wideAdapterName);
+	const std::string adapterName = Utilities::wide_to_utf8(wideAdapterName);
 
 	LOG(LogRHI, Log, "Selected adapter is {}", adapterName);
 	constexpr size_t megabyte = (1024ULL * 1024ULL);
@@ -1226,7 +1226,7 @@ void RenderHardwareInterface::SetRenderTargets(std::vector<std::shared_ptr<Textu
 
 void RenderHardwareInterface::BeginEvent(std::string_view aEvent) const
 {
-	const std::wstring wideEvent = str::utf8_to_wide(aEvent.data());
+	const std::wstring wideEvent = Utilities::utf8_to_wide(aEvent.data());
 	myUDA->BeginEvent(wideEvent.c_str());
 }
 
@@ -1237,7 +1237,7 @@ void RenderHardwareInterface::EndEvent() const
 
 void RenderHardwareInterface::SetMarker(std::string_view aMarker) const
 {
-	const std::wstring wideMarker = str::utf8_to_wide(aMarker.data());
+	const std::wstring wideMarker = Utilities::utf8_to_wide(aMarker.data());
 	myUDA->SetMarker(wideMarker.c_str());
 }
 

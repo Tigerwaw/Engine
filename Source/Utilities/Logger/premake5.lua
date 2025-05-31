@@ -7,7 +7,7 @@ workspace "TGPGameEngine"
 
 group "Utilities"
 project "Logger"
-  location "%{dirs.utilities}/%{prj.name}/"
+  location "%{dirs.logger}"
   kind "StaticLib"
   language "C++"
   cppdialect "C++20"
@@ -18,8 +18,8 @@ project "Logger"
 	objdir ("%{dirs.temp}/%{cfg.buildcfg}/%{prj.name}")
 
   files {
-		"%{dirs.utilities}/%{prj.name}/*.h",
-		"%{dirs.utilities}/%{prj.name}/*.cpp"
+		"**.h",
+		"**.cpp"
 	}
 
   includedirs { 

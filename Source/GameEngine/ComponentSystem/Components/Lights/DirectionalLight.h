@@ -1,16 +1,16 @@
 #pragma once
-#include "GameEngine/ComponentSystem/Components/Lights/LightSource.h"
-#include "GameEngine/Math/Vector.hpp"
-#include "GameEngine/Intersections/AABB3D.hpp"
-namespace CU = CommonUtilities;
+#include "ComponentSystem/Components/Lights/LightSource.h"
+#include "Math/Vector.hpp"
+#include "Math/AABB3D.hpp"
+
 
 class GameObject;
 
 class DirectionalLight : public LightSource
 {
 public:
-	DirectionalLight(float aIntensity = 1.0f, CU::Vector3f aColor = { 1.0f, 1.0f, 1.0f });
-	void RecalculateShadowFrustum(std::shared_ptr<GameObject> aRenderCamera, CU::AABB3D<float> aSceneBB);
+	DirectionalLight(float aIntensity = 1.0f, Math::Vector3f aColor = { 1.0f, 1.0f, 1.0f });
+	void RecalculateShadowFrustum(std::shared_ptr<GameObject> aRenderCamera, Math::AABB3D<float> aSceneBB);
 
 	bool Serialize(nl::json& outJsonObject) override;
 	bool Deserialize(nl::json& aJsonObject) override;

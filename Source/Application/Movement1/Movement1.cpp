@@ -36,7 +36,7 @@ void Movement1::InitializeApplication()
 	for (int i = 0; i < 4; i++)
 	{
 		std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
-		go->AddComponent<Transform>(CU::Vector3f(static_cast<float>(std::rand() % 1000 - std::rand() % 1000), 0, static_cast<float>(std::rand() % 1000 - std::rand() % 1000)));
+		go->AddComponent<Transform>(Math::Vector3f(static_cast<float>(std::rand() % 1000 - std::rand() % 1000), 0, static_cast<float>(std::rand() % 1000 - std::rand() % 1000)));
 		auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_TgaBroRed.json")->material);
 		model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
 		go->AddComponent<WrapAroundWorld>();
@@ -49,7 +49,7 @@ void Movement1::InitializeApplication()
 	for (int i = 0; i < 10; i++)
 	{
 		std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
-		go->AddComponent<Transform>(CU::Vector3f(static_cast<float>(std::rand() % 1000 - std::rand() % 1000), 0, static_cast<float>(std::rand() % 1000 - std::rand() % 1000)));
+		go->AddComponent<Transform>(Math::Vector3f(static_cast<float>(std::rand() % 1000 - std::rand() % 1000), 0, static_cast<float>(std::rand() % 1000 - std::rand() % 1000)));
 		auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_TgaBroGreen.json")->material);
 		model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
 		go->AddComponent<WrapAroundWorld>();

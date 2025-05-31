@@ -1,13 +1,13 @@
 #include "Enginepch.h"
 
 #include "Camera.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "GameEngine/Intersections/Intersection3D.hpp"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
+#include "Math/Intersection3D.hpp"
 
 #define PI 3.14159265358979323846
 
-Camera::Camera(float aFOV, float aNearPlane, float aFarPlane, CU::Vector2f aResolution)
+Camera::Camera(float aFOV, float aNearPlane, float aFarPlane, Math::Vector2f aResolution)
 {
 	InitPerspectiveProjection(aFOV, aNearPlane, aFarPlane, aResolution);
 }
@@ -25,7 +25,7 @@ void Camera::Update()
 {
 }
 
-void Camera::InitPerspectiveProjection(float aFOV, float aNearPlane, float aFarPlane, CU::Vector2f aResolution)
+void Camera::InitPerspectiveProjection(float aFOV, float aNearPlane, float aFarPlane, Math::Vector2f aResolution)
 {
 	myNearPlane = aNearPlane;
 	myFarPlane = aFarPlane;
@@ -36,7 +36,7 @@ void Camera::InitPerspectiveProjection(float aFOV, float aNearPlane, float aFarP
 	float verticalFOV = horizontalFOV * aspectRatio;
 	myViewportDimensions = aResolution;
 
-	myProjectionMatrix = CU::Matrix4x4<float>();
+	myProjectionMatrix = Math::Matrix4x4<float>();
 	myProjectionMatrix(1, 1) = horizontalFOV;
 	myProjectionMatrix(2, 2) = verticalFOV;
 	myProjectionMatrix(3, 3) = aFarPlane / (aFarPlane - aNearPlane);
@@ -44,15 +44,15 @@ void Camera::InitPerspectiveProjection(float aFOV, float aNearPlane, float aFarP
 	myProjectionMatrix(4, 3) = -aNearPlane * myProjectionMatrix(3, 3);
 	myProjectionMatrix(4, 4) = 0;
 
-	//CU::Vector3f topLeft = CU::Vector3f(-cos(horizontalFOV), sin(verticalFOV), 1.0f).GetNormalized();
-	//CU::Vector3f topRight = CU::Vector3f(cos(horizontalFOV), sin(verticalFOV), 1.0f).GetNormalized();
-	//CU::Vector3f bottomRight = CU::Vector3f(cos(horizontalFOV), -sin(verticalFOV), 1.0f).GetNormalized();
-	//CU::Vector3f bottomLeft = CU::Vector3f(-cos(horizontalFOV), -sin(verticalFOV), 1.0f).GetNormalized();
+	//Math::Vector3f topLeft = Math::Vector3f(-cos(horizontalFOV), sin(verticalFOV), 1.0f).GetNormalized();
+	//Math::Vector3f topRight = Math::Vector3f(cos(horizontalFOV), sin(verticalFOV), 1.0f).GetNormalized();
+	//Math::Vector3f bottomRight = Math::Vector3f(cos(horizontalFOV), -sin(verticalFOV), 1.0f).GetNormalized();
+	//Math::Vector3f bottomLeft = Math::Vector3f(-cos(horizontalFOV), -sin(verticalFOV), 1.0f).GetNormalized();
 	
-	CU::Vector3f topLeft = CU::Vector3f(-1.0f, 1.0f, 1.0f).GetNormalized();
-	CU::Vector3f topRight = CU::Vector3f(1.0f, 1.0f, 1.0f).GetNormalized();
-	CU::Vector3f bottomRight = CU::Vector3f(1.0f, -1.0f, 1.0f).GetNormalized();
-	CU::Vector3f bottomLeft = CU::Vector3f(-1.0f, -1.0f, 1.0f).GetNormalized();
+	Math::Vector3f topLeft = Math::Vector3f(-1.0f, 1.0f, 1.0f).GetNormalized();
+	Math::Vector3f topRight = Math::Vector3f(1.0f, 1.0f, 1.0f).GetNormalized();
+	Math::Vector3f bottomRight = Math::Vector3f(1.0f, -1.0f, 1.0f).GetNormalized();
+	Math::Vector3f bottomLeft = Math::Vector3f(-1.0f, -1.0f, 1.0f).GetNormalized();
 
 	myFrustumCorners[0] = bottomLeft * aNearPlane;
 	myFrustumCorners[1] = topLeft * aNearPlane;
@@ -69,7 +69,7 @@ void Camera::InitOrtographicProjection(float aLeft, float aRight, float aTop, fl
 	myViewportDimensions = { (aRight - aLeft) * 0.5f, (aTop - aBottom) * 0.5f };
 	myNearPlane = aNearPlane;
 	myFarPlane = aFarPlane;
-	myProjectionMatrix = CU::Matrix4x4<float>();
+	myProjectionMatrix = Math::Matrix4x4<float>();
 	myProjectionMatrix(1, 1) = 2.0f / (aRight - aLeft);
 	myProjectionMatrix(2, 2) = 2.0f / (aTop - aBottom);
 	myProjectionMatrix(3, 3) = 1.0f / (aFarPlane - aNearPlane);
@@ -78,45 +78,45 @@ void Camera::InitOrtographicProjection(float aLeft, float aRight, float aTop, fl
 	myProjectionMatrix(4, 2) = -(aTop + aBottom) / (aTop - aBottom);
 	myProjectionMatrix(4, 3) = -(aNearPlane) / (aFarPlane - aNearPlane);
 
-	myFrustumCorners[0] = CU::Vector3f(aLeft, aBottom, aNearPlane);
-	myFrustumCorners[1] = CU::Vector3f(aLeft, aTop, aNearPlane);
-	myFrustumCorners[2] = CU::Vector3f(aRight, aTop, aNearPlane);
-	myFrustumCorners[3] = CU::Vector3f(aRight, aBottom, aNearPlane);
-	myFrustumCorners[4] = CU::Vector3f(aLeft, aBottom, aFarPlane);
-	myFrustumCorners[5] = CU::Vector3f(aLeft, aTop, aFarPlane);
-	myFrustumCorners[6] = CU::Vector3f(aRight, aTop, aFarPlane);
-	myFrustumCorners[7] = CU::Vector3f(aRight, aBottom, aFarPlane);
+	myFrustumCorners[0] = Math::Vector3f(aLeft, aBottom, aNearPlane);
+	myFrustumCorners[1] = Math::Vector3f(aLeft, aTop, aNearPlane);
+	myFrustumCorners[2] = Math::Vector3f(aRight, aTop, aNearPlane);
+	myFrustumCorners[3] = Math::Vector3f(aRight, aBottom, aNearPlane);
+	myFrustumCorners[4] = Math::Vector3f(aLeft, aBottom, aFarPlane);
+	myFrustumCorners[5] = Math::Vector3f(aLeft, aTop, aFarPlane);
+	myFrustumCorners[6] = Math::Vector3f(aRight, aTop, aFarPlane);
+	myFrustumCorners[7] = Math::Vector3f(aRight, aBottom, aFarPlane);
 }
 
 
-CU::PlaneVolume<float> Camera::GetFrustumPlaneVolume(CU::Matrix4x4f aToObjectSpace)
+Math::PlaneVolume<float> Camera::GetFrustumPlaneVolume(Math::Matrix4x4f aToObjectSpace)
 {
-	std::vector<CU::Vector3f> corners;
+	std::vector<Math::Vector3f> corners;
 	
-	CU::Matrix4x4f matrix = gameObject->GetComponent<Transform>()->GetWorldMatrix() * aToObjectSpace;
+	Math::Matrix4x4f matrix = gameObject->GetComponent<Transform>()->GetWorldMatrix() * aToObjectSpace;
 
 	for (auto& corner : myFrustumCorners)
 	{
-		corners.emplace_back(CU::ToVector3(CU::ToVector4(corner, 1.0f) * matrix));
+		corners.emplace_back(Math::ToVector3(Math::ToVector4(corner, 1.0f) * matrix));
 	}
 
-	CU::PlaneVolume<float> volume;
-	volume.AddPlane(CU::Plane<float>(corners[0], corners[1], corners[2]));
-	volume.AddPlane(CU::Plane<float>(corners[6], corners[5], corners[4]));
+	Math::PlaneVolume<float> volume;
+	volume.AddPlane(Math::Plane<float>(corners[0], corners[1], corners[2]));
+	volume.AddPlane(Math::Plane<float>(corners[6], corners[5], corners[4]));
 	
-	volume.AddPlane(CU::Plane<float>(corners[4], corners[5], corners[1]));
-	volume.AddPlane(CU::Plane<float>(corners[2], corners[6], corners[7]));
+	volume.AddPlane(Math::Plane<float>(corners[4], corners[5], corners[1]));
+	volume.AddPlane(Math::Plane<float>(corners[2], corners[6], corners[7]));
 	
-	volume.AddPlane(CU::Plane<float>(corners[7], corners[4], corners[0]));
-	volume.AddPlane(CU::Plane<float>(corners[1], corners[5], corners[6]));
+	volume.AddPlane(Math::Plane<float>(corners[7], corners[4], corners[0]));
+	volume.AddPlane(Math::Plane<float>(corners[1], corners[5], corners[6]));
 
 	return volume;
 }
 
-bool Camera::GetViewcullingIntersection(std::shared_ptr<Transform> aObjectTransform, CU::AABB3D<float> aObjectAABB)
+bool Camera::GetViewcullingIntersection(std::shared_ptr<Transform> aObjectTransform, Math::AABB3D<float> aObjectAABB)
 {
 	std::shared_ptr<Transform> goTransform = gameObject->GetComponent<Transform>();
-	CU::Matrix4x4f objectMatrix = aObjectTransform->GetWorldMatrix();
+	Math::Matrix4x4f objectMatrix = aObjectTransform->GetWorldMatrix();
 
 	if (goTransform->IsScaled())
 	{
@@ -127,7 +127,7 @@ bool Camera::GetViewcullingIntersection(std::shared_ptr<Transform> aObjectTransf
 		objectMatrix = objectMatrix.GetFastInverse();
 	}
 
-	return CU::IntersectionBetweenPlaneVolumeAABB(GetFrustumPlaneVolume(objectMatrix), aObjectAABB);
+	return Math::IntersectionBetweenPlaneVolumeAABB(GetFrustumPlaneVolume(objectMatrix), aObjectAABB);
 }
 
 bool Camera::Serialize(nl::json& outJsonObject)
@@ -146,7 +146,7 @@ bool Camera::Deserialize(nl::json& aJsonObject)
 			float fov = 0;
 			float nearPlane = 0;
 			float farPlane = 0;
-			CU::Vector2f resolution = Engine::Get().GetResolution();
+			Math::Vector2f resolution = Engine::Get().GetResolution();
 
 			if (aJsonObject.contains("FOV"))
 			{

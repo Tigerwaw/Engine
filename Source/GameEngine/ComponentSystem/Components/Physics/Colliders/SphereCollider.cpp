@@ -1,12 +1,12 @@
 #include "Enginepch.h"
 #include "SphereCollider.h"
 #include "BoxCollider.h"
-#include "GameEngine/Intersections/Intersection3D.hpp"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "GameEngine/Utility/SerializationUtils.hpp"
+#include "Math/Intersection3D.hpp"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
+#include "CommonUtilities/SerializationUtils.hpp"
 
-SphereCollider::SphereCollider(float aRadius, CU::Vector3f aCenterOffset)
+SphereCollider::SphereCollider(float aRadius, Math::Vector3f aCenterOffset)
 {
     mySphere.InitWithCenterAndRadius(aCenterOffset, aRadius);
 }
@@ -25,21 +25,21 @@ bool SphereCollider::TestCollision(const SphereCollider* aCollider) const
 {
     std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
     std::shared_ptr<Transform> collTransform = aCollider->gameObject->GetComponent<Transform>();
-    CU::Sphere<float> otherSphereInMySpace = aCollider->GetSphere().GetSphereinNewSpace(collTransform->GetWorldMatrix() * transform->GetWorldMatrix().GetFastInverse());
+    Math::Sphere<float> otherSphereInMySpace = aCollider->GetSphere().GetSphereinNewSpace(collTransform->GetWorldMatrix() * transform->GetWorldMatrix().GetFastInverse());
 
-    return CU::IntersectionBetweenSpheres(GetSphere(), otherSphereInMySpace);
+    return Math::IntersectionBetweenSpheres(GetSphere(), otherSphereInMySpace);
 }
 
-bool SphereCollider::TestCollision(const CU::Ray<float> aRay, CU::Vector3f& outHitPoint) const
+bool SphereCollider::TestCollision(const Math::Ray<float> aRay, Math::Vector3f& outHitPoint) const
 {
     std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
-    CU::Ray<float> rayInMySpace = aRay.GetRayinNewSpace(transform->GetWorldMatrix().GetFastInverse());
+    Math::Ray<float> rayInMySpace = aRay.GetRayinNewSpace(transform->GetWorldMatrix().GetFastInverse());
     
     outHitPoint;
-    return CU::IntersectionSphereRay(mySphere, rayInMySpace);
+    return Math::IntersectionSphereRay(mySphere, rayInMySpace);
 }
 
-const CU::Sphere<float>& SphereCollider::GetSphere() const
+const Math::Sphere<float>& SphereCollider::GetSphere() const
 {
     return mySphere;
 }
@@ -52,12 +52,12 @@ bool SphereCollider::Serialize(nl::json& outJsonObject)
 
 bool SphereCollider::Deserialize(nl::json& aJsonObject)
 {
-    CU::Vector3f centerOffset;
+    Math::Vector3f centerOffset;
     float radius = 0;
 
     if (aJsonObject.contains("CenterOffset"))
     {
-        centerOffset = Utility::DeserializeVector3<float>(aJsonObject["CenterOffset"]);
+        centerOffset = Utilities::DeserializeVector3<float>(aJsonObject["CenterOffset"]);
     }
 
     if (aJsonObject.contains("Radius"))

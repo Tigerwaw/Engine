@@ -1,5 +1,5 @@
 #pragma once
-#include "Graphics/GraphicsEngine/GraphicsCommands/GraphicsCommandBase.h"
+#include "GraphicsCommands/GraphicsCommandBase.h"
 
 class Mesh;
 class Material;
@@ -15,7 +15,7 @@ public:
 	void Destroy() override;
 private:
 	std::shared_ptr<Mesh> mesh;
-	CU::Matrix4x4f transform;
+	Math::Matrix4x4f transform;
 	std::vector<std::shared_ptr<Material>> materialList;
 	std::shared_ptr<PipelineStateObject> psoOverride;
 	DynamicVertexBuffer* instanceBuffer = nullptr;

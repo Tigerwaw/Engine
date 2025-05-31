@@ -30,9 +30,9 @@ void PollingStation::SetWanderer(std::shared_ptr<GameObject> aGameObject)
 	myWanderer = aGameObject;
 }
 
-const std::vector<CU::Vector3f> PollingStation::GetOtherActorPositions() const
+const std::vector<Math::Vector3f> PollingStation::GetOtherActorPositions() const
 {
-	std::vector<CU::Vector3f> actorPositions;
+	std::vector<Math::Vector3f> actorPositions;
 
 	for (auto& actor : myWatchedActors)
 	{
@@ -45,12 +45,12 @@ const std::vector<CU::Vector3f> PollingStation::GetOtherActorPositions() const
 	return actorPositions;
 }
 
-const CU::Vector3f PollingStation::GetWandererPosition() const
+const Math::Vector3f PollingStation::GetWandererPosition() const
 {
 	if (auto transform = myWanderer->GetComponent<Transform>())
 	{
 		return transform->GetTranslation();
 	}
 
-	return CU::Vector3f();
+	return Math::Vector3f();
 }

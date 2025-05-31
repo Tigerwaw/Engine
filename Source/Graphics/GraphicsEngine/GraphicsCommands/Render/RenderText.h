@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "Graphics/GraphicsEngine/GraphicsCommands/GraphicsCommandBase.h"
+#include "GraphicsCommands/GraphicsCommandBase.h"
 
 class Text;
 

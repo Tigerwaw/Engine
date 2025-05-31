@@ -1,9 +1,9 @@
 #pragma once
 #include "GraphicsCommands/GraphicsCommandBase.h"
-#include "GameEngine/Math/Vector.hpp"
-#include "GameEngine/Math/Matrix.hpp"
+#include "Math/Vector.hpp"
+#include "Math/Matrix.hpp"
 
-namespace CU = CommonUtilities;
+
 
 class Spritesheet;
 class Texture;
@@ -18,8 +18,8 @@ public:
 private:
 	std::shared_ptr<Material> material;
 	std::shared_ptr<Texture> texture;
-	CU::Matrix4x4f matrix;
-	CU::Vector2f sheetDimensions;
+	Math::Matrix4x4f matrix;
+	Math::Vector2f sheetDimensions;
 	float currentFrame;
 };
 

@@ -1,6 +1,6 @@
 #include "GraphicsEngine.pch.h"
 #include "Text.h"
-#include "Graphics/GraphicsEngine/Objects/DynamicVertexBuffer.h"
+#include "Objects/DynamicVertexBuffer.h"
 
 Text::Text() = default;
 Text::~Text() = default;
@@ -43,8 +43,8 @@ void Text::SetTextContent(const std::string& aTextContent)
 		const int fontSize = myFont->Atlas.Size * mySize;
 		const float charAdvance = glyph.Advance * fontSize;
 		const unsigned currentVertexCount = static_cast<unsigned>(myTextData.vertices.size());
-		CU::Vector4f bounds = glyph.UVBounds;
-		CU::Vector4f offsets = glyph.PlaneBounds;
+		Math::Vector4f bounds = glyph.UVBounds;
+		Math::Vector4f offsets = glyph.PlaneBounds;
 
 		offsets.x = glyph.PlaneBounds.x * charAdvance;
 		offsets.z = glyph.PlaneBounds.z * fontSize * scalarOffset;
@@ -87,7 +87,7 @@ void Text::SetSize(const int aSize)
 	mySize = aSize;
 }
 
-void Text::SetPosition(CU::Vector2f aPosition)
+void Text::SetPosition(Math::Vector2f aPosition)
 {
 	myMatrix(4, 1) = aPosition.x;
 	myMatrix(4, 2) = aPosition.y;

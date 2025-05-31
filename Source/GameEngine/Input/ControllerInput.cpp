@@ -178,7 +178,7 @@ const float ControllerInput::GetAnalog(const unsigned aKeyCode) const
     return 0;
 }
 
-const CU::Vector2f ControllerInput::GetAnalog2D(const unsigned aKeyCode) const
+const Math::Vector2f ControllerInput::GetAnalog2D(const unsigned aKeyCode) const
 {
     switch (static_cast<ControllerAnalog2D>(aKeyCode))
     {
@@ -190,7 +190,7 @@ const CU::Vector2f ControllerInput::GetAnalog2D(const unsigned aKeyCode) const
         break;
     }
 
-    return CU::Vector2f();
+    return Math::Vector2f();
 }
 
 void ControllerInput::SetDeadZone(float aDeadZoneX, float aDeadZoneY)

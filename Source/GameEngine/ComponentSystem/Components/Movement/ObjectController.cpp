@@ -2,10 +2,10 @@
 
 #include "ObjectController.h"
 #include "Engine.h"
-#include "GameEngine/Time/Timer.h"
-#include "GameEngine/Input/InputHandler.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
+#include "Time/Timer.h"
+#include "Input/InputHandler.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
 
 ObjectController::ObjectController(float aMoveSpeed, float aRotSpeed)
 {
@@ -46,7 +46,7 @@ void ObjectController::Update()
 		gameObject->GetComponent<Transform>()->SetTranslation(0, 0, 0);
 	}
 
-	CU::Vector3f inputDelta;
+	Math::Vector3f inputDelta;
 
 	inputDelta += gameObject->GetComponent<Transform>()->GetRightVector() * inputHandler.GetAnalogAction("ObjectXMovement");
 	inputDelta += gameObject->GetComponent<Transform>()->GetUpVector() * inputHandler.GetAnalogAction("ObjectYMovement");
@@ -58,7 +58,7 @@ void ObjectController::Update()
 	}
 
 
-	CU::Vector3f rotationDelta;
+	Math::Vector3f rotationDelta;
 	rotationDelta.y = inputHandler.GetAnalogAction("ObjectYRotation");
 
 	rotationDelta *= myRotSpeed * deltaTime;

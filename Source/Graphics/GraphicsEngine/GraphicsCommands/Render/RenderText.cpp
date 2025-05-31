@@ -1,8 +1,8 @@
 #include "GraphicsEngine.pch.h"
 #include "RenderText.h"
 #include "AssetManager.h"
-#include "Graphics/GraphicsEngine/Objects/Text/Text.h"
-#include "Graphics/GraphicsEngine/Objects/ConstantBuffers/ObjectBuffer.h"
+#include "Objects/Text/Text.h"
+#include "Objects/ConstantBuffers/ObjectBuffer.h"
 
 RenderText::RenderText(std::shared_ptr<Text> aTextObject)
 {

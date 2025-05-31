@@ -1,9 +1,9 @@
 #include "Enginepch.h"
 
 #include "Transform.h"
-#include "GameEngine/Utility/SerializationUtils.hpp"
+#include "CommonUtilities/SerializationUtils.hpp"
 
-Transform::Transform(CU::Vector3f aPosition, CU::Vector3f aRotation, CU::Vector3f aScale)
+Transform::Transform(Math::Vector3f aPosition, Math::Vector3f aRotation, Math::Vector3f aScale)
 {
 	myPosition = aPosition;
 	myRotation = aRotation;
@@ -20,7 +20,7 @@ void Transform::Update()
 
 }
 
-void Transform::UpdateToWorldMatrix(CU::Matrix4x4f aToWorldMatrix, CU::Matrix4x4f aToWorldMatrixNoScale)
+void Transform::UpdateToWorldMatrix(Math::Matrix4x4f aToWorldMatrix, Math::Matrix4x4f aToWorldMatrixNoScale)
 {
 	myToWorldMatrix = aToWorldMatrix;
 	myToWorldMatrixNoScale = aToWorldMatrixNoScale;
@@ -46,25 +46,25 @@ void Transform::SetIsDirty()
 	UpdateChildrenToWorldMatrix();
 }
 
-const CU::Matrix4x4f& Transform::GetMatrix(bool aNoScale)
+const Math::Matrix4x4f& Transform::GetMatrix(bool aNoScale)
 {
 	if (myIsDirty)
 	{
-		myCachedMatrix = CU::Matrix4x4f();
-		myCachedMatrixNoScale = CU::Matrix4x4f();
+		myCachedMatrix = Math::Matrix4x4f();
+		myCachedMatrixNoScale = Math::Matrix4x4f();
 
-		CU::Matrix4x4f scaleMatrix;
+		Math::Matrix4x4f scaleMatrix;
 		scaleMatrix(1, 1) = myScale.x;
 		scaleMatrix(2, 2) = myScale.y;
 		scaleMatrix(3, 3) = myScale.z;
 
 		myCachedMatrix *= scaleMatrix;
 
-		CU::Matrix4x4f rotationMatrix = CU::Matrix4x4f::CreateRollPitchYawMatrix(myRotation);
+		Math::Matrix4x4f rotationMatrix = Math::Matrix4x4f::CreateRollPitchYawMatrix(myRotation);
 		myCachedMatrix *= rotationMatrix;
 		myCachedMatrixNoScale *= rotationMatrix;
 
-		CU::Matrix4x4f translationMatrix;
+		Math::Matrix4x4f translationMatrix;
 		translationMatrix(4, 1) = myPosition.x;
 		translationMatrix(4, 2) = myPosition.y;
 		translationMatrix(4, 3) = myPosition.z;
@@ -85,7 +85,7 @@ const CU::Matrix4x4f& Transform::GetMatrix(bool aNoScale)
 	}
 }
 
-const CU::Matrix4x4f Transform::GetWorldMatrix(bool aNoScale)
+const Math::Matrix4x4f Transform::GetWorldMatrix(bool aNoScale)
 {
 	if (aNoScale)
 	{
@@ -97,7 +97,7 @@ const CU::Matrix4x4f Transform::GetWorldMatrix(bool aNoScale)
 	}
 }
 
-const CU::Matrix4x4f Transform::GetToWorldMatrix(bool aNoScale)
+const Math::Matrix4x4f Transform::GetToWorldMatrix(bool aNoScale)
 {
 	if (aNoScale)
 	{
@@ -138,8 +138,8 @@ void Transform::SetParent(Transform* aTransform)
 	}
 	else
 	{
-		myToWorldMatrix = CU::Matrix4x4f();
-		myToWorldMatrixNoScale = CU::Matrix4x4f();
+		myToWorldMatrix = Math::Matrix4x4f();
+		myToWorldMatrixNoScale = Math::Matrix4x4f();
 		UpdateChildrenToWorldMatrix();
 	}
 }
@@ -162,8 +162,8 @@ void Transform::SetParentInternal(Transform* aTransform)
 	}
 	else
 	{
-		myToWorldMatrix = CU::Matrix4x4f();
-		myToWorldMatrixNoScale = CU::Matrix4x4f();
+		myToWorldMatrix = Math::Matrix4x4f();
+		myToWorldMatrixNoScale = Math::Matrix4x4f();
 		UpdateChildrenToWorldMatrix();
 	}
 }
@@ -199,7 +199,7 @@ void Transform::RemoveChild(Transform* aTransform)
 	}
 }
 
-const CU::Vector3f Transform::GetRightVector(bool aInWorldSpace)
+const Math::Vector3f Transform::GetRightVector(bool aInWorldSpace)
 {
 	if (aInWorldSpace)
 	{
@@ -211,7 +211,7 @@ const CU::Vector3f Transform::GetRightVector(bool aInWorldSpace)
 	}
 }
 
-const CU::Vector3f Transform::GetUpVector(bool aInWorldSpace)
+const Math::Vector3f Transform::GetUpVector(bool aInWorldSpace)
 {
 	if (aInWorldSpace)
 	{
@@ -223,7 +223,7 @@ const CU::Vector3f Transform::GetUpVector(bool aInWorldSpace)
 	}
 }
 
-const CU::Vector3f Transform::GetForwardVector(bool aInWorldSpace)
+const Math::Vector3f Transform::GetForwardVector(bool aInWorldSpace)
 {
 	if (aInWorldSpace)
 	{
@@ -235,11 +235,11 @@ const CU::Vector3f Transform::GetForwardVector(bool aInWorldSpace)
 	}
 }
 
-const CU::Vector3f Transform::GetTranslation(bool aInWorldSpace) const
+const Math::Vector3f Transform::GetTranslation(bool aInWorldSpace) const
 {
 	if (aInWorldSpace)
 	{
-		return CU::ToVector3(CU::ToVector4(myPosition) * myToWorldMatrix);
+		return Math::ToVector3(Math::ToVector4(myPosition) * myToWorldMatrix);
 	}
 	else
 	{
@@ -247,11 +247,11 @@ const CU::Vector3f Transform::GetTranslation(bool aInWorldSpace) const
 	}
 }
 
-const CU::Vector3f Transform::GetRotation(bool aInWorldSpace) const
+const Math::Vector3f Transform::GetRotation(bool aInWorldSpace) const
 {
 	if (aInWorldSpace)
 	{
-		return CU::ToVector3(CU::ToVector4(myRotation) * myToWorldMatrix);
+		return Math::ToVector3(Math::ToVector4(myRotation) * myToWorldMatrix);
 	}
 	else
 	{
@@ -259,11 +259,11 @@ const CU::Vector3f Transform::GetRotation(bool aInWorldSpace) const
 	}
 }
 
-const CU::Vector3f Transform::GetScale(bool aInWorldSpace) const
+const Math::Vector3f Transform::GetScale(bool aInWorldSpace) const
 {
 	if (aInWorldSpace)
 	{
-		return CU::ToVector3(CU::ToVector4(myScale) * myToWorldMatrix);
+		return Math::ToVector3(Math::ToVector4(myScale) * myToWorldMatrix);
 	}
 	else
 	{
@@ -271,7 +271,7 @@ const CU::Vector3f Transform::GetScale(bool aInWorldSpace) const
 	}
 }
 
-void Transform::SetTranslation(const CU::Vector3f aTranslation)
+void Transform::SetTranslation(const Math::Vector3f aTranslation)
 {
 	myPosition = aTranslation;
 	SetIsDirty();
@@ -283,7 +283,7 @@ void Transform::SetTranslation(const float aX, const float aY, const float aZ)
 	SetIsDirty();
 }
 
-void Transform::AddTranslation(const CU::Vector3f aTranslation)
+void Transform::AddTranslation(const Math::Vector3f aTranslation)
 {
 	myPosition += aTranslation;
 	SetIsDirty();
@@ -295,7 +295,7 @@ void Transform::AddTranslation(const float aX, const float aY, const float aZ)
 	SetIsDirty();
 }
 
-void Transform::SetRotation(const CU::Vector3f aRotationInDegrees)
+void Transform::SetRotation(const Math::Vector3f aRotationInDegrees)
 {
 	myRotation = aRotationInDegrees;
 	SetIsDirty();
@@ -309,7 +309,7 @@ void Transform::SetRotation(const float aPitch, const float aYaw, const float aR
 	SetIsDirty();
 }
 
-void Transform::AddRotation(const CU::Vector3f aRotationInDegrees)
+void Transform::AddRotation(const Math::Vector3f aRotationInDegrees)
 {
 	myRotation += aRotationInDegrees;
 	SetIsDirty();
@@ -323,7 +323,7 @@ void Transform::AddRotation(const float aPitch, const float aYaw, const float aR
 	SetIsDirty();
 }
 
-void Transform::SetScale(const CU::Vector3f aScale)
+void Transform::SetScale(const Math::Vector3f aScale)
 {
 	myScale = aScale;
 	SetIsDirty();
@@ -341,7 +341,7 @@ void Transform::SetUniformScale(float aScale)
 	SetIsDirty();
 }
 
-void Transform::AddScale(const CU::Vector3f aScale)
+void Transform::AddScale(const Math::Vector3f aScale)
 {
 	myScale += aScale;
 	SetIsDirty();
@@ -375,23 +375,23 @@ bool Transform::Serialize(nl::json& outJsonObject)
 
 bool Transform::Deserialize(nl::json& aJsonObject)
 {
-	CU::Vector3f pos;
-	CU::Vector3f rot;
-	CU::Vector3f scale = { 1.0f, 1.0f, 1.0f };
+	Math::Vector3f pos;
+	Math::Vector3f rot;
+	Math::Vector3f scale = { 1.0f, 1.0f, 1.0f };
 
 	if (aJsonObject.contains("Position"))
 	{
-		SetTranslation(Utility::DeserializeVector3<float>(aJsonObject["Position"]));
+		SetTranslation(Utilities::DeserializeVector3<float>(aJsonObject["Position"]));
 	};
 
 	if (aJsonObject.contains("Rotation"))
 	{
-		SetRotation(Utility::DeserializeVector3<float>(aJsonObject["Rotation"]));
+		SetRotation(Utilities::DeserializeVector3<float>(aJsonObject["Rotation"]));
 	}
 
 	if (aJsonObject.contains("Scale"))
 	{
-		SetScale(Utility::DeserializeVector3<float>(aJsonObject["Scale"]));
+		SetScale(Utilities::DeserializeVector3<float>(aJsonObject["Scale"]));
 	}
 
 	return true;

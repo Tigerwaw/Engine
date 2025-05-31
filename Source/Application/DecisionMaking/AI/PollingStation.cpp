@@ -34,14 +34,14 @@ void PollingStation::AddAIActor(std::shared_ptr<GameObject> aGameObject)
 	myAIActors.push_back(aGameObject);
 }
 
-const CU::Vector3f PollingStation::GetHealingWellPosition()
+const Math::Vector3f PollingStation::GetHealingWellPosition()
 {
 	return myHealingWell->GetComponent<Transform>()->GetTranslation(true);
 }
 
-const std::vector<CU::Vector3f> PollingStation::GetWallPositions() const
+const std::vector<Math::Vector3f> PollingStation::GetWallPositions() const
 {
-	std::vector<CU::Vector3f> wallPositions;
+	std::vector<Math::Vector3f> wallPositions;
 
 	for (auto& wall : myWalls)
 	{

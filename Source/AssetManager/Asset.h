@@ -7,7 +7,7 @@
 #include "Objects/PipelineStateObject.h"
 #include "Objects/Text/Font.h"
 
-#include "GameEngine/Pathfinding/NavMesh.h"
+#include "Pathfinding/NavMesh.h"
 
 struct Asset
 {

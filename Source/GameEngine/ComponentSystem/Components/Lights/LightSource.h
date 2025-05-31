@@ -1,25 +1,25 @@
 #pragma once
-#include "GameEngine/ComponentSystem/Component.h"
-#include "GameEngine/Math/Vector.hpp"
-namespace CU = CommonUtilities;
+#include "ComponentSystem/Component.h"
+#include "Math/Vector.hpp"
+
 
 class Texture;
 
 class LightSource : public Component
 {
 public:
-	LightSource(float aIntensity = 1.0f, CU::Vector3f aColor = { 1.0f, 1.0f, 1.0f });
+	LightSource(float aIntensity = 1.0f, Math::Vector3f aColor = { 1.0f, 1.0f, 1.0f });
 	~LightSource() override;
 	void Start() override;
 	void Update() override;
 	virtual void EnableShadowCasting(unsigned aShadowMapWidth, unsigned aShadowMapHeight);
 
-	void SetColor(CU::Vector3f aColor);
+	void SetColor(Math::Vector3f aColor);
 	void SetIntensity(float aIntensity);
-	CU::Vector3f GetColor() const { return myColor; }
+	Math::Vector3f GetColor() const { return myColor; }
 	float GetIntensity() const { return myIntensity; }
-	CU::Vector3f GetDirection() const;
-	CU::Vector3f GetPosition() const;
+	Math::Vector3f GetDirection() const;
+	Math::Vector3f GetPosition() const;
 	const bool CastsShadows() const { return myCastsShadows; }
 	void SetShadowBias(float aMinShadowBias, float aMaxShadowBias);
 	const float GetMinShadowBias() const { return myMinShadowBias; }
@@ -27,13 +27,13 @@ public:
 	void SetLightSize(float aSize);
 	const float GetLightSize() const { return myLightSize; }
 	std::shared_ptr<Texture> GetShadowMap();
-	const CU::Vector2f GetShadowMapSize() const { return myShadowMapSize; }
+	const Math::Vector2f GetShadowMapSize() const { return myShadowMapSize; }
 protected:
-	CU::Vector3f myColor = { 1.0f, 1.0f, 1.0f };
+	Math::Vector3f myColor = { 1.0f, 1.0f, 1.0f };
 	float myIntensity = 1.0f;
 	bool myCastsShadows = false;
 	std::shared_ptr<Texture> myShadowMap = nullptr;
-	CU::Vector2f myShadowMapSize;
+	Math::Vector2f myShadowMapSize;
 	float myMinShadowBias = 0.001f;
 	float myMaxShadowBias = 0.005f;
 	float myLightSize = 1.0f;

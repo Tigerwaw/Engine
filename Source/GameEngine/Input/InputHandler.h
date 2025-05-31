@@ -5,7 +5,7 @@
 #include "InputAction.h"
 
 #include "Math/Vector.hpp"
-namespace CU = CommonUtilities;
+
 
 class InputHandler
 {
@@ -27,8 +27,8 @@ public:
 	void SetControllerDeadZone(float aDeadZoneX, float aDeadZoneY);
 	void SetLeftStickDeadZone(float aDeadZoneX, float aDeadZoneY);
 	void SetRightStickDeadZone(float aDeadZoneX, float aDeadZoneY);
-	const CU::Vector2f GetLeftStickDeadZone() const;
-	const CU::Vector2f GetRightStickDeadZone() const;
+	const Math::Vector2f GetLeftStickDeadZone() const;
+	const Math::Vector2f GetRightStickDeadZone() const;
 
 	void RegisterBinaryAction(const std::string& aActionName, Keys aInput, GenericInput::ActionType aActionType);
 	void RegisterBinaryAction(const std::string& aActionName, ControllerButtons aInput, GenericInput::ActionType aActionType);
@@ -41,7 +41,7 @@ public:
 
 	const bool GetBinaryAction(const std::string& aActionName) const;
 	const float GetAnalogAction(const std::string& aActionName) const;
-	const CU::Vector2f GetAnalogAction2D(const std::string& aActionName) const;
+	const Math::Vector2f GetAnalogAction2D(const std::string& aActionName) const;
 private:
 	const bool ValidateActionName(const std::string& aActionName, bool aNoLog = false) const;
 

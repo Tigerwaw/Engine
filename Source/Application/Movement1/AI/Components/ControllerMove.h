@@ -2,7 +2,6 @@
 #include "GameEngine/ComponentSystem/Component.h"
 #include "Math/Vector.hpp"
 #include "Math/Quaternion.hpp"
-namespace CU = CommonUtilities;
 
 class ControllerBase;
 
@@ -28,7 +27,7 @@ public:
 	void Update() override;
 
 protected:
-	CU::Vector3f myVelocity;
+	Math::Vector3f myVelocity;
 
 private:
 	ControllerBase* myController;
@@ -39,6 +38,6 @@ private:
 	bool myOrientTowardsVelocity = true;
 	float myCurrentRotationTime = 0;
 	float myMaxRotationTime = 0.25f;
-	CU::Quatf myCurrentRot;
-	CU::Quatf myGoalRot;
+	Math::Quatf myCurrentRot;
+	Math::Quatf myGoalRot;
 };

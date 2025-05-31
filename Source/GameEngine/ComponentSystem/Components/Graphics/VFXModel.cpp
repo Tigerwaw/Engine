@@ -1,10 +1,10 @@
 #include "Enginepch.h"
 #include "VFXModel.h"
-#include "GameEngine/Engine.h"
-#include "GameEngine/Time/Timer.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
-#include "GameEngine/Utility/SerializationUtils.hpp"
+#include "Engine.h"
+#include "Time/Timer.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Graphics/Model.h"
+#include "CommonUtilities/SerializationUtils.hpp"
 
 VFXModel::~VFXModel()
 {
@@ -73,7 +73,7 @@ void VFXModel::ReceiveEvent(const GameObjectEvent& aEvent)
 	}
 }
 
-void VFXModel::SetWorldspaceSprite(bool aIsBillboard, bool aIsSpritesheet, CU::Vector2f aSpritesheetSize)
+void VFXModel::SetWorldspaceSprite(bool aIsBillboard, bool aIsSpritesheet, Math::Vector2f aSpritesheetSize)
 {
     myIsBillboard = aIsBillboard;
 
@@ -109,7 +109,7 @@ bool VFXModel::Deserialize(nl::json& aJsonObject)
 
 	bool isBillboard = myIsBillboard;
 	bool isSpritesheet = false;
-	CU::Vector2f spritesheetSize;
+	Math::Vector2f spritesheetSize;
 
 	if (aJsonObject.contains("IsBillboard"))
 	{
@@ -123,7 +123,7 @@ bool VFXModel::Deserialize(nl::json& aJsonObject)
 
 	if (aJsonObject.contains("SpritesheetSize"))
 	{
-		spritesheetSize = Utility::DeserializeVector2<float>(aJsonObject["SpritesheetSize"]);
+		spritesheetSize = Utilities::DeserializeVector2<float>(aJsonObject["SpritesheetSize"]);
 	}
 
 	SetWorldspaceSprite(isBillboard, isSpritesheet, spritesheetSize);

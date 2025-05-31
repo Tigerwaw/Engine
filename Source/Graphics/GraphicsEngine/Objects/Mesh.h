@@ -1,12 +1,12 @@
 #pragma once
-#include "GameEngine/Math/Matrix4x4.hpp"
-#include "GameEngine/Math/Vector.hpp"
-#include "GameEngine/Intersections/AABB3D.hpp"
+#include "Math/Matrix4x4.hpp"
+#include "Math/Vector.hpp"
+#include "Math/AABB3D.hpp"
 
 struct ID3D11Buffer;
 struct Vertex;
 
-namespace CU = CommonUtilities;
+
 
 class Mesh
 {
@@ -24,7 +24,7 @@ public:
 	{
 		struct Joint
 		{
-			CU::Matrix4x4<float> BindPoseInverse;
+			Math::Matrix4x4<float> BindPoseInverse;
 			int Parent = 0;
 			std::vector<unsigned> Children;
 			std::string Name;
@@ -38,20 +38,20 @@ public:
 	~Mesh();
 
 	void Initialize(std::vector<Vertex>&& aVertexList, std::vector<unsigned>&& aIndexList, std::vector<Element>&& aElementList, Skeleton aSkeleton);
-	void InitBoundingBox(CU::Vector3f aMinPoint, CU::Vector3f aMaxPoint);
+	void InitBoundingBox(Math::Vector3f aMinPoint, Math::Vector3f aMaxPoint);
 
 	FORCEINLINE const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetVertexBuffer() const { return myVertexBuffer; }
 	FORCEINLINE const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetIndexBuffer() const { return myIndexBuffer; }
 	FORCEINLINE const std::vector<Element>& GetElements() const { return myElements; }
 	FORCEINLINE const Skeleton& GetSkeleton() const { return mySkeleton; }
-	FORCEINLINE const CU::AABB3D<float>& GetBoundingBox() const { return myBoundingBox; }
+	FORCEINLINE const Math::AABB3D<float>& GetBoundingBox() const { return myBoundingBox; }
 
 private:
 	std::vector<Vertex> myVertices;
 	std::vector<unsigned> myIndices;
 	std::vector<Element> myElements;
 	Skeleton mySkeleton;
-	CU::AABB3D<float> myBoundingBox;
+	Math::AABB3D<float> myBoundingBox;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> myVertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> myIndexBuffer;

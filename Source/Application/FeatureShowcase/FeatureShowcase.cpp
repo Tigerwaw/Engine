@@ -1,23 +1,23 @@
 #include "Enginepch.h"
 #include "FeatureShowcase.h"
-#include <GameEngine/Application/AppSettings.h>
-#include <GameEngine/Engine.h>
-#include <GameEngine/Time/Timer.h>
+#include <Application/AppSettings.h>
+#include <Engine.h>
+#include <Time/Timer.h>
 #include <Psapi.h>
-#include <GameEngine/ComponentSystem/GameObject.h>
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "GameEngine/ComponentSystem/Components/Lights/AmbientLight.h"
-#include "GameEngine/ComponentSystem/Components/Lights/DirectionalLight.h"
-#include "GameEngine/ComponentSystem/Components/Lights/PointLight.h"
-#include "GameEngine/ComponentSystem/Components/Lights/SpotLight.h"
-#include <GameEngine/ComponentSystem/Components/Graphics/Model.h>
-#include <GameEngine/ComponentSystem/Components/Graphics/AnimatedModel.h>
-#include <GameEngine/ComponentSystem/Components/Graphics/InstancedModel.h>
-#include <GameEngine/ComponentSystem/Components/Graphics/VFXModel.h>
-#include <GameEngine/ComponentSystem/Components/Physics/Colliders/BoxCollider.h>
-#include <GameEngine/ComponentSystem/Components/Physics/Colliders/SphereCollider.h>
+#include <ComponentSystem/GameObject.h>
+#include <ComponentSystem/Components/Transform.h>
+#include <ComponentSystem/Components/Lights/AmbientLight.h>
+#include <ComponentSystem/Components/Lights/DirectionalLight.h>
+#include <ComponentSystem/Components/Lights/PointLight.h>
+#include <ComponentSystem/Components/Lights/SpotLight.h>
+#include <ComponentSystem/Components/Graphics/Model.h>
+#include <ComponentSystem/Components/Graphics/AnimatedModel.h>
+#include <ComponentSystem/Components/Graphics/InstancedModel.h>
+#include <ComponentSystem/Components/Graphics/VFXModel.h>
+#include <ComponentSystem/Components/Physics/Colliders/BoxCollider.h>
+#include <ComponentSystem/Components/Physics/Colliders/SphereCollider.h>
 
-#include <GameEngine/ComponentSystem/Components/Graphics/ParticleSystem.h>
+#include <ComponentSystem/Components/Graphics/ParticleSystem.h>
 
 static int sRamUsage = 0;
 static int sRamUsageChange = 0;
@@ -80,16 +80,16 @@ void FeatureShowcase::InitializeApplication()
 	inputHandler.RegisterBinaryAction("SharedAction", ControllerButtons::A, GenericInput::ActionType::Held);
 
 	std::shared_ptr<GameObject> instancedModelObj = std::make_shared<GameObject>();
-	instancedModelObj->AddComponent<Transform>(CU::Vector3f(-500.0f, 0, 1500.0f));
+	instancedModelObj->AddComponent<Transform>(Math::Vector3f(-500.0f, 0, 1500.0f));
 	std::shared_ptr<InstancedModel> instancedModel = instancedModelObj->AddComponent<InstancedModel>();
-	instancedModel->SetMesh(AssetManager::Get().GetAsset<MeshAsset>("Models/SM_Chest.fbx")->mesh);
+	instancedModel->SetMesh(AssetManager::Get().GetAsset<MeshAsset>("SM_Chest.fbx")->mesh);
 	instancedModel->SetMaterialOnSlot(0, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_Chest.json")->material);
 
 	for (int outer = 0; outer < 10; outer++)
 	{
 		for (int inner = 0; inner < 10; inner++)
 		{
-			CU::Matrix4x4f instanceMatrix;
+			Math::Matrix4x4f instanceMatrix;
 			instanceMatrix(4, 1) = inner * 250.0f;
 			instanceMatrix(4, 3) = outer * 250.0f;
 			instancedModel->AddInstance(instanceMatrix);
@@ -101,7 +101,7 @@ void FeatureShowcase::InitializeApplication()
 	Engine::Get().GetImGuiHandler().AddNewFunction([]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f resolution = Engine::Get().GetResolution();
+			Math::Vector2f resolution = Engine::Get().GetResolution();
 			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.02f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.35f * resolution.y });
 			bool open = true;
@@ -186,7 +186,7 @@ void FeatureShowcase::InitializeApplication()
 	Engine::Get().GetImGuiHandler().AddNewFunction([]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f resolution = Engine::Get().GetResolution();
+			Math::Vector2f resolution = Engine::Get().GetResolution();
 			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.4f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.55f * resolution.y });
 			bool open = true;
@@ -341,7 +341,7 @@ void FeatureShowcase::InitializeApplication()
 						float pos[3] = { sLight->GetPosition().x, sLight->GetPosition().y, sLight->GetPosition().z };
 						ImGui::Text("Position");
 						if (ImGui::DragFloat3("##SLightPos", pos)) sLight->gameObject->GetComponent<Transform>()->SetTranslation(pos[0], pos[1], pos[2]);
-						CU::Vector3f rotation = sLight->gameObject->GetComponent<Transform>()->GetRotation();
+						Math::Vector3f rotation = sLight->gameObject->GetComponent<Transform>()->GetRotation();
 						float rot[3] = { rotation.x, rotation.y, rotation.z };
 						ImGui::Text("Rotation");
 						if (ImGui::DragFloat3("##SLightRot", rot)) sLight->gameObject->GetComponent<Transform>()->SetRotation(rot[0], rot[1], rot[2]);
@@ -360,7 +360,7 @@ void FeatureShowcase::InitializeApplication()
 	Engine::Get().GetImGuiHandler().AddNewFunction([]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f resolution = Engine::Get().GetResolution();
+			Math::Vector2f resolution = Engine::Get().GetResolution();
 			ImGui::SetNextWindowPos({ 0.18f * resolution.x, 0.02f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.2f * resolution.y });
 			bool open = true;
@@ -372,7 +372,7 @@ void FeatureShowcase::InitializeApplication()
 
 				// FPS
 				{
-					CU::Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
+					Math::Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
 					int fps = Engine::Get().GetTimer().GetFPS();
 					if (fps < 60) color = { 1.0f, 1.0f, 0.0f, 1.0f };
 					if (fps < 30) color = { 1.0f, 0.0f, 0.0f, 1.0f };
@@ -439,7 +439,7 @@ void FeatureShowcase::InitializeApplication()
 						}
 					}
 
-					CU::Vector4f color = { 1.0f, 0.0f, 0.0f, 1.0f };
+					Math::Vector4f color = { 1.0f, 0.0f, 0.0f, 1.0f };
 					if (sRamUsageChange <= 0) color = { 0.0f, 1.0f, 0.0f, 1.0f };
 
 					ImGui::Text("RAM used:");
@@ -463,7 +463,7 @@ void FeatureShowcase::InitializeApplication()
 	Engine::Get().GetImGuiHandler().AddNewFunction([]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f resolution = Engine::Get().GetResolution();
+			Math::Vector2f resolution = Engine::Get().GetResolution();
 			ImGui::SetNextWindowPos({ 0.85f * resolution.x, 0.02f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.24f * resolution.x, 0.26f * resolution.y });
 			bool open = true;
@@ -594,7 +594,7 @@ void FeatureShowcase::InitializeApplication()
 	/*Engine::Get().GetImGuiHandler().AddNewFunction([]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f resolution = Engine::Get().GetResolution();
+			Math::Vector2f resolution = Engine::Get().GetResolution();
 			ImGui::SetNextWindowPos({ 0.85f * resolution.x, 0.32f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.24f * resolution.x, 0.24f * resolution.y });
 			bool open = true;
@@ -638,7 +638,7 @@ void FeatureShowcase::InitializeApplication()
 	Engine::Get().GetImGuiHandler().AddNewFunction([]()
 		{
 #ifndef _RETAIL
-			CU::Vector2f resolution = Engine::Get().GetResolution();
+			Math::Vector2f resolution = Engine::Get().GetResolution();
 			ImGui::SetNextWindowPos({ 0.85f * resolution.x, 0.32f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.24f * resolution.x, 0.24f * resolution.y });
 			bool open = true;
@@ -646,7 +646,7 @@ void FeatureShowcase::InitializeApplication()
 
 			std::shared_ptr<GameObject> psObject = Engine::Get().GetSceneHandler().FindGameObjectByName("ParticleTest");
 			std::shared_ptr<Transform> psTransform = psObject->GetComponent<Transform>();
-			CU::Vector3f psPos = psTransform->GetTranslation(true);
+			Math::Vector3f psPos = psTransform->GetTranslation(true);
 			float pos[3] = { psPos.x, psPos.y, psPos.z };
 			if (ImGui::DragFloat3("Particle System Position", pos))
 			{

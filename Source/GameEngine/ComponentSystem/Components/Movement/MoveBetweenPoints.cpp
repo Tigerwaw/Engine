@@ -1,16 +1,16 @@
 #include "Enginepch.h"
 #include "MoveBetweenPoints.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
-#include "GameEngine/Engine.h"
-#include "GameEngine/Time/Timer.h"
-#include "GameEngine/Utility/SerializationUtils.hpp"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
+#include "Engine.h"
+#include "Time/Timer.h"
+#include "CommonUtilities/SerializationUtils.hpp"
 
-MoveBetweenPoints::MoveBetweenPoints(std::vector<CU::Vector3f> aPointList, float aMoveSpeed) : myPointList(aPointList), myMoveSpeed(aMoveSpeed)
+MoveBetweenPoints::MoveBetweenPoints(std::vector<Math::Vector3f> aPointList, float aMoveSpeed) : myPointList(aPointList), myMoveSpeed(aMoveSpeed)
 {
 }
 
-void MoveBetweenPoints::SetPointList(std::vector<CU::Vector3f> aPointList)
+void MoveBetweenPoints::SetPointList(std::vector<Math::Vector3f> aPointList)
 {
 	myPointList = aPointList;
 }
@@ -32,7 +32,7 @@ void MoveBetweenPoints::Update()
 	myCurrentTimeMoved += deltaTime;
 	float t = myCurrentTimeMoved / myTimeToNextGoal;
 
-	CU::Vector3f newPosition = CU::Vector3f::Lerp(myPointList[myLastGoal], myPointList[myCurrentGoal], t);
+	Math::Vector3f newPosition = Math::Vector3f::Lerp(myPointList[myLastGoal], myPointList[myCurrentGoal], t);
 	transform->SetTranslation(newPosition);
 	
 	if (t > 0.99f)
@@ -66,7 +66,7 @@ bool MoveBetweenPoints::Deserialize(nl::json& aJsonObject)
 	{
 		for (auto& point : aJsonObject["Points"])
 		{
-			myPointList.emplace_back(Utility::DeserializeVector3<float>(point));
+			myPointList.emplace_back(Utilities::DeserializeVector3<float>(point));
 		}
 	}
 	

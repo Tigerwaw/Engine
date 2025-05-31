@@ -1,10 +1,10 @@
 #include "GraphicsEngine.pch.h"
 #include "RenderTrail.h"
 
-#include "GraphicsEngine/Objects/ConstantBuffers/ObjectBuffer.h"
-#include "GameEngine/ComponentSystem/Components/Graphics/TrailSystem.h"
-#include "GameEngine/ComponentSystem/GameObject.h"
-#include "GameEngine/ComponentSystem/Components/Transform.h"
+#include "Objects/ConstantBuffers/ObjectBuffer.h"
+#include "ComponentSystem/Components/Graphics/TrailSystem.h"
+#include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Transform.h"
 
 RenderTrail::RenderTrail(std::shared_ptr<TrailSystem> aTrailSystem)
 {

@@ -1,8 +1,8 @@
 #pragma once
-#include "Graphics/GraphicsEngine/GraphicsCommands/GraphicsCommandBase.h"
-#include "GameEngine/Math/Matrix.hpp"
+#include "GraphicsCommands/GraphicsCommandBase.h"
+#include "Math/Matrix.hpp"
 
-namespace CU = CommonUtilities;
+
 
 class Camera;
 
@@ -13,13 +13,13 @@ public:
     void Execute() override;
     void Destroy() override;
 private:
-    CU::Matrix4x4f myCameraInvView;
-    CU::Matrix4x4f myCameraProj;
-    CU::Vector4f myViewPosition;
-    CU::Vector4f myViewDirection;
+    Math::Matrix4x4f myCameraInvView;
+    Math::Matrix4x4f myCameraProj;
+    Math::Vector4f myViewPosition;
+    Math::Vector4f myViewDirection;
     float myTotalTime;
     float myDeltaTime;
-    CU::Vector2f myResolution;
+    Math::Vector2f myResolution;
     float myNearPlane;
     float myFarPlane;
 };

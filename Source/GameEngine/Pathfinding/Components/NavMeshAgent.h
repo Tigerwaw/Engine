@@ -1,9 +1,8 @@
 #pragma once
-#include <GameEngine/ComponentSystem/Component.h>
-#include <GameEngine/Math/Vector.hpp>
-#include "GameEngine/DebugDrawer/DebugLine.hpp"
-
-#include "GameEngine/Pathfinding/NavMeshPath.h"
+#include "ComponentSystem/Component.h"
+#include <Math/Vector.hpp>
+#include "DebugDrawer/DebugLine.hpp"
+#include "Pathfinding/NavMeshPath.h"
 
 class NavMesh;
 
@@ -20,12 +19,12 @@ public:
 	void SetMovementSpeed(float aSpeed);
 	float GetMovementSpeed() const;
 
-	void MoveToLocation(CU::Vector3f aPosition);
+	void MoveToLocation(Math::Vector3f aPosition);
 	void Stop();
 
 private:
 	bool MoveToNextPathPoint();
-	void RotateTowardsVelocity(CU::Vector3f aDirection);
+	void RotateTowardsVelocity(Math::Vector3f aDirection);
 
 	NavMesh* myNavMesh;
 	float myMovementSpeed = 150.0f;
@@ -34,8 +33,8 @@ private:
 	float myCurrentRotationTime = 0;
 	float myMaxRotationTime = 1.0f;
 
-	CU::Quatf myStartRotation;
-	CU::Quatf myGoalRotation;
+	Math::Quatf myStartRotation;
+	Math::Quatf myGoalRotation;
 
 	bool myShouldPathfind = false;
 	NavMeshPath myPath;
