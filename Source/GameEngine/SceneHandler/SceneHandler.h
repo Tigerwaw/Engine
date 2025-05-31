@@ -3,7 +3,7 @@
 class Scene;
 class GameObject;
 class SceneLoader;
-class Renderer;
+class RenderAssembler;
 class CollisionHandler;
 
 class SceneHandler
@@ -31,7 +31,7 @@ public:
     const unsigned GetActiveObjectAmount() const;
 private:
     std::unique_ptr<SceneLoader> mySceneLoader;
-    std::unique_ptr<Renderer> myRenderer;
+    std::unique_ptr<RenderAssembler> myRenderAssembler;
     std::unique_ptr<CollisionHandler> myCollisionHandler;
 
     std::shared_ptr<Scene> myActiveScene;

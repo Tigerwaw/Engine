@@ -12,7 +12,7 @@ class Scene final
 public:
 	friend class SceneHandler;
 	friend class SceneLoader;
-	friend class Renderer;
+	friend class RenderAssembler;
 	friend class CollisionHandler;
 
 	Scene();

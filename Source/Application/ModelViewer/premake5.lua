@@ -1,6 +1,6 @@
 include "../../../Premake/common.lua"
 
-workspace "TGPGameEngine"
+workspace "FRAGILE"
   location "%{dirs.root}"
   architecture "x64"
   configurations { "Debug", "Release", "Retail" }

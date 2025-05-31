@@ -1,5 +1,5 @@
 #include "Enginepch.h"
-#include "Renderer.h"
+#include "RenderAssembler.h"
 
 #include "Engine.h"
 #include "DebugDrawer/DebugDrawer.h"
@@ -29,10 +29,10 @@
 #include "ComponentSystem/Components/Physics/Colliders/BoxCollider.h"
 #include "ComponentSystem/Components/Physics/Colliders/SphereCollider.h"
 
-Renderer::Renderer() = default;
-Renderer::~Renderer() = default;
+RenderAssembler::RenderAssembler() = default;
+RenderAssembler::~RenderAssembler() = default;
 
-void Renderer::RenderScene(Scene& aScene)
+void RenderAssembler::RenderScene(Scene& aScene)
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(6), "Renderer Add Render Commands");
 
@@ -48,7 +48,7 @@ void Renderer::RenderScene(Scene& aScene)
 	DrawTestUI();
 }
 
-void Renderer::RenderForward(Scene& aScene)
+void RenderAssembler::RenderForward(Scene& aScene)
 {
 	GraphicsEngine& gfx = GraphicsEngine::Get();
 	GraphicsCommandList& gfxList = gfx.GetGraphicsCommandList();
@@ -107,7 +107,7 @@ void Renderer::RenderForward(Scene& aScene)
 	}
 }
 
-void Renderer::RenderDeferred(Scene& aScene)
+void RenderAssembler::RenderDeferred(Scene& aScene)
 {
 	GraphicsEngine& gfx = GraphicsEngine::Get();
 	GraphicsCommandList& gfxList = gfx.GetGraphicsCommandList();
@@ -331,7 +331,7 @@ void Renderer::RenderDeferred(Scene& aScene)
 	}
 }
 
-void Renderer::RenderDeferredObjects(Scene& aScene, bool aDisableViewCulling)
+void RenderAssembler::RenderDeferredObjects(Scene& aScene, bool aDisableViewCulling)
 {
 	std::shared_ptr<Camera> renderCamera = aScene.myMainCamera->GetComponent<Camera>();
 
@@ -380,7 +380,7 @@ void Renderer::RenderDeferredObjects(Scene& aScene, bool aDisableViewCulling)
 	}
 }
 
-void Renderer::RenderForwardObjects(Scene& aScene, bool aDisableViewCulling)
+void RenderAssembler::RenderForwardObjects(Scene& aScene, bool aDisableViewCulling)
 {
 	std::shared_ptr<Camera> renderCamera = aScene.myMainCamera->GetComponent<Camera>();
 
@@ -426,7 +426,7 @@ void Renderer::RenderForwardObjects(Scene& aScene, bool aDisableViewCulling)
 	}
 }
 
-void Renderer::QueueShadowmapTextureResources(Scene& aScene)
+void RenderAssembler::QueueShadowmapTextureResources(Scene& aScene)
 {
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetMarker>("Set Shadowmaps");
 
@@ -461,7 +461,7 @@ void Renderer::QueueShadowmapTextureResources(Scene& aScene)
 	}
 }
 
-void Renderer::QueueUpdateLightBuffer(Scene& aScene)
+void RenderAssembler::QueueUpdateLightBuffer(Scene& aScene)
 {
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetMarker>("Update Light Buffer");
 
@@ -497,7 +497,7 @@ void Renderer::QueueUpdateLightBuffer(Scene& aScene)
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateLightBuffer>(ambientLight, dirLight, pointLights, spotLights);
 }
 
-void Renderer::QueueSpotLightShadows(Scene& aScene)
+void RenderAssembler::QueueSpotLightShadows(Scene& aScene)
 {
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<BeginEvent>("Spotlight Shadows");
 
@@ -516,7 +516,7 @@ void Renderer::QueueSpotLightShadows(Scene& aScene)
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<EndEvent>();
 }
 
-void Renderer::QueuePointLightShadows(Scene& aScene)
+void RenderAssembler::QueuePointLightShadows(Scene& aScene)
 {
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<BeginEvent>("Pointlight Shadows");
 
@@ -536,7 +536,7 @@ void Renderer::QueuePointLightShadows(Scene& aScene)
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<EndEvent>();
 }
 
-void Renderer::QueueDirectionalLightShadows(Scene& aScene)
+void RenderAssembler::QueueDirectionalLightShadows(Scene& aScene)
 {
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<BeginEvent>("Directional Light Shadows");
 
@@ -551,7 +551,7 @@ void Renderer::QueueDirectionalLightShadows(Scene& aScene)
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<EndEvent>();
 }
 
-void Renderer::QueueDebugGizmos(Scene& aScene, std::shared_ptr<Camera> aRenderCamera)
+void RenderAssembler::QueueDebugGizmos(Scene& aScene, std::shared_ptr<Camera> aRenderCamera)
 {
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<BeginEvent>("Draw Debug Gizmos");
 
@@ -573,7 +573,7 @@ void Renderer::QueueDebugGizmos(Scene& aScene, std::shared_ptr<Camera> aRenderCa
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<EndEvent>();
 }
 
-void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aRenderCamera, bool aDisableViewCulling, std::shared_ptr<PipelineStateObject> aPSOoverride)
+void RenderAssembler::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aRenderCamera, bool aDisableViewCulling, std::shared_ptr<PipelineStateObject> aPSOoverride)
 {
 	for (auto& gameObject : aScene.myGameObjects)
 	{
@@ -634,7 +634,7 @@ void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aRenderCa
 	}
 }
 
-void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<PointLight> aPointLight, bool aDisableViewCulling, std::shared_ptr<PipelineStateObject> aPSOoverride)
+void RenderAssembler::QueueGameObjects(Scene& aScene, std::shared_ptr<PointLight> aPointLight, bool aDisableViewCulling, std::shared_ptr<PipelineStateObject> aPSOoverride)
 {
 	for (auto& gameObject : aScene.myGameObjects)
 	{
@@ -675,7 +675,7 @@ void Renderer::QueueGameObjects(Scene& aScene, std::shared_ptr<PointLight> aPoin
 	}
 }
 
-void Renderer::QueueDebugLines(Scene& aScene)
+void RenderAssembler::QueueDebugLines(Scene& aScene)
 {
 	if (GraphicsEngine::Get().DrawBoundingBoxes)
 	{
@@ -715,14 +715,14 @@ void Renderer::QueueDebugLines(Scene& aScene)
 	}
 }
 
-bool Renderer::IsInsideFrustum(std::shared_ptr<Camera> aRenderCamera, std::shared_ptr<Transform> aObjectTransform, Math::AABB3D<float> aObjectAABB)
+bool RenderAssembler::IsInsideFrustum(std::shared_ptr<Camera> aRenderCamera, std::shared_ptr<Transform> aObjectTransform, Math::AABB3D<float> aObjectAABB)
 {
 	if (!GraphicsEngine::Get().UseViewCulling) return true;
 
 	return aRenderCamera->GetViewcullingIntersection(aObjectTransform, aObjectAABB);
 }
 
-bool Renderer::IsInsideRadius(std::shared_ptr<PointLight> aPointLight, std::shared_ptr<Transform> aObjectTransform, Math::AABB3D<float> aObjectAABB)
+bool RenderAssembler::IsInsideRadius(std::shared_ptr<PointLight> aPointLight, std::shared_ptr<Transform> aObjectTransform, Math::AABB3D<float> aObjectAABB)
 {
 	if (!GraphicsEngine::Get().UseViewCulling) return true;
 
@@ -746,7 +746,7 @@ bool Renderer::IsInsideRadius(std::shared_ptr<PointLight> aPointLight, std::shar
 	return Math::IntersectionSphereAABB(sphere, aObjectAABB);
 }
 
-void Renderer::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
+void RenderAssembler::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
 {
 	if (aGameObject->GetComponent<Transform>())
 	{
@@ -826,7 +826,7 @@ void Renderer::UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject)
 }
 
 // TEMP
-void Renderer::Init()
+void RenderAssembler::Init()
 {
 	//myTestSprite = std::make_shared<Sprite>();
 	//myTestText = std::make_shared<Text>();
@@ -837,7 +837,7 @@ void Renderer::Init()
 	//myTestText->SetTextContent("Test");
 }
 
-void Renderer::DrawTestUI()
+void RenderAssembler::DrawTestUI()
 {
 	//myTestSprite->SetTexture(AssetManager::Get().GetAsset<TextureAsset>("EngineAssets/Textures/CommonUtilitiesT_perlin_C.dds")->texture);
 	//myTestSprite->SetPosition(Math::Vector2f(500.0f, 500.0f));

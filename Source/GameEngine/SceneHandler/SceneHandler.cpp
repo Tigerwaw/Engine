@@ -2,7 +2,7 @@
 
 #include "SceneHandler.h"
 #include "SceneLoader.h"
-#include "Renderer/Renderer.h"
+#include "RenderAssembler/RenderAssembler.h"
 #include "CollisionHandler/CollisionHandler.h"
 #include "ComponentSystem/Scene.h"
 #include "ComponentSystem/GameObject.h"
@@ -12,7 +12,7 @@
 SceneHandler::SceneHandler()
 {
     mySceneLoader = std::make_unique<SceneLoader>();
-    myRenderer = std::make_unique<Renderer>();
+    myRenderAssembler = std::make_unique<RenderAssembler>();
     myCollisionHandler = std::make_unique<CollisionHandler>();
 }
 
@@ -41,7 +41,7 @@ void SceneHandler::RenderActiveScene()
         return;
     }
 
-    myRenderer->RenderScene(*myActiveScene);
+    myRenderAssembler->RenderScene(*myActiveScene);
 }
 
 void SceneHandler::CreateEmptyScene()
@@ -64,7 +64,7 @@ void SceneHandler::LoadScene(const std::string& aSceneFilePath)
     }
 
     mySceneLoader->LoadScene(newScene, Engine::Get().GetContentRootPath() / aSceneFilePath);
-    myRenderer->Init();
+    myRenderAssembler->Init();
 }
 
 void SceneHandler::UnloadScene(unsigned aSceneIndex)

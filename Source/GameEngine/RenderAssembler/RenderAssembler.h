@@ -13,11 +13,11 @@ struct PipelineStateObject;
 class Sprite;
 class Text;
 
-class Renderer
+class RenderAssembler
 {
 public:
-    Renderer();
-    ~Renderer();
+    RenderAssembler();
+    ~RenderAssembler();
     void RenderScene(Scene& aScene);
 
     // TEMP

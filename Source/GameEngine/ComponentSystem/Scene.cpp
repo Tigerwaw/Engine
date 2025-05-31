@@ -14,7 +14,7 @@
 #include "ComponentSystem/Components/Lights/PointLight.h"
 #include "ComponentSystem/Components/Lights/SpotLight.h"
 
-#include "Renderer/Renderer.h"
+#include "RenderAssembler/RenderAssembler.h"
 #include "Engine.h"
 #include "DebugDrawer/DebugDrawer.h"
 #include "AssetManager.h"
