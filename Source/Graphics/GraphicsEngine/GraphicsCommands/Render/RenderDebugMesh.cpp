@@ -6,44 +6,36 @@
 #include "Objects/Material.h"
 #include "Objects/ConstantBuffers/ObjectBuffer.h"
 #include "Objects/ConstantBuffers/MaterialBuffer.h"
-#include "ComponentSystem/GameObject.h"
-#include "ComponentSystem/Components/Transform.h"
-#include "ComponentSystem/Components/Graphics/DebugModel.h"
-#include "AssetManager.h"
 
-#include "Engine.h"
-#include "DebugDrawer/DebugDrawer.h"
-
-RenderDebugMesh::RenderDebugMesh(std::shared_ptr<DebugModel> aModel)
+RenderDebugMesh::RenderDebugMesh(const DebugMeshRenderData& aModelData)
 {
-    if (!aModel.get()) return;
+    myData = aModelData;
 
-    mesh = aModel->GetMesh();
+   /* mesh = aModel->GetMesh();
     transform = aModel->gameObject->GetComponent<Transform>()->GetWorldMatrix();
     materialList = aModel->GetMaterials();
 
     if (GraphicsEngine::Get().DrawBoundingBoxes)
     {
         Engine::Get().GetDebugDrawer().DrawBoundingBox(aModel);
-    }
+    }*/
 }
 
 void RenderDebugMesh::Execute()
 {
-    if (!mesh) return;
+    if (!myData.mesh) return;
 
     ObjectBuffer objBufferData;
-    objBufferData.World = transform;
-    objBufferData.WorldInvT = transform.GetFastInverse().GetTranspose();
+    objBufferData.World = myData.transform;
+    objBufferData.WorldInvT = myData.transform.GetFastInverse().GetTranspose();
     objBufferData.hasSkinning = false;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
-    GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("PSO_Gizmo")->pso);
-    GraphicsEngine::Get().RenderMesh(*mesh, materialList, true);
+    GraphicsEngine::Get().RenderMesh(*myData.mesh, myData.materialList, true);
 }
 
 void RenderDebugMesh::Destroy()
 {
-    mesh = nullptr;
-    materialList.~vector();
+    myData.mesh = nullptr;
+    myData.materialList.~vector();
 }

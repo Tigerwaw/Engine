@@ -1,7 +1,7 @@
 #pragma once
-#include "GraphicsCommandBase.h"
+#include "GraphicsCommands/GraphicsCommandBase.h"
 
-struct ClearTextureResource : public GraphicsCommandBase
+class ClearTextureResource : public GraphicsCommandBase
 {
 public:
     ClearTextureResource(unsigned aSlot);

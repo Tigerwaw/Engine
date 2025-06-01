@@ -1,8 +1,11 @@
 #pragma once
-#include "EngineDefines.h"
 #include "Math/Vector.hpp"
 #include "Math/Matrix.hpp"
 
+#define MAX_POINTLIGHTS 4
+#define MAX_SPOTLIGHTS 4
+#define MAX_DEBUG_LINES 2048
+#define MAX_PARTICLES 20000
 
 
 struct LightBuffer

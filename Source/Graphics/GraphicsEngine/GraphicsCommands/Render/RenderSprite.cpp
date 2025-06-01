@@ -6,34 +6,33 @@
 #include "Objects/Sprite.h"
 #include "Objects/Texture.h"
 #include "Objects/Material.h"
-#include "AssetManager.h"
 
-RenderSprite::RenderSprite(std::shared_ptr<Sprite> aSprite)
+RenderSprite::RenderSprite(const SpriteData& aSpriteData)
 {
-    material = aSprite->GetMaterial();
-    texture = aSprite->GetTexture();
-    matrix = aSprite->GetMatrix();
+    myData = aSpriteData;
+    //material = aSprite->GetMaterial();
+    //texture = aSprite->GetTexture();
+    //matrix = aSprite->GetMatrix();
 }
 
 void RenderSprite::Execute()
 {
-    if (!texture && !material) return;
+    if (!myData.texture && !myData.material) return;
 
     SpriteBuffer spriteBufferData;
-    spriteBufferData.Matrix = matrix;
+    spriteBufferData.Matrix = myData.matrix;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::SpriteBuffer, spriteBufferData);
 
-    if (material)
+    if (myData.material)
     {
-        GraphicsEngine::Get().ChangePipelineState(material->GetPSO());
-        GraphicsEngine::Get().SetTextureResource_PS(0, material->GetTexture(Material::TextureType::Albedo));
+        GraphicsEngine::Get().ChangePipelineState(myData.material->GetPSO());
+        GraphicsEngine::Get().SetTextureResource_PS(0, myData.material->GetTexture(Material::TextureType::Albedo));
         GraphicsEngine::Get().RenderSprite();
         GraphicsEngine::Get().ClearTextureResource_PS(0);
     }
     else
     {
-        GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("PSO_Sprite")->pso);
-        GraphicsEngine::Get().SetTextureResource_PS(0, *texture);
+        GraphicsEngine::Get().SetTextureResource_PS(0, *myData.texture);
         GraphicsEngine::Get().RenderSprite();
         GraphicsEngine::Get().ClearTextureResource_PS(0);
     }
@@ -41,6 +40,6 @@ void RenderSprite::Execute()
 
 void RenderSprite::Destroy()
 {
-    material = nullptr;
-    texture = nullptr;
+    myData.material = nullptr;
+    myData.texture = nullptr;
 }

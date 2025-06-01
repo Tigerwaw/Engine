@@ -1,21 +1,19 @@
 #include "GraphicsEngine.pch.h"
 #include "RenderText.h"
-#include "AssetManager.h"
 #include "Objects/Text/Text.h"
 #include "Objects/ConstantBuffers/ObjectBuffer.h"
 
-RenderText::RenderText(std::shared_ptr<Text> aTextObject)
+RenderText::RenderText(const TextData& aTextData)
 {
-	text = aTextObject;
+	myData = aTextData;
 }
 
 void RenderText::Execute()
 {
-	GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("PSO_Text")->pso);
-	GraphicsEngine::Get().RenderText(*text);
+	GraphicsEngine::Get().RenderText(*myData.text);
 }
 
 void RenderText::Destroy()
 {
-	text = nullptr;
+	myData.text = nullptr;
 }

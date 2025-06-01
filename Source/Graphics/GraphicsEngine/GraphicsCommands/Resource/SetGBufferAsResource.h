@@ -1,5 +1,5 @@
 #pragma once
-#include "GraphicsCommandBase.h"
+#include "GraphicsCommands/GraphicsCommandBase.h"
 
 class GBuffer;
 class Texture;

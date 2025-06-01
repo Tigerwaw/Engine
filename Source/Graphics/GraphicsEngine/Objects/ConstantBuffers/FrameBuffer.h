@@ -10,6 +10,6 @@ struct FrameBuffer
 	float NearPlane = 0;
 	float FarPlane = 0;
 	Math::Vector2f Padding;
-	Math::Vector2f Time;
+	Math::Vector2f Time; // x = TotalTime, y = Delta Time
 	Math::Vector2f Resolution;
 };

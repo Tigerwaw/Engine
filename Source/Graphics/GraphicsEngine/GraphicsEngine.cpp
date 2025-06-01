@@ -3,7 +3,6 @@
 
 #include "ShaderReflection/ShaderInfo.h"
 
-#include "Engine.h"
 #include "Objects/Shader.h"
 #include "Objects/Vertices/Vertex.h"
 #include "Objects/Vertices/DebugLineVertex.h"
@@ -25,9 +24,8 @@
 
 #include "Objects/DynamicVertexBuffer.h"
 #include "Objects/GBuffer.h"
-#include "AssetManager.h"
 
-bool GraphicsEngine::Initialize(HWND aWindowHandle)
+bool GraphicsEngine::Initialize(HWND aWindowHandle, Math::Vector2f aResolution, const std::filesystem::path& aContentRoot)
 {
 	myRHI = std::make_unique<RenderHardwareInterface>();
 
@@ -53,7 +51,7 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 
 		defaultPSO.VertexStride = sizeof(Vertex);
 
-		std::wstring root = Engine::Get().GetContentRootPath().wstring();
+		std::wstring root = aContentRoot.wstring();
 		if (!rhi.CreateInputLayout(defaultPSO.InputLayout, Vertex::InputLayoutDefinition, root + L"EngineAssets/Shaders/SH_Mesh_VS.cso"))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to load default input layout!");
@@ -79,13 +77,13 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle)
 	}
 
 	myLUTtexture = std::make_shared<Texture>();
-	rhi.CreateLUT("LUT", 512, 512, myLUTtexture);
+	rhi.CreateLUT("LUT", 512, 512, myLUTtexture, aContentRoot / L"EngineAssets/Shaders/SH_Quad_VS.cso", aContentRoot / L"EngineAssets/Shaders/SH_brdfLUT_PS.cso");
 
 	CreateConstantBuffers();
 	
 	myCommandList = std::make_unique<GraphicsCommandList>();
 	myGBuffer = std::make_unique<GBuffer>();
-	Math::Vector2f resolution = Engine::Get().GetResolution();
+	Math::Vector2f resolution = aResolution;
 	myGBuffer->CreateGBuffer(static_cast<unsigned>(resolution.x), static_cast<unsigned>(resolution.y));
 
 	CreateRandomKernel(64);
@@ -387,7 +385,7 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<M
 		if (aMaterialList.size() > element.MaterialIndex)
 		{
 			MaterialBuffer matBufferData = aMaterialList[element.MaterialIndex]->MaterialSettings();
-			GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, matBufferData);
+			UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, matBufferData);
 
 			if (!aOverrideMaterialPSO)
 			{
@@ -441,7 +439,7 @@ void GraphicsEngine::RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount,
 		if (aMaterialList.size() > element.MaterialIndex)
 		{
 			MaterialBuffer matBufferData = aMaterialList[element.MaterialIndex]->MaterialSettings();
-			GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, matBufferData);
+			UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, matBufferData);
 
 			if (!aOverrideMaterialPSO)
 			{
@@ -507,7 +505,7 @@ void GraphicsEngine::RenderParticleEmitter(ParticleEmitter& aParticleEmitter)
 	}
 
 	myRHI->SetPrimitiveTopology(Topology::POINTLIST);
-	myRHI->SetVertexBuffer(aParticleEmitter.myVertexBuffer.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
+	myRHI->SetVertexBuffer(aParticleEmitter.myVertexBuffer->GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
 	myRHI->Draw(static_cast<unsigned>(aParticleEmitter.myParticles.size()));
 
 	for (const auto& [slot, texture] : aParticleEmitter.GetMaterial()->GetTextures())
@@ -526,7 +524,7 @@ void GraphicsEngine::RenderTrailEmitter(TrailEmitter& aTrailEmitter)
 	}
 
 	myRHI->SetPrimitiveTopology(Topology::LINESTRIP);
-	myRHI->SetVertexBuffer(aTrailEmitter.myVertexBuffer.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
+	myRHI->SetVertexBuffer(aTrailEmitter.myVertexBuffer->GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
 	unsigned count = aTrailEmitter.GetCurrentLength();
 	myRHI->Draw(count);
 

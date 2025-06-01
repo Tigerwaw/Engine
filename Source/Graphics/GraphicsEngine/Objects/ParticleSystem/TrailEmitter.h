@@ -1,5 +1,4 @@
 #pragma once
-#include "Objects/DynamicVertexBuffer.h"
 #include "Objects/Vertices/TrailVertex.h"
 #include "TrailEmitterSettings.h"
 
@@ -25,7 +24,7 @@ protected:
 	virtual void InitInternal();
 	std::vector<TrailVertex> myTrailVertices;
 private:
-	DynamicVertexBuffer myVertexBuffer;
+	std::shared_ptr<DynamicVertexBuffer> myVertexBuffer;
 	std::shared_ptr<Material> myMaterial;
 	TrailEmitterSettings mySettings;
 	std::vector<Math::Vector3f> myPreviousPositions;

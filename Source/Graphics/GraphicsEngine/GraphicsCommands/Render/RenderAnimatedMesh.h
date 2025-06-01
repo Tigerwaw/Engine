@@ -2,25 +2,26 @@
 #include "GraphicsCommands/GraphicsCommandBase.h"
 #include "Math/Matrix4x4.hpp"
 
-
-
 class Mesh;
-class AnimatedModel;
 class Material;
 struct PipelineStateObject;
 
-struct RenderAnimatedMesh : GraphicsCommandBase
+class RenderAnimatedMesh : GraphicsCommandBase
 {
 public:
-	RenderAnimatedMesh(std::shared_ptr<AnimatedModel> aModel);
-	RenderAnimatedMesh(std::shared_ptr<AnimatedModel> aModel, std::shared_ptr<PipelineStateObject> aPSOoverride);
+	struct AnimMeshRenderData
+	{
+		std::shared_ptr<Mesh> mesh;
+		Math::Matrix4x4f transform;
+		std::array<Math::Matrix4x4f, 128> jointTransforms;
+		std::vector<std::shared_ptr<Material>> materialList;
+		std::shared_ptr<PipelineStateObject> psoOverride;
+	};
+
+	RenderAnimatedMesh(const AnimMeshRenderData& aModelData);
 	void Execute() override;
 	void Destroy() override;
 private:
-	std::shared_ptr<Mesh> mesh;
-	Math::Matrix4x4f transform;
-	std::array<Math::Matrix4x4f, 128> jointTransforms;
-	std::vector<std::shared_ptr<Material>> materialList;
-	std::shared_ptr<PipelineStateObject> psoOverride;
+	AnimMeshRenderData myData;
 };
 

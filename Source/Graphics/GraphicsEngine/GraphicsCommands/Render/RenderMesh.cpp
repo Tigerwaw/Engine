@@ -6,60 +6,38 @@
 #include "Objects/Material.h"
 #include "Objects/ConstantBuffers/ObjectBuffer.h"
 #include "Objects/ConstantBuffers/MaterialBuffer.h"
-#include "ComponentSystem/GameObject.h"
-#include "ComponentSystem/Components/Transform.h"
-#include "ComponentSystem/Components/Graphics/Model.h"
 
-#include "Engine.h"
-#include "DebugDrawer/DebugDrawer.h"
-
-RenderMesh::RenderMesh(std::shared_ptr<Model> aModel)
+RenderMesh::RenderMesh(const RenderMeshData& aModelData)
 {
-    if (!aModel.get()) return;
-
-    mesh = aModel->GetMesh();
-    transform = aModel->gameObject->GetComponent<Transform>()->GetWorldMatrix();
-    materialList = aModel->GetMaterials();
-    customShaderParams_1 = aModel->GetCustomShaderData_1();
-    customShaderParams_2 = aModel->GetCustomShaderData_2();
-
-    if (GraphicsEngine::Get().DrawBoundingBoxes)
-    {
-        Engine::Get().GetDebugDrawer().DrawBoundingBox(aModel);
-    }
-}
-
-RenderMesh::RenderMesh(std::shared_ptr<Model> aModel, std::shared_ptr<PipelineStateObject> aPSOoverride) : RenderMesh(aModel)
-{
-    psoOverride = aPSOoverride;
+    myData = aModelData;
 }
 
 void RenderMesh::Execute()
 {
-    if (!mesh) return;
+    if (!myData.mesh) return;
 
     ObjectBuffer objBufferData;
-    objBufferData.World = transform;
-    objBufferData.WorldInvT = transform.GetFastInverse().GetTranspose();
+    objBufferData.World = myData.transform;
+    objBufferData.WorldInvT = myData.transform.GetFastInverse().GetTranspose();
     objBufferData.hasSkinning = false;
-    objBufferData.customData_1 = customShaderParams_1;
-    objBufferData.customData_2 = customShaderParams_2;
+    objBufferData.customData_1 = myData.customShaderParams_1;
+    objBufferData.customData_2 = myData.customShaderParams_2;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
-    if (psoOverride)
+    if (myData.psoOverride)
     {
-        GraphicsEngine::Get().ChangePipelineState(psoOverride);
-        GraphicsEngine::Get().RenderMesh(*mesh, materialList, true);
+        GraphicsEngine::Get().ChangePipelineState(myData.psoOverride);
+        GraphicsEngine::Get().RenderMesh(*myData.mesh, myData.materialList, true);
     }
     else
     {
-        GraphicsEngine::Get().RenderMesh(*mesh, materialList);
+        GraphicsEngine::Get().RenderMesh(*myData.mesh, myData.materialList);
     }
 }
 
 void RenderMesh::Destroy()
 {
-    mesh = nullptr;
-    psoOverride = nullptr;
-    materialList.~vector();
+    myData.mesh = nullptr;
+    myData.psoOverride = nullptr;
+    myData.materialList.~vector();
 }

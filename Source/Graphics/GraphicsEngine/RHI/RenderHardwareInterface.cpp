@@ -20,8 +20,6 @@
 #include "Objects/ConstantBuffers/ConstantBuffer.h"
 #include "Objects/DynamicVertexBuffer.h"
 
-#include "Engine.h"
-
 using namespace Microsoft::WRL;
 
 RenderHardwareInterface::RenderHardwareInterface() = default;
@@ -1072,7 +1070,7 @@ bool RenderHardwareInterface::CreateShadowCubemap(std::string_view aName, unsign
 	return true;
 }
 
-bool RenderHardwareInterface::CreateLUT(std::string_view aName, unsigned aWidth, unsigned aHeight, std::shared_ptr<Texture> outTexture)
+bool RenderHardwareInterface::CreateLUT(std::string_view aName, unsigned aWidth, unsigned aHeight, std::shared_ptr<Texture> outTexture, const std::filesystem::path& aVSPath, const std::filesystem::path& aPSPath)
 {
 	if (!CreateTexture(aName, aWidth, aHeight, RHITextureFormat::R16G16_Float, *outTexture, false, true, true, false, false))
 	{
@@ -1080,14 +1078,14 @@ bool RenderHardwareInterface::CreateLUT(std::string_view aName, unsigned aWidth,
 	}
 
 	std::shared_ptr<Shader> LUTshaderVS = std::make_shared<Shader>();
-	if (!LoadShaderFromFilePath("LUT_VS", *LUTshaderVS, Engine::Get().GetContentRootPath() / L"EngineAssets/Shaders/SH_Quad_VS.cso"))
+	if (!LoadShaderFromFilePath("LUT_VS", *LUTshaderVS, aVSPath))
 	{
 		LOG(LogRHI, Error, "Failed to load LUT vertex shader!");
 		return false;
 	}
 
 	std::shared_ptr<Shader> LUTshaderPS = std::make_shared<Shader>();
-	if (!LoadShaderFromFilePath("LUT_PS", *LUTshaderPS, Engine::Get().GetContentRootPath() / L"EngineAssets/Shaders/SH_brdfLUT_PS.cso"))
+	if (!LoadShaderFromFilePath("LUT_PS", *LUTshaderPS, aPSPath))
 	{
 		LOG(LogRHI, Error, "Failed to load LUT pixel shader!");
 		return false;

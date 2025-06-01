@@ -4,22 +4,25 @@
 
 class Mesh;
 class Material;
-class Model;
 struct PipelineStateObject;
 
-struct RenderMesh : GraphicsCommandBase
+class RenderMesh : GraphicsCommandBase
 {
 public:
-	RenderMesh(std::shared_ptr<Model> aModel);
-	RenderMesh(std::shared_ptr<Model> aModel, std::shared_ptr<PipelineStateObject> aPSOoverride);
+	struct RenderMeshData
+	{
+		std::shared_ptr<Mesh> mesh;
+		Math::Matrix4x4f transform;
+		std::vector<std::shared_ptr<Material>> materialList;
+		std::shared_ptr<PipelineStateObject> psoOverride;
+		Math::Vector4f customShaderParams_1;
+		Math::Vector4f customShaderParams_2;
+	};
+
+	RenderMesh(const RenderMeshData& aModelData);
 	void Execute() override;
 	void Destroy() override;
 private:
-	std::shared_ptr<Mesh> mesh;
-	Math::Matrix4x4f transform;
-	std::vector<std::shared_ptr<Material>> materialList;
-	std::shared_ptr<PipelineStateObject> psoOverride;
-	Math::Vector4f customShaderParams_1;
-	Math::Vector4f customShaderParams_2;
+	RenderMeshData myData;
 };
 

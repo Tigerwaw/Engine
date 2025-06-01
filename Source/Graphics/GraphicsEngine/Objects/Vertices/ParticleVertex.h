@@ -1,7 +1,5 @@
 #pragma once
 #include "Math/Vector.hpp"
-
-
 #include "RHI/RHIStructs.h"
 
 struct ParticleVertex

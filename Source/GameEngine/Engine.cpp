@@ -52,7 +52,7 @@ void Engine::Initialize()
     AppSettings::Destroy();
 
     instance.myWindow->InitializeWindow(instance.myTitle, instance.myWindowSize, instance.myWindowPos, instance.myIsFullscreen, instance.myIsBorderless, instance.myAllowDropFiles);
-    GraphicsEngine::Get().Initialize(instance.myWindow->GetWindowHandle());
+    GraphicsEngine::Get().Initialize(instance.myWindow->GetWindowHandle(), instance.myResolution, instance.myContentRoot);
     GraphicsEngine::Get().SetResolution(instance.myResolution.x, instance.myResolution.y);
 
     AssetManager::Get().Initialize(instance.myContentRoot, instance.myAutoRegisterAssets);

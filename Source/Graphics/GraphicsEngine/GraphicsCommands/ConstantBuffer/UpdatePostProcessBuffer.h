@@ -2,7 +2,7 @@
 #include "GraphicsCommands/GraphicsCommandBase.h"
 #include "Objects/ConstantBuffers/PostProcessBuffer.h"
 
-struct UpdatePostProcessBuffer : public GraphicsCommandBase
+class UpdatePostProcessBuffer : public GraphicsCommandBase
 {
 public:
     UpdatePostProcessBuffer();

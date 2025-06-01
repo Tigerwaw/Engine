@@ -1,7 +1,7 @@
 #pragma once
 #include "GraphicsCommands/GraphicsCommandBase.h"
 
-struct EndEvent : public GraphicsCommandBase
+class EndEvent : public GraphicsCommandBase
 {
 public:
     EndEvent();

@@ -1,7 +1,8 @@
 #pragma once
 
-struct GraphicsCommandBase
+class GraphicsCommandBase
 {
+public:
 	virtual void Execute() = 0;
 	virtual void Destroy() = 0;
 

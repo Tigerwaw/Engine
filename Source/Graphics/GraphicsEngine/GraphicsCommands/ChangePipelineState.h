@@ -3,7 +3,7 @@
 
 struct PipelineStateObject;
 
-struct ChangePipelineState : public GraphicsCommandBase
+class ChangePipelineState : public GraphicsCommandBase
 {
 public:
     ChangePipelineState(std::shared_ptr<PipelineStateObject> aPipelineStateObject);

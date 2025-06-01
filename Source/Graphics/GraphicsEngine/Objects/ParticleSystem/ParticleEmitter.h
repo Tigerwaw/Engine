@@ -1,5 +1,4 @@
 #pragma once
-#include "Objects/DynamicVertexBuffer.h"
 #include "Objects/Vertices/ParticleVertex.h"
 #include "ParticleEmitterSettings.h"
 
@@ -24,7 +23,7 @@ class ParticleEmitter
 		virtual void InitInternal();
 		std::vector<ParticleVertex> myParticles;
 	private:
-		DynamicVertexBuffer myVertexBuffer;
+		std::shared_ptr<DynamicVertexBuffer> myVertexBuffer;
 		std::shared_ptr<Material> myMaterial;
 		ParticleEmitterSettings mySettings;
 };

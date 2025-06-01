@@ -1,15 +1,18 @@
 #pragma once
 #include "GraphicsCommands/GraphicsCommandBase.h"
 
-class PointLight;
-
-struct UpdateShadowBuffer : public GraphicsCommandBase
+class UpdateShadowBuffer : public GraphicsCommandBase
 {
 public:
-    UpdateShadowBuffer(std::shared_ptr<PointLight> aPointLight);
+    struct ShadowData
+    {
+        Math::Matrix4x4f cameraTransform;
+    };
+
+    UpdateShadowBuffer(const ShadowData& aShadowData);
     void Execute() override;
     void Destroy() override;
 private:
-    std::shared_ptr<PointLight> myPointLight;
+    ShadowData myData;
 };
 

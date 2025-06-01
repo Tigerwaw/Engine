@@ -1,7 +1,7 @@
 #pragma once
 #include "GraphicsCommands/GraphicsCommandBase.h"
 
-struct SetMarker : public GraphicsCommandBase
+class SetMarker : public GraphicsCommandBase
 {
 public:
     SetMarker(std::string_view aMarkerName);

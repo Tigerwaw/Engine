@@ -2,7 +2,6 @@
 #include "Math/Vector.hpp"
 #include "Math/Curve.h"
 
-
 struct ParticleEmitterSettings
 {
 	Math::Vector3f EmitterSize;

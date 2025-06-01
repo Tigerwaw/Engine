@@ -2,14 +2,10 @@
 #include "RenderParticles.h"
 
 #include "Objects/ConstantBuffers/ObjectBuffer.h"
-#include "ComponentSystem/Components/Graphics/ParticleSystem.h"
-#include "ComponentSystem/GameObject.h"
-#include "ComponentSystem/Components/Transform.h"
 
-RenderParticles::RenderParticles(std::shared_ptr<ParticleSystem> aParticleSystem)
+RenderParticles::RenderParticles(const RenderParticlesData& aParticleSystemData)
 {
-	particleSystem = aParticleSystem;
-    transform = aParticleSystem->gameObject->GetComponent<Transform>()->GetWorldMatrix();
+    myData = aParticleSystemData;
 }
 
 void RenderParticles::Execute()
@@ -17,11 +13,11 @@ void RenderParticles::Execute()
     GraphicsEngine& gfx = GraphicsEngine::Get();
 
     ObjectBuffer objBufferData;
-    objBufferData.World = transform;
-    objBufferData.WorldInvT = transform.GetFastInverse().GetTranspose();
+    objBufferData.World = myData.transform;
+    objBufferData.WorldInvT = myData.transform.GetFastInverse().GetTranspose();
     gfx.UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
-    for (auto& emitter : particleSystem->GetEmitters())
+    for (auto& emitter : myData.emitters)
     {
         gfx.RenderParticleEmitter(emitter);
     }
@@ -29,5 +25,5 @@ void RenderParticles::Execute()
 
 void RenderParticles::Destroy()
 {
-	particleSystem = nullptr;
+    myData.emitters.~vector();
 }

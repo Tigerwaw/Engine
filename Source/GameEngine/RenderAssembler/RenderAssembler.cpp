@@ -10,7 +10,7 @@
 #include "Math/Vector.hpp"
 #include "Math/AABB3D.hpp"
 #include "Math/Intersection3D.hpp"
-
+#include "Time/Timer.h"
 
 #include "ComponentSystem/Scene.h"
 #include "ComponentSystem/GameObject.h"
@@ -66,7 +66,19 @@ void RenderAssembler::RenderForward(Scene& aScene)
 	QueueUpdateLightBuffer(aScene);
 
 	// Final Render
-	gfxList.Enqueue<UpdateFrameBuffer>(aScene.myMainCamera->GetComponent<Camera>());
+	auto camComp = aScene.myMainCamera->GetComponent<Camera>();
+	auto camTransform = aScene.myMainCamera->GetComponent<Transform>();
+	FrameBuffer frameBuffer;
+	frameBuffer.InvView = camTransform->GetWorldMatrix().GetFastInverse();
+	frameBuffer.Projection = camComp->GetProjectionMatrix();
+	frameBuffer.ViewPosition = Math::ToVector4(camTransform->GetTranslation(true), 1.0f);
+	frameBuffer.ViewDirection = Math::ToVector4(camTransform->GetForwardVector(true), 1.0f);
+	frameBuffer.NearPlane = camComp->GetNearPlane();
+	frameBuffer.FarPlane = camComp->GetFarPlane();
+	frameBuffer.Time = { static_cast<float>(Engine::Get().GetTimer().GetTimeSinceProgramStart()), Engine::Get().GetTimer().GetDeltaTime() };
+	frameBuffer.Resolution = Engine::Get().GetResolution();
+
+	gfxList.Enqueue<UpdateFrameBuffer>(frameBuffer);
 	if (gfx.CurrentDebugMode != DebugMode::None)
 	{
 		std::shared_ptr<PipelineStateObject> pso = AssetManager::Get().GetAsset<PSOAsset>(gfx.DebugModeNames[static_cast<int>(gfx.CurrentDebugMode)])->pso;
@@ -126,7 +138,19 @@ void RenderAssembler::RenderDeferred(Scene& aScene)
 	// Deferred Objects
 	gfxList.Enqueue<BeginEvent>("Draw Deferred Objects");
 	gfxList.Enqueue<SetGBufferAsRenderTarget>();
-	gfxList.Enqueue<UpdateFrameBuffer>(aScene.myMainCamera->GetComponent<Camera>());
+
+	auto camComp = aScene.myMainCamera->GetComponent<Camera>();
+	auto camTransform = aScene.myMainCamera->GetComponent<Transform>();
+	FrameBuffer frameBuffer;
+	frameBuffer.InvView = camTransform->GetWorldMatrix().GetFastInverse();
+	frameBuffer.Projection = camComp->GetProjectionMatrix();
+	frameBuffer.ViewPosition = Math::ToVector4(camTransform->GetTranslation(true), 1.0f);
+	frameBuffer.ViewDirection = Math::ToVector4(camTransform->GetForwardVector(true), 1.0f);
+	frameBuffer.NearPlane = camComp->GetNearPlane();
+	frameBuffer.FarPlane = camComp->GetFarPlane();
+	frameBuffer.Time = { static_cast<float>(Engine::Get().GetTimer().GetTimeSinceProgramStart()), Engine::Get().GetTimer().GetDeltaTime() };
+	frameBuffer.Resolution = Engine::Get().GetResolution();
+	gfxList.Enqueue<UpdateFrameBuffer>(frameBuffer);
 	RenderDeferredObjects(aScene);
 	gfxList.Enqueue<EndEvent>();
 	
@@ -239,13 +263,19 @@ void RenderAssembler::RenderDeferred(Scene& aScene)
 		std::shared_ptr<ParticleSystem> particleSystem = gameObject->GetComponent<ParticleSystem>();
 		if (particleSystem && particleSystem->GetActive())
 		{
-			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderParticles>(particleSystem);
+			RenderParticles::RenderParticlesData data;
+			data.emitters = particleSystem->GetEmitters();
+			data.transform = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderParticles>(data);
 		}
 
 		std::shared_ptr<TrailSystem> trailSystem = gameObject->GetComponent<TrailSystem>();
 		if (trailSystem && trailSystem->GetActive())
 		{
-			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderTrail>(trailSystem);
+			RenderTrail::TrailData data;
+			data.emitters = trailSystem->GetEmitters();
+			data.transform = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderTrail>(data);
 		}
 	}
 	gfxList.Enqueue<EndEvent>();
@@ -347,7 +377,21 @@ void RenderAssembler::RenderDeferredObjects(Scene& aScene, bool aDisableViewCull
 				if (model->GetMaterialOnSlot(0)->GetPSO()->BlendState == nullptr)
 				{
 					UpdateBoundingBox(gameObject);
-					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model, AssetManager::Get().GetAsset<PSOAsset>("PSO_Deferred")->pso);
+
+					RenderMesh::RenderMeshData data;
+					data.mesh = model->GetMesh();
+					data.transform = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+					data.materialList = model->GetMaterials();
+					data.customShaderParams_1 = model->GetCustomShaderData_1();
+					data.customShaderParams_2 = model->GetCustomShaderData_2();
+					data.psoOverride = AssetManager::Get().GetAsset<PSOAsset>("PSO_Deferred")->pso;
+
+					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(data);
+
+					if (GraphicsEngine::Get().DrawBoundingBoxes)
+					{
+						Engine::Get().GetDebugDrawer().DrawBoundingBox(model);
+					}
 				}
 			}
 		}
@@ -360,7 +404,20 @@ void RenderAssembler::RenderDeferredObjects(Scene& aScene, bool aDisableViewCull
 				if (animModel->GetMaterialOnSlot(0)->GetPSO()->BlendState == nullptr)
 				{
 					UpdateBoundingBox(gameObject);
-					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel, AssetManager::Get().GetAsset<PSOAsset>("PSO_Deferred")->pso);
+
+					RenderAnimatedMesh::AnimMeshRenderData data;
+					data.mesh = animModel->GetMesh();
+					data.transform = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+					data.materialList = animModel->GetMaterials();
+					data.jointTransforms = animModel->GetCurrentPose();
+					data.psoOverride = AssetManager::Get().GetAsset<PSOAsset>("PSO_Deferred")->pso;
+
+					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(data);
+
+					if (GraphicsEngine::Get().DrawBoundingBoxes)
+					{
+					    Engine::Get().GetDebugDrawer().DrawBoundingBox(animModel);
+					}
 				}
 			}
 		}
@@ -373,7 +430,21 @@ void RenderAssembler::RenderDeferredObjects(Scene& aScene, bool aDisableViewCull
 				if (instancedModel->GetMaterialOnSlot(0)->GetPSO()->BlendState == nullptr)
 				{
 					UpdateBoundingBox(gameObject);
-					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(instancedModel, AssetManager::Get().GetAsset<PSOAsset>("PSO_Deferred")->pso);
+
+					RenderInstancedMesh::InstancedMeshRenderData data;
+					data.mesh = instancedModel->GetMesh();
+					data.transform = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+					data.materialList = instancedModel->GetMaterials();
+					data.instanceBuffer = &instancedModel->GetInstanceBuffer();
+					data.meshCount = instancedModel->GetMeshCount();
+					data.psoOverride = AssetManager::Get().GetAsset<PSOAsset>("PSO_Deferred")->pso;
+
+					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(data);
+
+					if (GraphicsEngine::Get().DrawBoundingBoxes)
+					{
+						Engine::Get().GetDebugDrawer().DrawBoundingBox(instancedModel->GetBoundingBox());
+					}
 				}
 			}
 		}
@@ -395,7 +466,19 @@ void RenderAssembler::RenderForwardObjects(Scene& aScene, bool aDisableViewCulli
 			{
 				if (model->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr)
 				{
-					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model);
+					RenderMesh::RenderMeshData data;
+					data.mesh = model->GetMesh();
+					data.transform = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+					data.materialList = model->GetMaterials();
+					data.customShaderParams_1 = model->GetCustomShaderData_1();
+					data.customShaderParams_2 = model->GetCustomShaderData_2();
+
+					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(data);
+
+					if (GraphicsEngine::Get().DrawBoundingBoxes)
+					{
+						Engine::Get().GetDebugDrawer().DrawBoundingBox(model);
+					}
 				}
 			}
 		}
@@ -407,7 +490,18 @@ void RenderAssembler::RenderForwardObjects(Scene& aScene, bool aDisableViewCulli
 			{
 				if (animModel->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr)
 				{
-					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel);
+					RenderAnimatedMesh::AnimMeshRenderData data;
+					data.mesh = animModel->GetMesh();
+					data.transform = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+					data.materialList = animModel->GetMaterials();
+					data.jointTransforms = animModel->GetCurrentPose();
+
+					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(data);
+
+					if (GraphicsEngine::Get().DrawBoundingBoxes)
+					{
+						Engine::Get().GetDebugDrawer().DrawBoundingBox(animModel);
+					}
 				}
 			}
 		}
@@ -419,7 +513,19 @@ void RenderAssembler::RenderForwardObjects(Scene& aScene, bool aDisableViewCulli
 			{
 				if (instancedModel->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr)
 				{
-					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(instancedModel);
+					RenderInstancedMesh::InstancedMeshRenderData data;
+					data.mesh = instancedModel->GetMesh();
+					data.transform = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+					data.materialList = instancedModel->GetMaterials();
+					data.instanceBuffer = &instancedModel->GetInstanceBuffer();
+					data.meshCount = instancedModel->GetMeshCount();
+
+					GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(data);
+
+					if (GraphicsEngine::Get().DrawBoundingBoxes)
+					{
+						Engine::Get().GetDebugDrawer().DrawBoundingBox(instancedModel->GetBoundingBox());
+					}
 				}
 			}
 		}
@@ -465,36 +571,112 @@ void RenderAssembler::QueueUpdateLightBuffer(Scene& aScene)
 {
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetMarker>("Update Light Buffer");
 
-	std::shared_ptr<AmbientLight> ambientLight;
-	if (aScene.myAmbientLight)
-	{
-		ambientLight = aScene.myAmbientLight->GetComponent<AmbientLight>();
-	}
+	LightBuffer lightBufferData;
 
-	std::shared_ptr<DirectionalLight> dirLight;
-	if (aScene.myDirectionalLight)
+	if (aScene.myAmbientLight && aScene.myAmbientLight->GetActive())
 	{
-		dirLight = aScene.myDirectionalLight->GetComponent<DirectionalLight>();
-	}
-
-	std::vector<std::shared_ptr<PointLight>> pointLights;
-	for (auto& plight : aScene.myPointLights)
-	{
-		if (plight->GetActive())
+		if (auto ambientLightComp = aScene.myAmbientLight->GetComponent<AmbientLight>())
 		{
-			pointLights.emplace_back(plight->GetComponent<PointLight>());
-		}
-	}
-	std::vector<std::shared_ptr<SpotLight>> spotLights;
-	for (auto& slight : aScene.mySpotLights)
-	{
-		if (slight->GetActive())
-		{
-			spotLights.emplace_back(slight->GetComponent<SpotLight>());
+			lightBufferData.AmbientLight.Color = ambientLightComp->GetColor();
+			lightBufferData.AmbientLight.Intensity = ambientLightComp->GetIntensity();
 		}
 	}
 
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateLightBuffer>(ambientLight, dirLight, pointLights, spotLights);
+	if (aScene.myDirectionalLight && aScene.myDirectionalLight->GetActive())
+	{
+		if (auto dirLightCamComp = aScene.myDirectionalLight->GetComponent<Camera>())
+		{
+			lightBufferData.DirLight.Projection = dirLightCamComp->GetProjectionMatrix();
+			lightBufferData.DirLight.FrustumSize = dirLightCamComp->GetViewportDimensions();
+			lightBufferData.DirLight.NearPlane = dirLightCamComp->GetNearPlane();
+		}
+
+		if (auto dirLightTransformComp = aScene.myDirectionalLight->GetComponent<Transform>())
+		{
+			lightBufferData.DirLight.View = dirLightTransformComp->GetWorldMatrix().GetFastInverse();
+		}
+
+		if (auto dirLightComp = aScene.myDirectionalLight->GetComponent<DirectionalLight>())
+		{
+			lightBufferData.DirLight.Color = dirLightComp->GetColor();
+			lightBufferData.DirLight.Intensity = dirLightComp->GetIntensity();
+			lightBufferData.DirLight.Direction = dirLightComp->GetDirection();
+			
+			lightBufferData.DirLight.CastShadows = dirLightComp->CastsShadows();
+			lightBufferData.DirLight.MinBias = dirLightComp->GetMinShadowBias();
+			lightBufferData.DirLight.MaxBias = dirLightComp->GetMaxShadowBias();
+			lightBufferData.DirLight.LightSize = dirLightComp->GetLightSize();
+		}
+	}
+
+	int activePLights = 0;
+	for (int i = 0; i < static_cast<int>(aScene.myPointLights.size()); i++)
+	{
+		auto& pLight = aScene.myPointLights[i];
+
+		if (pLight && pLight->GetActive())
+		{
+			++activePLights;
+
+			if (auto cam = pLight->GetComponent<Camera>())
+			{
+				lightBufferData.PointLights[i].FrustumSize = cam->GetViewportDimensions();
+				lightBufferData.PointLights[i].NearPlane = cam->GetNearPlane();
+				lightBufferData.PointLights[i].Projection = cam->GetProjectionMatrix();
+			}
+
+			if (auto light = pLight->GetComponent<PointLight>())
+			{
+				lightBufferData.PointLights[i].Position = light->GetPosition();
+				lightBufferData.PointLights[i].Color = light->GetColor();
+				lightBufferData.PointLights[i].Intensity = light->GetIntensity();
+				lightBufferData.PointLights[i].CastShadows = light->CastsShadows();
+				lightBufferData.PointLights[i].MinBias = light->GetMinShadowBias();
+				lightBufferData.PointLights[i].MaxBias = light->GetMaxShadowBias();
+				lightBufferData.PointLights[i].LightSize = light->GetLightSize();
+			}
+		}
+	}
+	lightBufferData.NumPointLights = activePLights;
+
+	int activeSLights = 0;
+	for (int i = 0; i < static_cast<int>(aScene.mySpotLights.size()); i++)
+	{
+		auto& sLight = aScene.mySpotLights[i];
+
+		if (sLight && sLight->GetActive())
+		{
+			++activeSLights;
+
+			if (auto transform = sLight->GetComponent<Transform>())
+			{
+				lightBufferData.SpotLights[i].View = transform->GetMatrix().GetFastInverse();
+			}
+
+			if (auto cam = sLight->GetComponent<Camera>())
+			{
+				lightBufferData.SpotLights[i].FrustumSize = cam->GetViewportDimensions();
+				lightBufferData.SpotLights[i].NearPlane = cam->GetNearPlane();
+				lightBufferData.SpotLights[i].Projection = cam->GetProjectionMatrix();
+			}
+
+			if (auto light = sLight->GetComponent<SpotLight>())
+			{
+				lightBufferData.SpotLights[i].Position = light->GetPosition();
+				lightBufferData.SpotLights[i].Position = light->GetDirection();
+				lightBufferData.SpotLights[i].ConeAngle = light->GetConeAngleRadians();
+				lightBufferData.SpotLights[i].Color = light->GetColor();
+				lightBufferData.SpotLights[i].Intensity = light->GetIntensity();
+				lightBufferData.SpotLights[i].CastShadows = light->CastsShadows();
+				lightBufferData.SpotLights[i].MinBias = light->GetMinShadowBias();
+				lightBufferData.SpotLights[i].MaxBias = light->GetMaxShadowBias();
+				lightBufferData.SpotLights[i].LightSize = light->GetLightSize();
+			}
+		}
+	}
+	lightBufferData.NumSpotLights = activePLights;
+
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateLightBuffer>(lightBufferData);
 }
 
 void RenderAssembler::QueueSpotLightShadows(Scene& aScene)
@@ -509,7 +691,21 @@ void RenderAssembler::QueueSpotLightShadows(Scene& aScene)
 
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Shadow")->pso);
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, spotLight->GetShadowMap(), false, true);
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(aScene.mySpotLights[i]->GetComponent<Camera>());
+
+		std::shared_ptr<Camera> lightCam = spotLight->gameObject->GetComponent<Camera>();
+		std::shared_ptr<Transform> lightTransform = spotLight->gameObject->GetComponent<Transform>();
+
+		FrameBuffer frameBuffer;
+		frameBuffer.InvView = lightTransform->GetWorldMatrix().GetFastInverse();
+		frameBuffer.Projection = lightCam->GetProjectionMatrix();
+		frameBuffer.ViewPosition = Math::ToVector4(lightTransform->GetTranslation(true), 1.0f);
+		frameBuffer.ViewDirection = Math::ToVector4(lightTransform->GetForwardVector(true), 1.0f);
+		frameBuffer.NearPlane = lightCam->GetNearPlane();
+		frameBuffer.FarPlane = lightCam->GetFarPlane();
+		frameBuffer.Time = { static_cast<float>(Engine::Get().GetTimer().GetTimeSinceProgramStart()), Engine::Get().GetTimer().GetDeltaTime() };
+		frameBuffer.Resolution = Engine::Get().GetResolution();
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(frameBuffer);
+
 		QueueGameObjects(aScene, aScene.mySpotLights[i]->GetComponent<Camera>(), false, AssetManager::Get().GetAsset<PSOAsset>("PSO_Shadow")->pso);
 	}
 
@@ -528,8 +724,24 @@ void RenderAssembler::QueuePointLightShadows(Scene& aScene)
 
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, pointLight->GetShadowMap(), false, true);
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_ShadowCube")->pso);
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(aScene.myPointLights[i]->GetComponent<Camera>());
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateShadowBuffer>(pointLight);
+
+		std::shared_ptr<Camera> lightCam = pointLight->gameObject->GetComponent<Camera>();
+		std::shared_ptr<Transform> lightTransform = pointLight->gameObject->GetComponent<Transform>();
+
+		FrameBuffer frameBuffer;
+		frameBuffer.InvView = lightTransform->GetWorldMatrix().GetFastInverse();
+		frameBuffer.Projection = lightCam->GetProjectionMatrix();
+		frameBuffer.ViewPosition = Math::ToVector4(lightTransform->GetTranslation(true), 1.0f);
+		frameBuffer.ViewDirection = Math::ToVector4(lightTransform->GetForwardVector(true), 1.0f);
+		frameBuffer.NearPlane = lightCam->GetNearPlane();
+		frameBuffer.FarPlane = lightCam->GetFarPlane();
+		frameBuffer.Time = { static_cast<float>(Engine::Get().GetTimer().GetTimeSinceProgramStart()), Engine::Get().GetTimer().GetDeltaTime() };
+		frameBuffer.Resolution = Engine::Get().GetResolution();
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(frameBuffer);
+
+		UpdateShadowBuffer::ShadowData shadowData;
+		shadowData.cameraTransform = pointLight->gameObject->GetComponent<Transform>()->GetMatrix();
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateShadowBuffer>(shadowData);
 		QueueGameObjects(aScene, pointLight, false, AssetManager::Get().GetAsset<PSOAsset>("PSO_ShadowCube")->pso);
 	}
 
@@ -546,7 +758,21 @@ void RenderAssembler::QueueDirectionalLightShadows(Scene& aScene)
 
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, dLight->GetShadowMap(), false, true);
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("PSO_Shadow")->pso);
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(aScene.myDirectionalLight->GetComponent<Camera>());
+
+	std::shared_ptr<Camera> lightCam = dLight->gameObject->GetComponent<Camera>();
+	std::shared_ptr<Transform> lightTransform = dLight->gameObject->GetComponent<Transform>();
+
+	FrameBuffer frameBuffer;
+	frameBuffer.InvView = lightTransform->GetWorldMatrix().GetFastInverse();
+	frameBuffer.Projection = lightCam->GetProjectionMatrix();
+	frameBuffer.ViewPosition = Math::ToVector4(lightTransform->GetTranslation(true), 1.0f);
+	frameBuffer.ViewDirection = Math::ToVector4(lightTransform->GetForwardVector(true), 1.0f);
+	frameBuffer.NearPlane = lightCam->GetNearPlane();
+	frameBuffer.FarPlane = lightCam->GetFarPlane();
+	frameBuffer.Time = { static_cast<float>(Engine::Get().GetTimer().GetTimeSinceProgramStart()), Engine::Get().GetTimer().GetDeltaTime() };
+	frameBuffer.Resolution = Engine::Get().GetResolution();
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(frameBuffer);
+
 	QueueGameObjects(aScene, aScene.myDirectionalLight->GetComponent<Camera>(), false, AssetManager::Get().GetAsset<PSOAsset>("PSO_Shadow")->pso);
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<EndEvent>();
 }
@@ -563,9 +789,14 @@ void RenderAssembler::QueueDebugGizmos(Scene& aScene, std::shared_ptr<Camera> aR
 		std::shared_ptr<DebugModel> model = gameObject->GetComponent<DebugModel>();
 		if (model && model->GetActive())
 		{
-			if (aRenderCamera->GetViewcullingIntersection(gameObject->GetComponent<Transform>(), model->GetBoundingBox()))
+			auto transform = gameObject->GetComponent<Transform>();
+			if (aRenderCamera->GetViewcullingIntersection(transform, model->GetBoundingBox()))
 			{
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderDebugMesh>(model);
+				RenderDebugMesh::DebugMeshRenderData data;
+				data.mesh = model->GetMesh();
+				data.transform = transform->GetWorldMatrix();
+				data.materialList = model->GetMaterials();
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderDebugMesh>(data);
 			}
 		}
 	}
@@ -592,7 +823,15 @@ void RenderAssembler::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aR
 				{
 					if (!model->GetCastShadows()) continue;
 				}
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model, aPSOoverride);
+
+				RenderMesh::RenderMeshData data;
+				data.mesh = model->GetMesh();
+				data.transform = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+				data.materialList = model->GetMaterials();
+				data.customShaderParams_1 = model->GetCustomShaderData_1();
+				data.customShaderParams_2 = model->GetCustomShaderData_2();
+				data.psoOverride = aPSOoverride;
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(data);
 			}
 		}
 
@@ -610,7 +849,13 @@ void RenderAssembler::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aR
 					if (!animModel->GetCastShadows()) continue;
 				}
 
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel, aPSOoverride);
+				RenderAnimatedMesh::AnimMeshRenderData data;
+				data.mesh = animModel->GetMesh();
+				data.transform = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+				data.materialList = animModel->GetMaterials();
+				data.jointTransforms = animModel->GetCurrentPose();
+				data.psoOverride = aPSOoverride;
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(data);
 			}
 		}
 
@@ -628,7 +873,14 @@ void RenderAssembler::QueueGameObjects(Scene& aScene, std::shared_ptr<Camera> aR
 					if (!instancedModel->GetCastShadows()) continue;
 				}
 
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(instancedModel, aPSOoverride);
+				RenderInstancedMesh::InstancedMeshRenderData data;
+				data.mesh = instancedModel->GetMesh();
+				data.transform = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+				data.materialList = instancedModel->GetMaterials();
+				data.instanceBuffer = &instancedModel->GetInstanceBuffer();
+				data.meshCount = instancedModel->GetMeshCount();
+				data.psoOverride = aPSOoverride;
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(data);
 			}
 		}
 	}
@@ -647,7 +899,14 @@ void RenderAssembler::QueueGameObjects(Scene& aScene, std::shared_ptr<PointLight
 
 			if (aDisableViewCulling || !model->GetShouldViewcull() || IsInsideRadius(aPointLight, gameObject->GetComponent<Transform>(), model->GetBoundingBox()))
 			{
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(model, aPSOoverride);
+				RenderMesh::RenderMeshData data;
+				data.mesh = model->GetMesh();
+				data.transform = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+				data.materialList = model->GetMaterials();
+				data.customShaderParams_1 = model->GetCustomShaderData_1();
+				data.customShaderParams_2 = model->GetCustomShaderData_2();
+				data.psoOverride = aPSOoverride;
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(data);
 			}
 		}
 
@@ -658,7 +917,13 @@ void RenderAssembler::QueueGameObjects(Scene& aScene, std::shared_ptr<PointLight
 
 			if (aDisableViewCulling || !animModel->GetShouldViewcull() || IsInsideRadius(aPointLight, gameObject->GetComponent<Transform>(), animModel->GetBoundingBox()))
 			{
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(animModel, aPSOoverride);
+				RenderAnimatedMesh::AnimMeshRenderData data;
+				data.mesh = animModel->GetMesh();
+				data.transform = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+				data.materialList = animModel->GetMaterials();
+				data.jointTransforms = animModel->GetCurrentPose();
+				data.psoOverride = aPSOoverride;
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(data);
 			}
 		}
 
@@ -669,7 +934,14 @@ void RenderAssembler::QueueGameObjects(Scene& aScene, std::shared_ptr<PointLight
 
 			if (aDisableViewCulling || !instancedModel->GetShouldViewcull() || IsInsideRadius(aPointLight, gameObject->GetComponent<Transform>(), instancedModel->GetBoundingBox()))
 			{
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(instancedModel, aPSOoverride);
+				RenderInstancedMesh::InstancedMeshRenderData data;
+				data.mesh = instancedModel->GetMesh();
+				data.transform = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+				data.materialList = instancedModel->GetMaterials();
+				data.instanceBuffer = &instancedModel->GetInstanceBuffer();
+				data.meshCount = instancedModel->GetMeshCount();
+				data.psoOverride = aPSOoverride;
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(data);
 			}
 		}
 	}
@@ -843,7 +1115,10 @@ void RenderAssembler::DrawTestUI()
 	//myTestSprite->SetPosition(Math::Vector2f(500.0f, 500.0f));
 	//myTestSprite->SetSize(Math::Vector2f(600.0f, 600.0f));
 	//GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(GraphicsEngine::Get().GetBackBuffer(), nullptr, false, false);
+	// //GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("PSO_Sprite")->pso);
+	// //GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("PSO_Spritesheet")->pso);
 	//GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderSprite>(myTestSprite);
 
+	//GraphicsEngine::Get().ChangePipelineState(AssetManager::Get().GetAsset<PSOAsset>("PSO_Text")->pso);
 	//GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderText>(myTestText);
 }

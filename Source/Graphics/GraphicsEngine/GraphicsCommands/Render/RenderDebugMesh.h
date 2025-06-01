@@ -2,20 +2,21 @@
 #include "GraphicsCommands/GraphicsCommandBase.h"
 #include "Math/Matrix4x4.hpp"
 
-
-
 class Mesh;
 class Material;
-class DebugModel;
 
-struct RenderDebugMesh : GraphicsCommandBase
+class RenderDebugMesh : GraphicsCommandBase
 {
 public:
-	RenderDebugMesh(std::shared_ptr<DebugModel> aModel);
+	struct DebugMeshRenderData
+	{
+		std::shared_ptr<Mesh> mesh;
+		Math::Matrix4x4f transform;
+		std::vector<std::shared_ptr<Material>> materialList;
+	};
+	RenderDebugMesh(const DebugMeshRenderData& aModelData);
 	void Execute() override;
 	void Destroy() override;
 private:
-	std::shared_ptr<Mesh> mesh;
-	Math::Matrix4x4f transform;
-	std::vector<std::shared_ptr<Material>> materialList;
+	DebugMeshRenderData myData;
 };

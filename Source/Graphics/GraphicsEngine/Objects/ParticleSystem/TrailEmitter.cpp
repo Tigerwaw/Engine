@@ -1,6 +1,8 @@
 #include "GraphicsEngine.pch.h"
 #include "TrailEmitter.h"
-#include "EngineDefines.h"
+#include "Objects/DynamicVertexBuffer.h"
+
+#define MAX_PARTICLES 20000
 
 TrailEmitter::TrailEmitter()
 {
@@ -34,7 +36,7 @@ void TrailEmitter::Update(Math::Vector3f aFollowTarget, float aDeltaTime)
 		myPreviousPositions[i] = myPreviousPositions[i - 1];
 	}
 
-	myVertexBuffer.UpdateVertexBuffer(myTrailVertices);
+	myVertexBuffer->UpdateVertexBuffer(myTrailVertices);
 }
 
 void TrailEmitter::InitTrailVertex(TrailVertex& aTrailVertex)
@@ -66,5 +68,6 @@ void TrailEmitter::InitInternal()
 		InitTrailVertex(p);
 	}
 
-	myVertexBuffer.CreateBuffer("Trail_VertexBuffer", myTrailVertices, MAX_PARTICLES);
+	myVertexBuffer = std::make_shared<DynamicVertexBuffer>();
+	myVertexBuffer->CreateBuffer("Trail_VertexBuffer", myTrailVertices, MAX_PARTICLES);
 }

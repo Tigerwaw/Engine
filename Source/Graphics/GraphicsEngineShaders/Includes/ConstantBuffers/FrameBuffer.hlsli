@@ -10,7 +10,7 @@ cbuffer FrameBuffer : register(b0)
     float FB_NearPlane;
     float FB_FarPlane;
     float2 FB_Padding;
-    float2 FB_Time;
+    float2 FB_Time; // x = TotalTime, y = Delta Time
     float2 FB_Resolution;
 }
 

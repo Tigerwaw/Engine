@@ -1,18 +1,21 @@
 #pragma once
 #include "GraphicsCommands/GraphicsCommandBase.h"
 #include "Math/Matrix4x4.hpp"
-
-
-class TrailSystem;
+#include "Objects/ParticleSystem/TrailEmitter.h"
 
 class RenderTrail : public GraphicsCommandBase
 {
 public:
-	RenderTrail(std::shared_ptr<TrailSystem> aTrailSystem);
+	struct TrailData
+	{
+		std::vector<TrailEmitter> emitters;
+		Math::Matrix4x4f transform;
+	};
+
+	RenderTrail(const TrailData& aTrailData);
 	void Execute() override;
 	void Destroy() override;
 private:
-	std::shared_ptr<TrailSystem> trailSystem;
-	Math::Matrix4x4f transform;
+	TrailData myData;
 };
 

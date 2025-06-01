@@ -34,8 +34,6 @@
 #include "Debug/EndEvent.h"
 #include "Debug/SetMarker.h"
 
-
-
 class Mesh;
 
 class GraphicsCommandList final

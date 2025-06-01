@@ -1,9 +1,9 @@
 #pragma once
-#include "GraphicsCommandBase.h"
+#include "GraphicsCommands/GraphicsCommandBase.h"
 
 class Texture;
 
-struct SetTextureResource : public GraphicsCommandBase
+class SetTextureResource : public GraphicsCommandBase
 {
 public:
     SetTextureResource(unsigned aSlot, std::shared_ptr<Texture> aTexture);

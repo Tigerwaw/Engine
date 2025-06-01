@@ -15,7 +15,7 @@ class Text;
 class Sprite;
 class DynamicVertexBuffer;
 class GraphicsCommandList;
-struct GraphicsCommandBase;
+class GraphicsCommandBase;
 class GBuffer;
 class ParticleEmitter;
 class TrailEmitter;
@@ -115,7 +115,7 @@ public:
 		static GraphicsEngine myInstance;
 		return myInstance;
 	}
-	bool Initialize(HWND aWindowHandle);
+	bool Initialize(HWND aWindowHandle, Math::Vector2f aResolution, const std::filesystem::path& aContentRoot);
 
 #ifndef _RETAIL
 	bool InitializeImGui();

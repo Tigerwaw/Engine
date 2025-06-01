@@ -1,21 +1,25 @@
 #pragma once
-#include "GraphicsCommandBase.h"
+#include "GraphicsCommands/GraphicsCommandBase.h"
 #include "Math/Matrix.hpp"
-
 
 class Sprite;
 class Texture;
 class Material;
 
-struct RenderSprite : GraphicsCommandBase
+class RenderSprite : GraphicsCommandBase
 {
 public:
-	RenderSprite(std::shared_ptr<Sprite> aSprite);
+	struct SpriteData
+	{
+		std::shared_ptr<Material> material;
+		std::shared_ptr<Texture> texture;
+		Math::Matrix4x4f matrix;
+	};
+
+	RenderSprite(const SpriteData& aSpriteData);
 	void Execute() override;
 	void Destroy() override;
 private:
-	std::shared_ptr<Material> material;
-	std::shared_ptr<Texture> texture;
-	Math::Matrix4x4f matrix;
+	SpriteData myData;
 };
 

@@ -1,18 +1,21 @@
 #pragma once
 #include "GraphicsCommands/GraphicsCommandBase.h"
 #include "Math/Matrix4x4.hpp"
-
-
-class ParticleSystem;
+#include "Objects/ParticleSystem/ParticleEmitter.h"
 
 class RenderParticles : public GraphicsCommandBase
 {
 public:
-	RenderParticles(std::shared_ptr<ParticleSystem> aParticleSystem);
+	struct RenderParticlesData
+	{
+		std::vector<ParticleEmitter> emitters;
+		Math::Matrix4x4f transform;
+	};
+
+	RenderParticles(const RenderParticlesData& aParticleSystemData);
 	void Execute() override;
 	void Destroy() override;
 private:
-	std::shared_ptr<ParticleSystem> particleSystem;
-	Math::Matrix4x4f transform;
+	RenderParticlesData myData;
 };
 

@@ -37,12 +37,10 @@ project "GraphicsEngine"
 
   includedirs {
     dirs.graphicsengine,
-    dirs.assetmanager,
     dirs.utilities,
     dirs.imgui,
     dirs.commonutilities,
-    dirs.math,
-    dirs.engine -- Remove
+    dirs.math
   }
 
   filter "system:windows"

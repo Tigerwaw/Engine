@@ -4,8 +4,9 @@
 
 using GraphicsCommandFunction = std::function<void()>;
 
-struct LambdaGraphicsCommand final : public GraphicsCommandBase
+class LambdaGraphicsCommand final : public GraphicsCommandBase
 {
+public:
 	GraphicsCommandFunction myLambda;
 
 	LambdaGraphicsCommand(GraphicsCommandFunction&& aLambda) : myLambda(std::move(aLambda))

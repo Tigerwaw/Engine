@@ -2,14 +2,10 @@
 #include "RenderTrail.h"
 
 #include "Objects/ConstantBuffers/ObjectBuffer.h"
-#include "ComponentSystem/Components/Graphics/TrailSystem.h"
-#include "ComponentSystem/GameObject.h"
-#include "ComponentSystem/Components/Transform.h"
 
-RenderTrail::RenderTrail(std::shared_ptr<TrailSystem> aTrailSystem)
+RenderTrail::RenderTrail(const TrailData& aTrailData)
 {
-    trailSystem = aTrailSystem;
-    transform = aTrailSystem->gameObject->GetComponent<Transform>()->GetWorldMatrix();
+    myData = aTrailData;
 }
 
 void RenderTrail::Execute()
@@ -17,11 +13,11 @@ void RenderTrail::Execute()
     GraphicsEngine& gfx = GraphicsEngine::Get();
 
     ObjectBuffer objBufferData;
-    objBufferData.World = transform;
-    objBufferData.WorldInvT = transform.GetFastInverse().GetTranspose();
+    objBufferData.World = myData.transform;
+    objBufferData.WorldInvT = myData.transform.GetFastInverse().GetTranspose();
     gfx.UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
-    for (auto& emitter : trailSystem->GetEmitters())
+    for (auto& emitter : myData.emitters)
     {
         gfx.RenderTrailEmitter(emitter);
     }
@@ -29,5 +25,5 @@ void RenderTrail::Execute()
 
 void RenderTrail::Destroy()
 {
-    trailSystem = nullptr;
+    myData.emitters.~vector();
 }

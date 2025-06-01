@@ -1,7 +1,7 @@
 #pragma once
 #include "GraphicsCommands/GraphicsCommandBase.h"
 
-struct RenderFullscreenQuad : GraphicsCommandBase
+class RenderFullscreenQuad : GraphicsCommandBase
 {
 public:
 	RenderFullscreenQuad();

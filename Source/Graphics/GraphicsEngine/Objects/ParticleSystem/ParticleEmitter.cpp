@@ -1,7 +1,9 @@
 #include "GraphicsEngine.pch.h"
 #include "ParticleEmitter.h"
-#include "EngineDefines.h"
 #include "Math/Random.hpp"
+#include "Objects/DynamicVertexBuffer.h"
+
+#define MAX_PARTICLES 20000
 
 ParticleEmitter::ParticleEmitter()
 {
@@ -28,7 +30,7 @@ void ParticleEmitter::Update(float aDeltaTime)
 		UpdateParticle(particle, aDeltaTime);
 	}
 
-	myVertexBuffer.UpdateVertexBuffer(myParticles);
+	myVertexBuffer->UpdateVertexBuffer(myParticles);
 }
 
 void ParticleEmitter::InitParticle(ParticleVertex& aParticle, size_t aIndex)
@@ -74,5 +76,6 @@ void ParticleEmitter::InitInternal()
 		InitParticle(p, i);
 	}
 
-	myVertexBuffer.CreateBuffer("Particle_VertexBuffer", myParticles, MAX_PARTICLES);
+	myVertexBuffer = std::make_shared<DynamicVertexBuffer>();
+	myVertexBuffer->CreateBuffer("Particle_VertexBuffer", myParticles, MAX_PARTICLES);
 }

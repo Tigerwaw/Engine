@@ -3,7 +3,7 @@
 
 class Texture;
 
-struct SetRenderTarget : public GraphicsCommandBase
+class SetRenderTarget : public GraphicsCommandBase
 {
 public:
     SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);

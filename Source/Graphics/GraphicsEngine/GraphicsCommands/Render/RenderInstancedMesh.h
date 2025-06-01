@@ -3,22 +3,25 @@
 
 class Mesh;
 class Material;
-class InstancedModel;
 struct PipelineStateObject;
 
 class RenderInstancedMesh : public GraphicsCommandBase
 {
 public:
-	RenderInstancedMesh(std::shared_ptr<InstancedModel> aInstancedModel);
-	RenderInstancedMesh(std::shared_ptr<InstancedModel> aInstancedModel, std::shared_ptr<PipelineStateObject> aPSOoverride);
+	struct InstancedMeshRenderData
+	{
+		std::shared_ptr<Mesh> mesh;
+		Math::Matrix4x4f transform;
+		std::vector<std::shared_ptr<Material>> materialList;
+		std::shared_ptr<PipelineStateObject> psoOverride;
+		DynamicVertexBuffer* instanceBuffer = nullptr;
+		unsigned meshCount = 0;
+	};
+
+	RenderInstancedMesh(const InstancedMeshRenderData& aInstancedModelData);
 	void Execute() override;
 	void Destroy() override;
 private:
-	std::shared_ptr<Mesh> mesh;
-	Math::Matrix4x4f transform;
-	std::vector<std::shared_ptr<Material>> materialList;
-	std::shared_ptr<PipelineStateObject> psoOverride;
-	DynamicVertexBuffer* instanceBuffer = nullptr;
-	unsigned meshCount;
+	InstancedMeshRenderData myData;
 };
 
