@@ -1,5 +1,6 @@
 #include "ServerBase.h"
 #include <iostream>
+#include <cassert>
 
 #include "NetMessage.h"
 
@@ -16,6 +17,16 @@ void ServerBase::StartServer()
 
 void ServerBase::Update()
 {
+    std::chrono::duration<float> elapsed_seconds = std::chrono::system_clock::now() - myLastDataTickTime;
+    if (elapsed_seconds.count() > myDataTickRate)
+    {
+        myLastDataTickTime = std::chrono::system_clock::now();
+        myAvgDataReceived = static_cast<int>(std::roundf(myDataReceived / elapsed_seconds.count()));
+        myAvgDataSent = static_cast<int>(std::roundf(myDataSent / elapsed_seconds.count()));
+        myDataReceived = 0;
+        myDataSent = 0;
+    }
+
     if (myShouldReceive)
     {
         Receive();
@@ -47,26 +58,49 @@ void ServerBase::Receive()
     }
 }
 
-void ServerBase::SendToClient(NetBuffer& aBuffer, int aClientIndex) const
+void ServerBase::AcceptHandshake(const NetBuffer& aBuffer, const sockaddr_in& aAddress)
 {
-    myComm.SendData(aBuffer, myClients[aClientIndex].address);
+    myComm.SendData(aBuffer, aAddress);
+    printf("\nAccepted handshake for adress [%i] : [%i]", aAddress.sin_addr.S_un.S_addr, aAddress.sin_port);
 }
 
-void ServerBase::SendToAllClients(NetBuffer& aBuffer) const
+const NetInfo& ServerBase::AddClient(const sockaddr_in& aAddress, const std::string& aUsername)
 {
-    for (auto& client : myClients)
+    NetInfo& newClient = myClients.emplace_back();
+    newClient.address = aAddress;
+    newClient.username = aUsername;
+
+    printf("Added client %s : %i", aUsername.c_str(), aAddress.sin_addr.S_un.S_addr);
+    return newClient;
+}
+
+void ServerBase::RemoveClient(int aClientIndex)
+{
+    myClients.erase(myClients.begin() + aClientIndex);
+}
+
+void ServerBase::SendToClient(const NetBuffer& aBuffer, int aClientIndex)
+{
+    assert(aClientIndex >= 0 && aClientIndex < static_cast<int>(myClients.size()));
+
+    myDataSent += myComm.SendData(aBuffer, myClients[aClientIndex].address);
+}
+
+void ServerBase::SendToAllClients(const NetBuffer& aBuffer)
+{
+    for (int clientIndex = 0; clientIndex < static_cast<int>(myClients.size()); ++clientIndex)
     {
-        myComm.SendData(aBuffer, client.address);
+        SendToClient(aBuffer, clientIndex);
     }
 }
 
-void ServerBase::SendToAllClientsExcluding(NetBuffer& aBuffer, const int aClientIndex) const
+void ServerBase::SendToAllClientsExcluding(const NetBuffer& aBuffer, const int aClientIndex)
 {
-    for (auto& client : myClients)
+    for (int clientIndex = 0; clientIndex < static_cast<int>(myClients.size()); ++clientIndex)
     {
-        if (GetClientIndex(client.address) == aClientIndex) continue;
+        if (clientIndex == aClientIndex) continue;
 
-        myComm.SendData(aBuffer, client.address);
+        SendToClient(aBuffer, clientIndex);
     }
 }
 
@@ -96,4 +130,11 @@ const int ServerBase::GetClientIndex(const sockaddr_in& aAddress) const
     }
 
     return -1;
+}
+
+const NetInfo& ServerBase::GetClient(int aClientIndex) const
+{
+    assert(aClientIndex >= 0 && aClientIndex < static_cast<int>(myClients.size()));
+
+    return myClients[aClientIndex];
 }

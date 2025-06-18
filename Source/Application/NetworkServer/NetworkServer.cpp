@@ -16,6 +16,17 @@ void NetworkServer::InitializeApplication()
 	GraphicsEngine::Get().DrawColliders = true;
 	Engine::Get().GetSceneHandler().LoadScene("Scenes/SC_NetworkingScene.json");
 	myServer.StartServer();
+
+	Engine::Get().GetImGuiHandler().AddNewFunction([this]()
+		{
+			if (ImGui::Begin("Network Stats"))
+			{
+				ImGui::Text("Received Data: %i bytes/s", myServer.GetReceivedData());
+				ImGui::Text("Sent Data: %i bytes/s", myServer.GetSentData());
+
+				ImGui::End();
+			}
+		});
 }
 
 void NetworkServer::UpdateApplication()

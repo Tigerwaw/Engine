@@ -150,6 +150,7 @@ LRESULT CALLBACK WinProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In
 {
 	if (uMsg == WM_DESTROY || uMsg == WM_CLOSE)
 	{
+		Engine::Shutdown();
 		PostQuitMessage(0);
 	}
 

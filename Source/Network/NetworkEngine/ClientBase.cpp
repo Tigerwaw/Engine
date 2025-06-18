@@ -19,6 +19,16 @@ void ClientBase::ConnectClient(const char* aIP)
 
 void ClientBase::Update()
 {
+    std::chrono::duration<float> elapsed_seconds = std::chrono::system_clock::now() - myLastDataTickTime;
+    if (elapsed_seconds.count() > myDataTickRate)
+    {
+        myLastDataTickTime = std::chrono::system_clock::now();
+        myAvgDataReceived = static_cast<int>(std::roundf(myDataReceived / elapsed_seconds.count()));
+        myAvgDataSent = static_cast<int>(std::roundf(myDataSent / elapsed_seconds.count()));
+        myDataReceived = 0;
+        myDataSent = 0;
+    }
+
     if (myShouldReceive)
     {
         Receive();
@@ -44,6 +54,7 @@ void ClientBase::Receive()
         int bytesReceived = myComm.ReceiveData(receiveBuffer, otherAddress);
         if (bytesReceived > 0)
         {
+            myDataReceived += bytesReceived;
             NetMessage* receivedMessage = nullptr;
             receivedMessage = ReceiveMessage(receiveBuffer);
 
@@ -59,6 +70,11 @@ void ClientBase::Receive()
             break;
         }
     }
+}
+
+void ClientBase::Send(const NetBuffer& aNetBuffer)
+{
+    myDataSent += myComm.SendData(aNetBuffer);
 }
 
 void ClientBase::HandleMessage_AcceptHandshake()

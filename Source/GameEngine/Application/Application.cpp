@@ -65,7 +65,6 @@ void Application::Run()
 
 
 		engine.Prepare();
-		engine.GetImGuiHandler().Update();
 		UpdateApplication();
 		engine.Update();
 		engine.Render();

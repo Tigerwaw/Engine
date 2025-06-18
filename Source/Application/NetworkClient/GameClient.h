@@ -29,12 +29,12 @@ protected:
     NetMessage* ReceiveMessage(const NetBuffer& aBuffer) const override;
     void HandleMessage(NetMessage* aMessage) override;
 
-    void SendHandshakeRequest() const override;
-    void SendConnectionRequest(const std::string& aUsername) const override;
-    void SendDisconnectMessage() const override;
+    void SendHandshakeRequest() override;
+    void SendConnectionRequest(const std::string& aUsername) override;
+    void SendDisconnectMessage() override;
 
-    void SendTextMessage(const std::string& aMessage) const;
-    void SendPositionMessage(const Math::Vector3f& aPosition) const;
+    void SendTextMessage(const std::string& aMessage);
+    void SendPositionMessage(const Math::Vector3f& aPosition);
 
     void HandleMessage_Disconnect(NetMessage_Disconnect& aMessage);
     void HandleMessage_Text(NetMessage_Text& aMessage);

@@ -1,3 +1,5 @@
+#include "ServerBase.h"
+#include "ServerBase.h"
 #include <Enginepch.h>
 #include "GameServer.h"
 #include <iostream>
@@ -110,9 +112,7 @@ void GameServer::HandleMessage_RequestConnect(NetMessage_RequestConnect& aMessag
 {
     if (DoesClientExist(aAddress)) return;
 
-    NetInfo& newInfo = myClients.emplace_back();
-    newInfo.address = aAddress;
-    newInfo.username = aMessage.GetUsername();
+    const NetInfo& newInfo = AddClient(aAddress, aMessage.GetUsername());
     int index = GetClientIndex(newInfo.address);
 
     // Send connect accept.
@@ -130,7 +130,7 @@ void GameServer::HandleMessage_RequestConnect(NetMessage_RequestConnect& aMessag
         createCharacterMsg.SetNetworkID(object->GetNetworkID());
         NetBuffer buffer;
         createCharacterMsg.Serialize(buffer);
-        myComm.SendData(buffer, myClients[index].address);
+        SendToClient(buffer, index);
     }
 }
 
@@ -139,10 +139,10 @@ void GameServer::HandleMessage_Disconnect(NetMessage_Disconnect&, const sockaddr
     if (!DoesClientExist(aAddress)) return;
 
     int index = GetClientIndex(aAddress);
-    const std::string& username = myClients[index].username;
+    const std::string& username = GetClient(index).username;
     printf("\n[User %s disconnected]", username.data());
     
-    myClients.erase(myClients.begin() + index);
+    RemoveClient(index);
 
     NetMessage_Disconnect disconnectMsg;
     disconnectMsg.SetData(username);
@@ -158,14 +158,11 @@ void GameServer::HandleMessage_HandshakeRequest(const sockaddr_in& aAddress)
     NetMessage_AcceptHandshake msg;
     NetBuffer buffer;
     msg.Serialize(buffer);
-    myComm.SendData(buffer, aAddress);
-    printf("\nAccepted handshake for adress [%i] : [%i]", aAddress.sin_addr.S_un.S_addr, aAddress.sin_port);
+    AcceptHandshake(buffer, aAddress);
 }
 
 void GameServer::CreateNewObject()
 {
-    //printf("\nStarted creating object!\n");
-
     Math::Vector3f startingPos;
     startingPos.x = static_cast<float>((std::rand() % 1000) - 500);
     startingPos.y = 0.0f;

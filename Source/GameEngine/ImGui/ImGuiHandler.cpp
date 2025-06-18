@@ -19,6 +19,9 @@ void ImGuiHandler::Initialize(HWND aMainWindowHandle)
 {
 	aMainWindowHandle;
 
+	ImGui_ImplWin32_EnableDpiAwareness();
+	float main_scale = ImGui_ImplWin32_GetDpiScaleForMonitor(::MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY));
+
 #ifndef _RETAIL
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -36,6 +39,18 @@ void ImGuiHandler::Initialize(HWND aMainWindowHandle)
 	}
 
 	ImGui::StyleColorsDark();
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.ScaleAllSizes(main_scale);
+	style.FontScaleDpi = main_scale;
+	io.ConfigDpiScaleFonts = true;
+	io.ConfigDpiScaleViewports = true;
+
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplWin32_Init(aMainWindowHandle);
@@ -61,8 +76,6 @@ void ImGuiHandler::BeginFrame()
 
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
-
-
 	ImGui::NewFrame();
 #endif
 }
@@ -74,14 +87,11 @@ void ImGuiHandler::Render()
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-	if (!Engine::Get().GetIsFullscreen())
+	// Update and Render additional Platform Windows
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
-		// Update and Render additional Platform Windows
-		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
-			ImGui::UpdatePlatformWindows();
-			ImGui::RenderPlatformWindowsDefault();
-		}
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
 	}
 
 	GraphicsEngine::Get().EndEvent();

@@ -73,47 +73,47 @@ void GameClient::Update()
     }
 }
 
-void GameClient::SendHandshakeRequest() const
+void GameClient::SendHandshakeRequest()
 {
     NetMessage_RequestHandshake msg;
     NetBuffer sendBuffer;
     msg.Serialize(sendBuffer);
-    myComm.SendData(sendBuffer);
+    Send(sendBuffer);
 }
 
-void GameClient::SendConnectionRequest(const std::string& aUsername) const
+void GameClient::SendConnectionRequest(const std::string& aUsername)
 {
     NetMessage_RequestConnect msg;
     msg.SetUsername(aUsername);
     NetBuffer sendBuffer;
     msg.Serialize(sendBuffer);
-    myComm.SendData(sendBuffer);
+    Send(sendBuffer);
 }
 
-void GameClient::SendTextMessage(const std::string& aMessage) const
+void GameClient::SendTextMessage(const std::string& aMessage)
 {
     NetMessage_Text textMsg;
     textMsg.SetData(aMessage);
     NetBuffer sendBuffer;
     textMsg.Serialize(sendBuffer);
-    myComm.SendData(sendBuffer);
+    Send(sendBuffer);
 }
 
-void GameClient::SendDisconnectMessage() const
+void GameClient::SendDisconnectMessage()
 {
     NetMessage_Disconnect disconnectMsg;
     NetBuffer sendBuffer;
     disconnectMsg.Serialize(sendBuffer);
-    myComm.SendData(sendBuffer);
+    Send(sendBuffer);
 }
 
-void GameClient::SendPositionMessage(const Math::Vector3f& aPosition) const
+void GameClient::SendPositionMessage(const Math::Vector3f& aPosition)
 {
     NetMessage_Position positionMsg;
     positionMsg.SetPosition(aPosition);
     NetBuffer sendBuffer;
     positionMsg.Serialize(sendBuffer);
-    myComm.SendData(sendBuffer);
+    Send(sendBuffer);
 
     printf("\nSent position x: %f, y: %f, z: %f", aPosition.x, aPosition.y, aPosition.z);
 }

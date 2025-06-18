@@ -13,7 +13,6 @@ public:
 	int SendData(const NetBuffer& inData) const;
 	int SendData(const NetBuffer& inData, const sockaddr_in& aRecipient) const;
 	int ReceiveData(NetBuffer& outData, sockaddr_in& outSender) const;
-
 private:
 	unsigned __int64 mySocket = NULL;
 	addrinfo* myAddressInfo = NULL;

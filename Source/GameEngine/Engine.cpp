@@ -89,6 +89,7 @@ void Engine::Update()
     mySceneHandler->UpdateActiveScene();
     myInputHandler->UpdateInput();
     myAudioEngine->Update();
+    myImGuiHandler->Update();
     mySceneHandler->RenderActiveScene();
 }
 

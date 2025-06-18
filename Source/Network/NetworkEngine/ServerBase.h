@@ -2,6 +2,7 @@
 #include <string>
 #include <WinSock2.h>
 #include <thread>
+#include <chrono>
 
 #include "Communicator.h"
 
@@ -32,21 +33,37 @@ public:
     void StartServer();
 
     virtual void Update();
+
+    int GetReceivedData() const { return myAvgDataReceived; }
+    int GetSentData() const { return myAvgDataSent; }
 protected:
     void Receive();
     virtual NetMessage* ReceiveMessage(const NetBuffer& aBuffer) const = 0;
     virtual void HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress, const int aBytesReceived) = 0;
 
-    void SendToClient(NetBuffer& aBuffer, int aClientIndex) const;
-    void SendToAllClients(NetBuffer& aBuffer) const;
-    void SendToAllClientsExcluding(NetBuffer& aBuffer, const int aClientIndex) const;
+    void AcceptHandshake(const NetBuffer& aBuffer, const sockaddr_in& aAddress);
+    const NetInfo& AddClient(const sockaddr_in& aAddress, const std::string& aUsername);
+    void RemoveClient(int aClientIndex); 
+
+    void SendToClient(const NetBuffer& aBuffer, int aClientIndex);
+    void SendToAllClients(const NetBuffer& aBuffer);
+    void SendToAllClientsExcluding(const NetBuffer& aBuffer, const int aClientIndex);
     bool DoesClientExist(const sockaddr_in& aAddress) const;
     const int GetClientIndex(const sockaddr_in& aAddress) const;
-
-    Communicator myComm;
-    std::vector<NetInfo> myClients;
+    const NetInfo& GetClient(int aClientIndex) const;
 
     bool myShouldReceive = false;
     int myMessagesHandledPerTick = 10;
+
+private:
+    Communicator myComm;
+    std::vector<NetInfo> myClients;
+
+    int myDataReceived = 0;
+    int myDataSent = 0;
+    int myAvgDataReceived = 0;
+    int myAvgDataSent = 0;
+    std::chrono::system_clock::time_point myLastDataTickTime;
+    float myDataTickRate = 1.0f;
 };
 

@@ -25,12 +25,12 @@ void NetworkClient::InitializeApplication()
 
 	Engine::Get().GetInputHandler().RegisterBinaryAction("ToggleLerp", Keys::SPACE, GenericInput::ActionType::Clicked);
 
-	Engine::Get().GetImGuiHandler().AddNewFunction([]() 
+	Engine::Get().GetImGuiHandler().AddNewFunction([this]() 
 	{
 		if (ImGui::Begin("Network Stats"))
 		{
-			ImGui::Text("Recv:");
-			ImGui::Text("Send:");
+			ImGui::Text("Received Data: %i bytes/s", myClient.GetReceivedData());
+			ImGui::Text("Sent Data: %i bytes/s", myClient.GetSentData());
 
 			ImGui::End();
 		}
