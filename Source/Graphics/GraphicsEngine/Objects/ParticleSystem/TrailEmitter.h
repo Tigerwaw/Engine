@@ -2,6 +2,8 @@
 #include "Objects/Vertices/TrailVertex.h"
 #include "TrailEmitterSettings.h"
 
+class DynamicVertexBuffer;
+
 class TrailEmitter
 {
 	friend class GraphicsEngine;

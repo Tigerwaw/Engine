@@ -2,6 +2,10 @@
 #include "Objects/Vertices/ParticleVertex.h"
 #include "ParticleEmitterSettings.h"
 
+class Material;
+class DynamicVertexBuffer;
+struct ParticleVertex;
+
 class ParticleEmitter
 {
 	friend class GraphicsEngine;

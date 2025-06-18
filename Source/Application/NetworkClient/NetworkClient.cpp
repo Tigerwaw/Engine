@@ -24,6 +24,17 @@ void NetworkClient::InitializeApplication()
 	myClient.ConnectClient("");
 
 	Engine::Get().GetInputHandler().RegisterBinaryAction("ToggleLerp", Keys::SPACE, GenericInput::ActionType::Clicked);
+
+	Engine::Get().GetImGuiHandler().AddNewFunction([]() 
+	{
+		if (ImGui::Begin("Network Stats"))
+		{
+			ImGui::Text("Recv:");
+			ImGui::Text("Send:");
+
+			ImGui::End();
+		}
+	});
 }
 
 void NetworkClient::UpdateApplication()

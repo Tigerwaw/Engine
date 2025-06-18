@@ -846,7 +846,7 @@ void ModelViewer::SetMaterial(std::shared_ptr<GameObject> aGO, std::filesystem::
 	myIsCustomMaterial = false;
 }
 
-void ModelViewer::SetTexture(std::shared_ptr<GameObject> aGO, std::filesystem::path& aAssetPath)
+void ModelViewer::SetTexture(std::shared_ptr<GameObject>, std::filesystem::path& aAssetPath)
 {
 	std::string assetName = aAssetPath.filename().stem().string();
 
