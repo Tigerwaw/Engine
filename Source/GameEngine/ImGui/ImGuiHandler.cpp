@@ -4,6 +4,7 @@
 
 #include "GraphicsEngine.h"
 #include "Engine.h"
+#include "Application/Window.h"
 #include "Time/Timer.h"
 #include "Input/InputHandler.h"
 #include "SceneHandler/SceneHandler.h"
@@ -20,7 +21,6 @@ void ImGuiHandler::Initialize(HWND aMainWindowHandle)
 	aMainWindowHandle;
 
 	ImGui_ImplWin32_EnableDpiAwareness();
-	float main_scale = ImGui_ImplWin32_GetDpiScaleForMonitor(::MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY));
 
 #ifndef _RETAIL
 	IMGUI_CHECKVERSION();
@@ -29,23 +29,15 @@ void ImGuiHandler::Initialize(HWND aMainWindowHandle)
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-
-	if (!Engine::Get().GetIsFullscreen())
-	{
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
-
-		io.BackendFlags |= ImGuiBackendFlags_PlatformHasViewports;
-		io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;
-	}
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+	//io.ConfigDpiScaleFonts = true;
+	//io.ConfigDpiScaleViewports = true;
 
 	ImGui::StyleColorsDark();
-
+	float main_scale = ImGui_ImplWin32_GetDpiScaleForMonitor(::MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY));
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.ScaleAllSizes(main_scale);
 	style.FontScaleDpi = main_scale;
-	io.ConfigDpiScaleFonts = true;
-	io.ConfigDpiScaleViewports = true;
-
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		style.WindowRounding = 0.0f;
@@ -69,11 +61,6 @@ void ImGuiHandler::Destroy()
 void ImGuiHandler::BeginFrame()
 {
 #ifndef _RETAIL
-	ImGuiIO& io = ImGui::GetIO();
-	Math::Vector2f resolution = Engine::Get().GetResolution();
-	io.DisplaySize = { resolution.x, resolution.y };
-	io.DisplayFramebufferScale = { 1.0f, 1.0f };
-
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
@@ -83,11 +70,11 @@ void ImGuiHandler::BeginFrame()
 void ImGuiHandler::Render()
 {
 #ifndef _RETAIL
+	if (!Engine::Get().GetApplicationWindow().GetWindowHandle()) return;
+
 	GraphicsEngine::Get().BeginEvent("ImGui");
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
-	// Update and Render additional Platform Windows
 	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		ImGui::UpdatePlatformWindows();

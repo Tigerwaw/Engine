@@ -47,6 +47,20 @@ bool Window::InitializeWindow(const std::string& aWindowTitle, Math::Vector2f aW
 		flags = WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME | WS_POPUP;
 	}
 
+	RECT wr{}; // set the size, but not the position
+	wr.left = static_cast<LONG>(posX);
+	wr.top = static_cast<LONG>(posY);
+	wr.right = wr.left + static_cast<LONG>(aWindowSize.x);
+	wr.bottom = wr.top + static_cast<LONG>(aWindowSize.y);
+	BOOL result = AdjustWindowRect(&wr, flags, FALSE);
+
+	if (!result)
+	{
+		return false;
+	}
+
+	SetProcessDPIAware();
+
 	// Then we use the class to create our window
 	myMainWindowHandle = CreateWindow(
 		windowClassName,		// Classname
@@ -148,10 +162,12 @@ const Math::Vector2f Window::GetSize() const
 
 LRESULT CALLBACK WinProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam)
 {
-	if (uMsg == WM_DESTROY || uMsg == WM_CLOSE)
+	switch (uMsg)
 	{
-		Engine::Shutdown();
+	case WM_DESTROY:
+	case WM_CLOSE:
 		PostQuitMessage(0);
+		break;
 	}
 
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);

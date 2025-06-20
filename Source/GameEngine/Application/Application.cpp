@@ -28,12 +28,9 @@ void Application::Run()
 		PIXScopedEvent(PIX_COLOR_INDEX(0), "Main Update Loop");
 
 #ifndef _RETAIL
-		if (engine.GetIsFullscreen())
+		if (ImGui_ImplWin32_WndProcHandler(msg.hwnd, msg.message, msg.wParam, msg.lParam))
 		{
-			if (ImGui_ImplWin32_WndProcHandler(msg.hwnd, msg.message, msg.wParam, msg.lParam))
-			{
-				return;
-			}
+			return;
 		}
 #endif
 
