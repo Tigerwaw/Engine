@@ -75,6 +75,7 @@ void Engine::Shutdown()
     sInstance->myImGuiHandler->Destroy();
 
     delete sInstance;
+    LOG(LogGameEngine, Log, "Shut down engine!");
 }
 
 void Engine::Prepare()

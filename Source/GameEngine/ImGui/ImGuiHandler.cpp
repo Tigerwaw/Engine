@@ -15,7 +15,6 @@
 #include "ComponentSystem/Components/Graphics/AnimatedModel.h"
 #include "ComponentSystem/Components/Graphics/Camera.h"
 
-
 void ImGuiHandler::Initialize(HWND aMainWindowHandle)
 {
 	aMainWindowHandle;
@@ -70,8 +69,6 @@ void ImGuiHandler::BeginFrame()
 void ImGuiHandler::Render()
 {
 #ifndef _RETAIL
-	if (!Engine::Get().GetApplicationWindow().GetWindowHandle()) return;
-
 	GraphicsEngine::Get().BeginEvent("ImGui");
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

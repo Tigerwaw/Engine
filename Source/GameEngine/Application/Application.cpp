@@ -60,6 +60,8 @@ void Application::Run()
 			engine.GetInputHandler().UpdateEvents(msg.message, msg.wParam, msg.lParam);
 		}
 
+		if (!myIsRunning)
+			break;
 
 		engine.Prepare();
 		UpdateApplication();

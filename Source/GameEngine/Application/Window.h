@@ -52,6 +52,7 @@
 class Window
 {
 public:
+    ~Window();
     bool InitializeWindow(const std::string& aWindowTitle = "Application",
         Math::Vector2f aWindowSize = Math::Vector2f(1920.0f, 1080.0f), 
         Math::Vector2f aWindowPos = Math::Vector2f(0, 0),
