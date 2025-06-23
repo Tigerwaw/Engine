@@ -24,7 +24,3 @@ void NetMessage_RequestConnect::Deserialize(NetBuffer& aBuffer)
 {
 	NetMessage::Deserialize(aBuffer);
 }
-
-void NetMessage_RequestConnect::GetStringRepresentation(char*, int) const
-{
-}

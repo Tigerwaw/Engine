@@ -18,8 +18,3 @@ void NetMessage_Text::Deserialize(NetBuffer& aBuffer)
 	aBuffer.ReadData(buff);
 	myData.assign(buff);
 }
-
-void NetMessage_Text::GetStringRepresentation(char* outString, int aBufferSize) const
-{
-	memcpy_s(outString, aBufferSize, myData.data(), myData.size());
-}

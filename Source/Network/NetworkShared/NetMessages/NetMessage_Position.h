@@ -17,9 +17,6 @@ public:
 
 	void Serialize(NetBuffer& aBuffer) override;
 	void Deserialize(NetBuffer& aBuffer) override;
-
-	void GetStringRepresentation(char* outString, int aBufferSize) const override;
-
 protected:
 	unsigned myNetworkID;
 	Math::Vector3f myPosition;

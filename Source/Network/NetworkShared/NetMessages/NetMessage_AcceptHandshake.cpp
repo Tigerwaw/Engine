@@ -14,7 +14,3 @@ void NetMessage_AcceptHandshake::Deserialize(NetBuffer& aBuffer)
 {
 	NetMessage::Deserialize(aBuffer);
 }
-
-void NetMessage_AcceptHandshake::GetStringRepresentation(char*, int) const
-{
-}

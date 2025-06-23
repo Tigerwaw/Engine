@@ -7,7 +7,7 @@ NetMessage_CreateCharacter::NetMessage_CreateCharacter()
 
 void NetMessage_CreateCharacter::Serialize(NetBuffer& aBuffer)
 {
-	NetMessage::Serialize(aBuffer);
+	GuaranteedNetMessage::Serialize(aBuffer);
 	aBuffer.WriteData(myNetworkID);
 	aBuffer.WriteData(myPosition.x);
 	aBuffer.WriteData(myPosition.y);
@@ -16,15 +16,9 @@ void NetMessage_CreateCharacter::Serialize(NetBuffer& aBuffer)
 
 void NetMessage_CreateCharacter::Deserialize(NetBuffer& aBuffer)
 {
-	NetMessage::Deserialize(aBuffer);
+	GuaranteedNetMessage::Deserialize(aBuffer);
 	aBuffer.ReadData(myNetworkID);
 	aBuffer.ReadData(myPosition.x);
 	aBuffer.ReadData(myPosition.y);
 	aBuffer.ReadData(myPosition.z);
-}
-
-void NetMessage_CreateCharacter::GetStringRepresentation(char* outString, int aBufferSize) const
-{
-	outString;
-	aBufferSize;
 }

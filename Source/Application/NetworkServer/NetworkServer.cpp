@@ -23,6 +23,21 @@ void NetworkServer::InitializeApplication()
 			{
 				ImGui::Text("Received Data: %i bytes/s", myServer.GetReceivedData());
 				ImGui::Text("Sent Data: %i bytes/s", myServer.GetSentData());
+				ImGui::Text("Guaranteed Messages Sent: %i", myServer.GetNrOfGuaranteedMessagesSent());
+				ImGui::Text("Guaranteed Messages Lost: %i", myServer.GetNrOfGuaranteedMessagesLost());
+				ImGui::Text("Estimated Package Loss: %s%%", std::format("{:.3f}", myServer.GetEstimatedPackageLoss()).c_str());
+
+				ImGui::Spacing();
+				if (ImGui::BeginChild("Clients"))
+				{
+					for (size_t clientIndex = 0; clientIndex < myServer.GetClients().size(); clientIndex++)
+					{
+						auto& client = myServer.GetClients()[clientIndex];
+						ImGui::Text("Client ID: %s, Ping: %s ms", client.username.c_str(), std::format("{:.2f}", client.myRTT * 1000.0f).c_str());
+					}
+					
+					ImGui::EndChild();
+				}
 
 				ImGui::End();
 			}

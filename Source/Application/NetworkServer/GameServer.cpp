@@ -3,6 +3,9 @@
 #include <iostream>
 
 #include "NetworkEngine/NetMessage.h"
+#include "NetworkEngine/GuaranteedNetMessage.h"
+#include "NetworkEngine/AckNetMessage.h"
+#include "NetworkEngine/RTTPingMessage.h"
 #include "NetworkShared/NetMessages/NetMessage_Text.h"
 #include "NetworkShared/NetMessages/NetMessage_RequestConnect.h"
 #include "NetworkShared/NetMessages/NetMessage_AcceptConnect.h"
@@ -49,6 +52,67 @@ void GameServer::Update()
         Receive();
     }
 
+    for (int clientIndex = 0; clientIndex < static_cast<int>(myClients.size()); clientIndex++)
+    {
+        std::chrono::duration<float> timeSinceLastPing = std::chrono::system_clock::now() - myClients[clientIndex].myLastPingTime;
+        if (timeSinceLastPing.count() > myTimeBetweenPings)
+        {
+
+            RTTPingMessage pingMsg;
+            int guaranteedMessageID = CreateNewGuaranteedMessage(&pingMsg, clientIndex);
+            NetBuffer buffer;
+            pingMsg.Serialize(buffer);
+            SendToClient(buffer, clientIndex);
+
+            myGuaranteedMessageIDToData[guaranteedMessageID].myGuaranteedMessageBuffer = buffer;
+            UpdateClientPing(clientIndex, guaranteedMessageID);
+        }
+    }
+
+    std::array<int, 100> messageIDsToRemove = {};
+    int currentIndex = 0;
+
+    for (auto& [guaranteedMessageID, guaranteedMessageData] : myGuaranteedMessageIDToData)
+    {
+        int clientIndex = GetClientIndex(guaranteedMessageData.myRecipientAddress);
+        if (clientIndex == -1)
+        {
+            messageIDsToRemove[++currentIndex] = guaranteedMessageID;
+            continue;
+        }
+
+        std::chrono::duration<float> elapsedTime = std::chrono::system_clock::now() - guaranteedMessageData.myLastSentTimestamp;
+        if (elapsedTime.count() > myGuaranteedMessageTimeout)
+        {
+            if (guaranteedMessageData.myAttempts >= myGuaranteedMesssageMaxTimeouts)
+            {
+                RemoveClient(clientIndex);
+                messageIDsToRemove[++currentIndex] = guaranteedMessageID;
+            }
+            else
+            {
+                if (guaranteedMessageID == GetClient(clientIndex).myLastPingMessageID)
+                {
+                    UpdateClientPing(clientIndex, GetClient(clientIndex).myLastPingMessageID);
+                }
+                
+                printf("[%f] Sending guaranteed message with ID %i attempt %i\n", elapsedTime.count(), guaranteedMessageID, guaranteedMessageData.myAttempts);
+                ++myNrOfGuaranteedMessagesSent;
+                SendToClient(guaranteedMessageData.myGuaranteedMessageBuffer, clientIndex);
+                guaranteedMessageData.myLastSentTimestamp = std::chrono::system_clock::now();
+                ++guaranteedMessageData.myAttempts;
+            }
+        }
+    }
+
+    for (auto& messageIDToRemove : messageIDsToRemove)
+    {
+        if (myGuaranteedMessageIDToData.contains(messageIDToRemove))
+        {
+            myGuaranteedMessageIDToData.erase(messageIDToRemove);
+        }
+    }
+
     double currentTime = Engine::Get().GetTimer().GetTimeSinceProgramStart();
     float dt = static_cast<float>(currentTime - myLastUpdateTimestamp);
     if (dt > (1.0f / myTickRate))
@@ -78,11 +142,56 @@ void GameServer::Receive()
         int bytesReceived = myComm.ReceiveData(receiveBuffer, otherAddress);
         if (bytesReceived > 0)
         {
+            myDataReceived += bytesReceived;
             NetMessage* receivedMessage = ReceiveMessage(receiveBuffer);
 
             if (receivedMessage)
             {
                 receivedMessage->Deserialize(receiveBuffer);
+
+                if (auto guaranteedMessage = dynamic_cast<GuaranteedNetMessage*>(receivedMessage))
+                {
+                    int id = guaranteedMessage->GetGuaranteedMessageID();
+
+                    AckNetMessage msg;
+                    msg.SetGuaranteedMessageID(id);
+                    NetBuffer sendBuffer;
+                    msg.Serialize(sendBuffer);
+                    SendToClient(sendBuffer, GetClientIndex(otherAddress));
+
+                    if (std::find(myAcknowledgedMessageIDs.begin(), myAcknowledgedMessageIDs.end(), id) != myAcknowledgedMessageIDs.end())
+                    {
+                        // Message has already been acknowledged, so we send a new acknowledge but we do not act on the message.
+                        printf("Already acknowledged message with ID %i\n", id);
+                        delete receivedMessage;
+                        continue;
+                    }
+                    else
+                    {
+                        // We add the message ID to our acknowledged IDs so that if we receive this ID again we won't act on it.
+                        printf("Acknowledged message with ID %i\n", id);
+                        myAcknowledgedMessageIDs.emplace_back(id);
+                    }
+                }
+                else if (auto ackMessage = dynamic_cast<AckNetMessage*>(receivedMessage))
+                {
+                    int id = ackMessage->GetGuaranteedMessageID();
+                    if (myGuaranteedMessageIDToData.contains(id))
+                    {
+                        if (id == GetClient(GetClientIndex(otherAddress)).myLastPingMessageID)
+                        {
+                            UpdateClientPing(GetClientIndex(otherAddress), id, true);
+                        }
+
+                        ++myNrOfAcknowledges;
+                        printf("Received Acknowledge message with ID %i\n", id);
+                        myGuaranteedMessageIDToData.erase(id);
+                    }
+
+                    delete receivedMessage;
+                    continue;
+                }
+
                 HandleMessage(receivedMessage, otherAddress, bytesReceived);
                 delete receivedMessage;
             }
@@ -100,34 +209,22 @@ NetMessage* GameServer::ReceiveMessage(const NetBuffer& aBuffer) const
 
     switch (receivedMessageType)
     {
+    case NetMessageType::AckMessage:
+        return new AckNetMessage();
+    case NetMessageType::RTTPing:
+        return new RTTPingMessage();
     case NetMessageType::RequestConnect:
-    {
         return new NetMessage_RequestConnect();
-        break;
-    }
     case NetMessageType::Disconnect:
-    {
         return new NetMessage_Disconnect();
-        break;
-    }
     case NetMessageType::Text:
-    {
         return new NetMessage_Text();
-        break;
-    }
     case NetMessageType::RequestHandshake:
-    {
         return new NetMessage_RequestHandshake();
-        break;
-    }
     case NetMessageType::Position:
-    {
         return new NetMessage_Position();
-        break;
-    }
     default:
         return nullptr;
-        break;
     }
 }
 
@@ -153,7 +250,7 @@ void GameServer::HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress
 void GameServer::AcceptHandshake(const NetBuffer& aBuffer, const sockaddr_in& aAddress)
 {
     myComm.SendData(aBuffer, aAddress);
-    printf("\nAccepted handshake for adress [%i] : [%i]", aAddress.sin_addr.S_un.S_addr, aAddress.sin_port);
+    printf("Accepted handshake for adress [%i] : [%i]\n", aAddress.sin_addr.S_un.S_addr, aAddress.sin_port);
 }
 
 const NetInfo& GameServer::AddClient(const sockaddr_in& aAddress, const std::string& aUsername)
@@ -162,13 +259,14 @@ const NetInfo& GameServer::AddClient(const sockaddr_in& aAddress, const std::str
     newClient.address = aAddress;
     newClient.username = aUsername;
 
-    printf("Added client %s : %i", aUsername.c_str(), aAddress.sin_addr.S_un.S_addr);
+    printf("Added client %s : %i\n", aUsername.c_str(), aAddress.sin_addr.S_un.S_addr);
     return newClient;
 }
 
 void GameServer::RemoveClient(int aClientIndex)
 {
     myClients.erase(myClients.begin() + aClientIndex);
+    printf("Disconnected client!\n");
 }
 
 void GameServer::SendToClient(const NetBuffer& aBuffer, int aClientIndex)
@@ -231,6 +329,18 @@ const NetInfo& GameServer::GetClient(int aClientIndex) const
     return myClients[aClientIndex];
 }
 
+void GameServer::UpdateClientPing(int aClientIndex, int aMessageID, bool aShouldUpdateRTT)
+{
+    std::chrono::duration<float> rtt = std::chrono::system_clock::now() - myClients[aClientIndex].myLastPingTime;
+    myClients[aClientIndex].myLastPingTime = std::chrono::system_clock::now();
+    myClients[aClientIndex].myLastPingMessageID = aMessageID;
+
+    if (aShouldUpdateRTT)
+    {
+        myClients[aClientIndex].myRTT = rtt.count();
+    }
+}
+
 void GameServer::HandleMessage_RequestConnect(NetMessage_RequestConnect& aMessage, const sockaddr_in& aAddress)
 {
     if (DoesClientExist(aAddress)) return;
@@ -250,10 +360,13 @@ void GameServer::HandleMessage_RequestConnect(NetMessage_RequestConnect& aMessag
     for (auto& object : myObjects)
     {
         NetMessage_CreateCharacter createCharacterMsg;
+        int guaranteedMessageID = CreateNewGuaranteedMessage(&createCharacterMsg, index);
         createCharacterMsg.SetNetworkID(object->GetNetworkID());
         NetBuffer buffer;
         createCharacterMsg.Serialize(buffer);
         SendToClient(buffer, index);
+
+        myGuaranteedMessageIDToData[guaranteedMessageID].myGuaranteedMessageBuffer = buffer;
     }
 }
 
@@ -290,17 +403,25 @@ void GameServer::CreateNewObject()
     startingPos.x = static_cast<float>((std::rand() % 1000) - 500);
     startingPos.y = 0.0f;
     startingPos.z = static_cast<float>((std::rand() % 1000) - 500);
+    
+    int networkID = myCurrentNetworkID;
 
-    NetMessage_CreateCharacter createCharacterMsg;
-    createCharacterMsg.SetNetworkID(myCurrentNetworkID);
-    createCharacterMsg.SetStartingPosition(startingPos);
-    NetBuffer buffer;
-    createCharacterMsg.Serialize(buffer);
-    SendToAllClients(buffer);
+    for (int clientIndex = 0; clientIndex < static_cast<int>(myClients.size()); clientIndex++)
+    {
+        NetMessage_CreateCharacter createCharacterMsg;
+        int guaranteedMessageID = CreateNewGuaranteedMessage(&createCharacterMsg, clientIndex);
+        createCharacterMsg.SetNetworkID(networkID);
+        createCharacterMsg.SetStartingPosition(startingPos);
+        NetBuffer buffer;
+        createCharacterMsg.Serialize(buffer);
+        SendToClient(buffer, clientIndex);
+
+        myGuaranteedMessageIDToData[guaranteedMessageID].myGuaranteedMessageBuffer = buffer;
+    }
 
     std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
-    go->SetNetworkID(createCharacterMsg.GetNetworkID());
-    go->AddComponent<Transform>(createCharacterMsg.GetPosition());
+    go->SetNetworkID(networkID);
+    go->AddComponent<Transform>(startingPos);
     go->AddComponent<RandomDirectionMovement>();
     go->AddComponent<BounceAgainstWorldEdges>();
     auto coll = go->AddComponent<BoxCollider>(Math::Vector3f(50.0f, 100.0f, 50.0f), Math::Vector3f(0.0f, 90.0f, 0.0f));
@@ -334,11 +455,17 @@ void GameServer::DestroyObject(unsigned aNetworkID)
         myObjects.erase(it);
     }
 
-    NetMessage_RemoveCharacter removeCharacterMsg;
-    removeCharacterMsg.SetNetworkID(aNetworkID);
-    NetBuffer buffer;
-    removeCharacterMsg.Serialize(buffer);
-    SendToAllClients(buffer);
+    for (int clientIndex = 0; clientIndex < static_cast<int>(myClients.size()); clientIndex++)
+    {
+        NetMessage_RemoveCharacter removeCharacterMsg;
+        int guaranteedMessageID = CreateNewGuaranteedMessage(&removeCharacterMsg, clientIndex);
+        removeCharacterMsg.SetNetworkID(aNetworkID);
+        NetBuffer buffer;
+        removeCharacterMsg.Serialize(buffer);
+        SendToClient(buffer, clientIndex);
+
+        myGuaranteedMessageIDToData[guaranteedMessageID].myGuaranteedMessageBuffer = buffer;
+    }
 }
 
 void GameServer::UpdatePositions()
@@ -367,4 +494,19 @@ void GameServer::SendTestMessage()
     newMsg.Serialize(buffer);
     SendToAllClients(buffer);
     ++increment;
+}
+
+int GameServer::CreateNewGuaranteedMessage(GuaranteedNetMessage* aGuaranteedMessage, int aClientIndex)
+{
+    int id = myGuaranteedMessageID;
+    ++myGuaranteedMessageID;
+    aGuaranteedMessage->SetGuaranteedMessageID(id);
+
+    myGuaranteedMessageIDToData[id].myLastSentTimestamp = std::chrono::system_clock::now();
+    myGuaranteedMessageIDToData[id].myAttempts = 1;
+    myGuaranteedMessageIDToData[id].myRecipientAddress = GetClient(aClientIndex).address;
+
+    printf("Created guaranteed message with ID %i\n", id);
+    ++myNrOfGuaranteedMessagesSent;
+    return id;
 }

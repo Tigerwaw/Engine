@@ -4,6 +4,9 @@
 #include <WinSock2.h>
 
 #include "NetworkEngine/NetMessage.h"
+#include "NetworkEngine/GuaranteedNetMessage.h"
+#include "NetworkEngine/AckNetMessage.h"
+#include "NetworkEngine/RTTPingMessage.h"
 #include "NetworkShared/NetMessages/NetMessage_Text.h"
 #include "NetworkShared/NetMessages/NetMessage_RequestConnect.h"
 #include "NetworkShared/NetMessages/NetMessage_AcceptConnect.h"
@@ -65,6 +68,54 @@ void GameClient::Update()
         return;
     }
 
+    std::chrono::duration<float> timeSinceLastPing = std::chrono::system_clock::now() - myLastPingTime;
+    if (timeSinceLastPing.count() > myTimeBetweenPings)
+    {
+        myLastPingTime = std::chrono::system_clock::now();
+        
+        RTTPingMessage pingMsg;
+        int guaranteedMessageID = CreateNewGuaranteedMessage(&pingMsg);
+        NetBuffer buffer;
+        pingMsg.Serialize(buffer);
+        Send(buffer);
+
+        myGuaranteedMessageIDToData[guaranteedMessageID].myGuaranteedMessageBuffer = buffer;
+    }
+
+
+    std::array<int, 100> messageIDsToRemove = {};
+    int currentIndex = 0;
+
+    for (auto& [guaranteedMessageID, guaranteedMessageData] : myGuaranteedMessageIDToData)
+    {
+        std::chrono::duration<float> elapsedTime = std::chrono::system_clock::now() - guaranteedMessageData.myLastSentTimestamp;
+        if (elapsedTime.count() > myGuaranteedMessageTimeout)
+        {
+            if (guaranteedMessageData.myAttempts >= myGuaranteedMesssageMaxTimeouts)
+            {
+                SendDisconnectMessage();
+                messageIDsToRemove[++currentIndex] = guaranteedMessageID;
+            }
+            else
+            {
+                myLastPingTime = std::chrono::system_clock::now();
+                printf("Sending guaranteed message with ID %i attempt %i\n", guaranteedMessageID, guaranteedMessageData.myAttempts);
+                ++myNrOfGuaranteedMessagesSent;
+                Send(guaranteedMessageData.myGuaranteedMessageBuffer);
+                guaranteedMessageData.myLastSentTimestamp = std::chrono::system_clock::now();
+                ++guaranteedMessageData.myAttempts;
+            }
+        }
+    }
+
+    for (auto& messageIDToRemove : messageIDsToRemove)
+    {
+        if (myGuaranteedMessageIDToData.contains(messageIDToRemove))
+        {
+            myGuaranteedMessageIDToData.erase(messageIDToRemove);
+        }
+    }
+
     if (myShouldLerpPositions)
     {
         double currentTime = Engine::Get().GetTimer().GetTimeSinceEpoch();
@@ -122,6 +173,46 @@ void GameClient::Receive()
             if (receivedMessage)
             {
                 receivedMessage->Deserialize(receiveBuffer);
+
+                if (auto guaranteedMessage = dynamic_cast<GuaranteedNetMessage*>(receivedMessage))
+                {
+                    int id = guaranteedMessage->GetGuaranteedMessageID();
+
+                    AckNetMessage msg;
+                    msg.SetGuaranteedMessageID(id);
+                    NetBuffer sendBuffer;
+                    msg.Serialize(sendBuffer);
+                    Send(sendBuffer);
+
+                    if (std::find(myAcknowledgedMessageIDs.begin(), myAcknowledgedMessageIDs.end(), id) != myAcknowledgedMessageIDs.end())
+                    {
+                        // Message has already been acknowledged, so we send a new acknowledge but we do not act on the message.
+                        printf("Already acknowledged message with ID %i\n", id);
+                        delete receivedMessage;
+                        continue;
+                    }
+                    else
+                    {
+                        // We add the message ID to our acknowledged IDs so that if we receive this ID again we won't act on it.
+                        printf("Acknowledged message with ID %i\n", id);
+                        myAcknowledgedMessageIDs.emplace_back(id);
+                    }
+                }
+                else if (auto ackMessage = dynamic_cast<AckNetMessage*>(receivedMessage))
+                {
+                    int id = ackMessage->GetGuaranteedMessageID();
+                    if (myGuaranteedMessageIDToData.contains(id))
+                    {
+                        std::chrono::duration<float> rtt = std::chrono::system_clock::now() - myLastPingTime;
+                        myRTT = rtt.count();
+                        myLastPingTime = std::chrono::system_clock::now();
+
+                        ++myNrOfAcknowledges;
+                        printf("Received Acknowledge message with ID %i\n", id);
+                        myGuaranteedMessageIDToData.erase(id);
+                    }
+                }
+
                 HandleMessage(receivedMessage);
                 delete receivedMessage;
             }
@@ -145,6 +236,10 @@ NetMessage* GameClient::ReceiveMessage(const NetBuffer& aBuffer) const
 
     switch (receivedMessageType)
     {
+    case NetMessageType::AckMessage:
+        return new AckNetMessage();
+    case NetMessageType::RTTPing:
+        return new RTTPingMessage();
     case NetMessageType::RequestConnect:
         return new NetMessage_RequestConnect();
     case NetMessageType::AcceptConnect:
@@ -228,10 +323,14 @@ void GameClient::SendTextMessage(const std::string& aMessage)
 
 void GameClient::SendDisconnectMessage()
 {
+    printf("Attempting to disconnect\n");
     NetMessage_Disconnect disconnectMsg;
+    int guaranteedMessageID = CreateNewGuaranteedMessage(&disconnectMsg);
     NetBuffer sendBuffer;
     disconnectMsg.Serialize(sendBuffer);
     Send(sendBuffer);
+
+    myGuaranteedMessageIDToData[guaranteedMessageID].myGuaranteedMessageBuffer = sendBuffer;
 }
 
 void GameClient::SendPositionMessage(const Math::Vector3f& aPosition)
@@ -311,4 +410,18 @@ void GameClient::HandleMessage_Position(NetMessage_Position& aMessage)
 void GameClient::HandleMessage_Test(NetMessage_Test& aMessage)
 {
     printf("%i\n", aMessage.GetInt());
+}
+
+int GameClient::CreateNewGuaranteedMessage(GuaranteedNetMessage* aGuaranteedMessage)
+{
+    int id = myGuaranteedMessageID;
+    ++myGuaranteedMessageID;
+    aGuaranteedMessage->SetGuaranteedMessageID(id);
+
+    myGuaranteedMessageIDToData[id].myLastSentTimestamp = std::chrono::system_clock::now();
+    myGuaranteedMessageIDToData[id].myAttempts = 1;
+
+    printf("Created guaranteed message with ID %i\n", id);
+    ++myNrOfGuaranteedMessagesSent;
+    return id;
 }

@@ -13,9 +13,6 @@ public:
 
 	virtual void Serialize(NetBuffer& aBuffer);
 	virtual void Deserialize(NetBuffer& aBuffer);
-
-	virtual void GetStringRepresentation(char* outString, int aBufferSize) const = 0;
-
 protected:
 	NetMessageType myMessageType;
 };

@@ -1,10 +1,10 @@
 #pragma once
-#include "NetworkEngine/NetMessage.h"
+#include "NetworkEngine/GuaranteedNetMessage.h"
 #include <tuple>
 #include <Math/Vector3.hpp>
 
 
-class NetMessage_CreateCharacter : public NetMessage
+class NetMessage_CreateCharacter : public GuaranteedNetMessage
 {
 public:
 	NetMessage_CreateCharacter();
@@ -15,9 +15,6 @@ public:
 
 	void Serialize(NetBuffer& aBuffer) override;
 	void Deserialize(NetBuffer& aBuffer) override;
-
-	void GetStringRepresentation(char* outString, int aBufferSize) const override;
-
 protected:
 	unsigned myNetworkID;
 	Math::Vector3f myPosition;

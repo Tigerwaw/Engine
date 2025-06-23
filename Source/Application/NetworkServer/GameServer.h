@@ -6,10 +6,21 @@
 
 #include "Communicator.h"
 
+struct GuaranteedMessageData
+{
+    int myAttempts = 0;
+    std::chrono::system_clock::time_point myLastSentTimestamp;
+    NetBuffer myGuaranteedMessageBuffer;
+    sockaddr_in myRecipientAddress;
+};
+
 struct NetInfo
 {
     std::string username;
     sockaddr_in address;
+    int myLastPingMessageID;
+    std::chrono::system_clock::time_point myLastPingTime;
+    float myRTT;
 
     bool operator==(const sockaddr_in& other) const
     {
@@ -25,6 +36,8 @@ struct NetInfo
 };
 
 class NetMessage;
+class GuaranteedNetMessage;
+class AckNetMessage;
 class NetMessage_RequestConnect;
 class NetMessage_Disconnect;
 class NetMessage_Text;
@@ -39,6 +52,10 @@ public:
 
     int GetReceivedData() const { return myAvgDataReceived; }
     int GetSentData() const { return myAvgDataSent; }
+    int GetNrOfGuaranteedMessagesSent() const { return myNrOfGuaranteedMessagesSent; }
+    int GetNrOfGuaranteedMessagesLost() const { return myNrOfGuaranteedMessagesSent - myNrOfAcknowledges; }
+    float GetEstimatedPackageLoss() const { return static_cast<float>(myNrOfGuaranteedMessagesSent - myNrOfAcknowledges) / static_cast<float>(myNrOfGuaranteedMessagesSent); }
+    const std::vector<NetInfo>& GetClients() const { return myClients; }
 protected:
     void Receive();
     NetMessage* ReceiveMessage(const NetBuffer& aBuffer) const;
@@ -54,6 +71,7 @@ protected:
     bool DoesClientExist(const sockaddr_in& aAddress) const;
     const int GetClientIndex(const sockaddr_in& aAddress) const;
     const NetInfo& GetClient(int aClientIndex) const;
+    void UpdateClientPing(int aClientIndex, int aMessageID, bool aShouldUpdateRTT = false);
 
     bool myShouldReceive = false;
     int myMessagesHandledPerTick = 10;
@@ -79,6 +97,8 @@ private:
     int myAvgDataSent = 0;
     std::chrono::system_clock::time_point myLastDataTickTime;
     float myDataTickRate = 1.0f;
+    int myNrOfGuaranteedMessagesSent = 0;
+    int myNrOfAcknowledges = 0;
 
     unsigned myCurrentNetworkID = 1;
     std::vector<std::shared_ptr<GameObject>> myObjects;
@@ -91,5 +111,14 @@ private:
     double myLastUpdateTimestamp = 0;
     float myTimeBetweenObjectsSpawned = 1.0f;
     float myCurrentTimeSinceLastSpawn = 0;
+
+    int myGuaranteedMessageID = 1;
+    std::unordered_map<int, GuaranteedMessageData> myGuaranteedMessageIDToData;
+    float myGuaranteedMessageTimeout = 1.0f;
+    int myGuaranteedMesssageMaxTimeouts = 3;
+    std::vector<int> myAcknowledgedMessageIDs;
+    [[nodiscard("You need to use the returned message ID to add the buffer to myGuaranteedMessageIDToData")]] int CreateNewGuaranteedMessage(GuaranteedNetMessage* aGuaranteedMessage, int aClientIndex);
+
+    float myTimeBetweenPings = 1.0f;
 };
 

@@ -20,9 +20,3 @@ void NetMessage_Test::Deserialize(NetBuffer& aBuffer)
 	aBuffer.ReadData(myInt);
 	aBuffer.ReadData(myData);
 }
-
-void NetMessage_Test::GetStringRepresentation(char* outString, int aBufferSize) const
-{
-	outString;
-	aBufferSize;
-}

@@ -24,9 +24,3 @@ void NetMessage_Position::Deserialize(NetBuffer& aBuffer)
 	aBuffer.ReadData(myPosition.z);
 	aBuffer.ReadData(myTimestamp);
 }
-
-void NetMessage_Position::GetStringRepresentation(char* outString, int aBufferSize) const
-{
-	outString;
-	aBufferSize;
-}

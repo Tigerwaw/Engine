@@ -3,6 +3,8 @@
 enum class NetMessageType
 {
 	None,
+	RTTPing,
+	AckMessage,
 	RequestHandshake,
 	AcceptHandshake,
 	RequestConnect,

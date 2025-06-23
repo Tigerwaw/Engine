@@ -2,10 +2,13 @@
 #include <string>
 #include <thread>
 #include <chrono>
+#include "Math/Vector.hpp"
 #include "CommonUtilities/CircularArray.hpp"
 #include "Communicator.h"
 
 class NetMessage;
+class GuaranteedNetMessage;
+class AckNetMessage;
 class NetMessage_Connect;
 class NetMessage_AcceptConnect;
 class NetMessage_Disconnect;
@@ -16,6 +19,13 @@ class NetMessage_Position;
 class NetMessage_Test;
 
 class GameObject;
+
+struct GuaranteedMessageData
+{
+    int myAttempts = 0;
+    std::chrono::system_clock::time_point myLastSentTimestamp;
+    NetBuffer myGuaranteedMessageBuffer;
+};
 
 struct PositionData
 {
@@ -32,7 +42,10 @@ public:
 
     int GetReceivedData() const { return myAvgDataReceived; }
     int GetSentData() const { return myAvgDataSent; }
-
+    int GetNrOfGuaranteedMessagesSent() const { return myNrOfGuaranteedMessagesSent; }
+    int GetNrOfGuaranteedMessagesLost() const { return myNrOfGuaranteedMessagesSent - myNrOfAcknowledges; }
+    float GetEstimatedPackageLoss() const { return static_cast<float>(myNrOfGuaranteedMessagesSent - myNrOfAcknowledges) / static_cast<float>(myNrOfGuaranteedMessagesSent); }
+    float GetRTT() const { return myRTT; }
 protected:
     void Receive();
     void Send(const NetBuffer& aNetBuffer);
@@ -76,7 +89,20 @@ private:
     int myAvgDataSent = 0;
     std::chrono::system_clock::time_point myLastDataTickTime;
     float myDataTickRate = 1.0f;
+    int myNrOfGuaranteedMessagesSent = 0;
+    int myNrOfAcknowledges = 0;
 
     std::unordered_map<unsigned, Utilities::CircularArray<PositionData, 16>> myObjectIDPositionHistory;
     bool myShouldLerpPositions = true;
+
+    int myGuaranteedMessageID = 0;
+    std::unordered_map<int, GuaranteedMessageData> myGuaranteedMessageIDToData;
+    float myGuaranteedMessageTimeout = 1.0f;
+    int myGuaranteedMesssageMaxTimeouts = 3;
+    std::vector<int> myAcknowledgedMessageIDs;
+    [[nodiscard("You need to use the returned message ID to add the buffer to myGuaranteedMessageIDToData")]] int CreateNewGuaranteedMessage(GuaranteedNetMessage* aGuaranteedMessage);
+
+    float myTimeBetweenPings = 1.0f;
+    std::chrono::system_clock::time_point myLastPingTime;
+    float myRTT;
 };

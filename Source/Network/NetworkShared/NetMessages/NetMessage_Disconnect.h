@@ -1,8 +1,8 @@
 #pragma once
-#include "NetworkEngine/NetMessage.h"
+#include "NetworkEngine/GuaranteedNetMessage.h"
 #include <string>
 
-class NetMessage_Disconnect : public NetMessage
+class NetMessage_Disconnect : public GuaranteedNetMessage
 {
 public:
 	NetMessage_Disconnect();
@@ -11,9 +11,6 @@ public:
 
 	void Serialize(NetBuffer& aBuffer) override;
 	void Deserialize(NetBuffer& aBuffer) override;
-
-	void GetStringRepresentation(char* outString, int aBufferSize) const override;
-
 protected:
 	std::string myUsername;
 };

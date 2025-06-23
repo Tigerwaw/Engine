@@ -1,10 +1,10 @@
 #pragma once
-#include "NetworkEngine/NetMessage.h"
+#include "NetworkEngine/GuaranteedNetMessage.h"
 #include <tuple>
 #include <Math/Vector3.hpp>
 
 
-class NetMessage_RemoveCharacter : public NetMessage
+class NetMessage_RemoveCharacter : public GuaranteedNetMessage
 {
 public:
 	NetMessage_RemoveCharacter();
@@ -13,8 +13,6 @@ public:
 
 	void Serialize(NetBuffer& aBuffer) override;
 	void Deserialize(NetBuffer& aBuffer) override;
-
-	void GetStringRepresentation(char* outString, int aBufferSize) const override;
 
 protected:
 	unsigned myNetworkID;

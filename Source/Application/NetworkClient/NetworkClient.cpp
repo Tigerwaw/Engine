@@ -31,6 +31,11 @@ void NetworkClient::InitializeApplication()
 		{
 			ImGui::Text("Received Data: %i bytes/s", myClient.GetReceivedData());
 			ImGui::Text("Sent Data: %i bytes/s", myClient.GetSentData());
+			ImGui::Text("Guaranteed Messages Sent: %i", myClient.GetNrOfGuaranteedMessagesSent());
+			ImGui::Text("Guaranteed Messages Lost: %i", myClient.GetNrOfGuaranteedMessagesLost());
+			ImGui::Text("Estimated Package Loss: %s%%", std::format("{:.3f}", myClient.GetEstimatedPackageLoss()).c_str());
+
+			ImGui::Text("Ping: %s", std::format("{:.2f}", myClient.GetRTT() * 1000.0f).c_str());
 
 			ImGui::End();
 		}
