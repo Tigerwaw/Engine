@@ -9,6 +9,14 @@
 
 #define DEFAULT_PORT "27015"
 
+Communicator::~Communicator()
+{
+    closesocket(mySocket);
+    freeaddrinfo(myAddressInfo);
+    mySocket = NULL;
+    WSACleanup();
+}
+
 void Communicator::Init(bool aIsBinding, bool aIsBlocking, const char* aIP)
 {
     // Initialize Winsock
@@ -76,14 +84,6 @@ void Communicator::Init(bool aIsBinding, bool aIsBlocking, const char* aIP)
             return;
         }
     }
-}
-
-void Communicator::Destroy()
-{
-    closesocket(mySocket);
-    freeaddrinfo(myAddressInfo);
-    mySocket = NULL;
-    WSACleanup();
 }
 
 int Communicator::SendData(const NetBuffer& inData) const

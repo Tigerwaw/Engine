@@ -1,5 +1,3 @@
-#include "ServerBase.h"
-#include "ServerBase.h"
 #include <Enginepch.h>
 #include "GameServer.h"
 #include <iostream>
@@ -28,9 +26,28 @@
 #include "RandomDirectionMovement.h"
 #include "BounceAgainstWorldEdges.h"
 
+void GameServer::StartServer()
+{
+    myComm.Init(true, false, "");
+    myShouldReceive = true;
+}
+
 void GameServer::Update()
 {
-    ServerBase::Update();
+    std::chrono::duration<float> elapsed_seconds = std::chrono::system_clock::now() - myLastDataTickTime;
+    if (elapsed_seconds.count() > myDataTickRate)
+    {
+        myLastDataTickTime = std::chrono::system_clock::now();
+        myAvgDataReceived = static_cast<int>(std::roundf(myDataReceived / elapsed_seconds.count()));
+        myAvgDataSent = static_cast<int>(std::roundf(myDataSent / elapsed_seconds.count()));
+        myDataReceived = 0;
+        myDataSent = 0;
+    }
+
+    if (myShouldReceive)
+    {
+        Receive();
+    }
 
     double currentTime = Engine::Get().GetTimer().GetTimeSinceProgramStart();
     float dt = static_cast<float>(currentTime - myLastUpdateTimestamp);
@@ -48,6 +65,31 @@ void GameServer::Update()
                 CreateNewObject();
                 myCurrentlyActiveObjects++;
             }
+        }
+    }
+}
+
+void GameServer::Receive()
+{
+    for (int i = 0; i < myMessagesHandledPerTick; i++)
+    {
+        sockaddr_in otherAddress = {};
+        NetBuffer receiveBuffer;
+        int bytesReceived = myComm.ReceiveData(receiveBuffer, otherAddress);
+        if (bytesReceived > 0)
+        {
+            NetMessage* receivedMessage = ReceiveMessage(receiveBuffer);
+
+            if (receivedMessage)
+            {
+                receivedMessage->Deserialize(receiveBuffer);
+                HandleMessage(receivedMessage, otherAddress, bytesReceived);
+                delete receivedMessage;
+            }
+        }
+        else
+        {
+            break;
         }
     }
 }
@@ -106,6 +148,87 @@ void GameServer::HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress
     default:
         break;
     }
+}
+
+void GameServer::AcceptHandshake(const NetBuffer& aBuffer, const sockaddr_in& aAddress)
+{
+    myComm.SendData(aBuffer, aAddress);
+    printf("\nAccepted handshake for adress [%i] : [%i]", aAddress.sin_addr.S_un.S_addr, aAddress.sin_port);
+}
+
+const NetInfo& GameServer::AddClient(const sockaddr_in& aAddress, const std::string& aUsername)
+{
+    NetInfo& newClient = myClients.emplace_back();
+    newClient.address = aAddress;
+    newClient.username = aUsername;
+
+    printf("Added client %s : %i", aUsername.c_str(), aAddress.sin_addr.S_un.S_addr);
+    return newClient;
+}
+
+void GameServer::RemoveClient(int aClientIndex)
+{
+    myClients.erase(myClients.begin() + aClientIndex);
+}
+
+void GameServer::SendToClient(const NetBuffer& aBuffer, int aClientIndex)
+{
+    assert(aClientIndex >= 0 && aClientIndex < static_cast<int>(myClients.size()));
+
+    myDataSent += myComm.SendData(aBuffer, myClients[aClientIndex].address);
+}
+
+void GameServer::SendToAllClients(const NetBuffer& aBuffer)
+{
+    for (int clientIndex = 0; clientIndex < static_cast<int>(myClients.size()); ++clientIndex)
+    {
+        SendToClient(aBuffer, clientIndex);
+    }
+}
+
+void GameServer::SendToAllClientsExcluding(const NetBuffer& aBuffer, const int aClientIndex)
+{
+    for (int clientIndex = 0; clientIndex < static_cast<int>(myClients.size()); ++clientIndex)
+    {
+        if (clientIndex == aClientIndex) continue;
+
+        SendToClient(aBuffer, clientIndex);
+    }
+}
+
+bool GameServer::DoesClientExist(const sockaddr_in& aAddress) const
+{
+    if (myClients.empty()) return false;
+
+    for (int i = 0; i < myClients.size(); i++)
+    {
+        if (myClients[i] == aAddress)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+const int GameServer::GetClientIndex(const sockaddr_in& aAddress) const
+{
+    for (int i = 0; i < myClients.size(); i++)
+    {
+        if (myClients[i] == aAddress)
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+const NetInfo& GameServer::GetClient(int aClientIndex) const
+{
+    assert(aClientIndex >= 0 && aClientIndex < static_cast<int>(myClients.size()));
+
+    return myClients[aClientIndex];
 }
 
 void GameServer::HandleMessage_RequestConnect(NetMessage_RequestConnect& aMessage, const sockaddr_in& aAddress)

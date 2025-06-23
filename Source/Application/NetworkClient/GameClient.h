@@ -1,7 +1,11 @@
 #pragma once
-#include "ClientBase.h"
+#include <string>
+#include <thread>
+#include <chrono>
 #include "CommonUtilities/CircularArray.hpp"
+#include "Communicator.h"
 
+class NetMessage;
 class NetMessage_Connect;
 class NetMessage_AcceptConnect;
 class NetMessage_Disconnect;
@@ -20,22 +24,30 @@ struct PositionData
     double serverTimestamp;
 };
 
-class GameClient : public ClientBase
+class GameClient
 {
 public:
-    void Update() override;
+    void ConnectClient(const char* aIP);
+    void Update();
+
+    int GetReceivedData() const { return myAvgDataReceived; }
+    int GetSentData() const { return myAvgDataSent; }
 
 protected:
-    NetMessage* ReceiveMessage(const NetBuffer& aBuffer) const override;
-    void HandleMessage(NetMessage* aMessage) override;
+    void Receive();
+    void Send(const NetBuffer& aNetBuffer);
 
-    void SendHandshakeRequest() override;
-    void SendConnectionRequest(const std::string& aUsername) override;
-    void SendDisconnectMessage() override;
+    NetMessage* ReceiveMessage(const NetBuffer& aBuffer) const;
+    void HandleMessage(NetMessage* aMessage);
 
+    void SendHandshakeRequest();
+    void SendConnectionRequest(const std::string& aUsername);
+    void SendDisconnectMessage();
     void SendTextMessage(const std::string& aMessage);
     void SendPositionMessage(const Math::Vector3f& aPosition);
 
+    void HandleMessage_AcceptHandshake();
+    void HandleMessage_AcceptConnect();
     void HandleMessage_Disconnect(NetMessage_Disconnect& aMessage);
     void HandleMessage_Text(NetMessage_Text& aMessage);
     void HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMessage);
@@ -43,8 +55,28 @@ protected:
     void HandleMessage_Position(NetMessage_Position& aMessage);
     void HandleMessage_Test(NetMessage_Test& aMessage);
 
-private:
-    std::unordered_map<unsigned, Utilities::CircularArray<PositionData, 16>> myObjectIDPositionHistory;
+    bool HasEstablishedHandshake() const { return myHasEstablishedHandshake; }
+    bool HasEstablishedConnection() const { return myHasEstablishedConnection; }
 
+    bool myHasEstablishedHandshake = false;
+    bool myHasEstablishedConnection = false;
+
+    bool myShouldReceive = false;
+
+    std::chrono::system_clock::time_point myLastHandshakeRequestTime;
+    float myTimeBetweenHandshakeRequests = 2.0f;
+    int myMessagesHandledPerTick = 10;
+
+private:
+    Communicator myComm;
+
+    int myDataReceived = 0;
+    int myDataSent = 0;
+    int myAvgDataReceived = 0;
+    int myAvgDataSent = 0;
+    std::chrono::system_clock::time_point myLastDataTickTime;
+    float myDataTickRate = 1.0f;
+
+    std::unordered_map<unsigned, Utilities::CircularArray<PositionData, 16>> myObjectIDPositionHistory;
     bool myShouldLerpPositions = true;
 };
