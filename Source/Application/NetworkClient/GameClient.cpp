@@ -325,12 +325,9 @@ void GameClient::SendDisconnectMessage()
 {
     printf("Attempting to disconnect\n");
     NetMessage_Disconnect disconnectMsg;
-    int guaranteedMessageID = CreateNewGuaranteedMessage(&disconnectMsg);
     NetBuffer sendBuffer;
     disconnectMsg.Serialize(sendBuffer);
     Send(sendBuffer);
-
-    myGuaranteedMessageIDToData[guaranteedMessageID].myGuaranteedMessageBuffer = sendBuffer;
 }
 
 void GameClient::SendPositionMessage(const Math::Vector3f& aPosition)

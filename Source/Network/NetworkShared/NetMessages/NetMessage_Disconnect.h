@@ -1,8 +1,8 @@
 #pragma once
-#include "NetworkEngine/GuaranteedNetMessage.h"
+#include "NetworkEngine/NetMessage.h"
 #include <string>
 
-class NetMessage_Disconnect : public GuaranteedNetMessage
+class NetMessage_Disconnect : public NetMessage
 {
 public:
 	NetMessage_Disconnect();

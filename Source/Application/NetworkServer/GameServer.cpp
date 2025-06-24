@@ -28,6 +28,7 @@
 #include <GameEngine/ComponentSystem/Components/Physics/Colliders/BoxCollider.h>
 #include "RandomDirectionMovement.h"
 #include "BounceAgainstWorldEdges.h"
+#include <Utilities/CommonUtilities/VectorUtilities.hpp>
 
 void GameServer::StartServer()
 {
@@ -96,7 +97,7 @@ void GameServer::Update()
                     UpdateClientPing(clientIndex, GetClient(clientIndex).myLastPingMessageID);
                 }
                 
-                printf("[%f] Sending guaranteed message with ID %i attempt %i\n", elapsedTime.count(), guaranteedMessageID, guaranteedMessageData.myAttempts);
+                printf("Sending guaranteed message with ID %i attempt %i\n", guaranteedMessageID, guaranteedMessageData.myAttempts);
                 ++myNrOfGuaranteedMessagesSent;
                 SendToClient(guaranteedMessageData.myGuaranteedMessageBuffer, clientIndex);
                 guaranteedMessageData.myLastSentTimestamp = std::chrono::system_clock::now();
@@ -157,9 +158,12 @@ void GameServer::Receive()
                     msg.SetGuaranteedMessageID(id);
                     NetBuffer sendBuffer;
                     msg.Serialize(sendBuffer);
-                    SendToClient(sendBuffer, GetClientIndex(otherAddress));
+                    if (DoesClientExist(otherAddress))
+                    {
+                        SendToClient(sendBuffer, GetClientIndex(otherAddress));
+                    }
 
-                    if (std::find(myAcknowledgedMessageIDs.begin(), myAcknowledgedMessageIDs.end(), id) != myAcknowledgedMessageIDs.end())
+                    if (Utilities::VectorContains(myAcknowledgedMessageIDs, id))
                     {
                         // Message has already been acknowledged, so we send a new acknowledge but we do not act on the message.
                         printf("Already acknowledged message with ID %i\n", id);

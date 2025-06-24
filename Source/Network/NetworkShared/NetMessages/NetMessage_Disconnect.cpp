@@ -7,13 +7,13 @@ NetMessage_Disconnect::NetMessage_Disconnect()
 
 void NetMessage_Disconnect::Serialize(NetBuffer& aBuffer)
 {
-	GuaranteedNetMessage::Serialize(aBuffer);
+	NetMessage::Serialize(aBuffer);
 	aBuffer.WriteData(*myUsername.data(), static_cast<int>(myUsername.size()));
 }
 
 void NetMessage_Disconnect::Deserialize(NetBuffer& aBuffer)
 {
-	GuaranteedNetMessage::Deserialize(aBuffer);
+	NetMessage::Deserialize(aBuffer);
 	char buff[DEFAULT_BUFLEN]{ 0 };
 	aBuffer.ReadData(buff);
 	myUsername = std::string(buff);

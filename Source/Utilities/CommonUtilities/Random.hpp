@@ -1,0 +1,22 @@
+#include <random>
+#include <type_traits>
+#include <Math/ArithmeticUtilities.hpp>
+
+namespace Utilities
+{
+	inline thread_local std::mt19937_64 ranGen(std::random_device{}());
+
+	template<Math::IsIntegralType T>
+	inline T RandomInRange(T aMin, T aMax)
+	{
+		std::uniform_int_distribution<T> distribution(aMin, aMax);
+		return distribution(ranGen);
+	}
+
+	template<Math::IsFloatingPointType T>
+	inline T RandomInRange(T aMin, T aMax)
+	{
+		std::uniform_real_distribution<T> distribution(aMin, aMax);
+		return distribution(ranGen);
+	}
+}
