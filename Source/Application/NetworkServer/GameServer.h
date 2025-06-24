@@ -16,22 +16,24 @@ struct GuaranteedMessageData
 
 struct NetInfo
 {
-    std::string username;
-    sockaddr_in address;
+    std::string myUsername;
+    sockaddr_in myAddress;
+    unsigned myCharacterNetworkID;
+    Math::Vector3f myLastPosition;
     int myLastPingMessageID;
     std::chrono::system_clock::time_point myLastPingTime;
     float myRTT;
 
     bool operator==(const sockaddr_in& other) const
     {
-        return address.sin_addr.S_un.S_addr == other.sin_addr.S_un.S_addr &&
-            address.sin_port == other.sin_port;
+        return myAddress.sin_addr.S_un.S_addr == other.sin_addr.S_un.S_addr &&
+            myAddress.sin_port == other.sin_port;
     }
 
     bool operator==(sockaddr_in& other) const
     {
-        return address.sin_addr.S_un.S_addr == other.sin_addr.S_un.S_addr &&
-            address.sin_port == other.sin_port;
+        return myAddress.sin_addr.S_un.S_addr == other.sin_addr.S_un.S_addr &&
+            myAddress.sin_port == other.sin_port;
     }
 };
 
@@ -71,7 +73,10 @@ protected:
     bool DoesClientExist(const sockaddr_in& aAddress) const;
     const int GetClientIndex(const sockaddr_in& aAddress) const;
     const NetInfo& GetClient(int aClientIndex) const;
+    const int GetClientIndexByNetworkID(unsigned aNetworkID) const;
     void UpdateClientPing(int aClientIndex, int aMessageID, bool aShouldUpdateRTT = false);
+    void SetClientNetworkID(int aClientIndex, unsigned aNetworkID);
+    void SetClientLastPosition(int aClientIndex, Math::Vector3f aPosition);
 
     bool myShouldReceive = false;
     int myMessagesHandledPerTick = 10;
@@ -80,9 +85,12 @@ protected:
     void HandleMessage_Disconnect(NetMessage_Disconnect& aMessage, const sockaddr_in& aAddress);
 
     void HandleMessage_HandshakeRequest(const sockaddr_in& aAddress);
+    void HandleMessage_Position(NetMessage_Position& aMessage, const sockaddr_in& aAddress);
 
     void CreateNewObject();
     void DestroyObject(unsigned aNetworkID);
+
+    void CreateNewPlayer(const sockaddr_in& aAddress);
     void UpdatePositions();
 
     void SendTestMessage();
@@ -103,14 +111,17 @@ private:
     unsigned myCurrentNetworkID = 1;
     std::vector<std::shared_ptr<GameObject>> myObjects;
 
+    std::vector<std::shared_ptr<GameObject>> myPlayers;
+    float myPlayerAwarenessCircleRadius = 500.0f;
+
     float myTickRate = 10.0f;
 
     int myCurrentlyActiveObjects = 0;
     int myObjectLimit = 16;
 
-    double myLastUpdateTimestamp = 0;
+    std::chrono::system_clock::time_point myLastUpdateTimestamp;
     float myTimeBetweenObjectsSpawned = 1.0f;
-    float myCurrentTimeSinceLastSpawn = 0;
+    std::chrono::system_clock::time_point myLastSpawnTimestamp;
 
     int myGuaranteedMessageID = 1;
     std::unordered_map<int, GuaranteedMessageData> myGuaranteedMessageIDToData;

@@ -6,6 +6,7 @@ namespace Utilities
 {
 	inline thread_local std::mt19937_64 ranGen(std::random_device{}());
 
+	// Range is inclusive
 	template<Math::IsIntegralType T>
 	inline T RandomInRange(T aMin, T aMax)
 	{
@@ -13,6 +14,7 @@ namespace Utilities
 		return distribution(ranGen);
 	}
 
+	// Range is inclusive
 	template<Math::IsFloatingPointType T>
 	inline T RandomInRange(T aMin, T aMax)
 	{

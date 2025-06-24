@@ -3,10 +3,10 @@
 #include <iostream>
 #include <WinSock2.h>
 
-#include "NetworkEngine/NetMessage.h"
-#include "NetworkEngine/GuaranteedNetMessage.h"
-#include "NetworkEngine/AckNetMessage.h"
-#include "NetworkEngine/RTTPingMessage.h"
+#include "NetworkEngine/BaseNetMessages/NetMessage.h"
+#include "NetworkEngine/BaseNetMessages/GuaranteedNetMessage.h"
+#include "NetworkEngine/BaseNetMessages/AckNetMessage.h"
+#include "NetworkEngine/BaseNetMessages/RTTPingMessage.h"
 #include "NetworkShared/NetMessages/NetMessage_Text.h"
 #include "NetworkShared/NetMessages/NetMessage_RequestConnect.h"
 #include "NetworkShared/NetMessages/NetMessage_AcceptConnect.h"
@@ -28,8 +28,11 @@
 #include <GameEngine/ComponentSystem/Components/Graphics/Model.h>
 #include <GameEngine/ComponentSystem/Components/Physics/Colliders/BoxCollider.h>
 #include <GameEngine/Input/InputHandler.h>
+#include <Utilities/CommonUtilities/Random.hpp>
 
 #include "Controller.h"
+
+inline const std::array<std::string, 10> clientNames = { "Lars", "Ingvar", "Jonas", "Katarina", "Sara", "Klas", "Vera", "Tor", "Freja", "Wilmer" };
 
 void GameClient::ConnectClient(const char* aIP)
 {
@@ -64,7 +67,7 @@ void GameClient::Update()
 
     if (!myHasEstablishedConnection)
     {
-        SendConnectionRequest("");
+        SendConnectionRequest(clientNames[Utilities::RandomInRange(0, 9)]);
         return;
     }
 
@@ -122,8 +125,13 @@ void GameClient::Update()
 
         for (auto& [clientID, positionDataArray] : myObjectIDPositionHistory)
         {
+            auto go = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(clientID);
+            if (!go) continue;
+
             if (positionDataArray.Size() >= 2)
             {
+                go->GetComponent<AnimatedModel>()->SetActive(true);
+
                 PositionData lastPos = positionDataArray.Peek_Front();
                 PositionData nextPos = positionDataArray.Peek_Next();
 
@@ -138,9 +146,31 @@ void GameClient::Update()
                 }
 
                 Math::Vector3f lerpedPosition = Math::Vector3f::Lerp(lastPos.position, nextPos.position, t);
-                if (auto go = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(clientID))
+                go->GetComponent<Transform>()->SetTranslation(lerpedPosition);
+            }
+            else if (positionDataArray.Size() > 0 && currentTime - positionDataArray.Peek_Latest().clientTimestamp > 3.0f)
+            {
+                go->GetComponent<AnimatedModel>()->SetActive(false);
+            }
+        }
+    }
+
+    // Send player character position to server
+    std::chrono::duration<float> dt = std::chrono::system_clock::now() - myLastPositionSendTimestamp;
+    if (dt.count() > (1.0f / myPositionSendTickRate))
+    {
+        myLastPositionSendTimestamp = std::chrono::system_clock::now();
+
+        if (myPlayerCharacter)
+        {
+            if (auto transform = myPlayerCharacter->GetComponent<Transform>())
+            {
+                SendPositionMessage(myPlayerCharacter->GetComponent<Transform>()->GetTranslation(true), myPlayerCharacter->GetNetworkID());
+
+                if (!Math::Vector3f::Equal(transform->GetTranslation(true), myLastPosition, 0.01f))
                 {
-                    go->GetComponent<Transform>()->SetTranslation(lerpedPosition);
+                    myLastPosition = transform->GetTranslation(true);
+                    SendPositionMessage(myPlayerCharacter->GetComponent<Transform>()->GetTranslation(true), myPlayerCharacter->GetNetworkID());
                 }
             }
         }
@@ -330,10 +360,12 @@ void GameClient::SendDisconnectMessage()
     Send(sendBuffer);
 }
 
-void GameClient::SendPositionMessage(const Math::Vector3f& aPosition)
+void GameClient::SendPositionMessage(const Math::Vector3f& aPosition, unsigned aNetworkID)
 {
     NetMessage_Position positionMsg;
     positionMsg.SetPosition(aPosition);
+    positionMsg.SetNetworkID(aNetworkID);
+    positionMsg.SetTimestamp(Engine::Get().GetTimer().GetTimeSinceEpoch());
     NetBuffer sendBuffer;
     positionMsg.Serialize(sendBuffer);
     Send(sendBuffer);
@@ -368,10 +400,30 @@ void GameClient::HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMess
     std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
     go->SetNetworkID(aMessage.GetNetworkID());
     go->AddComponent<Transform>(aMessage.GetPosition());
-    go->AddComponent<BoxCollider>(Math::Vector3f(50.0f, 100.0f, 50.0f), Math::Vector3f(0.0f, 90.0f, 0.0f));
 
-    auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorBlue.json")->material);
-    model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
+    if (aMessage.GetIsPlayerCharacter())
+    {
+        auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorGreen.json")->material);
+        model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
+
+        if (aMessage.GetIsControlledByClient())
+        {
+            go->AddComponent<Controller>(150.0f, 1.0f);
+            myPlayerCharacter = go;
+        }
+        else
+        {
+            model->SetActive(false);
+        }
+    }
+    else
+    {
+        go->AddComponent<BoxCollider>(Math::Vector3f(50.0f, 100.0f, 50.0f), Math::Vector3f(0.0f, 90.0f, 0.0f));
+
+        auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorBlue.json")->material);
+        model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
+        model->SetActive(false);
+    }
 
     Engine::Get().GetSceneHandler().Instantiate(go);
 }
@@ -383,6 +435,8 @@ void GameClient::HandleMessage_RemoveCharacter(NetMessage_RemoveCharacter& aMess
     {
         Engine::Get().GetSceneHandler().Destroy(go);
     }
+
+    myObjectIDPositionHistory.erase(aMessage.GetNetworkID());
 }
 
 void GameClient::HandleMessage_Position(NetMessage_Position& aMessage)

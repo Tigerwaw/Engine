@@ -12,10 +12,10 @@ namespace Math
 	concept IsArithmeticType = std::is_arithmetic_v<T>;
 
 	template<typename T>
-	concept IsIntegralType = std::is_floating_point_v<T>;
+	concept IsIntegralType = std::is_integral_v<T>;
 
 	template<typename T>
-	concept IsFloatingPointType = std::is_integral_v<T>;
+	concept IsFloatingPointType = std::is_floating_point_v<T>;
 
 	template<typename T>
 	T Saturate(const T& aValue)

@@ -1,5 +1,5 @@
 #pragma once
-#include "NetBuffer.h"
+#include "NetworkEngine/NetBuffer.h"
 #include "NetMessageType.h"
 
 class NetMessage

@@ -1,5 +1,5 @@
 #pragma once
-#include "NetworkEngine/NetMessage.h"
+#include "NetworkEngine/BaseNetMessages/NetMessage.h"
 
 class NetMessage_Test : public NetMessage
 {

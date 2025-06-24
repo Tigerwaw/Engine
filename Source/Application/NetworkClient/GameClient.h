@@ -57,7 +57,7 @@ protected:
     void SendConnectionRequest(const std::string& aUsername);
     void SendDisconnectMessage();
     void SendTextMessage(const std::string& aMessage);
-    void SendPositionMessage(const Math::Vector3f& aPosition);
+    void SendPositionMessage(const Math::Vector3f& aPosition, unsigned aNetworkID);
 
     void HandleMessage_AcceptHandshake();
     void HandleMessage_AcceptConnect();
@@ -105,4 +105,9 @@ private:
     float myTimeBetweenPings = 1.0f;
     std::chrono::system_clock::time_point myLastPingTime;
     float myRTT;
+
+    std::shared_ptr<GameObject> myPlayerCharacter;
+    float myPositionSendTickRate = 10.0f;
+    std::chrono::system_clock::time_point myLastPositionSendTimestamp;
+    Math::Vector3f myLastPosition;
 };

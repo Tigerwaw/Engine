@@ -1,5 +1,5 @@
 #pragma once
-#include "NetworkEngine/NetMessage.h"
+#include "NetworkEngine/BaseNetMessages/NetMessage.h"
 #include <tuple>
 #include <Math/Vector3.hpp>
 

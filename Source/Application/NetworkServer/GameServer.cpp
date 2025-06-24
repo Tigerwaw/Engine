@@ -2,10 +2,10 @@
 #include "GameServer.h"
 #include <iostream>
 
-#include "NetworkEngine/NetMessage.h"
-#include "NetworkEngine/GuaranteedNetMessage.h"
-#include "NetworkEngine/AckNetMessage.h"
-#include "NetworkEngine/RTTPingMessage.h"
+#include "NetworkEngine/BaseNetMessages/NetMessage.h"
+#include "NetworkEngine/BaseNetMessages/GuaranteedNetMessage.h"
+#include "NetworkEngine/BaseNetMessages/AckNetMessage.h"
+#include "NetworkEngine/BaseNetMessages/RTTPingMessage.h"
 #include "NetworkShared/NetMessages/NetMessage_Text.h"
 #include "NetworkShared/NetMessages/NetMessage_RequestConnect.h"
 #include "NetworkShared/NetMessages/NetMessage_AcceptConnect.h"
@@ -114,16 +114,15 @@ void GameServer::Update()
         }
     }
 
-    double currentTime = Engine::Get().GetTimer().GetTimeSinceProgramStart();
-    float dt = static_cast<float>(currentTime - myLastUpdateTimestamp);
-    if (dt > (1.0f / myTickRate))
+    std::chrono::duration<float> dt = std::chrono::system_clock::now() - myLastUpdateTimestamp;
+    if (dt.count() > (1.0f / myTickRate))
     {
-        myLastUpdateTimestamp = currentTime;
+        myLastUpdateTimestamp = std::chrono::system_clock::now();
 
         UpdatePositions();
 
-        myCurrentTimeSinceLastSpawn += dt;
-        if (myCurrentTimeSinceLastSpawn > myTimeBetweenObjectsSpawned)
+        std::chrono::duration<float> timeSinceLastSpawn = std::chrono::system_clock::now() - myLastSpawnTimestamp;
+        if (timeSinceLastSpawn.count() > myTimeBetweenObjectsSpawned)
         {
             if (myCurrentlyActiveObjects < myObjectLimit)
             {
@@ -246,6 +245,9 @@ void GameServer::HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress
     case NetMessageType::RequestHandshake:
         HandleMessage_HandshakeRequest(aAddress);
         break;
+    case NetMessageType::Position:
+        HandleMessage_Position(*static_cast<NetMessage_Position*>(aMessage), aAddress);
+        break;
     default:
         break;
     }
@@ -260,8 +262,8 @@ void GameServer::AcceptHandshake(const NetBuffer& aBuffer, const sockaddr_in& aA
 const NetInfo& GameServer::AddClient(const sockaddr_in& aAddress, const std::string& aUsername)
 {
     NetInfo& newClient = myClients.emplace_back();
-    newClient.address = aAddress;
-    newClient.username = aUsername;
+    newClient.myAddress = aAddress;
+    newClient.myUsername = aUsername;
 
     printf("Added client %s : %i\n", aUsername.c_str(), aAddress.sin_addr.S_un.S_addr);
     return newClient;
@@ -277,7 +279,7 @@ void GameServer::SendToClient(const NetBuffer& aBuffer, int aClientIndex)
 {
     assert(aClientIndex >= 0 && aClientIndex < static_cast<int>(myClients.size()));
 
-    myDataSent += myComm.SendData(aBuffer, myClients[aClientIndex].address);
+    myDataSent += myComm.SendData(aBuffer, myClients[aClientIndex].myAddress);
 }
 
 void GameServer::SendToAllClients(const NetBuffer& aBuffer)
@@ -333,6 +335,19 @@ const NetInfo& GameServer::GetClient(int aClientIndex) const
     return myClients[aClientIndex];
 }
 
+const int GameServer::GetClientIndexByNetworkID(unsigned aNetworkID) const
+{
+    for (int i = 0; i < myClients.size(); i++)
+    {
+        if (myClients[i].myCharacterNetworkID == aNetworkID)
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
 void GameServer::UpdateClientPing(int aClientIndex, int aMessageID, bool aShouldUpdateRTT)
 {
     std::chrono::duration<float> rtt = std::chrono::system_clock::now() - myClients[aClientIndex].myLastPingTime;
@@ -345,12 +360,22 @@ void GameServer::UpdateClientPing(int aClientIndex, int aMessageID, bool aShould
     }
 }
 
+void GameServer::SetClientNetworkID(int aClientIndex, unsigned aNetworkID)
+{
+    myClients[aClientIndex].myCharacterNetworkID = aNetworkID;
+}
+
+void GameServer::SetClientLastPosition(int aClientIndex, Math::Vector3f aPosition)
+{
+    myClients[aClientIndex].myLastPosition = aPosition;
+}
+
 void GameServer::HandleMessage_RequestConnect(NetMessage_RequestConnect& aMessage, const sockaddr_in& aAddress)
 {
     if (DoesClientExist(aAddress)) return;
 
     const NetInfo& newInfo = AddClient(aAddress, aMessage.GetUsername());
-    int index = GetClientIndex(newInfo.address);
+    int index = GetClientIndex(newInfo.myAddress);
 
     // Send connect accept.
     {
@@ -365,6 +390,8 @@ void GameServer::HandleMessage_RequestConnect(NetMessage_RequestConnect& aMessag
     {
         NetMessage_CreateCharacter createCharacterMsg;
         int guaranteedMessageID = CreateNewGuaranteedMessage(&createCharacterMsg, index);
+        createCharacterMsg.SetIsPlayerCharacter(false);
+        createCharacterMsg.SetIsControlledByClient(false);
         createCharacterMsg.SetNetworkID(object->GetNetworkID());
         NetBuffer buffer;
         createCharacterMsg.Serialize(buffer);
@@ -372,6 +399,23 @@ void GameServer::HandleMessage_RequestConnect(NetMessage_RequestConnect& aMessag
 
         myGuaranteedMessageIDToData[guaranteedMessageID].myGuaranteedMessageBuffer = buffer;
     }
+
+    // Create already existing characters for newly joined user.
+    for (auto& player : myPlayers)
+    {
+        NetMessage_CreateCharacter createCharacterMsg;
+        int guaranteedMessageID = CreateNewGuaranteedMessage(&createCharacterMsg, index);
+        createCharacterMsg.SetIsPlayerCharacter(true);
+        createCharacterMsg.SetIsControlledByClient(false);
+        createCharacterMsg.SetNetworkID(player->GetNetworkID());
+        NetBuffer buffer;
+        createCharacterMsg.Serialize(buffer);
+        SendToClient(buffer, index);
+
+        myGuaranteedMessageIDToData[guaranteedMessageID].myGuaranteedMessageBuffer = buffer;
+    }
+
+    CreateNewPlayer(aAddress);
 }
 
 void GameServer::HandleMessage_Disconnect(NetMessage_Disconnect&, const sockaddr_in& aAddress)
@@ -379,7 +423,7 @@ void GameServer::HandleMessage_Disconnect(NetMessage_Disconnect&, const sockaddr
     if (!DoesClientExist(aAddress)) return;
 
     int index = GetClientIndex(aAddress);
-    const std::string& username = GetClient(index).username;
+    const std::string& username = GetClient(index).myUsername;
     printf("\n[User %s disconnected]", username.data());
     
     RemoveClient(index);
@@ -401,6 +445,23 @@ void GameServer::HandleMessage_HandshakeRequest(const sockaddr_in& aAddress)
     AcceptHandshake(buffer, aAddress);
 }
 
+void GameServer::HandleMessage_Position(NetMessage_Position& aMessage, const sockaddr_in& aAddress)
+{
+    if (DoesClientExist(aAddress) && aMessage.GetNetworkID() != GetClient(GetClientIndex(aAddress)).myCharacterNetworkID)
+    {
+        printf("A client is trying to set the position of an object with a network ID that doesn't match their characters network ID. Either the game is broken or the player is cheating! :O");
+        return;
+    }
+
+    for (auto& playerObject : myPlayers)
+    {
+        if (playerObject->GetNetworkID() == aMessage.GetNetworkID())
+        {
+            playerObject->GetComponent<Transform>()->SetTranslation(aMessage.GetPosition());
+        }
+    }
+}
+
 void GameServer::CreateNewObject()
 {
     Math::Vector3f startingPos;
@@ -409,12 +470,16 @@ void GameServer::CreateNewObject()
     startingPos.z = static_cast<float>((std::rand() % 1000) - 500);
     
     int networkID = myCurrentNetworkID;
+    myLastSpawnTimestamp = std::chrono::system_clock::now();
+    ++myCurrentNetworkID;
 
     for (int clientIndex = 0; clientIndex < static_cast<int>(myClients.size()); clientIndex++)
     {
         NetMessage_CreateCharacter createCharacterMsg;
         int guaranteedMessageID = CreateNewGuaranteedMessage(&createCharacterMsg, clientIndex);
         createCharacterMsg.SetNetworkID(networkID);
+        createCharacterMsg.SetIsPlayerCharacter(false);
+        createCharacterMsg.SetIsControlledByClient(false);
         createCharacterMsg.SetStartingPosition(startingPos);
         NetBuffer buffer;
         createCharacterMsg.Serialize(buffer);
@@ -423,32 +488,31 @@ void GameServer::CreateNewObject()
         myGuaranteedMessageIDToData[guaranteedMessageID].myGuaranteedMessageBuffer = buffer;
     }
 
-    std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
-    go->SetNetworkID(networkID);
-    go->AddComponent<Transform>(startingPos);
-    go->AddComponent<RandomDirectionMovement>();
-    go->AddComponent<BounceAgainstWorldEdges>();
-    auto coll = go->AddComponent<BoxCollider>(Math::Vector3f(50.0f, 100.0f, 50.0f), Math::Vector3f(0.0f, 90.0f, 0.0f));
-    unsigned id = go->GetNetworkID();
-    coll->SetCollisionResponse([this, id] {
-        if (auto gameObject = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(id))
-        {
-            Engine::Get().GetSceneHandler().Destroy(gameObject);
-            DestroyObject(id);
-            myCurrentlyActiveObjects--;
-        }
-        });
+    {
+        std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
+        go->SetNetworkID(networkID);
+        go->AddComponent<Transform>(startingPos);
+        go->AddComponent<RandomDirectionMovement>();
+        go->AddComponent<BounceAgainstWorldEdges>();
+        auto coll = go->AddComponent<BoxCollider>(Math::Vector3f(50.0f, 100.0f, 50.0f), Math::Vector3f(0.0f, 90.0f, 0.0f));
+        unsigned id = go->GetNetworkID();
+        coll->SetCollisionResponse([this, id] {
+            if (auto gameObject = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(id))
+            {
+                Engine::Get().GetSceneHandler().Destroy(gameObject);
+                DestroyObject(id);
+                myCurrentlyActiveObjects--;
+            }
+            });
 
 
-    auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorBlue.json")->material);
-    model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
+        auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorBlue.json")->material);
+        model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
 
-    myObjects.push_back(go);
+        myObjects.push_back(go);
 
-    Engine::Get().GetSceneHandler().Instantiate(go);
-
-    myCurrentTimeSinceLastSpawn = 0.0f;
-    myCurrentNetworkID++;
+        Engine::Get().GetSceneHandler().Instantiate(go);
+    }
 }
 
 void GameServer::DestroyObject(unsigned aNetworkID)
@@ -472,17 +536,113 @@ void GameServer::DestroyObject(unsigned aNetworkID)
     }
 }
 
+void GameServer::CreateNewPlayer(const sockaddr_in& aAddress)
+{
+    Math::Vector3f startingPos;
+    startingPos.x = static_cast<float>((std::rand() % 1000) - 500);
+    startingPos.y = 0.0f;
+    startingPos.z = static_cast<float>((std::rand() % 1000) - 500);
+
+    int networkID = myCurrentNetworkID;
+    ++myCurrentNetworkID;
+    ++myCurrentlyActiveObjects;
+
+    {
+        int clientIndex = GetClientIndex(aAddress);
+
+        NetMessage_CreateCharacter createCharacterMsg;
+        int guaranteedMessageID = CreateNewGuaranteedMessage(&createCharacterMsg, clientIndex);
+        createCharacterMsg.SetNetworkID(networkID);
+        createCharacterMsg.SetIsPlayerCharacter(true);
+        createCharacterMsg.SetIsControlledByClient(true);
+        createCharacterMsg.SetStartingPosition(startingPos);
+        NetBuffer buffer;
+        createCharacterMsg.Serialize(buffer);
+
+        SendToClient(buffer, clientIndex);
+
+        myGuaranteedMessageIDToData[guaranteedMessageID].myGuaranteedMessageBuffer = buffer;
+    }
+
+    for (int clientIndex = 0; clientIndex < static_cast<int>(myClients.size()); clientIndex++)
+    {
+        if (myClients[clientIndex] == aAddress) continue;
+
+        NetMessage_CreateCharacter createCharacterMsg;
+        int guaranteedMessageID = CreateNewGuaranteedMessage(&createCharacterMsg, clientIndex);
+        createCharacterMsg.SetNetworkID(networkID);
+        createCharacterMsg.SetIsPlayerCharacter(true);
+        createCharacterMsg.SetIsControlledByClient(false);
+        createCharacterMsg.SetStartingPosition(startingPos);
+        NetBuffer buffer;
+        createCharacterMsg.Serialize(buffer);
+        SendToClient(buffer, clientIndex);
+
+        myGuaranteedMessageIDToData[guaranteedMessageID].myGuaranteedMessageBuffer = buffer;
+    }
+
+    {
+        std::shared_ptr<GameObject> go = std::make_shared<GameObject>();
+        go->SetNetworkID(networkID);
+        go->AddComponent<Transform>(startingPos);
+
+        auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorGreen.json")->material);
+        model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
+
+        SetClientNetworkID(GetClientIndex(aAddress), networkID);
+        myPlayers.push_back(go);
+
+        Engine::Get().GetSceneHandler().Instantiate(go);
+    }
+}
+
 void GameServer::UpdatePositions()
 {
-    for (auto& object : myObjects)
+    for (int clientIndex = 0; clientIndex < static_cast<int>(myClients.size()); clientIndex++)
     {
-        NetMessage_Position newMsg;
-        newMsg.SetNetworkID(object->GetNetworkID());
-        newMsg.SetPosition(object->GetComponent<Transform>()->GetTranslation());
-        newMsg.SetTimestamp(Engine::Get().GetTimer().GetTimeSinceEpoch());
-        NetBuffer buffer;
-        newMsg.Serialize(buffer);
-        SendToAllClients(buffer);
+        int clientNetworkID = GetClient(clientIndex).myCharacterNetworkID;
+        Math::Vector3f clientPos;
+        if (auto go = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(clientNetworkID))
+        {
+            clientPos = go->GetComponent<Transform>()->GetTranslation(true);
+        }
+
+        for (auto& object : myObjects)
+        {
+            Math::Vector3f objectPos = object->GetComponent<Transform>()->GetTranslation(true);
+            if ((clientPos - objectPos).LengthSqr() > myPlayerAwarenessCircleRadius * myPlayerAwarenessCircleRadius) continue;
+
+            NetMessage_Position newMsg;
+            newMsg.SetNetworkID(object->GetNetworkID());
+            newMsg.SetPosition(objectPos);
+            newMsg.SetTimestamp(Engine::Get().GetTimer().GetTimeSinceEpoch());
+            NetBuffer buffer;
+            newMsg.Serialize(buffer);
+            SendToClient(buffer, clientIndex);
+        }
+
+        for (auto& playerObject : myPlayers)
+        {
+            if (auto playerTransform = playerObject->GetComponent<Transform>())
+            {
+                if (GetClientIndexByNetworkID(playerObject->GetNetworkID()) == clientIndex) continue;
+
+                //if (Math::Vector3f::Equal(playerTransform->GetTranslation(true), GetClient(clientIndex).myLastPosition, 0.01f)) continue;
+
+                //SetClientLastPosition(clientIndex, playerTransform->GetTranslation(true));
+
+                Math::Vector3f playerPos = playerTransform->GetTranslation(true);
+                if ((clientPos - playerPos).LengthSqr() > myPlayerAwarenessCircleRadius * myPlayerAwarenessCircleRadius) continue;
+
+                NetMessage_Position newMsg;
+                newMsg.SetNetworkID(playerObject->GetNetworkID());
+                newMsg.SetPosition(playerPos);
+                newMsg.SetTimestamp(Engine::Get().GetTimer().GetTimeSinceEpoch());
+                NetBuffer buffer;
+                newMsg.Serialize(buffer);
+                SendToClient(buffer, clientIndex);
+            }
+        }
     }
 }
 
@@ -508,7 +668,7 @@ int GameServer::CreateNewGuaranteedMessage(GuaranteedNetMessage* aGuaranteedMess
 
     myGuaranteedMessageIDToData[id].myLastSentTimestamp = std::chrono::system_clock::now();
     myGuaranteedMessageIDToData[id].myAttempts = 1;
-    myGuaranteedMessageIDToData[id].myRecipientAddress = GetClient(aClientIndex).address;
+    myGuaranteedMessageIDToData[id].myRecipientAddress = GetClient(aClientIndex).myAddress;
 
     printf("Created guaranteed message with ID %i\n", id);
     ++myNrOfGuaranteedMessagesSent;

@@ -1,5 +1,5 @@
 #pragma once
-#include "NetworkEngine/NetMessage.h"
+#include "NetworkEngine/BaseNetMessages/NetMessage.h"
 #include <string>
 
 class NetMessage_RequestHandshake : public NetMessage

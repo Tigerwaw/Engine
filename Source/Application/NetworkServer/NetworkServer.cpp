@@ -21,11 +21,12 @@ void NetworkServer::InitializeApplication()
 		{
 			if (ImGui::Begin("Network Stats"))
 			{
+				ImGui::Text("FPS: %i", Engine::Get().GetTimer().GetFPS());
 				ImGui::Text("Received Data: %i bytes/s", myServer.GetReceivedData());
 				ImGui::Text("Sent Data: %i bytes/s", myServer.GetSentData());
 				ImGui::Text("Guaranteed Messages Sent: %i", myServer.GetNrOfGuaranteedMessagesSent());
 				ImGui::Text("Guaranteed Messages Lost: %i", myServer.GetNrOfGuaranteedMessagesLost());
-				ImGui::Text("Estimated Package Loss: %s%%", std::format("{:.3f}", myServer.GetEstimatedPackageLoss()).c_str());
+				ImGui::Text("Estimated Package Loss: %.3f%%", myServer.GetEstimatedPackageLoss());
 
 				ImGui::Spacing();
 				if (ImGui::BeginChild("Clients"))
@@ -33,7 +34,7 @@ void NetworkServer::InitializeApplication()
 					for (size_t clientIndex = 0; clientIndex < myServer.GetClients().size(); clientIndex++)
 					{
 						auto& client = myServer.GetClients()[clientIndex];
-						ImGui::Text("Client ID: %s, Ping: %s ms", client.username.c_str(), std::format("{:.2f}", client.myRTT * 1000.0f).c_str());
+						ImGui::Text("Client ID: %s, Ping: %.0f ms", client.myUsername.c_str(), client.myRTT * 1000.0f);
 					}
 					
 					ImGui::EndChild();

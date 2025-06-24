@@ -12,6 +12,7 @@ namespace Utilities
 		T Pop_Front();
 		T& Peek_Front();
 		T& Peek_Next();
+		T& Peek_Latest();
 		void Clear();
 		int Size() const;
 		int MaxSize() const;
@@ -77,6 +78,14 @@ namespace Utilities
 		assert(myFirstIndex != myLastIndex);
 
 		return this->operator[](1);
+	}
+
+	template<typename T, int MAXSIZE>
+	inline T& CircularArray<T, MAXSIZE>::Peek_Latest()
+	{
+		assert(myFirstIndex != myLastIndex);
+
+		return this->operator[](Size());
 	}
 
 	template<typename T, int MAXSIZE>
