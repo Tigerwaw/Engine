@@ -12,7 +12,6 @@ public:
 	const float GetTimeScale() const { return myTimeScale; }
 	float GetDeltaTime() const;
 	float GetUnscaledDeltaTime() const;
-	double GetTimeSinceEpoch() const;
 	double GetTimeSinceProgramStart() const;
 	float GetFrameTimeMS() const;
 	int GetFPS() const;

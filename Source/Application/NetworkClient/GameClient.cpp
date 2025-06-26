@@ -119,27 +119,28 @@ void GameClient::Update()
         }
     }
 
-    if (myShouldLerpPositions)
+    
+    for (auto& [clientID, positionDataArray] : myObjectIDPositionHistory)
     {
-        double currentTime = Engine::Get().GetTimer().GetTimeSinceEpoch();
+        auto go = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(clientID);
+        if (!go) continue;
 
-        for (auto& [clientID, positionDataArray] : myObjectIDPositionHistory)
+        if (myShouldLerpPositions)
         {
-            auto go = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(clientID);
-            if (!go) continue;
+            // Hide rendering of an object if we haven't received a position message for them in the last 3 seconds.
+            std::chrono::duration<float> timeSinceLastPosition = std::chrono::system_clock::now() - positionDataArray.Peek_Latest().serverTimestamp;
+            go->GetComponent<AnimatedModel>()->SetActive(timeSinceLastPosition.count() < 3.0f);
 
             if (positionDataArray.Size() >= 2)
             {
-                go->GetComponent<AnimatedModel>()->SetActive(true);
-
                 PositionData lastPos = positionDataArray.Peek_Front();
                 PositionData nextPos = positionDataArray.Peek_Next();
 
-                float messageTimeDiff = static_cast<float>(currentTime - nextPos.clientTimestamp);
-                float timestampDiff = static_cast<float>(nextPos.serverTimestamp - lastPos.serverTimestamp);
-                if (timestampDiff == 0.0f) return;
+                std::chrono::duration<float> messageTimeDiff = std::chrono::system_clock::now() - nextPos.clientTimestamp;
+                std::chrono::duration<float> timestampDiff = nextPos.serverTimestamp - lastPos.serverTimestamp;
+                if (timestampDiff.count() == 0.0f) return;
 
-                float t = messageTimeDiff / timestampDiff;
+                float t = messageTimeDiff.count() / timestampDiff.count();
                 if (t >= 1.0f)
                 {
                     positionDataArray.Pop_Front();
@@ -147,10 +148,6 @@ void GameClient::Update()
 
                 Math::Vector3f lerpedPosition = Math::Vector3f::Lerp(lastPos.position, nextPos.position, t);
                 go->GetComponent<Transform>()->SetTranslation(lerpedPosition);
-            }
-            else if (positionDataArray.Size() > 0 && currentTime - positionDataArray.Peek_Latest().clientTimestamp > 3.0f)
-            {
-                go->GetComponent<AnimatedModel>()->SetActive(false);
             }
         }
     }
@@ -365,7 +362,7 @@ void GameClient::SendPositionMessage(const Math::Vector3f& aPosition, unsigned a
     NetMessage_Position positionMsg;
     positionMsg.SetPosition(aPosition);
     positionMsg.SetNetworkID(aNetworkID);
-    positionMsg.SetTimestamp(Engine::Get().GetTimer().GetTimeSinceEpoch());
+    positionMsg.SetTimestamp(std::chrono::system_clock::now());
     NetBuffer sendBuffer;
     positionMsg.Serialize(sendBuffer);
     Send(sendBuffer);
@@ -408,7 +405,7 @@ void GameClient::HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMess
 
         if (aMessage.GetIsControlledByClient())
         {
-            go->AddComponent<Controller>(150.0f, 1.0f);
+            go->AddComponent<Controller>(250.0f, 1.0f);
             myPlayerCharacter = go;
         }
         else
@@ -446,7 +443,7 @@ void GameClient::HandleMessage_Position(NetMessage_Position& aMessage)
         PositionData data;
         data.position = aMessage.GetPosition();
         data.serverTimestamp = aMessage.GetTimestamp();
-        data.clientTimestamp = Engine::Get().GetTimer().GetTimeSinceEpoch();
+        data.clientTimestamp = std::chrono::system_clock::now();
         myObjectIDPositionHistory[aMessage.GetNetworkID()].Push_back(data);
     }
     else
@@ -454,6 +451,11 @@ void GameClient::HandleMessage_Position(NetMessage_Position& aMessage)
         if (auto go = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(aMessage.GetNetworkID()))
         {
             go->GetComponent<Transform>()->SetTranslation(aMessage.GetPosition());
+
+            if (myPlayerCharacter)
+            {
+                go->GetComponent<AnimatedModel>()->SetActive((myPlayerCharacter->GetComponent<Transform>()->GetTranslation(true) - aMessage.GetPosition()).LengthSqr() < 500.0f * 500.0f);
+            }
         }
     }
 }

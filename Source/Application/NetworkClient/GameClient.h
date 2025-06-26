@@ -30,8 +30,8 @@ struct GuaranteedMessageData
 struct PositionData
 {
     Math::Vector3f position;
-    double clientTimestamp;
-    double serverTimestamp;
+    std::chrono::system_clock::time_point clientTimestamp;
+    std::chrono::system_clock::time_point serverTimestamp;
 };
 
 class GameClient

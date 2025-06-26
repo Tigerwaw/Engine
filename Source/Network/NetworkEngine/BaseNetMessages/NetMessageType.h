@@ -14,5 +14,6 @@ enum class NetMessageType
 	CreateCharacter,
 	RemoveCharacter,
 	Position,
-	Test
+	Test,
+	UpdateVisibleObjects
 };

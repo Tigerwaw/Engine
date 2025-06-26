@@ -3,6 +3,7 @@
 #include <WinSock2.h>
 #include <thread>
 #include <chrono>
+#include "Utilities/Math/Vector.hpp"
 
 #include "Communicator.h"
 

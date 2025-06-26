@@ -615,7 +615,7 @@ void GameServer::UpdatePositions()
             NetMessage_Position newMsg;
             newMsg.SetNetworkID(object->GetNetworkID());
             newMsg.SetPosition(objectPos);
-            newMsg.SetTimestamp(Engine::Get().GetTimer().GetTimeSinceEpoch());
+            newMsg.SetTimestamp(std::chrono::system_clock::now());
             NetBuffer buffer;
             newMsg.Serialize(buffer);
             SendToClient(buffer, clientIndex);
@@ -627,9 +627,9 @@ void GameServer::UpdatePositions()
             {
                 if (GetClientIndexByNetworkID(playerObject->GetNetworkID()) == clientIndex) continue;
 
-                //if (Math::Vector3f::Equal(playerTransform->GetTranslation(true), GetClient(clientIndex).myLastPosition, 0.01f)) continue;
+                if (Math::Vector3f::Equal(playerTransform->GetTranslation(true), GetClient(clientIndex).myLastPosition, 0.01f)) continue;
 
-                //SetClientLastPosition(clientIndex, playerTransform->GetTranslation(true));
+                SetClientLastPosition(clientIndex, playerTransform->GetTranslation(true));
 
                 Math::Vector3f playerPos = playerTransform->GetTranslation(true);
                 if ((clientPos - playerPos).LengthSqr() > myPlayerAwarenessCircleRadius * myPlayerAwarenessCircleRadius) continue;
@@ -637,7 +637,7 @@ void GameServer::UpdatePositions()
                 NetMessage_Position newMsg;
                 newMsg.SetNetworkID(playerObject->GetNetworkID());
                 newMsg.SetPosition(playerPos);
-                newMsg.SetTimestamp(Engine::Get().GetTimer().GetTimeSinceEpoch());
+                newMsg.SetTimestamp(std::chrono::system_clock::now());
                 NetBuffer buffer;
                 newMsg.Serialize(buffer);
                 SendToClient(buffer, clientIndex);
