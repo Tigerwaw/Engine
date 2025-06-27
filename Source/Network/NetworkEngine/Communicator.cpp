@@ -2,6 +2,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <stdio.h>
+#include "NetworkDefines.hpp"
 
 #pragma comment (lib, "Ws2_32.lib")
 #pragma comment (lib, "Mswsock.lib")
@@ -116,11 +117,11 @@ int Communicator::SendData(const NetBuffer& inData, const sockaddr_in& aRecipien
 
 int Communicator::ReceiveData(NetBuffer& outData, sockaddr_in& outSender) const
 {
-    char buff[DEFAULT_BUFLEN]{ 0 };
+    char buff[NetworkDefines::defaultBufferSize]{ 0 };
 
     sockaddr_in recAddress = {};
     int recAddressLen = sizeof(sockaddr_in);
-    int result = recvfrom(mySocket, buff, DEFAULT_BUFLEN, 0, reinterpret_cast<sockaddr*>(&recAddress), &recAddressLen);
+    int result = recvfrom(mySocket, buff, NetworkDefines::defaultBufferSize, 0, reinterpret_cast<sockaddr*>(&recAddress), &recAddressLen);
     if (result > 0)
     {
         memcpy_s(outData.GetBuffer(), result, buff, result);

@@ -1,11 +1,12 @@
 #pragma once
 #include <corecrt_memcpy_s.h>
-
-#define DEFAULT_BUFLEN 512
+#include <cassert>
+#include "NetworkDefines.hpp"
 
 class NetBuffer
 {
 public:
+	void ResetBuffer();
 	const char* GetBuffer() const { return myBuffer; }
 	char* GetBuffer() { return myBuffer; }
 	int GetSize() const { return myReadWriteIndex; }
@@ -20,13 +21,15 @@ public:
 	void WriteData(const T& aDataToReadFrom, int aSizeOfDataToReadFrom);
 
 private:
-	char myBuffer[DEFAULT_BUFLEN]{ 0 };
+	char myBuffer[NetworkDefines::defaultBufferSize]{ 0 };
 	int myReadWriteIndex = 0;
 };
 
 template<typename T>
 inline void NetBuffer::ReadData(T& aDataToWriteTo)
 {
+	assert(myReadWriteIndex < NetworkDefines::defaultBufferSize);
+
 	constexpr int numBytes = static_cast<int>(sizeof(T));
 	memcpy_s(&aDataToWriteTo, numBytes, myBuffer + myReadWriteIndex, numBytes);
 	myReadWriteIndex += numBytes;
@@ -35,19 +38,21 @@ inline void NetBuffer::ReadData(T& aDataToWriteTo)
 template<typename T>
 inline void NetBuffer::WriteData(const T& aDataToReadFrom)
 {
+	assert(myReadWriteIndex < NetworkDefines::defaultBufferSize);
+
 	constexpr int numBytes = static_cast<int>(sizeof(T));
-	memcpy_s(myBuffer + myReadWriteIndex, DEFAULT_BUFLEN - myReadWriteIndex, &aDataToReadFrom, numBytes);
+	memcpy_s(myBuffer + myReadWriteIndex, NetworkDefines::defaultBufferSize - myReadWriteIndex, &aDataToReadFrom, numBytes);
 	myReadWriteIndex += numBytes;
 }
 
 template<typename T>
 inline void NetBuffer::WriteData(const T& aDataToReadFrom, int aSizeOfDataToReadFrom)
 {
-	if (aSizeOfDataToReadFrom > DEFAULT_BUFLEN - myReadWriteIndex)
+	if (aSizeOfDataToReadFrom > NetworkDefines::defaultBufferSize - myReadWriteIndex)
 	{
-		aSizeOfDataToReadFrom = DEFAULT_BUFLEN - myReadWriteIndex;
+		aSizeOfDataToReadFrom = NetworkDefines::defaultBufferSize - myReadWriteIndex;
 	}
 
-	memcpy_s(myBuffer + myReadWriteIndex, DEFAULT_BUFLEN - myReadWriteIndex, &aDataToReadFrom, aSizeOfDataToReadFrom);
+	memcpy_s(myBuffer + myReadWriteIndex, NetworkDefines::defaultBufferSize - myReadWriteIndex, &aDataToReadFrom, aSizeOfDataToReadFrom);
 	myReadWriteIndex += aSizeOfDataToReadFrom;
 }

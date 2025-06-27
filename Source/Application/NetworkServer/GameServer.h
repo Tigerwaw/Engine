@@ -31,10 +31,10 @@ struct NetInfo
             myAddress.sin_port == other.sin_port;
     }
 
-    bool operator==(sockaddr_in& other) const
+    bool operator==(const NetInfo& other) const
     {
-        return myAddress.sin_addr.S_un.S_addr == other.sin_addr.S_un.S_addr &&
-            myAddress.sin_port == other.sin_port;
+        return myAddress.sin_addr.S_un.S_addr == other.myAddress.sin_addr.S_un.S_addr &&
+            myAddress.sin_port == other.myAddress.sin_port;
     }
 };
 
@@ -59,28 +59,30 @@ public:
     int GetNrOfGuaranteedMessagesLost() const { return myNrOfGuaranteedMessagesSent - myNrOfAcknowledges; }
     float GetEstimatedPackageLoss() const { return static_cast<float>(myNrOfGuaranteedMessagesSent - myNrOfAcknowledges) / static_cast<float>(myNrOfGuaranteedMessagesSent); }
     const std::vector<NetInfo>& GetClients() const { return myClients; }
+    const std::unordered_map<int, GuaranteedMessageData>& GetGuaranteedMessageData() const { return myGuaranteedMessageIDToData; }
 protected:
     void Receive();
     NetMessage* ReceiveMessage(const NetBuffer& aBuffer) const;
     void HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress, const int aBytesReceived);
+    bool HandleGuaranteedMessage(GuaranteedNetMessage* aMessage, const sockaddr_in& aAddress);
+    void HandleAckMessage(AckNetMessage* aMessage, const sockaddr_in& aAddress);
 
     void AcceptHandshake(const NetBuffer& aBuffer, const sockaddr_in& aAddress);
-    const NetInfo& AddClient(const sockaddr_in& aAddress, const std::string& aUsername);
-    void RemoveClient(int aClientIndex);
+    NetInfo& AddClient(const sockaddr_in& aAddress, const std::string& aUsername);
+    void RemoveClient(const NetInfo& aClientNetInfo);
 
-    void SendToClient(const NetBuffer& aBuffer, int aClientIndex);
+    void SendToClient(const NetBuffer& aBuffer, const NetInfo& aClientNetInfo);
     void SendToAllClients(const NetBuffer& aBuffer);
-    void SendToAllClientsExcluding(const NetBuffer& aBuffer, const int aClientIndex);
-    bool DoesClientExist(const sockaddr_in& aAddress) const;
-    const int GetClientIndex(const sockaddr_in& aAddress) const;
-    const NetInfo& GetClient(int aClientIndex) const;
-    const int GetClientIndexByNetworkID(unsigned aNetworkID) const;
-    void UpdateClientPing(int aClientIndex, int aMessageID, bool aShouldUpdateRTT = false);
-    void SetClientNetworkID(int aClientIndex, unsigned aNetworkID);
-    void SetClientLastPosition(int aClientIndex, Math::Vector3f aPosition);
+    void SendToAllClientsExcluding(const NetBuffer& aBuffer, const NetInfo& aClientNetInfo);
 
-    bool myShouldReceive = false;
-    int myMessagesHandledPerTick = 10;
+    bool DoesClientExist(const sockaddr_in& aAddress) const;
+
+    const NetInfo* GetClient(const sockaddr_in& aAddress) const;
+    NetInfo* GetClient(const sockaddr_in& aAddress);
+    const NetInfo* GetClientByNetworkID(unsigned aNetworkID) const;
+    NetInfo* GetClientByNetworkID(unsigned aNetworkID);
+
+    void UpdateClientPing(NetInfo& aClientNetInfo, int aMessageID, bool aShouldUpdateRTT = false);
 
     void HandleMessage_RequestConnect(NetMessage_RequestConnect& aMessage, const sockaddr_in& aAddress);
     void HandleMessage_Disconnect(NetMessage_Disconnect& aMessage, const sockaddr_in& aAddress);
@@ -91,7 +93,12 @@ protected:
     void CreateNewObject();
     void DestroyObject(unsigned aNetworkID);
 
-    void CreateNewPlayer(const sockaddr_in& aAddress);
+    void CreateNewPlayer(NetInfo& aClientNetInfo);
+
+    void UpdateNetworkStats();
+    void PingClients();
+    void UpdateGuaranteedMessages();
+    void UpdateObjectSpawn();
     void UpdatePositions();
 
     void SendTestMessage();
@@ -99,38 +106,32 @@ protected:
 private:
     Communicator myComm;
     std::vector<NetInfo> myClients;
+    bool myShouldReceive = false;
+    std::chrono::system_clock::time_point myLastTickTimestamp;
+    unsigned myCurrentNetworkID = 1;
 
+    // Game Specific
+    int myCurrentlyActiveObjects = 0;
+    std::chrono::system_clock::time_point myLastSpawnTimestamp;
+    std::vector<std::shared_ptr<GameObject>> myObjects;
+    std::vector<std::shared_ptr<GameObject>> myPlayers;
+    // --
+
+    // Network Stats
     int myDataReceived = 0;
     int myDataSent = 0;
     int myAvgDataReceived = 0;
     int myAvgDataSent = 0;
     std::chrono::system_clock::time_point myLastDataTickTime;
-    float myDataTickRate = 1.0f;
     int myNrOfGuaranteedMessagesSent = 0;
     int myNrOfAcknowledges = 0;
+    // --
 
-    unsigned myCurrentNetworkID = 1;
-    std::vector<std::shared_ptr<GameObject>> myObjects;
-
-    std::vector<std::shared_ptr<GameObject>> myPlayers;
-    float myPlayerAwarenessCircleRadius = 500.0f;
-
-    float myTickRate = 10.0f;
-
-    int myCurrentlyActiveObjects = 0;
-    int myObjectLimit = 16;
-
-    std::chrono::system_clock::time_point myLastUpdateTimestamp;
-    float myTimeBetweenObjectsSpawned = 1.0f;
-    std::chrono::system_clock::time_point myLastSpawnTimestamp;
-
+    // Guaranteed Message Handling
     int myGuaranteedMessageID = 1;
     std::unordered_map<int, GuaranteedMessageData> myGuaranteedMessageIDToData;
-    float myGuaranteedMessageTimeout = 1.0f;
-    int myGuaranteedMesssageMaxTimeouts = 3;
     std::vector<int> myAcknowledgedMessageIDs;
-    [[nodiscard("You need to use the returned message ID to add the buffer to myGuaranteedMessageIDToData")]] int CreateNewGuaranteedMessage(GuaranteedNetMessage* aGuaranteedMessage, int aClientIndex);
-
-    float myTimeBetweenPings = 1.0f;
+    [[nodiscard("You need to use the returned message ID to add the buffer to myGuaranteedMessageIDToData")]] int CreateNewGuaranteedMessage(GuaranteedNetMessage* aGuaranteedMessage, const NetInfo& aClientNetInfo);
+    // --
 };
 

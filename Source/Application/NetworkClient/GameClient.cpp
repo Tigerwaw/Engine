@@ -3,6 +3,7 @@
 #include <iostream>
 #include <WinSock2.h>
 
+#include "NetworkEngine/NetworkDefines.hpp"
 #include "NetworkEngine/BaseNetMessages/NetMessage.h"
 #include "NetworkEngine/BaseNetMessages/GuaranteedNetMessage.h"
 #include "NetworkEngine/BaseNetMessages/AckNetMessage.h"
@@ -28,11 +29,9 @@
 #include <GameEngine/ComponentSystem/Components/Graphics/Model.h>
 #include <GameEngine/ComponentSystem/Components/Physics/Colliders/BoxCollider.h>
 #include <GameEngine/Input/InputHandler.h>
-#include <Utilities/CommonUtilities/Random.hpp>
+#include <Utilities/CommonUtilities/VectorUtilities.hpp>
 
 #include "Controller.h"
-
-inline const std::array<std::string, 10> clientNames = { "Lars", "Ingvar", "Jonas", "Katarina", "Sara", "Klas", "Vera", "Tor", "Freja", "Wilmer" };
 
 void GameClient::ConnectClient(const char* aIP)
 {
@@ -40,24 +39,20 @@ void GameClient::ConnectClient(const char* aIP)
     SendHandshakeRequest();
     myLastHandshakeRequestTime = std::chrono::system_clock::now();
     myShouldReceive = true;
-    printf("\nWaiting for server...");
+    myAttemptToConnect = true;
+    printf("\nWaiting for server...\n");
+}
+
+void GameClient::SetUsername(const char* aUsername)
+{
+    myUsername = aUsername;
 }
 
 void GameClient::Update()
 {
-    if (Engine::Get().GetInputHandler().GetBinaryAction("ToggleLerp"))
+    if (myAttemptToConnect)
     {
-        myShouldLerpPositions = !myShouldLerpPositions;
-    }
-
-    std::chrono::duration<float> elapsed_seconds = std::chrono::system_clock::now() - myLastDataTickTime;
-    if (elapsed_seconds.count() > myDataTickRate)
-    {
-        myLastDataTickTime = std::chrono::system_clock::now();
-        myAvgDataReceived = static_cast<int>(std::roundf(myDataReceived / elapsed_seconds.count()));
-        myAvgDataSent = static_cast<int>(std::roundf(myDataSent / elapsed_seconds.count()));
-        myDataReceived = 0;
-        myDataSent = 0;
+        TryConnect();
     }
 
     if (myShouldReceive)
@@ -65,201 +60,76 @@ void GameClient::Update()
         Receive();
     }
 
-    if (!myHasEstablishedConnection)
+    std::chrono::duration<float> timeSinceLastTick = std::chrono::system_clock::now() - myLastTickTimestamp;
+    if (timeSinceLastTick.count() > (1.0f / NetworkDefines::Client::tickRate))
     {
-        SendConnectionRequest(clientNames[Utilities::RandomInRange(0, 9)]);
-        return;
-    }
+        myLastTickTimestamp = std::chrono::system_clock::now();
 
-    std::chrono::duration<float> timeSinceLastPing = std::chrono::system_clock::now() - myLastPingTime;
-    if (timeSinceLastPing.count() > myTimeBetweenPings)
-    {
-        myLastPingTime = std::chrono::system_clock::now();
-        
-        RTTPingMessage pingMsg;
-        int guaranteedMessageID = CreateNewGuaranteedMessage(&pingMsg);
-        NetBuffer buffer;
-        pingMsg.Serialize(buffer);
-        Send(buffer);
-
-        myGuaranteedMessageIDToData[guaranteedMessageID].myGuaranteedMessageBuffer = buffer;
-    }
-
-
-    std::array<int, 100> messageIDsToRemove = {};
-    int currentIndex = 0;
-
-    for (auto& [guaranteedMessageID, guaranteedMessageData] : myGuaranteedMessageIDToData)
-    {
-        std::chrono::duration<float> elapsedTime = std::chrono::system_clock::now() - guaranteedMessageData.myLastSentTimestamp;
-        if (elapsedTime.count() > myGuaranteedMessageTimeout)
+        if (myHasEstablishedHandshake && myHasEstablishedConnection)
         {
-            if (guaranteedMessageData.myAttempts >= myGuaranteedMesssageMaxTimeouts)
-            {
-                SendDisconnectMessage();
-                messageIDsToRemove[++currentIndex] = guaranteedMessageID;
-            }
-            else
-            {
-                myLastPingTime = std::chrono::system_clock::now();
-                printf("Sending guaranteed message with ID %i attempt %i\n", guaranteedMessageID, guaranteedMessageData.myAttempts);
-                ++myNrOfGuaranteedMessagesSent;
-                Send(guaranteedMessageData.myGuaranteedMessageBuffer);
-                guaranteedMessageData.myLastSentTimestamp = std::chrono::system_clock::now();
-                ++guaranteedMessageData.myAttempts;
-            }
-        }
-    }
-
-    for (auto& messageIDToRemove : messageIDsToRemove)
-    {
-        if (myGuaranteedMessageIDToData.contains(messageIDToRemove))
-        {
-            myGuaranteedMessageIDToData.erase(messageIDToRemove);
-        }
-    }
-
-    
-    for (auto& [clientID, positionDataArray] : myObjectIDPositionHistory)
-    {
-        auto go = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(clientID);
-        if (!go) continue;
-
-        if (myShouldLerpPositions)
-        {
-            // Hide rendering of an object if we haven't received a position message for them in the last 3 seconds.
-            std::chrono::duration<float> timeSinceLastPosition = std::chrono::system_clock::now() - positionDataArray.Peek_Latest().serverTimestamp;
-            go->GetComponent<AnimatedModel>()->SetActive(timeSinceLastPosition.count() < 3.0f);
-
-            if (positionDataArray.Size() >= 2)
-            {
-                PositionData lastPos = positionDataArray.Peek_Front();
-                PositionData nextPos = positionDataArray.Peek_Next();
-
-                std::chrono::duration<float> messageTimeDiff = std::chrono::system_clock::now() - nextPos.clientTimestamp;
-                std::chrono::duration<float> timestampDiff = nextPos.serverTimestamp - lastPos.serverTimestamp;
-                if (timestampDiff.count() == 0.0f) return;
-
-                float t = messageTimeDiff.count() / timestampDiff.count();
-                if (t >= 1.0f)
-                {
-                    positionDataArray.Pop_Front();
-                }
-
-                Math::Vector3f lerpedPosition = Math::Vector3f::Lerp(lastPos.position, nextPos.position, t);
-                go->GetComponent<Transform>()->SetTranslation(lerpedPosition);
-            }
-        }
-    }
-
-    // Send player character position to server
-    std::chrono::duration<float> dt = std::chrono::system_clock::now() - myLastPositionSendTimestamp;
-    if (dt.count() > (1.0f / myPositionSendTickRate))
-    {
-        myLastPositionSendTimestamp = std::chrono::system_clock::now();
-
-        if (myPlayerCharacter)
-        {
-            if (auto transform = myPlayerCharacter->GetComponent<Transform>())
-            {
-                SendPositionMessage(myPlayerCharacter->GetComponent<Transform>()->GetTranslation(true), myPlayerCharacter->GetNetworkID());
-
-                if (!Math::Vector3f::Equal(transform->GetTranslation(true), myLastPosition, 0.01f))
-                {
-                    myLastPosition = transform->GetTranslation(true);
-                    SendPositionMessage(myPlayerCharacter->GetComponent<Transform>()->GetTranslation(true), myPlayerCharacter->GetNetworkID());
-                }
-            }
+            UpdateNetworkStats();
+            PingServer();
+            UpdateGuaranteedMessages();
+            UpdateObjectPositions();
+            SendPlayerCharacterPosition();
         }
     }
 }
 
 void GameClient::Receive()
 {
-    if (!myHasEstablishedHandshake)
+    sockaddr_in otherAddress = {};
+    NetBuffer receiveBuffer;
+    int currentMessagesHandled = 0;
+    while (int bytesReceived = myComm.ReceiveData(receiveBuffer, otherAddress) > 0 && currentMessagesHandled < NetworkDefines::Client::maxMessagesHandledPerTick)
     {
-        std::chrono::duration<float> elapsed_seconds = std::chrono::system_clock::now() - myLastHandshakeRequestTime;
-        if (elapsed_seconds.count() > myTimeBetweenHandshakeRequests)
-        {
-            myLastHandshakeRequestTime = std::chrono::system_clock::now();
-            SendHandshakeRequest();
-        }
-    }
+        ++currentMessagesHandled;
 
-    for (int i = 0; i < myMessagesHandledPerTick; i++)
-    {
-        sockaddr_in otherAddress = {};
-        NetBuffer receiveBuffer;
-        int bytesReceived = myComm.ReceiveData(receiveBuffer, otherAddress);
-        if (bytesReceived > 0)
-        {
-            myDataReceived += bytesReceived;
-            NetMessage* receivedMessage = nullptr;
-            receivedMessage = ReceiveMessage(receiveBuffer);
+        myDataReceived += bytesReceived;
+        NetMessage* receivedMessage = ReceiveMessage(receiveBuffer);
 
-            if (receivedMessage)
+        if (receivedMessage)
+        {
+            receivedMessage->Deserialize(receiveBuffer);
+
+            if (auto guaranteedMessage = dynamic_cast<GuaranteedNetMessage*>(receivedMessage))
             {
-                receivedMessage->Deserialize(receiveBuffer);
-
-                if (auto guaranteedMessage = dynamic_cast<GuaranteedNetMessage*>(receivedMessage))
+                if (!HandleGuaranteedMessage(guaranteedMessage))
                 {
-                    int id = guaranteedMessage->GetGuaranteedMessageID();
-
-                    AckNetMessage msg;
-                    msg.SetGuaranteedMessageID(id);
-                    NetBuffer sendBuffer;
-                    msg.Serialize(sendBuffer);
-                    Send(sendBuffer);
-
-                    if (std::find(myAcknowledgedMessageIDs.begin(), myAcknowledgedMessageIDs.end(), id) != myAcknowledgedMessageIDs.end())
-                    {
-                        // Message has already been acknowledged, so we send a new acknowledge but we do not act on the message.
-                        printf("Already acknowledged message with ID %i\n", id);
-                        delete receivedMessage;
-                        continue;
-                    }
-                    else
-                    {
-                        // We add the message ID to our acknowledged IDs so that if we receive this ID again we won't act on it.
-                        printf("Acknowledged message with ID %i\n", id);
-                        myAcknowledgedMessageIDs.emplace_back(id);
-                    }
+                    delete receivedMessage;
+                    continue;
                 }
-                else if (auto ackMessage = dynamic_cast<AckNetMessage*>(receivedMessage))
-                {
-                    int id = ackMessage->GetGuaranteedMessageID();
-                    if (myGuaranteedMessageIDToData.contains(id))
-                    {
-                        std::chrono::duration<float> rtt = std::chrono::system_clock::now() - myLastPingTime;
-                        myRTT = rtt.count();
-                        myLastPingTime = std::chrono::system_clock::now();
-
-                        ++myNrOfAcknowledges;
-                        printf("Received Acknowledge message with ID %i\n", id);
-                        myGuaranteedMessageIDToData.erase(id);
-                    }
-                }
-
-                HandleMessage(receivedMessage);
-                delete receivedMessage;
             }
+            else if (auto ackMessage = dynamic_cast<AckNetMessage*>(receivedMessage))
+            {
+                HandleAckMessage(ackMessage);
+                delete receivedMessage;
+                continue;
+            }
+
+            HandleMessage(receivedMessage);
+            delete receivedMessage;
         }
-        else
-        {
-            break;
-        }
+
+        receiveBuffer.ResetBuffer();
     }
 }
 
-void GameClient::Send(const NetBuffer& aNetBuffer)
+void GameClient::Send(const NetBuffer& aBuffer)
 {
-    myDataSent += myComm.SendData(aNetBuffer);
+#ifdef DEBUG_SENT_MESSAGE_TYPE
+    printf("Sent NetMessageType: %i\n", aBuffer.GetBuffer()[0]);
+#endif
+    myDataSent += myComm.SendData(aBuffer);
 }
 
 NetMessage* GameClient::ReceiveMessage(const NetBuffer& aBuffer) const
 {
     NetMessageType receivedMessageType = static_cast<NetMessageType>(aBuffer.GetBuffer()[0]);
-    //printf("NetMessageType: %i\n", static_cast<int>(receivedMessageType));
+
+#ifdef DEBUG_RECEIVED_MESSAGE_TYPE
+    printf("Received NetMessageType: %i\n", static_cast<int>(receivedMessageType));
+#endif
 
     switch (receivedMessageType)
     {
@@ -322,6 +192,53 @@ void GameClient::HandleMessage(NetMessage* aMessage)
     }
 }
 
+bool GameClient::HandleGuaranteedMessage(GuaranteedNetMessage* aMessage)
+{
+    int id = aMessage->GetGuaranteedMessageID();
+
+    AckNetMessage msg;
+    msg.SetGuaranteedMessageID(id);
+    NetBuffer sendBuffer;
+    msg.Serialize(sendBuffer);
+    Send(sendBuffer);
+
+    if (Utilities::VectorContains(myAcknowledgedMessageIDs, id))
+    {
+        // Message has already been acknowledged, so we send a new acknowledge but we do not act on the message.
+#ifdef DEBUG_ACKNOWLEDGED_MESSAGE
+        printf("Already acknowledged message with ID %i\n", id);
+#endif
+        return false;
+    }
+    else
+    {
+        // We add the message ID to our acknowledged IDs so that if we receive this ID again we won't act on it.
+#ifdef DEBUG_ACKNOWLEDGED_MESSAGE
+        printf("Acknowledged message with ID %i\n", id);
+#endif
+        myAcknowledgedMessageIDs.emplace_back(id);
+    }
+
+    return true;
+}
+
+void GameClient::HandleAckMessage(AckNetMessage* aMessage)
+{
+    int id = aMessage->GetGuaranteedMessageID();
+    if (myGuaranteedMessageIDToData.contains(id))
+    {
+        std::chrono::duration<float> rtt = std::chrono::system_clock::now() - myLastPingTime;
+        myRTT = rtt.count();
+        myLastPingTime = std::chrono::system_clock::now();
+
+        ++myNrOfAcknowledges;
+#ifdef DEBUG_ACKNOWLEDGED_MESSAGE
+        printf("Received Acknowledge message with ID %i\n", id);
+#endif
+        myGuaranteedMessageIDToData.erase(id);
+    }
+}
+
 void GameClient::SendHandshakeRequest()
 {
     NetMessage_RequestHandshake msg;
@@ -332,6 +249,10 @@ void GameClient::SendHandshakeRequest()
 
 void GameClient::SendConnectionRequest(const std::string& aUsername)
 {
+#ifdef DEBUG_ATTEMPTING_CONNECT
+    printf("Attempting to connect to server with username %s\n", aUsername.c_str());
+#endif
+
     NetMessage_RequestConnect msg;
     msg.SetUsername(aUsername);
     NetBuffer sendBuffer;
@@ -350,11 +271,15 @@ void GameClient::SendTextMessage(const std::string& aMessage)
 
 void GameClient::SendDisconnectMessage()
 {
-    printf("Attempting to disconnect\n");
+#ifdef DEBUG_ATTEMPTING_DISCONNECT
+    printf("Disconnected\n");
+#endif
     NetMessage_Disconnect disconnectMsg;
     NetBuffer sendBuffer;
     disconnectMsg.Serialize(sendBuffer);
     Send(sendBuffer);
+
+    Disconnect();
 }
 
 void GameClient::SendPositionMessage(const Math::Vector3f& aPosition, unsigned aNetworkID)
@@ -367,24 +292,32 @@ void GameClient::SendPositionMessage(const Math::Vector3f& aPosition, unsigned a
     positionMsg.Serialize(sendBuffer);
     Send(sendBuffer);
 
-    printf("\nSent position x: %f, y: %f, z: %f", aPosition.x, aPosition.y, aPosition.z);
+#ifdef DEBUG_SEND_POSITION
+    printf("Sent position x: %f, y: %f, z: %f\n", aPosition.x, aPosition.y, aPosition.z);
+#endif
 }
 
 void GameClient::HandleMessage_AcceptHandshake()
 {
     myHasEstablishedHandshake = true;
+#ifdef DEBUG_ESTABLISHED_HANDSHAKE
     printf("\nSuccessfully established handshake!\n");
+#endif
 }
 
 void GameClient::HandleMessage_AcceptConnect()
 {
     myHasEstablishedConnection = true;
+#ifdef DEBUG_ESTABLISHED_CONNECTION
     printf("\nSuccessfully established connection!\n");
+#endif
 }
 
 void GameClient::HandleMessage_Disconnect(NetMessage_Disconnect& aMessage)
 {
+#ifdef DEBUG_CLIENT_DISCONNECTED
     printf("\n[%s] has left the game.", aMessage.GetData().data());
+#endif
 }
 
 void GameClient::HandleMessage_Text(NetMessage_Text& aMessage)
@@ -465,16 +398,174 @@ void GameClient::HandleMessage_Test(NetMessage_Test& aMessage)
     printf("%i\n", aMessage.GetInt());
 }
 
+void GameClient::TryConnect()
+{
+    if (!myHasEstablishedHandshake)
+    {
+        std::chrono::duration<float> elapsed_seconds = std::chrono::system_clock::now() - myLastHandshakeRequestTime;
+        if (elapsed_seconds.count() > (1.0f / NetworkDefines::Client::handshakeRequestRate))
+        {
+            myLastHandshakeRequestTime = std::chrono::system_clock::now();
+            SendHandshakeRequest();
+        }
+    }
+
+    if (myHasEstablishedHandshake && !myHasEstablishedConnection)
+    {
+        std::chrono::duration<float> elapsed_seconds = std::chrono::system_clock::now() - myLastConnectRequestTime;
+        if (elapsed_seconds.count() > (1.0f / NetworkDefines::Client::connectRequestRate))
+        {
+            myLastConnectRequestTime = std::chrono::system_clock::now();
+            SendConnectionRequest(myUsername);
+        }
+    }
+}
+
+void GameClient::UpdateNetworkStats()
+{
+    std::chrono::duration<float> elapsed_seconds = std::chrono::system_clock::now() - myLastDataTickTime;
+    if (elapsed_seconds.count() > NetworkDefines::networkStatsUpdateRate)
+    {
+        myLastDataTickTime = std::chrono::system_clock::now();
+        myAvgDataReceived = static_cast<int>(std::roundf(myDataReceived / elapsed_seconds.count()));
+        myAvgDataSent = static_cast<int>(std::roundf(myDataSent / elapsed_seconds.count()));
+        myDataReceived = 0;
+        myDataSent = 0;
+    }
+}
+
+void GameClient::PingServer()
+{
+    std::chrono::duration<float> timeSinceLastPing = std::chrono::system_clock::now() - myLastPingTime;
+    if (timeSinceLastPing.count() > (1.0f / NetworkDefines::Client::pingServerRate))
+    {
+        myLastPingTime = std::chrono::system_clock::now();
+
+        RTTPingMessage pingMsg;
+        int guaranteedMessageID = CreateNewGuaranteedMessage(&pingMsg);
+        NetBuffer buffer;
+        pingMsg.Serialize(buffer);
+        Send(buffer);
+
+        myGuaranteedMessageIDToData[guaranteedMessageID].myGuaranteedMessageBuffer = buffer;
+    }
+}
+
+void GameClient::UpdateGuaranteedMessages()
+{
+    std::array<int, 100> messageIDsToRemove = {};
+    int currentIndex = 0;
+
+    for (auto& [guaranteedMessageID, guaranteedMessageData] : myGuaranteedMessageIDToData)
+    {
+        std::chrono::duration<float> elapsedTime = std::chrono::system_clock::now() - guaranteedMessageData.myLastSentTimestamp;
+        if (elapsedTime.count() > NetworkDefines::guaranteedMessageTimeout)
+        {
+            if (guaranteedMessageData.myAttempts > NetworkDefines::guaranteedMesssageMaxTimeouts)
+            {
+                SendDisconnectMessage();
+                messageIDsToRemove[++currentIndex] = guaranteedMessageID;
+            }
+            else
+            {
+#ifdef DEBUG_SEND_GUARANTEED_MESSAGE
+                printf("Resending guaranteed message with ID %i attempt %i\n", guaranteedMessageID, guaranteedMessageData.myAttempts);
+#endif
+                myLastPingTime = std::chrono::system_clock::now();
+                ++myNrOfGuaranteedMessagesSent;
+                Send(guaranteedMessageData.myGuaranteedMessageBuffer);
+                guaranteedMessageData.myLastSentTimestamp = std::chrono::system_clock::now();
+                ++guaranteedMessageData.myAttempts;
+            }
+        }
+    }
+
+    for (auto& messageIDToRemove : messageIDsToRemove)
+    {
+        if (myGuaranteedMessageIDToData.contains(messageIDToRemove))
+        {
+            myGuaranteedMessageIDToData.erase(messageIDToRemove);
+        }
+    }
+}
+
+void GameClient::UpdateObjectPositions()
+{
+    if (!myShouldLerpPositions) return;
+
+    for (auto& [clientID, positionDataArray] : myObjectIDPositionHistory)
+    {
+        auto go = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(clientID);
+        if (!go) continue;
+
+        // Hide rendering of an object if we haven't received a position message for them in the last 3 seconds.
+        std::chrono::duration<float> timeSinceLastPosition = std::chrono::system_clock::now() - positionDataArray.Peek_Latest().serverTimestamp;
+        go->GetComponent<AnimatedModel>()->SetActive(timeSinceLastPosition.count() < 3.0f);
+
+        if (positionDataArray.Size() >= 2)
+        {
+            PositionData lastPos = positionDataArray.Peek_Front();
+            PositionData nextPos = positionDataArray.Peek_Next();
+
+            std::chrono::duration<float> messageTimeDiff = std::chrono::system_clock::now() - nextPos.clientTimestamp;
+            std::chrono::duration<float> timestampDiff = nextPos.serverTimestamp - lastPos.serverTimestamp;
+            if (timestampDiff.count() == 0.0f) return;
+
+            float t = messageTimeDiff.count() / timestampDiff.count();
+            if (t >= 1.0f)
+            {
+                positionDataArray.Pop_Front();
+            }
+
+            Math::Vector3f lerpedPosition = Math::Vector3f::Lerp(lastPos.position, nextPos.position, t);
+            go->GetComponent<Transform>()->SetTranslation(lerpedPosition);
+        }
+    }
+}
+
+void GameClient::SendPlayerCharacterPosition()
+{
+    std::chrono::duration<float> dt = std::chrono::system_clock::now() - myLastPositionSendTimestamp;
+    if (dt.count() > (1.0f / NetworkDefines::Client::playerPositionSendTickRate))
+    {
+        myLastPositionSendTimestamp = std::chrono::system_clock::now();
+
+        if (myPlayerCharacter)
+        {
+            if (auto transform = myPlayerCharacter->GetComponent<Transform>())
+            {
+                SendPositionMessage(myPlayerCharacter->GetComponent<Transform>()->GetTranslation(true), myPlayerCharacter->GetNetworkID());
+
+                if (!Math::Vector3f::Equal(transform->GetTranslation(true), myLastPosition, 0.01f))
+                {
+                    myLastPosition = transform->GetTranslation(true);
+                    SendPositionMessage(myPlayerCharacter->GetComponent<Transform>()->GetTranslation(true), myPlayerCharacter->GetNetworkID());
+                }
+            }
+        }
+    }
+}
+
+void GameClient::Disconnect()
+{
+    myHasEstablishedHandshake = false;
+    myHasEstablishedConnection = false;
+    myShouldReceive = false;
+    myAttemptToConnect = false;
+}
+
 int GameClient::CreateNewGuaranteedMessage(GuaranteedNetMessage* aGuaranteedMessage)
 {
-    int id = myGuaranteedMessageID;
-    ++myGuaranteedMessageID;
+    int id = myCurrentGuaranteedMessageID;
+    ++myCurrentGuaranteedMessageID;
     aGuaranteedMessage->SetGuaranteedMessageID(id);
 
     myGuaranteedMessageIDToData[id].myLastSentTimestamp = std::chrono::system_clock::now();
     myGuaranteedMessageIDToData[id].myAttempts = 1;
 
-    printf("Created guaranteed message with ID %i\n", id);
+#ifdef DEBUG_CREATE_GUARANTEED_MESSAGE
+    printf("Created guaranteed message with ID %i - NetMessageType: %i\n", id, static_cast<int>(aGuaranteedMessage->GetType()));
+#endif
     ++myNrOfGuaranteedMessagesSent;
     return id;
 }

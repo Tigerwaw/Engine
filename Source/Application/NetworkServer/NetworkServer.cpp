@@ -36,12 +36,36 @@ void NetworkServer::InitializeApplication()
 						auto& client = myServer.GetClients()[clientIndex];
 						ImGui::Text("Client ID: %s, Ping: %.0f ms", client.myUsername.c_str(), client.myRTT * 1000.0f);
 					}
-					
-					ImGui::EndChild();
 				}
+				ImGui::EndChild();
 
-				ImGui::End();
+				ImGui::Spacing();
+				if (ImGui::BeginChild("GuaranteedMessages"))
+				{
+					//if (ImGui::BeginTable("GM_Table", 4))
+					//{
+					//	for (auto& [id, data] : myServer.GetGuaranteedMessageData())
+					//	{
+					//		ImGui::TableSetColumnIndex(0);
+					//		ImGui::TableHeader("GMID");
+					//		ImGui::Text("%i", id);
+					//		ImGui::TableSetColumnIndex(1);
+					//		ImGui::TableHeader("Attempts");
+					//		ImGui::Text("%i", data.myAttempts);
+					//		ImGui::TableSetColumnIndex(2);
+					//		ImGui::TableHeader("Message Type");
+					//		ImGui::Text("%i", data.myGuaranteedMessageBuffer.GetBuffer()[0]);
+					//		ImGui::TableSetColumnIndex(3);
+					//		ImGui::TableHeader("Client Address");
+					//		ImGui::Text("%i", data.myRecipientAddress.sin_addr.S_un.S_addr);
+					//		ImGui::TableNextRow();
+					//	}
+					//}
+					//ImGui::EndTable();
+				}
+				ImGui::EndChild();
 			}
+			ImGui::End();
 		});
 }
 

@@ -37,8 +37,12 @@ struct PositionData
 class GameClient
 {
 public:
+    void SetUsername(const char* aUsername);
     void ConnectClient(const char* aIP);
     void Update();
+
+    void ToggleLerpPositions(bool aToggle) { myShouldLerpPositions = aToggle; }
+    bool GetIsLerpingPositions() const { return myShouldLerpPositions; }
 
     int GetReceivedData() const { return myAvgDataReceived; }
     int GetSentData() const { return myAvgDataSent; }
@@ -46,12 +50,16 @@ public:
     int GetNrOfGuaranteedMessagesLost() const { return myNrOfGuaranteedMessagesSent - myNrOfAcknowledges; }
     float GetEstimatedPackageLoss() const { return static_cast<float>(myNrOfGuaranteedMessagesSent - myNrOfAcknowledges) / static_cast<float>(myNrOfGuaranteedMessagesSent); }
     float GetRTT() const { return myRTT; }
+    const std::unordered_map<int, GuaranteedMessageData>& GetGuaranteedMessageData() const { return myGuaranteedMessageIDToData; }
+    const std::unordered_map<unsigned, Utilities::CircularArray<PositionData, 16>>& GetObjectPositionData() const { return myObjectIDPositionHistory; }
 protected:
     void Receive();
-    void Send(const NetBuffer& aNetBuffer);
+    void Send(const NetBuffer& aBuffer);
 
     NetMessage* ReceiveMessage(const NetBuffer& aBuffer) const;
     void HandleMessage(NetMessage* aMessage);
+    bool HandleGuaranteedMessage(GuaranteedNetMessage* aMessage);
+    void HandleAckMessage(AckNetMessage* aMessage);
 
     void SendHandshakeRequest();
     void SendConnectionRequest(const std::string& aUsername);
@@ -71,43 +79,55 @@ protected:
     bool HasEstablishedHandshake() const { return myHasEstablishedHandshake; }
     bool HasEstablishedConnection() const { return myHasEstablishedConnection; }
 
-    bool myHasEstablishedHandshake = false;
-    bool myHasEstablishedConnection = false;
-
-    bool myShouldReceive = false;
-
-    std::chrono::system_clock::time_point myLastHandshakeRequestTime;
-    float myTimeBetweenHandshakeRequests = 2.0f;
-    int myMessagesHandledPerTick = 10;
+    void TryConnect();
+    void UpdateNetworkStats();
+    void PingServer();
+    void UpdateGuaranteedMessages();
+    void UpdateObjectPositions();
+    void SendPlayerCharacterPosition();
+    void Disconnect();
 
 private:
     Communicator myComm;
+    std::chrono::system_clock::time_point myLastTickTimestamp;
+    std::chrono::system_clock::time_point myLastHandshakeRequestTime;
+    std::chrono::system_clock::time_point myLastConnectRequestTime;
+    bool myHasEstablishedHandshake = false;
+    bool myHasEstablishedConnection = false;
+    bool myShouldReceive = false;
+    bool myAttemptToConnect = false;
+    std::string myUsername;
 
+    // Network Stats
     int myDataReceived = 0;
     int myDataSent = 0;
     int myAvgDataReceived = 0;
     int myAvgDataSent = 0;
     std::chrono::system_clock::time_point myLastDataTickTime;
-    float myDataTickRate = 1.0f;
     int myNrOfGuaranteedMessagesSent = 0;
     int myNrOfAcknowledges = 0;
+    // --
 
-    std::unordered_map<unsigned, Utilities::CircularArray<PositionData, 16>> myObjectIDPositionHistory;
-    bool myShouldLerpPositions = true;
-
-    int myGuaranteedMessageID = 0;
-    std::unordered_map<int, GuaranteedMessageData> myGuaranteedMessageIDToData;
-    float myGuaranteedMessageTimeout = 1.0f;
-    int myGuaranteedMesssageMaxTimeouts = 3;
-    std::vector<int> myAcknowledgedMessageIDs;
-    [[nodiscard("You need to use the returned message ID to add the buffer to myGuaranteedMessageIDToData")]] int CreateNewGuaranteedMessage(GuaranteedNetMessage* aGuaranteedMessage);
-
-    float myTimeBetweenPings = 1.0f;
+    // Server Ping
     std::chrono::system_clock::time_point myLastPingTime;
     float myRTT;
+    // --
 
+    // Object Position Lerping
+    std::unordered_map<unsigned, Utilities::CircularArray<PositionData, 16>> myObjectIDPositionHistory;
+    bool myShouldLerpPositions = true;
+    // --
+
+    // Guaranteed Message Handling
+    int myCurrentGuaranteedMessageID = 0;
+    std::unordered_map<int, GuaranteedMessageData> myGuaranteedMessageIDToData;
+    std::vector<int> myAcknowledgedMessageIDs;
+    [[nodiscard("You need to use the returned message ID to add the buffer to myGuaranteedMessageIDToData")]] int CreateNewGuaranteedMessage(GuaranteedNetMessage* aGuaranteedMessage);
+    // --
+
+    // Player Character
     std::shared_ptr<GameObject> myPlayerCharacter;
-    float myPositionSendTickRate = 10.0f;
     std::chrono::system_clock::time_point myLastPositionSendTimestamp;
     Math::Vector3f myLastPosition;
+    // --
 };

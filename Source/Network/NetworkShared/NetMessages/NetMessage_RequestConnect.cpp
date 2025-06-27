@@ -24,7 +24,7 @@ void NetMessage_RequestConnect::Serialize(NetBuffer& aBuffer)
 void NetMessage_RequestConnect::Deserialize(NetBuffer& aBuffer)
 {
 	NetMessage::Deserialize(aBuffer);
-	char buff[DEFAULT_BUFLEN]{ 0 };
+	char buff[NetworkDefines::defaultBufferSize]{ 0 };
 	aBuffer.ReadData(buff);
 	myUsername.assign(buff);
 }

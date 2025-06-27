@@ -10,6 +10,9 @@
 #include "GameEngine/ComponentSystem/Components/Graphics/Model.h"
 
 #include "Controller.h"
+#include <Utilities/CommonUtilities/Random.hpp>
+
+inline const std::array<const char*, 10> clientNames = { "Lars", "Ingvar", "Jonas", "Katarina", "Sara", "Klas", "Vera", "Tor", "Freja", "Wilmer" };
 
 Application* CreateApplication()
 {
@@ -22,6 +25,7 @@ void NetworkClient::InitializeApplication()
 	GraphicsEngine::Get().RecalculateShadowFrustum = false;
 	GraphicsEngine::Get().DrawColliders = true;
 	Engine::Get().GetSceneHandler().LoadScene("Scenes/SC_NetworkingScene.json");
+	myClient.SetUsername(clientNames[Utilities::RandomInRange(0, 9)]);
 	myClient.ConnectClient("");
 
 	Engine::Get().GetInputHandler().RegisterBinaryAction("ToggleLerp", Keys::SPACE, GenericInput::ActionType::Clicked);
@@ -40,10 +44,35 @@ void NetworkClient::InitializeApplication()
 			ImGui::Text("Ping: %.0f ms", myClient.GetRTT() * 1000.0f);
 
 			ImGui::Spacing();
-			ImGui::Text("Press SPACE to toggle movement lerping");
+			bool toggleLerp = myClient.GetIsLerpingPositions();
+			ImGui::Checkbox("Toggle Object Position Lerp", &toggleLerp);
+			myClient.ToggleLerpPositions(toggleLerp);
 
-			ImGui::End();
+			ImGui::Spacing();
+			if (ImGui::BeginChild("GuaranteedMessages"))
+			{
+				//if (ImGui::BeginTable("GM_Table", 3))
+				//{
+				//	for (auto& [id, data] : myClient.GetGuaranteedMessageData())
+				//	{
+				//		ImGui::TableSetColumnIndex(0);
+				//		ImGui::TableHeader("GMID");
+				//		ImGui::Text("%i", id);
+				//		ImGui::TableSetColumnIndex(1);
+				//		ImGui::TableHeader("Attempts");
+				//		ImGui::Text("%i", data.myAttempts);
+				//		ImGui::TableSetColumnIndex(2);
+				//		ImGui::TableHeader("Message Type");
+				//		ImGui::Text("%i", data.myGuaranteedMessageBuffer.GetBuffer()[0]);
+				//		ImGui::TableNextRow();
+				//	}
+
+				//}
+				//ImGui::EndTable();
+			}
+			ImGui::EndChild();
 		}
+		ImGui::End();
 	});
 }
 

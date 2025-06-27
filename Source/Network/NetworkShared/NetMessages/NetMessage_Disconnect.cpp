@@ -14,7 +14,7 @@ void NetMessage_Disconnect::Serialize(NetBuffer& aBuffer)
 void NetMessage_Disconnect::Deserialize(NetBuffer& aBuffer)
 {
 	NetMessage::Deserialize(aBuffer);
-	char buff[DEFAULT_BUFLEN]{ 0 };
+	char buff[NetworkDefines::defaultBufferSize]{ 0 };
 	aBuffer.ReadData(buff);
 	myUsername = std::string(buff);
 }
