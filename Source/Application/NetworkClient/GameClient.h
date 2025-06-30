@@ -115,11 +115,11 @@ private:
 
     // Object Position Lerping
     std::unordered_map<unsigned, Utilities::CircularArray<PositionData, 16>> myObjectIDPositionHistory;
-    bool myShouldLerpPositions = true;
+    bool myShouldLerpPositions = false;
     // --
 
     // Guaranteed Message Handling
-    int myCurrentGuaranteedMessageID = 0;
+    int myCurrentGuaranteedMessageID = 1;
     std::unordered_map<int, GuaranteedMessageData> myGuaranteedMessageIDToData;
     std::vector<int> myAcknowledgedMessageIDs;
     [[nodiscard("You need to use the returned message ID to add the buffer to myGuaranteedMessageIDToData")]] int CreateNewGuaranteedMessage(GuaranteedNetMessage* aGuaranteedMessage);

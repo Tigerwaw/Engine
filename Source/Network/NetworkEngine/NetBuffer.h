@@ -6,7 +6,6 @@
 class NetBuffer
 {
 public:
-	void ResetBuffer();
 	const char* GetBuffer() const { return myBuffer; }
 	char* GetBuffer() { return myBuffer; }
 	int GetSize() const { return myReadWriteIndex; }

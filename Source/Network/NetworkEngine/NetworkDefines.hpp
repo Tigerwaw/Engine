@@ -1,18 +1,18 @@
 #pragma once
-#define DEBUG_SENT_MESSAGE_TYPE
-#define DEBUG_RECEIVED_MESSAGE_TYPE
-#define DEBUG_CREATE_GUARANTEED_MESSAGE
-#define DEBUG_SEND_GUARANTEED_MESSAGE
-#define DEBUG_ACKNOWLEDGED_MESSAGE
+//#define DEBUG_SENT_MESSAGE_TYPE
+//#define DEBUG_RECEIVED_MESSAGE_TYPE
+//#define DEBUG_CREATE_GUARANTEED_MESSAGE
+//#define DEBUG_SEND_GUARANTEED_MESSAGE
+//#define DEBUG_ACKNOWLEDGED_MESSAGE
 #define DEBUG_ACCEPT_HANDSHAKE
+#define DEBUG_ESTABLISHED_HANDSHAKE
+#define DEBUG_ESTABLISHED_CONNECTION
 #define DEBUG_ADD_CLIENT
 #define DEBUG_REMOVE_CLIENT
 #define DEBUG_CLIENT_DISCONNECTED
 #define DEBUG_ATTEMPTING_CONNECT
 #define DEBUG_ATTEMPTING_DISCONNECT
 //#define DEBUG_SEND_POSITION
-#define DEBUG_ESTABLISHED_HANDSHAKE
-#define DEBUG_ESTABLISHED_CONNECTION
 
 namespace NetworkDefines
 {
@@ -35,6 +35,6 @@ namespace NetworkDefines
 
 	constexpr int defaultBufferSize = 512;
 	constexpr float guaranteedMessageTimeout = 1.0f;
-	constexpr int guaranteedMesssageMaxTimeouts = 3;
+	constexpr int guaranteedMessageMaxTimeouts = 3;
 	constexpr float networkStatsUpdateRate = 1.0f;
 }

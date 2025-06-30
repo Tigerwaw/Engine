@@ -50,20 +50,20 @@ void GameClient::SetUsername(const char* aUsername)
 
 void GameClient::Update()
 {
-    if (myAttemptToConnect)
-    {
-        TryConnect();
-    }
-
-    if (myShouldReceive)
-    {
-        Receive();
-    }
-
     std::chrono::duration<float> timeSinceLastTick = std::chrono::system_clock::now() - myLastTickTimestamp;
     if (timeSinceLastTick.count() > (1.0f / NetworkDefines::Client::tickRate))
     {
         myLastTickTimestamp = std::chrono::system_clock::now();
+
+        if (myAttemptToConnect)
+        {
+            TryConnect();
+        }
+
+        if (myShouldReceive)
+        {
+            Receive();
+        }
 
         if (myHasEstablishedHandshake && myHasEstablishedConnection)
         {
@@ -78,12 +78,13 @@ void GameClient::Update()
 
 void GameClient::Receive()
 {
-    sockaddr_in otherAddress = {};
-    NetBuffer receiveBuffer;
-    int currentMessagesHandled = 0;
-    while (int bytesReceived = myComm.ReceiveData(receiveBuffer, otherAddress) > 0 && currentMessagesHandled < NetworkDefines::Client::maxMessagesHandledPerTick)
+    for (size_t i = 0; i < NetworkDefines::Client::maxMessagesHandledPerTick; i++)
     {
-        ++currentMessagesHandled;
+        sockaddr_in otherAddress = {};
+        NetBuffer receiveBuffer;
+
+        int bytesReceived = myComm.ReceiveData(receiveBuffer, otherAddress);
+        if (bytesReceived <= 0) break;
 
         myDataReceived += bytesReceived;
         NetMessage* receivedMessage = ReceiveMessage(receiveBuffer);
@@ -110,8 +111,6 @@ void GameClient::Receive()
             HandleMessage(receivedMessage);
             delete receivedMessage;
         }
-
-        receiveBuffer.ResetBuffer();
     }
 }
 
@@ -195,6 +194,7 @@ void GameClient::HandleMessage(NetMessage* aMessage)
 bool GameClient::HandleGuaranteedMessage(GuaranteedNetMessage* aMessage)
 {
     int id = aMessage->GetGuaranteedMessageID();
+    assert(id != 0 && "Guaranteed Message ID should never be 0, something weird is happening!\n");
 
     AckNetMessage msg;
     msg.SetGuaranteedMessageID(id);
@@ -341,10 +341,10 @@ void GameClient::HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMess
             go->AddComponent<Controller>(250.0f, 1.0f);
             myPlayerCharacter = go;
         }
-        else
-        {
-            model->SetActive(false);
-        }
+        //else
+        //{
+        //    model->SetActive(false);
+        //}
     }
     else
     {
@@ -352,7 +352,7 @@ void GameClient::HandleMessage_CreateCharacter(NetMessage_CreateCharacter& aMess
 
         auto model = go->AddComponent<AnimatedModel>(AssetManager::Get().GetAsset<MeshAsset>("Assets/SK_C_TGA_Bro.fbx")->mesh, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_ColorBlue.json")->material);
         model->AddAnimationToLayer("Idle", AssetManager::Get().GetAsset<AnimationAsset>("Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx")->animation, "", true);
-        model->SetActive(false);
+        //model->SetActive(false);
     }
 
     Engine::Get().GetSceneHandler().Instantiate(go);
@@ -365,8 +365,11 @@ void GameClient::HandleMessage_RemoveCharacter(NetMessage_RemoveCharacter& aMess
     {
         Engine::Get().GetSceneHandler().Destroy(go);
     }
-
-    myObjectIDPositionHistory.erase(aMessage.GetNetworkID());
+    
+    if (myObjectIDPositionHistory.contains(aMessage.GetNetworkID()))
+    {
+        myObjectIDPositionHistory.erase(aMessage.GetNetworkID());
+    }
 }
 
 void GameClient::HandleMessage_Position(NetMessage_Position& aMessage)
@@ -385,10 +388,10 @@ void GameClient::HandleMessage_Position(NetMessage_Position& aMessage)
         {
             go->GetComponent<Transform>()->SetTranslation(aMessage.GetPosition());
 
-            if (myPlayerCharacter)
-            {
-                go->GetComponent<AnimatedModel>()->SetActive((myPlayerCharacter->GetComponent<Transform>()->GetTranslation(true) - aMessage.GetPosition()).LengthSqr() < 500.0f * 500.0f);
-            }
+            //if (myPlayerCharacter)
+            //{
+            //    go->GetComponent<AnimatedModel>()->SetActive((myPlayerCharacter->GetComponent<Transform>()->GetTranslation(true) - aMessage.GetPosition()).LengthSqr() < 500.0f * 500.0f);
+            //}
         }
     }
 }
@@ -461,7 +464,7 @@ void GameClient::UpdateGuaranteedMessages()
         std::chrono::duration<float> elapsedTime = std::chrono::system_clock::now() - guaranteedMessageData.myLastSentTimestamp;
         if (elapsedTime.count() > NetworkDefines::guaranteedMessageTimeout)
         {
-            if (guaranteedMessageData.myAttempts > NetworkDefines::guaranteedMesssageMaxTimeouts)
+            if (guaranteedMessageData.myAttempts > NetworkDefines::guaranteedMessageMaxTimeouts)
             {
                 SendDisconnectMessage();
                 messageIDsToRemove[++currentIndex] = guaranteedMessageID;
@@ -493,14 +496,21 @@ void GameClient::UpdateObjectPositions()
 {
     if (!myShouldLerpPositions) return;
 
-    for (auto& [clientID, positionDataArray] : myObjectIDPositionHistory)
+    std::array<int, 10> clientIDsToRemove = {};
+    int currentIndex = 0;
+
+    for (auto& [networkID, positionDataArray] : myObjectIDPositionHistory)
     {
-        auto go = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(clientID);
-        if (!go) continue;
+        auto go = Engine::Get().GetSceneHandler().FindGameObjectByNetworkID(networkID);
+        if (!go)
+        {
+            clientIDsToRemove[++currentIndex] = networkID;
+            continue;
+        }
 
         // Hide rendering of an object if we haven't received a position message for them in the last 3 seconds.
-        std::chrono::duration<float> timeSinceLastPosition = std::chrono::system_clock::now() - positionDataArray.Peek_Latest().serverTimestamp;
-        go->GetComponent<AnimatedModel>()->SetActive(timeSinceLastPosition.count() < 3.0f);
+        //std::chrono::duration<float> timeSinceLastPosition = std::chrono::system_clock::now() - positionDataArray.Peek_Latest().serverTimestamp;
+        //go->GetComponent<AnimatedModel>()->SetActive(timeSinceLastPosition.count() < 3.0f);
 
         if (positionDataArray.Size() >= 2)
         {
@@ -519,6 +529,14 @@ void GameClient::UpdateObjectPositions()
 
             Math::Vector3f lerpedPosition = Math::Vector3f::Lerp(lastPos.position, nextPos.position, t);
             go->GetComponent<Transform>()->SetTranslation(lerpedPosition);
+        }
+    }
+
+    for (auto& clientIDToRemove : clientIDsToRemove)
+    {
+        if (myObjectIDPositionHistory.contains(clientIDToRemove))
+        {
+            myObjectIDPositionHistory.erase(clientIDToRemove);
         }
     }
 }

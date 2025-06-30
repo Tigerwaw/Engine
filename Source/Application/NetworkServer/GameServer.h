@@ -15,15 +15,30 @@ struct GuaranteedMessageData
     sockaddr_in myRecipientAddress;
 };
 
+struct AckMessageData
+{
+    int myMessageID;
+    sockaddr_in mySenderAddress;
+
+    bool operator==(const AckMessageData& other) const
+    {
+        return myMessageID == other.myMessageID && 
+            mySenderAddress.sin_addr.S_un.S_addr == other.mySenderAddress.sin_addr.S_un.S_addr &&
+            mySenderAddress.sin_port == other.mySenderAddress.sin_port;
+    }
+};
+
 struct NetInfo
 {
     std::string myUsername;
     sockaddr_in myAddress;
     unsigned myCharacterNetworkID;
-    Math::Vector3f myLastPosition;
     int myLastPingMessageID;
     std::chrono::system_clock::time_point myLastPingTime;
     float myRTT;
+    std::chrono::system_clock::time_point myLastNearUpdateTimestamp;
+    std::chrono::system_clock::time_point myLastMediumUpdateTimestamp;
+    std::chrono::system_clock::time_point myLastFarUpdateTimestamp;
 
     bool operator==(const sockaddr_in& other) const
     {
@@ -63,7 +78,7 @@ public:
 protected:
     void Receive();
     NetMessage* ReceiveMessage(const NetBuffer& aBuffer) const;
-    void HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress, const int aBytesReceived);
+    void HandleMessage(NetMessage* aMessage, const sockaddr_in& aAddress);
     bool HandleGuaranteedMessage(GuaranteedNetMessage* aMessage, const sockaddr_in& aAddress);
     void HandleAckMessage(AckNetMessage* aMessage, const sockaddr_in& aAddress);
 
@@ -103,6 +118,9 @@ protected:
 
     void SendTestMessage();
 
+    void InitializeGrid();
+    Math::Vector2<int> GetGridCell(const Math::Vector3f& aPosition) const;
+
 private:
     Communicator myComm;
     std::vector<NetInfo> myClients;
@@ -115,6 +133,7 @@ private:
     std::chrono::system_clock::time_point myLastSpawnTimestamp;
     std::vector<std::shared_ptr<GameObject>> myObjects;
     std::vector<std::shared_ptr<GameObject>> myPlayers;
+    std::array<std::array<Math::AABB3D<float>, 2>, 2> myGrid;
     // --
 
     // Network Stats
@@ -128,9 +147,9 @@ private:
     // --
 
     // Guaranteed Message Handling
-    int myGuaranteedMessageID = 1;
+    int myCurrentGuaranteedMessageID = 1;
     std::unordered_map<int, GuaranteedMessageData> myGuaranteedMessageIDToData;
-    std::vector<int> myAcknowledgedMessageIDs;
+    std::vector<AckMessageData> myAcknowledgedMessageIDs;
     [[nodiscard("You need to use the returned message ID to add the buffer to myGuaranteedMessageIDToData")]] int CreateNewGuaranteedMessage(GuaranteedNetMessage* aGuaranteedMessage, const NetInfo& aClientNetInfo);
     // --
 };
