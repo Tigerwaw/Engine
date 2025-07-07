@@ -25,6 +25,8 @@ public:
 	float GetFarPlane() const { return myFarPlane; }
 	float GetHorizontalFOV() const { return myHFOV; }
 	Math::Vector2f GetViewportDimensions() const { return myViewportDimensions; }
+	void SetAsMainCamera(bool aIsMainCamera) { myIsMainCamera = aIsMainCamera; }
+	bool IsMainCamera() const { return myIsMainCamera; }
 
 	const std::array<Math::Vector3f, 8>& GetFrustumCorners() const { return myFrustumCorners; }
 	// Get Frustum Plane Volume in object space (Leave arguments empty to get in world space)
@@ -35,6 +37,7 @@ public:
 	bool Deserialize(nl::json& aJsonObject) override;
 
 protected:
+	bool myIsMainCamera = false;
 	Math::Matrix4x4f myProjectionMatrix;
 	std::array<Math::Vector3f, 8> myFrustumCorners;
 	float myNearPlane = 0;

@@ -8,7 +8,6 @@
 #include "ComponentSystem/Components/Graphics/Camera.h"
 #include "ComponentSystem/Components/Graphics/Model.h"
 #include "ComponentSystem/Components/Graphics/AnimatedModel.h"
-#include "ComponentSystem/Components/Graphics/DebugModel.h"
 #include "ComponentSystem/GameObject.h"
 #include "ComponentSystem/Components/Transform.h"
 #include "Math/MathConstants.hpp"
@@ -100,13 +99,6 @@ void DebugDrawer::DrawBoundingBox(std::shared_ptr<Model> aModel, Math::Vector4f 
 }
 
 void DebugDrawer::DrawBoundingBox(std::shared_ptr<AnimatedModel> aModel, Math::Vector4f aColor)
-{
-    Math::Matrix4x4f objectMatrix = aModel->gameObject->GetComponent<Transform>()->GetWorldMatrix();
-    Math::AABB3D<float> boundingBox = aModel->GetBoundingBox();
-    DrawBoundingBox(boundingBox, objectMatrix, aColor);
-}
-
-void DebugDrawer::DrawBoundingBox(std::shared_ptr<DebugModel> aModel, Math::Vector4f aColor)
 {
     Math::Matrix4x4f objectMatrix = aModel->gameObject->GetComponent<Transform>()->GetWorldMatrix();
     Math::AABB3D<float> boundingBox = aModel->GetBoundingBox();

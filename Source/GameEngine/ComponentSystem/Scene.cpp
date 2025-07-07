@@ -7,7 +7,6 @@
 #include "ComponentSystem/Components/Transform.h"
 #include "ComponentSystem/Components/Graphics/Model.h"
 #include "ComponentSystem/Components/Graphics/AnimatedModel.h"
-#include "ComponentSystem/Components/Graphics/DebugModel.h"
 #include "ComponentSystem/Components/Graphics/Camera.h"
 #include "ComponentSystem/Components/Lights/AmbientLight.h"
 #include "ComponentSystem/Components/Lights/DirectionalLight.h"
@@ -121,28 +120,20 @@ void Scene::Instantiate(std::shared_ptr<GameObject> aGameObject)
 	else if (aGameObject->GetComponent<DirectionalLight>())
 	{
 		myDirectionalLight = aGameObject;
-#ifdef _DEBUG
-		myDirectionalLight->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/SM_DirectionalLightGizmo.fbx")->mesh);
-#endif
 	}
 	else if (aGameObject->GetComponent<PointLight>())
 	{
-#ifdef _DEBUG
-		aGameObject->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/SM_PointLightGizmo.fbx")->mesh);
-#endif
 		myPointLights.emplace_back(aGameObject);
 	}
 	else if (aGameObject->GetComponent<SpotLight>())
 	{
-#ifdef _DEBUG
-		aGameObject->AddComponent<DebugModel>(AssetManager::Get().GetAsset<MeshAsset>("EngineAssets/Models/SM_SpotLightGizmo.fbx")->mesh);
-#endif
 		mySpotLights.emplace_back(aGameObject);
 	}
-	else if (aGameObject->GetComponent<Camera>())
+	else if (auto cam = aGameObject->GetComponent<Camera>())
 	{
 		if (aGameObject->GetName() == "MainCamera")
 		{
+			cam->SetAsMainCamera(true);
 			myMainCamera = aGameObject;
 			Engine::Get().GetAudioEngine().SetListener(aGameObject);
 		}

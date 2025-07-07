@@ -20,7 +20,6 @@ void ModelViewer::InitializeApplication()
 {
 	myLogs.emplace_back("[LOG] Started ModelViewer");
 	GraphicsEngine::Get().RecalculateShadowFrustum = false;
-	GraphicsEngine::Get().DrawGizmos = true;
 	Engine::Get().GetSceneHandler().LoadScene("Scenes/SC_ModelViewerScene.json");
 	std::shared_ptr<GameObject> newGO = std::make_shared<GameObject>();
 	newGO->SetName("Model");

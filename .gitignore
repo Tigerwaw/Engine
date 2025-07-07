@@ -4,6 +4,7 @@
 *.vcxproj
 *.vcxproj.user
 *.vcxproj.filters
+.wpix
 Temp/**
 Bin/**
 Lib/**

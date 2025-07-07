@@ -108,7 +108,6 @@ void FeatureShowcase::InitializeApplication()
 			ImGui::Begin("FeatureShowcase", &open, ImGuiWindowFlags_NoSavedSettings);
 
 			ImGui::Checkbox("Use Viewculling", &GraphicsEngine::Get().UseViewCulling);
-			ImGui::Checkbox("Draw Gizmos", &GraphicsEngine::Get().DrawGizmos);
 			ImGui::Checkbox("Draw Bounding Boxes", &GraphicsEngine::Get().DrawBoundingBoxes);
 			ImGui::Checkbox("Draw Camera Frustums", &GraphicsEngine::Get().DrawCameraFrustums);
 			ImGui::Checkbox("Draw Colliders", &GraphicsEngine::Get().DrawColliders);
