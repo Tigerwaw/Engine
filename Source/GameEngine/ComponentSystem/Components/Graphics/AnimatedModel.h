@@ -61,7 +61,7 @@ public:
 
     void SetMaterialOnSlot(unsigned aSlot, std::shared_ptr<Material> aMaterial);
     std::shared_ptr<Material> GetMaterialOnSlot(unsigned aSlot) { return myMaterials[mySlotToIndex[aSlot]]; }
-    std::vector<std::shared_ptr<Material>> GetMaterials() { return myMaterials; }
+    const std::vector<std::shared_ptr<Material>>& GetMaterials() { return myMaterials; }
     const Math::AABB3D<float> GetBoundingBox() const;
 
     void PlayAnimation();
@@ -88,7 +88,7 @@ public:
     const bool IsLayerCurrentlyBlending(unsigned aLayerIndex = 0) const;
     const float GetCurrentBlendFactorOnLayer(unsigned aLayerIndex = 0) const;
 
-    std::array<Math::Matrix4x4f, 128> GetCurrentPose() { return myJointTransforms; }
+    const std::array<Math::Matrix4x4f, 128>& GetCurrentPose() const { return myJointTransforms; }
 
     void SetViewcull(bool aShouldViewcull) { myShouldViewcull = aShouldViewcull; }
     const bool GetShouldViewcull() const { return myShouldViewcull; }

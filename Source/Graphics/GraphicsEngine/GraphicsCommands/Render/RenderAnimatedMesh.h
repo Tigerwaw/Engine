@@ -19,6 +19,7 @@ public:
 	};
 
 	RenderAnimatedMesh(const AnimMeshRenderData& aModelData);
+	RenderAnimatedMesh(AnimMeshRenderData&& aModelData);
 	void Execute() override;
 	void Destroy() override;
 private:

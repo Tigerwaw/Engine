@@ -20,6 +20,7 @@ public:
 	};
 
 	RenderMesh(const RenderMeshData& aModelData);
+	RenderMesh(RenderMeshData&& aModelData);
 	void Execute() override;
 	void Destroy() override;
 private:

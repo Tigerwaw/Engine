@@ -22,7 +22,7 @@ public:
 
     void SetMaterialOnSlot(unsigned aSlot, std::shared_ptr<Material> aMaterial);
     std::shared_ptr<Material>& GetMaterialOnSlot(unsigned aSlot) { return myMaterials[mySlotToIndex[aSlot]]; }
-    std::vector<std::shared_ptr<Material>>& GetMaterials() { return myMaterials; }
+    const std::vector<std::shared_ptr<Material>>& GetMaterials() { return myMaterials; }
     const Math::AABB3D<float> GetBoundingBox() const { return myBoundingBox; }
 
     void SetViewcull(bool aShouldViewcull) { myShouldViewcull = aShouldViewcull; }

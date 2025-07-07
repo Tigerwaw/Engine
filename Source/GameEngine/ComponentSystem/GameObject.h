@@ -94,6 +94,8 @@ inline const bool GameObject::RemoveComponent()
 template<typename T>
 inline const std::shared_ptr<T> GameObject::GetComponent()
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(6), "Component System Get Component");
+
     for (auto& comp : myComponents)
     {
         std::shared_ptr<T> castedComp = std::dynamic_pointer_cast<T>(comp);

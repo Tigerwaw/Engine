@@ -19,6 +19,7 @@ public:
 	};
 
 	RenderInstancedMesh(const InstancedMeshRenderData& aInstancedModelData);
+	RenderInstancedMesh(InstancedMeshRenderData&& aInstancedModelData);
 	void Execute() override;
 	void Destroy() override;
 private:

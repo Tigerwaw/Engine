@@ -9,7 +9,14 @@
 
 RenderAnimatedMesh::RenderAnimatedMesh(const AnimMeshRenderData& aModelData)
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(6), "Graphics Command Copy Anim Mesh Data");
     myData = aModelData;
+}
+
+RenderAnimatedMesh::RenderAnimatedMesh(AnimMeshRenderData&& aModelData)
+{
+    PIXScopedEvent(PIX_COLOR_INDEX(6), "Graphics Command Move Anim Mesh Data");
+    myData = std::move(aModelData);
 }
 
 void RenderAnimatedMesh::Execute()

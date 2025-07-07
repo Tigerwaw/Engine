@@ -3,6 +3,7 @@
 #include <future>
 #include <chrono>
 #include "Asset.h"
+#include "WinPixEventRuntime/pix3.h"
 
 class AssetManager
 {
@@ -58,6 +59,7 @@ private:
 template<typename T>
 inline std::shared_ptr<T> AssetManager::GetAsset(const std::filesystem::path& aPath)
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(6), "AssetManager Get Asset");
 	std::shared_ptr<T> asset = nullptr;
 
 	if (myAssets.contains(aPath.stem()))

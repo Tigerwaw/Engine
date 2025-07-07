@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <memory>
 
+#include "WinPixEventRuntime/pix3.h"
 #include "GraphicsCommandBase.h"
 #include "LambdaGraphicsCommand.h"
 #include "Render/RenderMesh.h"
@@ -58,6 +59,7 @@ public:
 	std::enable_if_t<std::is_base_of_v<GraphicsCommandBase, CommandClass>>
 	Enqueue(Args... args)
 	{
+		PIXScopedEvent(PIX_COLOR_INDEX(6), "GraphicsEngine Queue Command");
 		const size_t commandSize = sizeof(CommandClass);
 		if (myCursor + commandSize > mySize)
 		{

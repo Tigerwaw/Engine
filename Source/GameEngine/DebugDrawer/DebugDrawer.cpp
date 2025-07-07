@@ -144,8 +144,7 @@ void DebugDrawer::DrawBoundingSphere(Math::Sphere<float> aSphere, Math::Matrix4x
 
 void DebugDrawer::DrawBoundingBox(Math::AABB3D<float> aAABB, Math::Matrix4x4f aWorldMatrix, Math::Vector4f aColor)
 {
-    //aAABB = aAABB.GetAABBinNewSpace(aWorldMatrix);
-    std::vector<Math::Vector3f> corners = aAABB.GetCorners();
+    std::array<Math::Vector3f, 8> corners = aAABB.GetCorners();
 
     for (auto& corner : corners)
     {

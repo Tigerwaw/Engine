@@ -12,6 +12,11 @@ RenderInstancedMesh::RenderInstancedMesh(const InstancedMeshRenderData& aInstanc
     myData = aInstancedModelData;
 }
 
+RenderInstancedMesh::RenderInstancedMesh(InstancedMeshRenderData&& aInstancedModelData)
+{
+    myData = std::move(aInstancedModelData);
+}
+
 void RenderInstancedMesh::Execute()
 {
     if (!myData.mesh) return;

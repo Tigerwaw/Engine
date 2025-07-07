@@ -91,13 +91,13 @@ void Camera::InitOrtographicProjection(float aLeft, float aRight, float aTop, fl
 
 Math::PlaneVolume<float> Camera::GetFrustumPlaneVolume(Math::Matrix4x4f aToObjectSpace)
 {
-	std::vector<Math::Vector3f> corners;
-	
+	PIXScopedEvent(PIX_COLOR_INDEX(6), "Get Frustum Plane Volume");
 	Math::Matrix4x4f matrix = gameObject->GetComponent<Transform>()->GetWorldMatrix() * aToObjectSpace;
-
-	for (auto& corner : myFrustumCorners)
+	
+	std::array<Math::Vector3f, 8> corners;
+	for (int i = 0; i < myFrustumCorners.size(); i++)
 	{
-		corners.emplace_back(Math::ToVector3(Math::ToVector4(corner, 1.0f) * matrix));
+		corners[i] = Math::ToVector3<float>(Math::ToVector4<float>(myFrustumCorners[i], 1.0f) * matrix);
 	}
 
 	Math::PlaneVolume<float> volume;
@@ -113,13 +113,14 @@ Math::PlaneVolume<float> Camera::GetFrustumPlaneVolume(Math::Matrix4x4f aToObjec
 	return volume;
 }
 
-bool Camera::GetViewcullingIntersection(std::shared_ptr<Transform> aObjectTransform, Math::AABB3D<float> aObjectAABB)
+bool Camera::GetViewcullingIntersection(std::shared_ptr<Transform> aObjectTransform, const Math::AABB3D<float>& aObjectAABB)
 {
 	std::shared_ptr<Transform> goTransform = gameObject->GetComponent<Transform>();
 	Math::Matrix4x4f objectMatrix = aObjectTransform->GetWorldMatrix();
 
 	if (goTransform->IsScaled())
 	{
+		PIXScopedEvent(PIX_COLOR_INDEX(6), "Matrix Get Slow Inverse");
 		objectMatrix = objectMatrix.GetInverse();
 	}
 	else
@@ -127,6 +128,7 @@ bool Camera::GetViewcullingIntersection(std::shared_ptr<Transform> aObjectTransf
 		objectMatrix = objectMatrix.GetFastInverse();
 	}
 
+	PIXScopedEvent(PIX_COLOR_INDEX(6), "Plane Volume AABB Intersection");
 	return Math::IntersectionBetweenPlaneVolumeAABB(GetFrustumPlaneVolume(objectMatrix), aObjectAABB);
 }
 

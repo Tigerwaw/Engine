@@ -12,6 +12,11 @@ RenderMesh::RenderMesh(const RenderMeshData& aModelData)
     myData = aModelData;
 }
 
+RenderMesh::RenderMesh(RenderMeshData&& aModelData)
+{
+    myData = std::move(aModelData);
+}
+
 void RenderMesh::Execute()
 {
     if (!myData.mesh) return;

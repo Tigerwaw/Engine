@@ -15,6 +15,9 @@ Application::~Application()
 
 void Application::Run()
 {
+	HRESULT result = SetThreadDescription(GetCurrentThread(), L"MainThread");
+	if (FAILED(result)) return;
+
 	Engine::Initialize();
 	Engine& engine = Engine::Get();
 

@@ -273,7 +273,7 @@ namespace Math
 	}
 
 	template<class T>
-	bool IntersectionBetweenPlaneVolumeAABB(const PlaneVolume<T>& aPlaneVolume, const AABB3D<T> aBoundingBox)
+	bool IntersectionBetweenPlaneVolumeAABB(const PlaneVolume<T>& aPlaneVolume, const AABB3D<T>& aBoundingBox)
 	{
 		for (const Plane<T>& plane : aPlaneVolume.GetPlanes())
 		{

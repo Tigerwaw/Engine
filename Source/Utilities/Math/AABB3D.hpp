@@ -28,7 +28,7 @@ namespace Math
 		bool IsInside(const Vector3<T>& aPosition) const;
 		const Vector3<T> GetMin() const;
 		const Vector3<T> GetMax() const;
-		const std::vector<Vector3<T>> GetCorners() const;
+		const std::array<Math::Vector3<T>, 8> GetCorners() const;
 		const Vector3<T> GetCenter() const;
 		const Vector3<T> GetExtents() const;
 	private:
@@ -140,18 +140,18 @@ namespace Math
 	}
 
 	template<class T>
-	inline const std::vector<Vector3<T>> AABB3D<T>::GetCorners() const
+	inline const std::array<Math::Vector3<T>, 8> AABB3D<T>::GetCorners() const
 	{
-		std::vector<Vector3<T>> corners;
-		corners.emplace_back(minPoint);
-		corners.emplace_back(Vector3<T>(maxPoint.x, minPoint.y, minPoint.z));
-		corners.emplace_back(Vector3<T>(maxPoint.x, minPoint.y, maxPoint.z));
-		corners.emplace_back(Vector3<T>(minPoint.x, minPoint.y, maxPoint.z));
+		std::array<Math::Vector3<T>, 8> corners;
+		corners[0] = minPoint;
+		corners[1] = Vector3<T>(maxPoint.x, minPoint.y, minPoint.z);
+		corners[2] = Vector3<T>(maxPoint.x, minPoint.y, maxPoint.z);
+		corners[3] = Vector3<T>(minPoint.x, minPoint.y, maxPoint.z);
 
-		corners.emplace_back(Vector3<T>(minPoint.x, maxPoint.y, minPoint.z));
-		corners.emplace_back(Vector3<T>(maxPoint.x, maxPoint.y, minPoint.z));
-		corners.emplace_back(maxPoint);
-		corners.emplace_back(Vector3<T>(minPoint.x, maxPoint.y, maxPoint.z));
+		corners[4] = Vector3<T>(minPoint.x, maxPoint.y, minPoint.z);
+		corners[5] = Vector3<T>(maxPoint.x, maxPoint.y, minPoint.z);
+		corners[6] = maxPoint;
+		corners[7] = Vector3<T>(minPoint.x, maxPoint.y, maxPoint.z);
 		return corners;
 	}
 

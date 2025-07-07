@@ -9,6 +9,9 @@ class AmbientLight;
 class DirectionalLight;
 class PointLight;
 class SpotLight;
+class Model;
+class AnimatedModel;
+class InstancedModel;
 class ParticleSystem;
 class TrailSystem;
 struct PipelineStateObject;
@@ -35,7 +38,10 @@ private:
         std::shared_ptr<DirectionalLight> directionalLight;
         std::vector<std::shared_ptr<PointLight>> pointLights;
         std::vector<std::shared_ptr<SpotLight>> spotLights;
-        std::vector<std::shared_ptr<GameObject>> castShadowsObjects;
+
+        std::vector<std::shared_ptr<Model>> castShadowsModels;
+        std::vector<std::shared_ptr<AnimatedModel>> castShadowsAnimModels;
+        std::vector<std::shared_ptr<InstancedModel>> castShadowsInstancedModels;
 
         std::vector<std::shared_ptr<GameObject>> drawDeferred;
         std::vector<std::shared_ptr<GameObject>> drawForward;
@@ -50,12 +56,11 @@ private:
     SceneRenderData AssembleLists(Scene& aScene);
     void RenderDebug(SceneRenderData& aRenderData);
     void RenderDeferred(SceneRenderData& aRenderData);
+
     void QueueDeferredObjects(SceneRenderData& aRenderData);
     void QueueForwardObjects(SceneRenderData& aRenderData);
-
     void QueueParticleSystems(SceneRenderData& aRenderData);
     void QueueTrailSystems(SceneRenderData& aRenderData);
-
     void QueueShadowmapTextureResources(SceneRenderData& aRenderData);
     void QueueUpdateLightBuffer(SceneRenderData& aRenderData);
     void QueueSpotLightShadows(SceneRenderData& aRenderData);
@@ -66,10 +71,10 @@ private:
     void QueueObjectDebug(SceneRenderData& aRenderData);
     void QueueDebugLines(SceneRenderData& aRenderData);
 
-    bool IsInsideFrustum(std::shared_ptr<Camera> aRenderCamera, std::shared_ptr<Transform> aObjectTransform, Math::AABB3D<float> aObjectAABB);
-    bool IsInsideRadius(std::shared_ptr<PointLight> aPointLight, std::shared_ptr<Transform> aObjectTransform, Math::AABB3D<float> aObjectAABB);
+    bool IsInsideFrustum(std::shared_ptr<Camera> aRenderCamera, std::shared_ptr<Transform> aObjectTransform, const Math::AABB3D<float>& aObjectAABB);
+    bool IsInsideRadius(std::shared_ptr<PointLight> aPointLight, std::shared_ptr<Transform> aObjectTransform, const Math::AABB3D<float>& aObjectAABB);
 
-    void UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject);
+    void UpdateBoundingBox(std::shared_ptr<Transform> aTransform, const Math::AABB3D<float>& aBoundingBox);
     Math::AABB3D<float> myVisibleObjectsBB;
 
     // TEMP
