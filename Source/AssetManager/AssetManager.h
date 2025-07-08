@@ -32,7 +32,7 @@ public:
 	bool RegisterFontAsset(const std::filesystem::path& aPath);
 	bool RegisterNavMeshAsset(const std::filesystem::path& aPath);
 	std::filesystem::path& GetContentRoot() { return myContentRoot; }
-	std::filesystem::path MakeRelative(const std::filesystem::path& aPath);
+	std::filesystem::path MakeRelative(const std::filesystem::path& aPath) const;
 	bool DoesAssetExist(const std::filesystem::path& aPath);
 private:
 	AssetManager();

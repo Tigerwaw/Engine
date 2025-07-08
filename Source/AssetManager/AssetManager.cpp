@@ -872,7 +872,7 @@ bool AssetManager::ValidateAsset(const std::filesystem::path& aPath)
     return true;
 }
 
-std::filesystem::path AssetManager::MakeRelative(const std::filesystem::path& aPath)
+std::filesystem::path AssetManager::MakeRelative(const std::filesystem::path& aPath) const
 {
     std::filesystem::path targetPath = relative(aPath, myContentRoot);
     targetPath = myContentRoot / targetPath;

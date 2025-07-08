@@ -544,7 +544,6 @@ void RenderAssembler::QueueDeferredObjects(SceneRenderData& aRenderData)
 				data.materialList = model->GetMaterials();
 				data.customShaderParams_1 = model->GetCustomShaderData_1();
 				data.customShaderParams_2 = model->GetCustomShaderData_2();
-				data.psoOverride = AssetManager::Get().GetAsset<PSOAsset>("PSO_Deferred")->pso;
 
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(std::move(data));
 			}
@@ -563,7 +562,6 @@ void RenderAssembler::QueueDeferredObjects(SceneRenderData& aRenderData)
 				data.transform = transform->GetWorldMatrix();
 				data.materialList = animModel->GetMaterials();
 				data.jointTransforms = animModel->GetCurrentPose();
-				data.psoOverride = AssetManager::Get().GetAsset<PSOAsset>("PSO_Deferred")->pso;
 
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(std::move(data));
 			}
@@ -583,7 +581,6 @@ void RenderAssembler::QueueDeferredObjects(SceneRenderData& aRenderData)
 				data.materialList = instancedModel->GetMaterials();
 				data.instanceBuffer = &instancedModel->GetInstanceBuffer();
 				data.meshCount = instancedModel->GetMeshCount();
-				data.psoOverride = AssetManager::Get().GetAsset<PSOAsset>("PSO_Deferred")->pso;
 
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(std::move(data));
 			}

@@ -1,5 +1,5 @@
 {
-  "PSO": "PSO_PBR",
+  "PSO": "PSO_Deferred",
   "AlbedoTint": {
     "R": 0.0,
     "G": 0.0,

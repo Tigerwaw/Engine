@@ -66,7 +66,7 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle, Math::Vector2f aResolution, 
 		}
 
 		defaultPSO.PixelShader = std::make_shared<Shader>();
-		if (!rhi.LoadShaderFromFilePath("Default_PS", *defaultPSO.PixelShader, root + L"EngineAssets/Shaders/SH_PBRMesh_PS.cso"))
+		if (!rhi.LoadShaderFromFilePath("Default_PS", *defaultPSO.PixelShader, root + L"EngineAssets/Shaders/SH_Deferred_PS.cso"))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to load default pixel shader!");
 			return false;

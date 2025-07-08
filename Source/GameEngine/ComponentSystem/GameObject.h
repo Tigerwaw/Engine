@@ -59,7 +59,7 @@ private:
 template<class T, typename... Args>
 const std::shared_ptr<T> GameObject::AddComponent(Args&&... args)
 {
-    std::shared_ptr<Component> newComponent = myComponents.emplace_back(std::make_shared<T>(args...));
+    std::shared_ptr<Component> newComponent = myComponents.emplace_back(std::make_shared<T>(std::forward<Args>(args)...));
 
     if (newComponent.get())
     {
