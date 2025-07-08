@@ -408,12 +408,17 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
             std::filesystem::path texName = texPath.stem();
             if (myAssets.find(texName) == myAssets.end())
             {
-                textureExists = RegisterTextureAsset(myContentRoot / texPath);
+                RegisterTextureAsset(myContentRoot / texPath);
+                textureExists = myAssets.find(texName) != myAssets.end();
             }
 
             if (textureExists)
             {
                 asset->material->SetTextureOnSlot(textureIndex, GetAsset<TextureAsset>(texName)->texture);
+            }
+            else
+            {
+                LOG(LogAssetManager, Error, "Texture Asset {} could not be found!", texPath.string());
             }
 
             textureIndex++;
@@ -860,7 +865,7 @@ bool AssetManager::ValidateAsset(const std::filesystem::path& aPath)
     std::filesystem::path assetPath = MakeRelative(aPath);
     if (myAssets.find(assetPath.stem()) != myAssets.end())
     {
-        //LOG(LogAssetManager, Warning, "Asset with name '{}' is already registered!", aPath.string());
+        //LOG(LogAssetManager, Warning, "Asset with name '{}' is already registered!", assetPath.stem().string());
         return false;
     }
 
