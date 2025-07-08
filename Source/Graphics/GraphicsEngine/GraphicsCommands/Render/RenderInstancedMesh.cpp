@@ -22,7 +22,6 @@ RenderInstancedMesh::RenderInstancedMesh(InstancedMeshRenderData&& aInstancedMod
 void RenderInstancedMesh::Execute()
 {
     PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderInstancedMesh Execute");
-    if (!myData.mesh) return;
 
     ObjectBuffer objBufferData;
     objBufferData.World = myData.transform;
@@ -31,20 +30,11 @@ void RenderInstancedMesh::Execute()
     objBufferData.isInstanced = true;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
-    if (myData.psoOverride)
-    {
-        GraphicsEngine::Get().ChangePipelineState(myData.psoOverride);
-        GraphicsEngine::Get().RenderInstancedMesh(*myData.mesh, myData.meshCount, myData.materialList, *myData.instanceBuffer, true);
-    }
-    else
-    {
-        GraphicsEngine::Get().RenderInstancedMesh(*myData.mesh, myData.meshCount, myData.materialList, *myData.instanceBuffer);
-    }
+    GraphicsEngine::Get().RenderInstancedMesh(*myData.mesh, myData.meshCount, myData.materialList, *myData.instanceBuffer);
 }
 
 void RenderInstancedMesh::Destroy()
 {
     myData.mesh = nullptr;
-    myData.psoOverride = nullptr;
     myData.materialList.~vector();
 }

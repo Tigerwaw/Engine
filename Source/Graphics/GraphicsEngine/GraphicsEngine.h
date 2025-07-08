@@ -161,8 +161,10 @@ public:
 	void SetRenderTargets(const std::vector<std::shared_ptr<Texture>>& aRenderTargets, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
 
 	void RenderQuad();
-	void RenderMesh(const Mesh& aMesh, const std::vector<std::shared_ptr<Material>>& aMaterialList, bool aOverrideMaterialPSO = false);
-	void RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, const std::vector<std::shared_ptr<Material>>& aMaterialList, DynamicVertexBuffer& aInstanceBuffer, bool aOverrideMaterialPSO = false);
+	void RenderMesh(const Mesh& aMesh, const std::vector<std::shared_ptr<Material>>& aMaterialList);
+	void RenderMeshShadow(const Mesh& aMesh);
+	void RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, const std::vector<std::shared_ptr<Material>>& aMaterialList, DynamicVertexBuffer& aInstanceBuffer);
+	void RenderInstancedMeshShadow(const Mesh& aMesh, unsigned aMeshCount, DynamicVertexBuffer& aInstanceBuffer);
 	void RenderSprite();
 	void RenderText(const Text& aText);
 	void RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsigned aLineAmount);

@@ -373,7 +373,7 @@ void GraphicsEngine::RenderQuad()
 	ClearTextureResource_PS(127);
 }
 
-void GraphicsEngine::RenderMesh(const Mesh& aMesh, const std::vector<std::shared_ptr<Material>>& aMaterialList, bool aOverrideMaterialPSO)
+void GraphicsEngine::RenderMesh(const Mesh& aMesh, const std::vector<std::shared_ptr<Material>>& aMaterialList)
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Mesh");
 	myRHI->SetVertexBuffer(aMesh.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
@@ -389,13 +389,7 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, const std::vector<std::shared
 			MaterialBuffer matBufferData = aMaterialList[element.MaterialIndex]->MaterialSettings();
 			UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, matBufferData);
 
-			if (!aOverrideMaterialPSO)
-			{
-				if (aMaterialList[element.MaterialIndex]->GetPSO())
-				{
-					ChangePipelineState(aMaterialList[element.MaterialIndex]->GetPSO());
-				}
-			}
+			ChangePipelineState(aMaterialList[element.MaterialIndex]->GetPSO());
 
 			for (auto& [slot, texture] : aMaterialList[element.MaterialIndex]->GetTextures())
 			{
@@ -415,7 +409,21 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, const std::vector<std::shared
 	ClearTextureResource_PS(127);
 }
 
-void GraphicsEngine::RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, const std::vector<std::shared_ptr<Material>>& aMaterialList, DynamicVertexBuffer& aInstanceBuffer, bool aOverrideMaterialPSO)
+void GraphicsEngine::RenderMeshShadow(const Mesh& aMesh)
+{
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Mesh Shadow");
+	myRHI->SetVertexBuffer(aMesh.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
+	myRHI->SetIndexBuffer(aMesh.GetIndexBuffer());
+	myRHI->SetPrimitiveTopology(Topology::TRIANGLELIST);
+
+	for (const auto& element : aMesh.GetElements())
+	{
+		myRHI->DrawIndexed(element.IndexOffset, element.NumIndices);
+		myDrawcallAmount++;
+	}
+}
+
+void GraphicsEngine::RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, const std::vector<std::shared_ptr<Material>>& aMaterialList, DynamicVertexBuffer& aInstanceBuffer)
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Instanced Mesh");
 	std::vector<ID3D11Buffer*> buffers;
@@ -444,13 +452,7 @@ void GraphicsEngine::RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount,
 			MaterialBuffer matBufferData = aMaterialList[element.MaterialIndex]->MaterialSettings();
 			UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, matBufferData);
 
-			if (!aOverrideMaterialPSO)
-			{
-				if (aMaterialList[element.MaterialIndex]->GetPSO())
-				{
-					ChangePipelineState(aMaterialList[element.MaterialIndex]->GetPSO());
-				}
-			}
+			ChangePipelineState(aMaterialList[element.MaterialIndex]->GetPSO());
 
 			for (auto& [slot, texture] : aMaterialList[element.MaterialIndex]->GetTextures())
 			{
@@ -468,6 +470,33 @@ void GraphicsEngine::RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount,
 	}
 
 	ClearTextureResource_PS(127);
+}
+
+void GraphicsEngine::RenderInstancedMeshShadow(const Mesh& aMesh, unsigned aMeshCount, DynamicVertexBuffer& aInstanceBuffer)
+{
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Instanced Mesh Shadow");
+	std::vector<ID3D11Buffer*> buffers;
+	std::vector<unsigned> strides;
+	std::vector<unsigned> offsets;
+
+	buffers.emplace_back(*aMesh.GetVertexBuffer().GetAddressOf());
+	buffers.emplace_back(*aInstanceBuffer.GetVertexBuffer().GetAddressOf());
+
+	strides.emplace_back(myCurrentPSO->VertexStride);
+	strides.emplace_back(static_cast<unsigned>(sizeof(Math::Matrix4x4f)));
+
+	offsets.emplace_back(0);
+	offsets.emplace_back(0);
+
+	myRHI->SetVertexBuffers(buffers, strides, offsets);
+	myRHI->SetIndexBuffer(aMesh.GetIndexBuffer());
+	myRHI->SetPrimitiveTopology(Topology::TRIANGLELIST);
+
+	for (const auto& element : aMesh.GetElements())
+	{
+		myRHI->DrawIndexedInstanced(element.NumIndices, aMeshCount, element.IndexOffset, 0, 0);
+		myDrawcallAmount++;
+	}
 }
 
 void GraphicsEngine::RenderSprite()

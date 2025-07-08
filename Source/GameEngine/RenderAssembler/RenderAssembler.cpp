@@ -255,7 +255,6 @@ void RenderAssembler::RenderDebug(SceneRenderData& aRenderData)
 	frameBuffer.Resolution = Engine::Get().GetResolution();
 
 	gfxList.Enqueue<UpdateFrameBuffer>(std::move(frameBuffer));
-	std::shared_ptr<PipelineStateObject> pso = AssetManager::Get().GetAsset<PSOAsset>(gfx.DebugModeNames[static_cast<int>(gfx.CurrentDebugMode)])->pso;
 	gfxList.Enqueue<SetDefaultRenderTarget>();
 	QueueObjectDebug(aRenderData);
 
@@ -925,15 +924,11 @@ void RenderAssembler::QueueObjectShadows(SceneRenderData& aRenderData, std::shar
 			auto transform = model->gameObject->GetComponent<Transform>();
 			if (!model->GetShouldViewcull() || IsInsideFrustum(aRenderCamera, transform, model->GetBoundingBox()))
 			{
-				PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Mesh Data");
-				RenderMesh::RenderMeshData data;
+				PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Mesh Shadow Data");
+				RenderMeshShadow::RenderMeshShadowData data;
 				data.mesh = model->GetMesh();
 				data.transform = transform->GetWorldMatrix();
-				data.materialList = model->GetMaterials();
-				data.customShaderParams_1 = model->GetCustomShaderData_1();
-				data.customShaderParams_2 = model->GetCustomShaderData_2();
-				data.psoOverride = AssetManager::Get().GetAsset<PSOAsset>("PSO_Shadow")->pso;
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(std::move(data));
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMeshShadow>(std::move(data));
 			}
 		}
 	}
@@ -945,14 +940,12 @@ void RenderAssembler::QueueObjectShadows(SceneRenderData& aRenderData, std::shar
 			auto transform = animModel->gameObject->GetComponent<Transform>();
 			if (!animModel->GetShouldViewcull() || IsInsideFrustum(aRenderCamera, transform, animModel->GetBoundingBox()))
 			{
-				PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Anim Mesh Data");
-				RenderAnimatedMesh::AnimMeshRenderData data;
+				PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Anim Mesh Shadow Data");
+				RenderAnimatedMeshShadow::AnimMeshShadowRenderData data;
 				data.mesh = animModel->GetMesh();
 				data.transform = transform->GetWorldMatrix();
-				data.materialList = animModel->GetMaterials();
 				data.jointTransforms = animModel->GetCurrentPose();
-				data.psoOverride = AssetManager::Get().GetAsset<PSOAsset>("PSO_Shadow")->pso;
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(std::move(data));
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMeshShadow>(std::move(data));
 			}
 		}
 	}
@@ -964,15 +957,13 @@ void RenderAssembler::QueueObjectShadows(SceneRenderData& aRenderData, std::shar
 			auto transform = instancedModel->gameObject->GetComponent<Transform>();
 			if (!instancedModel->GetShouldViewcull() || IsInsideFrustum(aRenderCamera, transform, instancedModel->GetBoundingBox()))
 			{
-				PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Instanced Mesh Data");
-				RenderInstancedMesh::InstancedMeshRenderData data;
+				PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Instanced Mesh Shadow Data");
+				RenderInstancedMeshShadow::InstancedMeshShadowRenderData data;
 				data.mesh = instancedModel->GetMesh();
 				data.transform = transform->GetWorldMatrix();
-				data.materialList = instancedModel->GetMaterials();
 				data.instanceBuffer = &instancedModel->GetInstanceBuffer();
 				data.meshCount = instancedModel->GetMeshCount();
-				data.psoOverride = AssetManager::Get().GetAsset<PSOAsset>("PSO_Shadow")->pso;
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(std::move(data));
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMeshShadow>(std::move(data));
 			}
 		}
 	}
@@ -987,15 +978,11 @@ void RenderAssembler::QueueObjectShadows(SceneRenderData& aRenderData, std::shar
 		auto transform = model->gameObject->GetComponent<Transform>();
 		if (!model->GetShouldViewcull() || IsInsideRadius(aPointLight, transform, model->GetBoundingBox()))
 		{
-			PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Mesh Data");
-			RenderMesh::RenderMeshData data;
+			PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Mesh Shadow Data");
+			RenderMeshShadow::RenderMeshShadowData data;
 			data.mesh = model->GetMesh();
 			data.transform = transform->GetWorldMatrix();
-			data.materialList = model->GetMaterials();
-			data.customShaderParams_1 = model->GetCustomShaderData_1();
-			data.customShaderParams_2 = model->GetCustomShaderData_2();
-			data.psoOverride = AssetManager::Get().GetAsset<PSOAsset>("PSO_ShadowCube")->pso;
-			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(std::move(data));
+			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMeshShadow>(std::move(data));
 		}
 	}
 
@@ -1005,13 +992,11 @@ void RenderAssembler::QueueObjectShadows(SceneRenderData& aRenderData, std::shar
 		if (!animModel->GetShouldViewcull() || IsInsideRadius(aPointLight, transform, animModel->GetBoundingBox()))
 		{
 			PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Anim Mesh Data");
-			RenderAnimatedMesh::AnimMeshRenderData data;
+			RenderAnimatedMeshShadow::AnimMeshShadowRenderData data;
 			data.mesh = animModel->GetMesh();
 			data.transform = transform->GetWorldMatrix();
-			data.materialList = animModel->GetMaterials();
 			data.jointTransforms = animModel->GetCurrentPose();
-			data.psoOverride = AssetManager::Get().GetAsset<PSOAsset>("PSO_ShadowCube")->pso;
-			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(std::move(data));
+			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMeshShadow>(std::move(data));
 		}
 	}
 
@@ -1021,14 +1006,12 @@ void RenderAssembler::QueueObjectShadows(SceneRenderData& aRenderData, std::shar
 		if (!instancedModel->GetShouldViewcull() || IsInsideRadius(aPointLight, transform, instancedModel->GetBoundingBox()))
 		{
 			PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Instanced Mesh Data");
-			RenderInstancedMesh::InstancedMeshRenderData data;
+			RenderInstancedMeshShadow::InstancedMeshShadowRenderData data;
 			data.mesh = instancedModel->GetMesh();
 			data.transform = transform->GetWorldMatrix();
-			data.materialList = instancedModel->GetMaterials();
 			data.instanceBuffer = &instancedModel->GetInstanceBuffer();
 			data.meshCount = instancedModel->GetMeshCount();
-			data.psoOverride = AssetManager::Get().GetAsset<PSOAsset>("PSO_ShadowCube")->pso;
-			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(std::move(data));
+			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMeshShadow>(std::move(data));
 		}
 	}
 }
@@ -1053,7 +1036,6 @@ void RenderAssembler::QueueObjectDebug(SceneRenderData& aRenderData)
 				data.materialList = model->GetMaterials();
 				data.customShaderParams_1 = model->GetCustomShaderData_1();
 				data.customShaderParams_2 = model->GetCustomShaderData_2();
-				data.psoOverride = pso;
 
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(std::move(data));
 			}
@@ -1069,7 +1051,6 @@ void RenderAssembler::QueueObjectDebug(SceneRenderData& aRenderData)
 				data.transform = transform->GetWorldMatrix();
 				data.materialList = animModel->GetMaterials();
 				data.jointTransforms = animModel->GetCurrentPose();
-				data.psoOverride = pso;
 
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(std::move(data));
 			}
@@ -1086,7 +1067,6 @@ void RenderAssembler::QueueObjectDebug(SceneRenderData& aRenderData)
 				data.materialList = instancedModel->GetMaterials();
 				data.instanceBuffer = &instancedModel->GetInstanceBuffer();
 				data.meshCount = instancedModel->GetMeshCount();
-				data.psoOverride = pso;
 
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(std::move(data));
 			}
@@ -1109,7 +1089,6 @@ void RenderAssembler::QueueObjectDebug(SceneRenderData& aRenderData)
 				data.materialList = model->GetMaterials();
 				data.customShaderParams_1 = model->GetCustomShaderData_1();
 				data.customShaderParams_2 = model->GetCustomShaderData_2();
-				data.psoOverride = pso;
 
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(std::move(data));
 			}
@@ -1125,7 +1104,6 @@ void RenderAssembler::QueueObjectDebug(SceneRenderData& aRenderData)
 				data.transform = transform->GetWorldMatrix();
 				data.materialList = animModel->GetMaterials();
 				data.jointTransforms = animModel->GetCurrentPose();
-				data.psoOverride = pso;
 
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(std::move(data));
 			}
@@ -1142,7 +1120,6 @@ void RenderAssembler::QueueObjectDebug(SceneRenderData& aRenderData)
 				data.materialList = instancedModel->GetMaterials();
 				data.instanceBuffer = &instancedModel->GetInstanceBuffer();
 				data.meshCount = instancedModel->GetMeshCount();
-				data.psoOverride = pso;
 
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(std::move(data));
 			}

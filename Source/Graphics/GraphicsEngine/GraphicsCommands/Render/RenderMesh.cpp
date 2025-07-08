@@ -22,7 +22,6 @@ RenderMesh::RenderMesh(RenderMeshData&& aModelData)
 void RenderMesh::Execute()
 {
     PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderMesh Execute");
-    if (!myData.mesh) return;
 
     ObjectBuffer objBufferData;
     objBufferData.World = myData.transform;
@@ -32,20 +31,11 @@ void RenderMesh::Execute()
     objBufferData.customData_2 = myData.customShaderParams_2;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
-    if (myData.psoOverride)
-    {
-        GraphicsEngine::Get().ChangePipelineState(myData.psoOverride);
-        GraphicsEngine::Get().RenderMesh(*myData.mesh, myData.materialList, true);
-    }
-    else
-    {
-        GraphicsEngine::Get().RenderMesh(*myData.mesh, myData.materialList);
-    }
+    GraphicsEngine::Get().RenderMesh(*myData.mesh, myData.materialList);
 }
 
 void RenderMesh::Destroy()
 {
     myData.mesh = nullptr;
-    myData.psoOverride = nullptr;
     myData.materialList.~vector();
 }

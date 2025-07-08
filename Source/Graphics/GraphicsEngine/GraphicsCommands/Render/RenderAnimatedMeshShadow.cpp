@@ -1,28 +1,27 @@
 #include "GraphicsEngine.pch.h"
-#include "RenderAnimatedMesh.h"
+#include "RenderAnimatedMeshShadow.h"
 
 #include "GraphicsEngine.h"
 #include "Objects/Mesh.h"
-#include "Objects/Material.h"
 #include "Objects/ConstantBuffers/ObjectBuffer.h"
 #include "Objects/ConstantBuffers/AnimationBuffer.h"
 
-RenderAnimatedMesh::RenderAnimatedMesh(const AnimMeshRenderData& aModelData)
+RenderAnimatedMeshShadow::RenderAnimatedMeshShadow(const AnimMeshShadowRenderData& aModelData)
 {
-    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderAnimatedMesh Copy Constructor");
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderAnimatedMeshShadow Copy Constructor");
     myData = aModelData;
 }
 
-RenderAnimatedMesh::RenderAnimatedMesh(AnimMeshRenderData&& aModelData)
+RenderAnimatedMeshShadow::RenderAnimatedMeshShadow(AnimMeshShadowRenderData&& aModelData)
 {
-    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderAnimatedMesh Move Constructor");
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderAnimatedMeshShadow Move Constructor");
     myData = std::move(aModelData);
 }
 
-void RenderAnimatedMesh::Execute()
+void RenderAnimatedMeshShadow::Execute()
 {
-    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderAnimatedMesh Execute");
-
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderAnimatedMeshShadow Execute");
+    
     ObjectBuffer objBufferData;
     objBufferData.World = myData.transform;
     objBufferData.WorldInvT = myData.transform.GetFastInverse().GetTranspose();
@@ -33,11 +32,10 @@ void RenderAnimatedMesh::Execute()
     memcpy_s(animBufferData.JointTransforms, sizeof(Math::Matrix4x4<float>) * 128, myData.jointTransforms.data(), sizeof(Math::Matrix4x4<float>) * 128);
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::AnimationBuffer, animBufferData);
 
-    GraphicsEngine::Get().RenderMesh(*myData.mesh, myData.materialList);
+    GraphicsEngine::Get().RenderMeshShadow(*myData.mesh);
 }
 
-void RenderAnimatedMesh::Destroy()
+void RenderAnimatedMeshShadow::Destroy()
 {
     myData.mesh = nullptr;
-    myData.materialList.~vector();
 }
