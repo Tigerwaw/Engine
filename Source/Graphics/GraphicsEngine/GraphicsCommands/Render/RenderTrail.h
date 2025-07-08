@@ -13,6 +13,7 @@ public:
 	};
 
 	RenderTrail(const TrailData& aTrailData);
+	RenderTrail(TrailData&& aTrailData);
 	void Execute() override;
 	void Destroy() override;
 private:

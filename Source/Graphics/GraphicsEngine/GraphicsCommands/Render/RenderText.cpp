@@ -5,11 +5,19 @@
 
 RenderText::RenderText(const TextData& aTextData)
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderText Copy Constructor");
 	myData = aTextData;
+}
+
+RenderText::RenderText(TextData&& aTextData)
+{
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderText Move Constructor");
+	myData = std::move(aTextData);
 }
 
 void RenderText::Execute()
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderText Execute");
 	GraphicsEngine::Get().RenderText(*myData.text);
 }
 

@@ -13,6 +13,7 @@ public:
 	};
 
 	RenderText(const TextData& aTextData);
+	RenderText(TextData&& aTextData);
 	void Execute() override;
 	void Destroy() override;
 private:

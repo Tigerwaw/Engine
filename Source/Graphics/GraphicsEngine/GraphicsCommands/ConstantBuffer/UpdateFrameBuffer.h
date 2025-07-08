@@ -6,6 +6,7 @@ class UpdateFrameBuffer : public GraphicsCommandBase
 {
 public:
     UpdateFrameBuffer(const FrameBuffer& aFrameBuffer);
+    UpdateFrameBuffer(FrameBuffer&& aFrameBuffer);
     void Execute() override;
     void Destroy() override;
 private:

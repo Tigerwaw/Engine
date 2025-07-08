@@ -9,18 +9,19 @@
 
 RenderAnimatedMesh::RenderAnimatedMesh(const AnimMeshRenderData& aModelData)
 {
-    PIXScopedEvent(PIX_COLOR_INDEX(6), "Graphics Command Copy Anim Mesh Data");
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderAnimatedMesh Copy Constructor");
     myData = aModelData;
 }
 
 RenderAnimatedMesh::RenderAnimatedMesh(AnimMeshRenderData&& aModelData)
 {
-    PIXScopedEvent(PIX_COLOR_INDEX(6), "Graphics Command Move Anim Mesh Data");
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderAnimatedMesh Move Constructor");
     myData = std::move(aModelData);
 }
 
 void RenderAnimatedMesh::Execute()
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderAnimatedMesh Execute");
     if (!myData.mesh) return;
 
     ObjectBuffer objBufferData;

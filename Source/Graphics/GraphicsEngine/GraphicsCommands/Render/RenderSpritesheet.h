@@ -20,6 +20,7 @@ public:
 	};
 
 	RenderSpritesheet(const SpritesheetData& aSpriteData);
+	RenderSpritesheet(SpritesheetData&& aSpriteData);
 	void Execute() override;
 	void Destroy() override;
 private:

@@ -7,6 +7,7 @@ UpdatePostProcessBuffer::UpdatePostProcessBuffer()
 
 void UpdatePostProcessBuffer::Execute()
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD UpdatePostProcessBuffer Execute");
 	GraphicsEngine& gfx = GraphicsEngine::Get();
 
 	PostProcessBuffer ppBufferData;

@@ -5,6 +5,7 @@
 
 SetGBufferAsResource::SetGBufferAsResource()
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD SetGbufferAsResource Constructor");
 	GBuffer& gBuffer = GraphicsEngine::Get().GetGBuffer();
 	myAlbedo = gBuffer.GetAlbedo();
 	myMaterial = gBuffer.GetMaterial();
@@ -15,6 +16,7 @@ SetGBufferAsResource::SetGBufferAsResource()
 
 void SetGBufferAsResource::Execute()
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD SetGBufferAsResource Execute");
 	GraphicsEngine::Get().SetTextureResource_PS(0, *myAlbedo);
 	GraphicsEngine::Get().SetTextureResource_PS(1, *myMaterial);
 	GraphicsEngine::Get().SetTextureResource_PS(2, *myEffects);

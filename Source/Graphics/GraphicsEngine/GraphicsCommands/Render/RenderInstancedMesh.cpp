@@ -9,16 +9,19 @@
 
 RenderInstancedMesh::RenderInstancedMesh(const InstancedMeshRenderData& aInstancedModelData)
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderInstancedMesh Copy Constructor");
     myData = aInstancedModelData;
 }
 
 RenderInstancedMesh::RenderInstancedMesh(InstancedMeshRenderData&& aInstancedModelData)
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderInstancedMesh Move Constructor");
     myData = std::move(aInstancedModelData);
 }
 
 void RenderInstancedMesh::Execute()
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderInstancedMesh Execute");
     if (!myData.mesh) return;
 
     ObjectBuffer objBufferData;

@@ -5,11 +5,19 @@
 
 UpdateShadowBuffer::UpdateShadowBuffer(const ShadowData& aShadowData)
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD UpdateShadowBuffer Copy Constructor");
 	myData = aShadowData;
+}
+
+UpdateShadowBuffer::UpdateShadowBuffer(ShadowData&& aShadowData)
+{
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD UpdateShadowBuffer Move Constructor");
+	myData = std::move(aShadowData);
 }
 
 void UpdateShadowBuffer::Execute()
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD UpdateShadowBuffer Execute");
 	ShadowBuffer shadowBufferData;
 
 	myData.cameraTransform = Math::Matrix4x4f::CreateRollPitchYawMatrix({ 0, 90.0f, 0 }) * myData.cameraTransform;

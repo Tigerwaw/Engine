@@ -254,7 +254,7 @@ void RenderAssembler::RenderDebug(SceneRenderData& aRenderData)
 	frameBuffer.Time = { static_cast<float>(Engine::Get().GetTimer().GetTimeSinceProgramStart()), Engine::Get().GetTimer().GetDeltaTime() };
 	frameBuffer.Resolution = Engine::Get().GetResolution();
 
-	gfxList.Enqueue<UpdateFrameBuffer>(frameBuffer);
+	gfxList.Enqueue<UpdateFrameBuffer>(std::move(frameBuffer));
 	std::shared_ptr<PipelineStateObject> pso = AssetManager::Get().GetAsset<PSOAsset>(gfx.DebugModeNames[static_cast<int>(gfx.CurrentDebugMode)])->pso;
 	gfxList.Enqueue<SetDefaultRenderTarget>();
 	QueueObjectDebug(aRenderData);
@@ -308,7 +308,7 @@ void RenderAssembler::RenderDeferred(SceneRenderData& aRenderData)
 		frameBuffer.FarPlane = aRenderData.mainCamera->GetFarPlane();
 		frameBuffer.Time = { static_cast<float>(Engine::Get().GetTimer().GetTimeSinceProgramStart()), Engine::Get().GetTimer().GetDeltaTime() };
 		frameBuffer.Resolution = Engine::Get().GetResolution();
-		gfxList.Enqueue<UpdateFrameBuffer>(frameBuffer);
+		gfxList.Enqueue<UpdateFrameBuffer>(std::move(frameBuffer));
 		QueueDeferredObjects(aRenderData);
 		gfxList.Enqueue<EndEvent>();
 	}
@@ -537,7 +537,7 @@ void RenderAssembler::QueueDeferredObjects(SceneRenderData& aRenderData)
 			{
 				UpdateBoundingBox(transform, model->GetBoundingBox());
 
-				PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Mesh Data");
+				PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Mesh Data");
 				RenderMesh::RenderMeshData data;
 				data.mesh = model->GetMesh();
 				data.transform = transform->GetWorldMatrix();
@@ -546,7 +546,7 @@ void RenderAssembler::QueueDeferredObjects(SceneRenderData& aRenderData)
 				data.customShaderParams_2 = model->GetCustomShaderData_2();
 				data.psoOverride = AssetManager::Get().GetAsset<PSOAsset>("PSO_Deferred")->pso;
 
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(data);
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(std::move(data));
 			}
 		}
 
@@ -585,7 +585,7 @@ void RenderAssembler::QueueDeferredObjects(SceneRenderData& aRenderData)
 				data.meshCount = instancedModel->GetMeshCount();
 				data.psoOverride = AssetManager::Get().GetAsset<PSOAsset>("PSO_Deferred")->pso;
 
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(data);
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(std::move(data));
 			}
 		}
 	}
@@ -613,7 +613,7 @@ void RenderAssembler::QueueForwardObjects(SceneRenderData& aRenderData)
 				data.customShaderParams_1 = model->GetCustomShaderData_1();
 				data.customShaderParams_2 = model->GetCustomShaderData_2();
 
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(data);
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(std::move(data));
 			}
 		}
 
@@ -646,7 +646,7 @@ void RenderAssembler::QueueForwardObjects(SceneRenderData& aRenderData)
 				data.instanceBuffer = &instancedModel->GetInstanceBuffer();
 				data.meshCount = instancedModel->GetMeshCount();
 
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(data);
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(std::move(data));
 			}
 		}
 	}
@@ -661,7 +661,7 @@ void RenderAssembler::QueueParticleSystems(SceneRenderData& aRenderData)
 		RenderParticles::RenderParticlesData data;
 		data.emitters = particleSystem->GetEmitters();
 		data.transform = particleSystem->gameObject->GetComponent<Transform>()->GetWorldMatrix();
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderParticles>(data);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderParticles>(std::move(data));
 	}
 }
 
@@ -674,7 +674,7 @@ void RenderAssembler::QueueTrailSystems(SceneRenderData& aRenderData)
 		RenderTrail::TrailData data;
 		data.emitters = trailSystem->GetEmitters();
 		data.transform = trailSystem->gameObject->GetComponent<Transform>()->GetWorldMatrix();
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderTrail>(data);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderTrail>(std::move(data));
 	}
 }
 
@@ -810,7 +810,7 @@ void RenderAssembler::QueueUpdateLightBuffer(SceneRenderData& aRenderData)
 	}
 	lightBufferData.NumSpotLights = activePLights;
 
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateLightBuffer>(lightBufferData);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateLightBuffer>(std::move(lightBufferData));
 }
 
 void RenderAssembler::QueueSpotLightShadows(SceneRenderData& aRenderData)
@@ -840,7 +840,7 @@ void RenderAssembler::QueueSpotLightShadows(SceneRenderData& aRenderData)
 		frameBuffer.FarPlane = lightCam->GetFarPlane();
 		frameBuffer.Time = { static_cast<float>(Engine::Get().GetTimer().GetTimeSinceProgramStart()), Engine::Get().GetTimer().GetDeltaTime() };
 		frameBuffer.Resolution = Engine::Get().GetResolution();
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(frameBuffer);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(std::move(frameBuffer));
 
 		QueueObjectShadows(aRenderData, lightCam);
 	}
@@ -875,11 +875,11 @@ void RenderAssembler::QueuePointLightShadows(SceneRenderData& aRenderData)
 		frameBuffer.FarPlane = lightCam->GetFarPlane();
 		frameBuffer.Time = { static_cast<float>(Engine::Get().GetTimer().GetTimeSinceProgramStart()), Engine::Get().GetTimer().GetDeltaTime() };
 		frameBuffer.Resolution = Engine::Get().GetResolution();
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(frameBuffer);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(std::move(frameBuffer));
 
 		UpdateShadowBuffer::ShadowData shadowData;
 		shadowData.cameraTransform = pointLight->gameObject->GetComponent<Transform>()->GetMatrix();
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateShadowBuffer>(shadowData);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateShadowBuffer>(std::move(shadowData));
 		QueueObjectShadows(aRenderData, pointLight);
 	}
 
@@ -911,7 +911,7 @@ void RenderAssembler::QueueDirectionalLightShadows(SceneRenderData& aRenderData)
 	frameBuffer.FarPlane = lightCam->GetFarPlane();
 	frameBuffer.Time = { static_cast<float>(Engine::Get().GetTimer().GetTimeSinceProgramStart()), Engine::Get().GetTimer().GetDeltaTime() };
 	frameBuffer.Resolution = Engine::Get().GetResolution();
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(frameBuffer);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(std::move(frameBuffer));
 
 	QueueObjectShadows(aRenderData, lightCam);
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<EndEvent>();

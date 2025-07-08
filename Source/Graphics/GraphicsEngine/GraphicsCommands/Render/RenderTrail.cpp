@@ -5,11 +5,19 @@
 
 RenderTrail::RenderTrail(const TrailData& aTrailData)
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderTrail Copy Constructor");
     myData = aTrailData;
+}
+
+RenderTrail::RenderTrail(TrailData&& aTrailData)
+{
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderTrail Move Constructor");
+    myData = std::move(aTrailData);
 }
 
 void RenderTrail::Execute()
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderTrail Execute");
     GraphicsEngine& gfx = GraphicsEngine::Get();
 
     ObjectBuffer objBufferData;

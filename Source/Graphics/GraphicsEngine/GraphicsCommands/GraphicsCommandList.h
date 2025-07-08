@@ -11,7 +11,6 @@
 #include "Render/RenderMesh.h"
 #include "Render/RenderAnimatedMesh.h"
 #include "Render/RenderInstancedMesh.h"
-#include "Render/RenderDebugMesh.h"
 #include "Render/RenderText.h"
 #include "Render/RenderSprite.h"
 #include "Render/RenderSpritesheet.h"
@@ -23,9 +22,9 @@
 #include "Resource/ClearTextureResource.h"
 #include "Resource/SetGBufferAsRenderTarget.h"
 #include "Resource/SetGBufferAsResource.h"
-#include "ChangePipelineState.h"
-#include "SetDefaultRenderTarget.h"
-#include "SetRenderTarget.h"
+#include "Resource/ChangePipelineState.h"
+#include "Resource/SetDefaultRenderTarget.h"
+#include "Resource/SetRenderTarget.h"
 #include "ConstantBuffer/UpdateFrameBuffer.h"
 #include "ConstantBuffer/UpdateLightBuffer.h"
 #include "ConstantBuffer/UpdateShadowBuffer.h"
@@ -59,7 +58,7 @@ public:
 	std::enable_if_t<std::is_base_of_v<GraphicsCommandBase, CommandClass>>
 	Enqueue(Args... args)
 	{
-		PIXScopedEvent(PIX_COLOR_INDEX(6), "GraphicsEngine Queue Command");
+		PIXScopedEvent(PIX_COLOR_INDEX(1), "GraphicsEngine Queue Command");
 		const size_t commandSize = sizeof(CommandClass);
 		if (myCursor + commandSize > mySize)
 		{

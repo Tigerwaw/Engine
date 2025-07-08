@@ -158,11 +158,11 @@ public:
 	bool CreateShadowCubemap(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture);
 
 	void SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
-	void SetRenderTargets(std::vector<std::shared_ptr<Texture>> aRenderTargets, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
+	void SetRenderTargets(const std::vector<std::shared_ptr<Texture>>& aRenderTargets, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
 
 	void RenderQuad();
-	void RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<Material>> aMaterialList, bool aOverrideMaterialPSO = false);
-	void RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, std::vector<std::shared_ptr<Material>> aMaterialList, DynamicVertexBuffer& aInstanceBuffer, bool aOverrideMaterialPSO = false);
+	void RenderMesh(const Mesh& aMesh, const std::vector<std::shared_ptr<Material>>& aMaterialList, bool aOverrideMaterialPSO = false);
+	void RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, const std::vector<std::shared_ptr<Material>>& aMaterialList, DynamicVertexBuffer& aInstanceBuffer, bool aOverrideMaterialPSO = false);
 	void RenderSprite();
 	void RenderText(const Text& aText);
 	void RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsigned aLineAmount);

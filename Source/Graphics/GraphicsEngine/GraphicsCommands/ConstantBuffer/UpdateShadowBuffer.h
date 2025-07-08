@@ -10,6 +10,7 @@ public:
     };
 
     UpdateShadowBuffer(const ShadowData& aShadowData);
+    UpdateShadowBuffer(ShadowData&& aShadowData);
     void Execute() override;
     void Destroy() override;
 private:

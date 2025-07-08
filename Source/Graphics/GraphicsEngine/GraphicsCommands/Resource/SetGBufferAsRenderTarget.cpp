@@ -5,6 +5,7 @@
 
 SetGBufferAsRenderTarget::SetGBufferAsRenderTarget()
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD SetGBufferAsRenderTarget Constructor");
 	GBuffer& gBuffer = GraphicsEngine::Get().GetGBuffer();
 	myAlbedo = gBuffer.GetAlbedo();
 	myMaterial = gBuffer.GetMaterial();
@@ -15,6 +16,7 @@ SetGBufferAsRenderTarget::SetGBufferAsRenderTarget()
 
 void SetGBufferAsRenderTarget::Execute()
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD SetGBufferAsRenderTarget Execute");
 	std::vector<std::shared_ptr<Texture>> RTs;
 	RTs.emplace_back(myAlbedo);
 	RTs.emplace_back(myMaterial);

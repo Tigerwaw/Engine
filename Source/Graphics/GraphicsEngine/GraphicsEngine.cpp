@@ -103,7 +103,6 @@ void GraphicsEngine::BeginFrame()
 {
 	myLastFrameDrawcallAmount = myDrawcallAmount;
 	myDrawcallAmount = 0;
-	ChangePipelineState(myCurrentPSO);
 }
 
 void GraphicsEngine::RenderFrame()
@@ -113,6 +112,7 @@ void GraphicsEngine::RenderFrame()
 	{
 		myCommandList->Execute();
 	}
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "Reset Render Command List");
 	myCommandList->Reset();
 }
 
@@ -355,13 +355,14 @@ void GraphicsEngine::SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std
 	myRHI->SetRenderTarget(aRenderTarget, aDepthStencil, aClearRenderTarget, aClearDepthStencil);
 }
 
-void GraphicsEngine::SetRenderTargets(std::vector<std::shared_ptr<Texture>> aRenderTargets, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget, bool aClearDepthStencil)
+void GraphicsEngine::SetRenderTargets(const std::vector<std::shared_ptr<Texture>>& aRenderTargets, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget, bool aClearDepthStencil)
 {
 	myRHI->SetRenderTargets(aRenderTargets, aDepthStencil, aClearRenderTarget, aClearDepthStencil);
 }
 
 void GraphicsEngine::RenderQuad()
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Quad");
 	SetTextureResource_PS(127, *myLUTtexture);
 
 	myRHI->SetPrimitiveTopology(Topology::TRIANGLESTRIP);
@@ -372,8 +373,9 @@ void GraphicsEngine::RenderQuad()
 	ClearTextureResource_PS(127);
 }
 
-void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<Material>> aMaterialList, bool aOverrideMaterialPSO)
+void GraphicsEngine::RenderMesh(const Mesh& aMesh, const std::vector<std::shared_ptr<Material>>& aMaterialList, bool aOverrideMaterialPSO)
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Mesh");
 	myRHI->SetVertexBuffer(aMesh.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
 	myRHI->SetIndexBuffer(aMesh.GetIndexBuffer());
 	myRHI->SetPrimitiveTopology(Topology::TRIANGLELIST);
@@ -413,8 +415,9 @@ void GraphicsEngine::RenderMesh(const Mesh& aMesh, std::vector<std::shared_ptr<M
 	ClearTextureResource_PS(127);
 }
 
-void GraphicsEngine::RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, std::vector<std::shared_ptr<Material>> aMaterialList, DynamicVertexBuffer& aInstanceBuffer, bool aOverrideMaterialPSO)
+void GraphicsEngine::RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, const std::vector<std::shared_ptr<Material>>& aMaterialList, DynamicVertexBuffer& aInstanceBuffer, bool aOverrideMaterialPSO)
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Instanced Mesh");
 	std::vector<ID3D11Buffer*> buffers;
 	std::vector<unsigned> strides;
 	std::vector<unsigned> offsets;
@@ -469,12 +472,14 @@ void GraphicsEngine::RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount,
 
 void GraphicsEngine::RenderSprite()
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Sprite");
 	myRHI->SetPrimitiveTopology(Topology::POINTLIST);
 	myRHI->Draw(1);
 }
 
 void GraphicsEngine::RenderText(const Text& aText)
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Text");
 	SetTextureResource_PS(10, *aText.GetTexture());
 
 	const Text::TextData& textData = aText.GetTextData();
@@ -490,6 +495,7 @@ void GraphicsEngine::RenderText(const Text& aText)
 
 void GraphicsEngine::RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsigned aLineAmount)
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Debug Lines");
 	myRHI->SetVertexBuffer(aDynamicBuffer.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
 	myRHI->SetPrimitiveTopology(Topology::POINTLIST);
 	myRHI->Draw(aLineAmount);
@@ -497,6 +503,7 @@ void GraphicsEngine::RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsig
 
 void GraphicsEngine::RenderParticleEmitter(ParticleEmitter& aParticleEmitter)
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Particle Emitter");
 	ChangePipelineState(aParticleEmitter.GetMaterial()->GetPSO());
 
 	for (const auto& [slot, texture] : aParticleEmitter.GetMaterial()->GetTextures())
@@ -516,6 +523,7 @@ void GraphicsEngine::RenderParticleEmitter(ParticleEmitter& aParticleEmitter)
 
 void GraphicsEngine::RenderTrailEmitter(TrailEmitter& aTrailEmitter)
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Trail Emitter");
 	ChangePipelineState(aTrailEmitter.GetMaterial()->GetPSO());
 
 	for (const auto& [slot, texture] : aTrailEmitter.GetMaterial()->GetTextures())

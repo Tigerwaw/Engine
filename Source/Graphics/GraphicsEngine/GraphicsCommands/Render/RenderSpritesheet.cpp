@@ -9,16 +9,19 @@
 
 RenderSpritesheet::RenderSpritesheet(const SpritesheetData& aSpriteData)
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderSpritesheet Copy Constructor");
     myData = aSpriteData;
-    //material = aSpritesheet->GetMaterial();
-    //texture = aSpritesheet->GetTexture();
-    //matrix = aSpritesheet->GetMatrix();
-    //sheetDimensions = { static_cast<float>(aSpritesheet->GetSheetDimensions().x), static_cast<float>(aSpritesheet->GetSheetDimensions().y) };
-    //currentFrame = static_cast<float>(aSpritesheet->GetCurrentFrame());
+}
+
+RenderSpritesheet::RenderSpritesheet(SpritesheetData&& aSpriteData)
+{
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderSpritesheet Move Constructor");
+    myData = std::move(aSpriteData);
 }
 
 void RenderSpritesheet::Execute()
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderSpritesheet Execute");
     if (!myData.texture && !myData.material) return;
 
     SpriteBuffer spriteBufferData;

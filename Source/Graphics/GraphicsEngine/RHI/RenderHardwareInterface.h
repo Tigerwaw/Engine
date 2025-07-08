@@ -44,7 +44,7 @@ public:
 	bool CreateConstantBuffer(std::string_view aName, size_t aSize, unsigned aSlot, unsigned aPipelineStages, ConstantBuffer& outBuffer);
 
 	void SetVertexBuffer(const Microsoft::WRL::ComPtr<ID3D11Buffer>& aVertexBuffer, size_t aVertexSize, size_t aVertexOffset = 0) const;
-	void SetVertexBuffers(const std::vector<ID3D11Buffer*> aVertexBuffers, std::vector<unsigned> aStrides, std::vector<unsigned> aOffsets) const;
+	void SetVertexBuffers(const std::vector<ID3D11Buffer*>& aVertexBuffers, const std::vector<unsigned>& aStrides, const std::vector<unsigned>& aOffsets) const;
 	void SetIndexBuffer(const Microsoft::WRL::ComPtr<ID3D11Buffer>& aIndexBuffer) const;
 	void SetConstantBuffer(const ConstantBuffer& aBuffer);
 
@@ -89,7 +89,7 @@ public:
 	bool CreateLUT(std::string_view aName, unsigned aWidth, unsigned aHeight, std::shared_ptr<Texture> outTexture, const std::filesystem::path& aVSPath, const std::filesystem::path& aPSPath);
 
 	void SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
-	void SetRenderTargets(std::vector<std::shared_ptr<Texture>> aRenderTargets, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
+	void SetRenderTargets(const std::vector<std::shared_ptr<Texture>>& aRenderTargets, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
 
 	void BeginEvent(std::string_view aEvent) const;
 	void EndEvent() const;

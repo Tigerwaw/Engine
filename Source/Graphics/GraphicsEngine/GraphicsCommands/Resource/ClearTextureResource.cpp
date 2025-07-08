@@ -8,6 +8,7 @@ ClearTextureResource::ClearTextureResource(unsigned aSlot)
 
 void ClearTextureResource::Execute()
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD ClearTextureResource Execute");
     GraphicsEngine::Get().ClearTextureResource_PS(mySlot);
 }
 

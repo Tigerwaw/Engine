@@ -9,14 +9,19 @@
 
 RenderSprite::RenderSprite(const SpriteData& aSpriteData)
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderSprite Copy Constructor");
     myData = aSpriteData;
-    //material = aSprite->GetMaterial();
-    //texture = aSprite->GetTexture();
-    //matrix = aSprite->GetMatrix();
+}
+
+RenderSprite::RenderSprite(SpriteData&& aSpriteData)
+{
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderSprite Move Constructor");
+    myData = std::move(aSpriteData);
 }
 
 void RenderSprite::Execute()
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderSprite Execute");
     if (!myData.texture && !myData.material) return;
 
     SpriteBuffer spriteBufferData;

@@ -17,6 +17,7 @@ public:
 	};
 
 	RenderSprite(const SpriteData& aSpriteData);
+	RenderSprite(SpriteData&& aSpriteData);
 	void Execute() override;
 	void Destroy() override;
 private:

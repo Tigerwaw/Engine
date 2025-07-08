@@ -13,6 +13,7 @@ public:
 	};
 
 	RenderParticles(const RenderParticlesData& aParticleSystemData);
+	RenderParticles(RenderParticlesData&& aParticleSystemData);
 	void Execute() override;
 	void Destroy() override;
 private:

@@ -405,7 +405,7 @@ void RenderHardwareInterface::SetVertexBuffer(const Microsoft::WRL::ComPtr<ID3D1
 	myContext->IASetVertexBuffers(0, 1, aVertexBuffer.GetAddressOf(), &vertexSize, &vertexOffset);
 }
 
-void RenderHardwareInterface::SetVertexBuffers(const std::vector<ID3D11Buffer*> aVertexBuffers, std::vector<unsigned> aStrides, std::vector<unsigned> aOffsets) const
+void RenderHardwareInterface::SetVertexBuffers(const std::vector<ID3D11Buffer*>& aVertexBuffers, const std::vector<unsigned>& aStrides, const std::vector<unsigned>& aOffsets) const
 {
 	unsigned numBuffers = static_cast<unsigned>(aVertexBuffers.size());
 	myContext->IASetVertexBuffers(0, numBuffers, aVertexBuffers.data(), aStrides.data(), aOffsets.data());
@@ -617,6 +617,7 @@ void RenderHardwareInterface::DrawIndexedInstanced(unsigned aIndexCount, unsigne
 
 void RenderHardwareInterface::ChangePipelineState(const PipelineStateObject& aNewPSO)
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "RHI Change Pipeline State");
 	const std::array<float, 4> blendFactor = { 0, 0, 0, 0 };
 	constexpr unsigned samplerMask = 0xffffffff;
 	myContext->OMSetBlendState(aNewPSO.BlendState.Get(), blendFactor.data(), samplerMask);
@@ -915,6 +916,8 @@ bool RenderHardwareInterface::LoadTexture(std::string_view aName, const uint8_t*
 
 bool RenderHardwareInterface::SetTextureResource(unsigned aPipelineStages, unsigned aSlot, const Texture& aTexture) const
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "RHI Set Texture Resource");
+
 	if (!(aTexture.myBindFlags & D3D11_BIND_SHADER_RESOURCE))
 	{
 		LOG(LogRHI, Error, "This texture can not be used as a resource!");
@@ -1113,6 +1116,7 @@ bool RenderHardwareInterface::CreateLUT(std::string_view aName, unsigned aWidth,
 
 void RenderHardwareInterface::SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget, bool aClearDepthStencil)
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "RHI Set Render Target");
 	if (aClearRenderTarget)
 	{
 		myContext->ClearRenderTargetView(aRenderTarget->myRTV.Get(), aRenderTarget->myClearColor.data());
@@ -1160,8 +1164,9 @@ void RenderHardwareInterface::SetRenderTarget(std::shared_ptr<Texture> aRenderTa
 	myContext->RSSetViewports(1, &viewport);
 }
 
-void RenderHardwareInterface::SetRenderTargets(std::vector<std::shared_ptr<Texture>> aRenderTargets, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget, bool aClearDepthStencil)
+void RenderHardwareInterface::SetRenderTargets(const std::vector<std::shared_ptr<Texture>>& aRenderTargets, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget, bool aClearDepthStencil)
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "RHI Set Render Targets");
 	if (aClearRenderTarget)
 	{
 		for (auto& rt : aRenderTargets)
@@ -1303,6 +1308,7 @@ bool RenderHardwareInterface::CreateVertexBufferInternal(std::string_view aName,
 
 bool RenderHardwareInterface::UpdateDynamicVertexBufferInternal(DynamicVertexBuffer& outVxBuffer, const uint8_t* aVertexDataPointer, size_t aNumVertices, size_t aVertexSize) const
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "RHI Update Dynamic Vertex Buffer");
 	if (!outVxBuffer.GetVertexBuffer())
 	{
 		LOG(LogRHI, Error, "Failed to update dynamic vertex buffer. Vertex Buffer is invalid.");
@@ -1333,6 +1339,7 @@ bool RenderHardwareInterface::UpdateDynamicVertexBufferInternal(DynamicVertexBuf
 
 bool RenderHardwareInterface::UpdateConstantBufferInternal(const ConstantBuffer& aBuffer, const void* aBufferData, size_t aBufferDataSize)
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "RHI Update Constant Buffer");
 	if (!aBuffer.myBuffer)
 	{
 		LOG(LogRHI, Error, "Failed to update constant buffer. Buffer {} is invalid.", aBuffer.myName);
