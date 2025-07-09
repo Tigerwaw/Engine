@@ -6,6 +6,16 @@
 #include "WinPixEventRuntime/pix3.h"
 #include "CommonUtilities/StringUtilities.hpp"
 
+// TEMP INCLUDES
+#include "MeshAsset.h"
+#include "NavMeshAsset.h"
+#include "AnimationAsset.h"
+#include "FontAsset.h"
+#include "MaterialAsset.h"
+#include "PSOAsset.h"
+#include "ShaderAsset.h"
+#include "TextureAsset.h"
+
 class AssetManager
 {
 public:
