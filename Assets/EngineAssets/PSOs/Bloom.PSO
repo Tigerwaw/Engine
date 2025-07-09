@@ -1,0 +1,12 @@
+{
+  "VertexType": "Default",
+  "VertexShader": "SH_Quad_VS.cso",
+  "GeometryShader": "",
+  "PixelShader": "SH_PP_Bloom_PS.cso",
+  "BlendStateDesc": {
+    "BlendMode": "Alpha"
+  },
+  "Samplers": {
+    "LinearWrapSS": 0
+  }
+}

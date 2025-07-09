@@ -1,0 +1,9 @@
+{
+  "VertexType": "Default",
+  "VertexShader": "SH_Quad_VS.cso",
+  "GeometryShader": "",
+  "PixelShader": "SH_PP_TonemapLottes_PS.cso",
+  "Samplers": {
+    "LinearWrapSS": 0
+  }
+}

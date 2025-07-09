@@ -1,0 +1,11 @@
+{
+  "VertexType": "Default",
+  "VertexShader": "SH_Mesh_VS.cso",
+  "GeometryShader": "",
+  "PixelShader": "SH_Wireframe_PS.cso",
+  "RasterizerDesc": {
+    "FillMode": "Wireframe",
+    "CullMode": "None",
+    "AntialiasedLine": false
+  }
+}

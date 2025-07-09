@@ -1,0 +1,13 @@
+{
+  "VertexType": "Particle",
+  "VertexShader": "SH_Particle_VS.cso",
+  "GeometryShader": "SH_Particle_GS.cso",
+  "PixelShader": "SH_ParticleSpritesheet_PS.cso",
+  "BlendStateDesc": {
+    "BlendMode": "Alpha"
+  },
+  "UseReadOnlyDepthStencil": true,
+  "Samplers": {
+    "LinearWrapSS": 0
+  }
+}

@@ -198,25 +198,25 @@ public:
 
 	std::vector<std::string> DebugModeNames = {
 		"None",
-		"PSO_Unlit",
-		"PSO_DebugAO",
-		"PSO_DebugRoughness",
-		"PSO_DebugMetallic",
-		"PSO_DebugFX",
-		"PSO_Wireframe",
-		"PSO_DebugVertexNormals",
-		"PSO_DebugVertexTangents",
-		"PSO_DebugVertexBinormals",
-		"PSO_DebugPixelNormals",
-		"PSO_DebugTextureNormals",
-		"PSO_DebugUVs",
-		"PSO_DebugVertexColor"
+		"Unlit.pso",
+		"DebugAO.pso",
+		"DebugRoughness.pso",
+		"DebugMetallic.pso",
+		"DebugFX.pso",
+		"Wireframe.pso",
+		"DebugVertexNormals.pso",
+		"DebugVertexTangents.pso",
+		"DebugVertexBinormals.pso",
+		"DebugPixelNormals.pso",
+		"DebugTextureNormals.pso",
+		"DebugUVs.pso",
+		"DebugVertexColor.pso"
 	};
 	
 	std::vector<std::string> TonemapperNames = {
-		"PSO_TonemapUE",
-		"PSO_TonemapACES",
-		"PSO_TonemapLottes"
+		"TonemapUE.pso",
+		"TonemapACES.pso",
+		"TonemapLottes.pso"
 	};
 	
 	std::vector<std::string> LuminanceNames = {

@@ -1,9 +1,0 @@
-{
-  "VertexType": "Default",
-  "VertexShader": "SH_Mesh_VS",
-  "GeometryShader": "",
-  "PixelShader": "SH_DebugVertexBinormals_PS",
-  "Samplers":
-  {
-  }
-}

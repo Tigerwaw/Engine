@@ -1,0 +1,14 @@
+{
+  "VertexType": "Default",
+  "VertexShader": "SH_Quad_VS.cso",
+  "GeometryShader": "",
+  "PixelShader": "SH_Deferred_Pointlight_PS.cso",
+  "BlendStateDesc": {
+    "BlendMode": "Additive"
+  },
+  "Samplers": {
+    "LinearWrapSS": 0,
+    "LutSS": 14,
+    "ShadowSS": 15
+  }
+}

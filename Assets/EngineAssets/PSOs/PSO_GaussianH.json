@@ -1,9 +1,0 @@
-{
-  "VertexType": "Default",
-  "VertexShader": "SH_Quad_VS",
-  "GeometryShader": "",
-  "PixelShader": "SH_PP_GaussianH_PS",
-  "Samplers": {
-    "LinearClampSS": 1
-  }
-}

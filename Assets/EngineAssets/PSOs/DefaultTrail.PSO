@@ -1,0 +1,16 @@
+{
+  "VertexType": "Trail",
+  "VertexShader": "SH_Trail_VS.cso",
+  "GeometryShader": "SH_Trail_GS.cso",
+  "PixelShader": "SH_Trail_PS.cso",
+  "BlendStateDesc": {
+    "BlendMode": "Alpha"
+  },
+  "RasterizerDesc": {
+    "CullMode": "None"
+  },
+  "UseReadOnlyDepthStencil": true,
+  "Samplers": {
+    "LinearWrapSS": 0
+  }
+}

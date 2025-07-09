@@ -1,9 +1,0 @@
-{
-  "VertexType": "Text",
-  "VertexShader": "SH_UI_Text_VS",
-  "PixelShader": "SH_UI_Text_PS",
-  "Samplers":
-  {
-    "LinearWrapSS": 0
-  }
-}

@@ -11,8 +11,6 @@
 
 #include "Math/Matrix.hpp"
 #include "Math/Vector.hpp"
-#include "CommonUtilities/StringUtilities.hpp"
-
 
 #include "DefaultTextures/Default_C.h"
 #include "DefaultTextures/Default_N.h"
@@ -31,7 +29,7 @@ AssetManager::~AssetManager()
 
 bool AssetManager::DeregisterAsset(const std::filesystem::path& aPath)
 {
-    if (!myAssets.contains(aPath))
+    if (!myAssets.contains(aPath.filename()))
     {
         LOG(LogAssetManager, Warning, "Couldn't unregister asset at path {} since it does not seem to exist!", aPath.string());
         return false;
@@ -49,41 +47,52 @@ bool AssetManager::DeregisterAsset(const std::shared_ptr<Asset> aAsset)
 
 bool AssetManager::RegisterAsset(const std::filesystem::path& aPath)
 {
+    std::string extension = aPath.extension().string();
+    Utilities::ToLower(extension);
     std::string name = aPath.filename().string();
     Utilities::ToLower(name);
-    if (name.starts_with("sm") || name.starts_with("sk"))
+
+    if (extension == ".fbx")
     {
-        return RegisterMeshAsset(aPath);
+        if (name.starts_with("sm") || name.starts_with("sk"))
+        {
+            return RegisterMeshAsset(aPath);
+        }
+        else if (name.starts_with("a"))
+        {
+            return RegisterAnimationAsset(aPath);
+        }
+        else if (name.starts_with("nm"))
+        {
+            return RegisterNavMeshAsset(aPath);
+        }
     }
-    else if (name.starts_with("a"))
-    {
-        return RegisterAnimationAsset(aPath);
-    }
-    else if (name.starts_with("mat"))
+    else if (extension == ".mat")
     {
         return RegisterMaterialAsset(aPath);
     }
-    else if (name.starts_with("t"))
+    else if (extension == ".dds")
     {
         return RegisterTextureAsset(aPath);
     }
-    else if (name.starts_with("sh"))
+    else if (extension == ".cso")
     {
         return RegisterShaderAsset(aPath);
     }
-    else if (name.starts_with("pso"))
+    else if (extension == ".pso")
     {
         return RegisterPSOAsset(aPath);
     }
-    else if (name.starts_with("f"))
+    else if (extension == ".font")
     {
         return RegisterFontAsset(aPath);
     }
-    else if (name.starts_with("nm"))
+    else if (extension == ".font")
     {
-        return RegisterNavMeshAsset(aPath);
+        return RegisterFontAsset(aPath);
     }
-
+    
+    LOG(LogAssetManager, Error, "Asset {} with extension {} could not be correctly identified!", name, extension);
     return false;
 }
 
@@ -116,21 +125,21 @@ bool AssetManager::Initialize(const std::filesystem::path& aContentRootPath, boo
 
 void AssetManager::RegisterEngineAssets()
 {
-    RegisterEngineTextureAsset("T_Default_C", BuiltIn_Default_C_ByteCode, sizeof(BuiltIn_Default_C_ByteCode));
-    RegisterEngineTextureAsset("T_Default_N", BuiltIn_Default_N_ByteCode, sizeof(BuiltIn_Default_N_ByteCode));
-    RegisterEngineTextureAsset("T_Default_M", BuiltIn_Default_M_ByteCode, sizeof(BuiltIn_Default_M_ByteCode));
-    RegisterEngineTextureAsset("T_Default_FX", BuiltIn_Default_FX_ByteCode, sizeof(BuiltIn_Default_FX_ByteCode));
+    RegisterEngineTextureAsset("default_c", BuiltIn_Default_C_ByteCode, sizeof(BuiltIn_Default_C_ByteCode));
+    RegisterEngineTextureAsset("default_n", BuiltIn_Default_N_ByteCode, sizeof(BuiltIn_Default_N_ByteCode));
+    RegisterEngineTextureAsset("default_m", BuiltIn_Default_M_ByteCode, sizeof(BuiltIn_Default_M_ByteCode));
+    RegisterEngineTextureAsset("default_fx", BuiltIn_Default_FX_ByteCode, sizeof(BuiltIn_Default_FX_ByteCode));
 
     std::shared_ptr<MaterialAsset> asset = std::make_shared<MaterialAsset>();
     asset->material = std::make_shared<Material>();
     asset->material->SetPSO(GraphicsEngine::Get().GetDefaultPSO());
     asset->material->MaterialSettings().albedoTint = { 1.0f, 1.0f, 1.0f, 1.0f };
     asset->material->MaterialSettings().emissiveStrength = 0.0f;
-    asset->material->SetTexture(Material::TextureType::Albedo, GetAsset<TextureAsset>("T_Default_C")->texture);
-    asset->material->SetTexture(Material::TextureType::Normal, GetAsset<TextureAsset>("T_Default_N")->texture);
-    asset->material->SetTexture(Material::TextureType::Material, GetAsset<TextureAsset>("T_Default_M")->texture);
-    asset->material->SetTexture(Material::TextureType::Effects, GetAsset<TextureAsset>("T_Default_FX")->texture);
-    asset->name = "MAT_DefaultMaterial";
+    asset->material->SetTexture(Material::TextureType::Albedo, GetAsset<TextureAsset>("default_c")->texture);
+    asset->material->SetTexture(Material::TextureType::Normal, GetAsset<TextureAsset>("default_n")->texture);
+    asset->material->SetTexture(Material::TextureType::Material, GetAsset<TextureAsset>("default_m")->texture);
+    asset->material->SetTexture(Material::TextureType::Effects, GetAsset<TextureAsset>("default_fx")->texture);
+    asset->name = "defaultmaterial";
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered material asset {}", asset->name.string());
@@ -209,8 +218,7 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
     std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
 
     std::filesystem::path assetPath = MakeRelative(aPath);
-    const std::string ext = assetPath.extension().string();
-    if (!ext.ends_with("fbx")) return false;
+    if (!FilenameHasExtension(assetPath, ".fbx")) return false;
 
     TGA::FBX::Mesh tgaMesh;
     {
@@ -287,7 +295,9 @@ bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
     std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
     asset->mesh = std::make_shared<Mesh>(std::move(mesh));
     asset->path = assetPath;
-    asset->name = assetPath.stem();
+    std::string lowerCaseName = assetPath.filename().string();
+    Utilities::ToLower(lowerCaseName);
+    asset->name = lowerCaseName;
 
     std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
@@ -304,8 +314,7 @@ bool AssetManager::RegisterAnimationAsset(const std::filesystem::path& aPath)
     std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
 
     std::filesystem::path assetPath = MakeRelative(aPath);
-    const std::string ext = assetPath.extension().string();
-    if (!ext.ends_with("fbx")) return false;
+    if (!FilenameHasExtension(assetPath, ".fbx")) return false;
 
     TGA::FBX::Animation tgaAnimation;
 
@@ -337,7 +346,9 @@ bool AssetManager::RegisterAnimationAsset(const std::filesystem::path& aPath)
     std::shared_ptr<AnimationAsset> asset = std::make_shared<AnimationAsset>();
     asset->animation = std::make_shared<Animation>(std::move(animation));
     asset->path = assetPath;
-    asset->name = assetPath.stem();
+    std::string lowerCaseName = assetPath.filename().string();
+    Utilities::ToLower(lowerCaseName);
+    asset->name = lowerCaseName;
 
     std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
@@ -354,17 +365,15 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
     std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
 
     std::filesystem::path assetPath = MakeRelative(aPath);
-    const std::string ext = assetPath.extension().string();
-    if (!ext.ends_with("json")) return false;
-    //if (!ext.ends_with("mat")) return false;
+    if (!FilenameHasExtension(assetPath, ".mat")) return false;
 
     std::shared_ptr<MaterialAsset> asset = std::make_shared<MaterialAsset>();
     asset->material = std::make_shared<Material>();
     asset->material->SetPSO(GraphicsEngine::Get().GetDefaultPSO());
-    asset->material->SetTexture(Material::TextureType::Albedo, GetAsset<TextureAsset>("T_Default_C")->texture);
-    asset->material->SetTexture(Material::TextureType::Normal, GetAsset<TextureAsset>("T_Default_N")->texture);
-    asset->material->SetTexture(Material::TextureType::Material, GetAsset<TextureAsset>("T_Default_M")->texture);
-    asset->material->SetTexture(Material::TextureType::Effects, GetAsset<TextureAsset>("T_Default_FX")->texture);
+    asset->material->SetTexture(Material::TextureType::Albedo, GetAsset<TextureAsset>("default_c")->texture);
+    asset->material->SetTexture(Material::TextureType::Normal, GetAsset<TextureAsset>("default_n")->texture);
+    asset->material->SetTexture(Material::TextureType::Material, GetAsset<TextureAsset>("default_m")->texture);
+    asset->material->SetTexture(Material::TextureType::Effects, GetAsset<TextureAsset>("default_fx")->texture);
 
     std::ifstream path(aPath);
     nl::json data = nl::json();
@@ -405,7 +414,8 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
         {
             bool textureExists = true;
             std::filesystem::path texPath = texturePath.get<std::string>();
-            std::filesystem::path texName = texPath.stem();
+            std::string texNameLower = Utilities::ToLowerCopy(texPath.filename().string());
+            std::filesystem::path texName = texNameLower;
             if (myAssets.find(texName) == myAssets.end())
             {
                 RegisterTextureAsset(myContentRoot / texPath);
@@ -426,7 +436,9 @@ bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
     }
 
     asset->path = assetPath;
-    asset->name = assetPath.stem();
+    std::string lowerCaseName = assetPath.filename().string();
+    Utilities::ToLower(lowerCaseName);
+    asset->name = lowerCaseName;
 
     std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
@@ -443,8 +455,7 @@ bool AssetManager::RegisterTextureAsset(const std::filesystem::path& aPath)
     std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
 
     std::filesystem::path assetPath = MakeRelative(aPath);
-    const std::string ext = assetPath.extension().string();
-    if (!ext.ends_with("dds")) return false;
+    if (!FilenameHasExtension(assetPath, ".dds")) return false;
 
     std::shared_ptr<TextureAsset> asset = std::make_shared<TextureAsset>();
     asset->texture = std::make_shared<Texture>();
@@ -455,7 +466,9 @@ bool AssetManager::RegisterTextureAsset(const std::filesystem::path& aPath)
         return false;
     }
     asset->path = assetPath;
-    asset->name = assetPath.stem();
+    std::string lowerCaseName = assetPath.filename().string();
+    Utilities::ToLower(lowerCaseName);
+    asset->name = lowerCaseName;
 
     std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
@@ -472,8 +485,7 @@ bool AssetManager::RegisterShaderAsset(const std::filesystem::path& aPath)
     std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
 
     std::filesystem::path assetPath = MakeRelative(aPath);
-    const std::string ext = assetPath.extension().string();
-    if (!ext.ends_with("cso")) return false;
+    if (!FilenameHasExtension(assetPath, ".cso")) return false;
 
     std::shared_ptr<ShaderAsset> asset = std::make_shared<ShaderAsset>();
     asset->shader = std::make_shared<Shader>();
@@ -485,7 +497,9 @@ bool AssetManager::RegisterShaderAsset(const std::filesystem::path& aPath)
     }
 
     asset->path = assetPath;
-    asset->name = assetPath.stem();
+    std::string lowerCaseName = assetPath.filename().string();
+    Utilities::ToLower(lowerCaseName);
+    asset->name = lowerCaseName;
 
     std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
@@ -502,8 +516,7 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
     std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
 
     std::filesystem::path assetPath = MakeRelative(aPath);
-    const std::string ext = assetPath.extension().string();
-    if (!ext.ends_with("json")) return false;
+    if (!FilenameHasExtension(assetPath, ".pso")) return false;
 
     std::shared_ptr<PSOAsset> asset = std::make_shared<PSOAsset>();
 
@@ -523,7 +536,7 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
 
     PSODescription psoDesc = {};
     
-    psoDesc.name = assetPath.stem().string();
+    psoDesc.name = assetPath.filename().string();
 
     if (data.contains("VertexType"))
     {
@@ -584,17 +597,17 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
     if (!vsPath.empty())
     {
         psoDesc.vsPath = vsPath.wstring();
-        psoDesc.vsShader = GetAsset<ShaderAsset>(vsPath.stem())->shader;
+        psoDesc.vsShader = GetAsset<ShaderAsset>(vsPath.filename())->shader;
     }
 
     if (!gsPath.empty())
     {
-        psoDesc.gsShader = GetAsset<ShaderAsset>(gsPath.stem())->shader;
+        psoDesc.gsShader = GetAsset<ShaderAsset>(gsPath.filename())->shader;
     }
 
     if (!psPath.empty())
     {
-        psoDesc.psShader = GetAsset<ShaderAsset>(psPath.stem())->shader;
+        psoDesc.psShader = GetAsset<ShaderAsset>(psPath.filename())->shader;
     }
 
     if (data.contains("RasterizerDesc"))
@@ -686,7 +699,9 @@ bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
     }
 
     asset->path = assetPath;
-    asset->name = assetPath.stem();
+    std::string lowerCaseName = assetPath.filename().string();
+    Utilities::ToLower(lowerCaseName);
+    asset->name = lowerCaseName;
 
     std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
@@ -703,15 +718,14 @@ bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
     std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
 
     std::filesystem::path assetPath = MakeRelative(aPath);
-    const std::string ext = assetPath.extension().string();
-    if (!ext.ends_with("json")) return false;
+    if (!FilenameHasExtension(assetPath, ".font")) return false;
 
     std::shared_ptr<FontAsset> asset = std::make_shared<FontAsset>();
     asset->font = std::make_shared<Font>();
 
     std::filesystem::path texturePath = assetPath;
     texturePath = texturePath.replace_filename("T" + texturePath.stem().string().substr(1) + ".dds");
-    if (myAssets.find(texturePath.stem()) == myAssets.end())
+    if (myAssets.find(texturePath.filename()) == myAssets.end())
     {
         if (!RegisterTextureAsset(myContentRoot / texturePath))
         {
@@ -720,7 +734,7 @@ bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
         }
     }
 
-    asset->font->Texture = GetAsset<TextureAsset>(texturePath.stem())->texture;
+    asset->font->Texture = GetAsset<TextureAsset>(texturePath.filename())->texture;
 
     std::ifstream path(aPath);
     nl::json data = nl::json();
@@ -784,7 +798,9 @@ bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
     }
 
     asset->path = assetPath;
-    asset->name = assetPath.stem();
+    std::string lowerCaseName = assetPath.filename().string();
+    Utilities::ToLower(lowerCaseName);
+    asset->name = lowerCaseName;
 
     std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
@@ -805,8 +821,7 @@ bool AssetManager::RegisterNavMeshAsset(const std::filesystem::path& aPath)
     std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
 
     std::filesystem::path assetPath = MakeRelative(aPath);
-    const std::string ext = assetPath.extension().string();
-    if (!ext.ends_with("fbx")) return false;
+    if (!FilenameHasExtension(assetPath, ".fbx")) return false;
 
     TGA::FBX::NavMesh tgaNavMesh;
     {
@@ -838,7 +853,9 @@ bool AssetManager::RegisterNavMeshAsset(const std::filesystem::path& aPath)
     std::shared_ptr<NavMeshAsset> asset = std::make_shared<NavMeshAsset>();
     asset->navmesh = std::make_shared<NavMesh>(std::move(navMesh));
     asset->path = assetPath;
-    asset->name = assetPath.stem();
+    std::string lowerCaseName = assetPath.filename().string();
+    Utilities::ToLower(lowerCaseName);
+    asset->name = lowerCaseName;
 
     std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
@@ -863,9 +880,9 @@ bool AssetManager::ValidateAsset(const std::filesystem::path& aPath)
     }
 
     std::filesystem::path assetPath = MakeRelative(aPath);
-    if (myAssets.find(assetPath.stem()) != myAssets.end())
+    if (myAssets.find(assetPath.filename()) != myAssets.end())
     {
-        //LOG(LogAssetManager, Warning, "Asset with name '{}' is already registered!", assetPath.stem().string());
+        //LOG(LogAssetManager, Warning, "Asset with name '{}' is already registered!", assetPath.filename().string());
         return false;
     }
 
@@ -893,27 +910,21 @@ std::filesystem::path AssetManager::MakeRelative(const std::filesystem::path& aP
     return aPath;
 }
 
-bool AssetManager::DoesAssetExist(const std::filesystem::path& aPath)
-{
-    aPath;
-    return false;
-}
-
 bool AssetManager::RegisterEngineTextureAsset(std::string_view aName, const uint8_t* aTextureDataPtr, size_t aTextureDataSize)
 {
     std::shared_ptr<TextureAsset> asset = std::make_shared<TextureAsset>();
     asset->texture = std::make_shared<Texture>();
-    if (!GraphicsEngine::Get().LoadTexture(aName, aTextureDataPtr, aTextureDataSize, *asset->texture))
+    asset->name = Utilities::ToLowerCopy(aName.data());
+    if (!GraphicsEngine::Get().LoadTexture(asset->name.string(), aTextureDataPtr, aTextureDataSize, *asset->texture))
     {
-        LOG(LogAssetManager, Error, "Failed to register default texture asset {}", aName);
+        LOG(LogAssetManager, Error, "Failed to register default texture asset {}", asset->name.string());
         return false;
     }
-    asset->name = aName;
 
     std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
 
-    LOG(LogAssetManager, Log, "Registered default texture asset {}", aName);
+    LOG(LogAssetManager, Log, "Registered default texture asset {}", asset->name.string());
 
     return true;
 }
@@ -970,7 +981,7 @@ bool AssetManager::RegisterPlanePrimitive()
     
     std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
     asset->mesh = std::make_shared<Mesh>(std::move(plane));
-    asset->name = "SM_PlanePrimitive";
+    asset->name = "sm_planeprimitive";
 
     std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
@@ -1164,7 +1175,7 @@ bool AssetManager::RegisterCubePrimitive()
 
     std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
     asset->mesh = std::make_shared<Mesh>(std::move(cube));
-    asset->name = "SM_CubePrimitive";
+    asset->name = "sm_cubeprimitive";
 
     std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
@@ -1324,13 +1335,27 @@ bool AssetManager::RegisterRampPrimitive()
 
     std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
     asset->mesh = std::make_shared<Mesh>(std::move(ramp));
-    asset->name = "SM_RampPrimitive";
+    asset->name = "sm_rampprimitive";
 
     std::lock_guard<std::mutex> assetLock(myAssetMutex);
     myAssets.emplace(asset->name, asset);
 
     LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
     return true;
+}
+
+bool AssetManager::FilenameHasPrefix(const std::filesystem::path& aPath, const char* aPrefixCompare) const
+{
+    std::string filename = Utilities::ToLowerCopy(aPath.filename().string());
+    std::string prefix = Utilities::ToLowerCopy(aPrefixCompare);
+    return filename.starts_with(prefix);
+}
+
+bool AssetManager::FilenameHasExtension(const std::filesystem::path& aPath, const char* aExtensionCompare) const
+{
+    std::string filenameExtension = Utilities::ToLowerCopy(aPath.extension().string());
+    std::string extension = Utilities::ToLowerCopy(aExtensionCompare);
+    return filenameExtension == extension;
 }
 
 void AssetManager::LogAssetLoadError(const std::filesystem::path& aPath)

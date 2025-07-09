@@ -1,0 +1,13 @@
+{
+  "PSO": "DefaultTrail.pso",
+  "AlbedoTint": {
+    "R": 1.0,
+    "G": 1.0,
+    "B": 1.0,
+    "A": 1.0
+  },
+  "EmissiveStrength": 1.0,
+  "Textures": [
+    "EngineAssets/Textures/Utility/T_perlin.dds"
+  ]
+}

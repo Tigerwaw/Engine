@@ -1,9 +1,0 @@
-{
-  "VertexType": "Default",
-  "VertexShader": "SH_ShadowCube_VS",
-  "GeometryShader": "SH_ShadowCube_GS",
-  "PixelShader": "",
-  "Samplers":
-  {
-  }
-}

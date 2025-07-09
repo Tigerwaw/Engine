@@ -1,0 +1,16 @@
+{
+  "PSO": "Deferred.pso",
+  "AlbedoTint": {
+    "R": 1.0,
+    "G": 1.0,
+    "B": 1.0,
+    "A": 1.0
+  },
+  "EmissiveStrength": 1.0,
+  "Textures": [
+    "Textures/Chest/T_Chest_C.dds",
+    "Textures/Chest/T_Chest_N.dds",
+    "Textures/Chest/T_Chest_M.dds",
+    "Textures/Chest/T_Chest_FX.dds"
+  ]
+}

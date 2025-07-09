@@ -1,0 +1,794 @@
+{
+  "GameObjects": [
+    {
+      "Name": "Plane",
+      "Active": true,
+      "Static": true,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 0.0, 0.0, 0.0 ],
+          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Scale": [ 5000.0, 5000.0, 5000.0 ]
+        },
+        {
+          "Type": "Model",
+          "ShouldViewcull": false,
+          "Model": "SM_PlanePrimitive",
+          "Materials": [
+            "DefaultMaterial"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Cube",
+      "Active": true,
+      "Static": true,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 100.0, 50.0, 200.0 ],
+          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Scale": [ 50.0, 50.0, 50.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "SM_CubePrimitive",
+          "Materials": [
+            "DefaultMaterial"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Cube2",
+      "Active": true,
+      "Static": true,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 600.0, 200.0, 800.0 ],
+          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Scale": [ 200.0, 200.0, 200.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "SM_CubePrimitive",
+          "Materials": [
+            "DefaultMaterial"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Ramp",
+      "Active": true,
+      "Static": true,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 300.0, 50.0, 0.0 ],
+          "Rotation": [ 0.0, 45.0, 0.0 ],
+          "Scale": [ 50.0, 50.0, 50.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "SM_RampPrimitive",
+          "Materials": [
+            "DefaultMaterial"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "CastleWall1",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -2400.0, 0.0, 200.0 ],
+          "Rotation": [ 0.0, 180.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "SM_Castle_Wall_sbxuw_High.fbx",
+          "Materials": [
+            "MAT_Chest.MAT"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "CastleWall2",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -2000.0, 0.0, 200.0 ],
+          "Rotation": [ 0.0, 180.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "SM_Castle_Wall_sctv3_High.fbx",
+          "Materials": [
+            "MAT_Chest.MAT"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "CastleStairs",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -2200.0, 0.0, 800.0 ],
+          "Rotation": [ 0.0, 180.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "SM_Castle_Stairs_scfdy_High.fbx",
+          "Materials": [
+            "Materials/MAT_Chest.MAT"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "CastleStructure",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -2000.0, 0.0, 500.0 ],
+          "Rotation": [ 0.0, 180.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "SM_Castle_Structure_sczvi_High.fbx",
+          "Materials": [
+            "Materials/MAT_Chest.MAT"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Chest",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -500.0, 0.0, 500.0 ],
+          "Rotation": [ 0.0, 180.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "Models/SM_Chest.fbx",
+          "Materials": [
+            "Materials/MAT_Chest.MAT"
+          ]
+        },
+        {
+          "Type": "Rotator",
+          "RotationPerSecond": [ 0.0, 35.0, 0.0 ]
+        }
+      ]
+    },
+    {
+      "Name": "Chest2",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -700.0, 0.0, -900.0 ],
+          "Rotation": [ 0.0, 120.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "Models/SM_Chest.fbx",
+          "Materials": [
+            "Materials/MAT_Chest.MAT"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Chest3",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 200.0, 0.0, 800.0 ],
+          "Rotation": [ 0.0, -45.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "Models/SM_Chest.fbx",
+          "Materials": [
+            "Materials/MAT_Chest.MAT"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Chest4",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 2000.0, 0.0, -500.0 ],
+          "Rotation": [ 0.0, -15.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "Models/SM_Chest.fbx",
+          "Materials": [
+            "Materials/MAT_Chest.MAT"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Chest5",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -1000.0, 0.0, 600.0 ],
+          "Rotation": [ 0.0, 45.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "Models/SM_Chest.fbx",
+          "Materials": [
+            "Materials/MAT_Chest.MAT"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "ColorChecker",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 100.0, 40.0, 0.0 ],
+          "Rotation": [ -90.0, 0.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "EngineAssets/Models/SM_Color_Checker.fbx",
+          "Materials": [
+            "EngineAssets/Materials/MAT_ColorChecker.MAT"
+          ]
+        },
+        {
+          "Type": "Rotator",
+          "RotationPerSecond": [ 0.0, 30.0, 0.0 ]
+        },
+        {
+          "Type": "BoxCollider",
+          "CenterOffset": [ 0.0, 0.0, 5.0 ],
+          "Extents": {
+            "Width": 60.0,
+            "Height": 60.0,
+            "Depth": 90.0
+          }
+        }
+      ]
+    },
+    {
+      "Name": "MatballOne",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -100.0, 0.0, 0.0 ],
+          "Rotation": [ 0.0, -45.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "Models/SM_TMA_Matball.fbx",
+          "Materials": [
+            "Materials/MAT_MatballOne.MAT",
+            "Materials/MAT_MatballTwo.MAT"
+          ]
+        },
+        {
+          "Type": "Rotator",
+          "RotationPerSecond": [ 0.0, 35.0, 0.0 ]
+        }
+      ],
+      "Children": [
+        {
+          "Name": "MatballTwo",
+          "Active": true,
+          "Static": false,
+          "Components": [
+            {
+              "Type": "Transform",
+              "Position": [ -100.0, 0.0, 200.0 ],
+              "Rotation": [ 0.0, -45.0, 0.0 ],
+              "Scale": [ 1.0, 1.0, 1.0 ]
+            },
+            {
+              "Type": "Model",
+              "Model": "Models/SM_TMA_Matball.fbx",
+              "Materials": [
+                "Materials/MAT_MatballOne_Transparent.MAT",
+                "Materials/MAT_MatballOne_Transparent.MAT"
+              ]
+            },
+            {
+              "Type": "Rotator",
+              "RotationPerSecond": [ 0.0, -45.0, 0.0 ]
+            },
+            {
+              "Type": "AudioSource",
+              "AudioName": "TestMusic",
+              "IsOneShot": false,
+              "SourceType": 2,
+              "PlayOnStart": true
+            },
+            {
+              "Type": "SphereCollider",
+              "CenterOffset": [ 0.0, 70.0, 0.0 ],
+              "Radius": 60.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "TgaBro",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -250.0, 0.0, 150.0 ],
+          "Rotation": [ 0.0, 180.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "AnimatedModel",
+          "Model": "Models/SK_C_TGA_Bro.fbx",
+          "Materials": [
+            "Materials/MAT_TgaBro.MAT"
+          ],
+          "AnimationLayers": [
+            {
+              "StartBone": "",
+              "Animations": [
+                {
+                  "Name": "Idle",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx",
+                  "Loop": true
+                },
+                {
+                  "Name": "Walk",
+                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Walk.fbx",
+                  "Loop": true,
+                  "Events": [
+                    {
+                      "EventType": 1,
+                      "Frame": 1
+                    },
+                    {
+                      "EventType": 1,
+                      "Frame": 17
+                    }
+                  ]
+                },
+                {
+                  "Name": "Run",
+                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx",
+                  "Loop": true,
+                  "Events": [
+                    {
+                      "EventType": 1,
+                      "Frame": 4
+                    },
+                    {
+                      "EventType": 1,
+                      "Frame": 13
+                    }
+                  ]
+                },
+                {
+                  "Name": "Wave",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Wave.fbx",
+                  "Loop": true
+                }
+              ]
+            },
+            {
+              "StartBone": "RightShoulder",
+              "Animations": [
+                {
+                  "Name": "Wave",
+                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Wave.fbx",
+                  "Loop": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Type": "AudioSource",
+          "AudioName": "TgaBroFootsteps",
+          "IsOneShot": true,
+          "SourceType": 2,
+          "PlayOnEvent": 1
+        }
+      ]
+    },
+    {
+      "Name": "MainCamera",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 0.0, 600.0, -600.0 ],
+          "Rotation": [ 45.0, 0.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Camera",
+          "Perspective": true,
+          "FOV": 90.0,
+          "NearPlane": 1.0,
+          "FarPlane": 10000.0
+        },
+        {
+          "Type": "FreecamController",
+          "MoveSpeed": 400.0,
+          "RotationSpeed": 300.0
+        }
+      ]
+    },
+    {
+      "Name": "A_Light",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 0.0, 0.0, 0.0 ],
+          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "AmbientLight",
+          "Cubemap": "Textures/Cubemaps/T_Skansen_Cube.dds",
+          "Intensity": 0.2
+        }
+      ]
+    },
+    {
+      "Name": "D_Light",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -500.0, 500.0, -500.0 ],
+          "Rotation": [ 45.0, 45.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "DirectionalLight",
+          "Intensity": 1.0,
+          "Color": [ 1.0, 1.0, 1.0 ],
+          "CastShadows": true,
+          "ShadowTextureSize": 4096,
+          "MinShadowBias": 0.0003,
+          "MaxShadowBias": 0.001,
+          "LightSize": 1000.0
+        },
+        {
+          "Type": "Camera",
+          "Perspective": false,
+          "LeftPlane": -1024.0,
+          "RightPlane": 1024.0,
+          "TopPlane": 1024.0,
+          "BottomPlane": -1024.0,
+          "NearPlane": 1.0,
+          "FarPlane": 6000.0
+        }
+      ]
+    },
+    {
+      "Name": "P_Light",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 50.0, 200.0, 100.0 ],
+          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "PointLight",
+          "Intensity": 50000.0,
+          "Color": [ 1.0, 1.0, 1.0 ],
+          "CastShadows": true,
+          "ShadowTextureSize": 512,
+          "MinShadowBias": 0.00005,
+          "MaxShadowBias": 0.0002,
+          "LightSize": 1500.0
+        },
+        {
+          "Type": "Camera",
+          "Perspective": true,
+          "FOV": 90.0,
+          "NearPlane": 1.0,
+          "FarPlane": 3000.0,
+          "Resolution": [ 512.0, 512.0 ]
+        }
+      ]
+    },
+    {
+      "Name": "S_Light",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -70.0, 180.0, -200.0 ],
+          "Rotation": [ 45.0, -15.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "SpotLight",
+          "Intensity": 100000.0,
+          "Color": [ 1.0, 1.0, 1.0 ],
+          "ConeAngle": 600.0,
+          "CastShadows": true,
+          "ShadowTextureSize": 512,
+          "MinShadowBias": 0.0001,
+          "MaxShadowBias": 0.015,
+          "LightSize": 0.7
+        },
+        {
+          "Type": "Camera",
+          "Perspective": true,
+          "FOV": 90.0,
+          "NearPlane": 50.0,
+          "FarPlane": 2000.0,
+          "Resolution": [ 512.0, 512.0 ]
+        }
+      ]
+    },
+    {
+      "Name": "VFXTest",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 0.0, 200.0, 0.0 ],
+          "Rotation": [ -45.0, 0.0, 0.0 ],
+          "Scale": [ 100.0, 100.0, 100.0 ]
+        },
+        {
+          "Type": "Model",
+          "ShouldViewcull": true,
+          "Model": "SM_PlanePrimitive",
+          "Materials": [
+            "Materials/MAT_ExplosionVFX.MAT"
+          ]
+        },
+        {
+          "Type": "VFXModel",
+          "CastShadows": false,
+          "Lifetime": 1.0,
+          "EventTrigger": 0,
+          "IsBillboard": true,
+          "IsSpritesheet": true,
+          "SpritesheetSize": [
+            8.0,
+            4.0
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "ParticleTest",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -1000.0, 100.0, 0.0 ],
+          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "ParticleSystem",
+          "Emitters": [
+            {
+              "EmitterSize": [ 100.0, 100.0, 100.0 ],
+              "Material": "Materials/MAT_ExplosionParticle.MAT",
+              "SpawnRate": 100.0,
+              "Lifetime": 1.0,
+              "Size": [
+                {
+                  "Time": 0.0,
+                  "Value": [ 1.0, 1.0 ]
+                },
+                {
+                  "Time": 1.0,
+                  "Value": [ 80.0, 80.0 ]
+                }
+              ],
+              "Velocity": {
+                "Min": [ -50.0, 100.0, -50.0 ],
+                "Max": [ 50.0, 300.0, 50.0 ]
+              },
+              "GravityScale": 10.0,
+              "Color": [
+                {
+                  "Time": 0.0,
+                  "Value": [ 1.0, 1.0, 1.0, 0.0 ]
+                },
+                {
+                  "Time": 0.5,
+                  "Value": [ 1.0, 1.0, 1.0, 0.75 ]
+                },
+                {
+                  "Time": 1.0,
+                  "Value": [ 1.0, 1.0, 1.0, 0.0 ]
+                }
+              ]
+            },
+            {
+              "EmitterSize": [ 20.0, 20.0, 20.0 ],
+              "Material": "Materials/MAT_SmokeParticle.MAT",
+              "SpawnRate": 20.0,
+              "Lifetime": 5.0,
+              "Size": [
+                {
+                  "Time": 0.0,
+                  "Value": [ 1.0, 1.0 ]
+                },
+                {
+                  "Time": 1.0,
+                  "Value": [ 150.0, 150.0 ]
+                }
+              ],
+              "Angle": [
+                {
+                  "Time": 0.0,
+                  "Value": 0
+                },
+                {
+                  "Time": 1.0,
+                  "Value": 45.0
+                }
+              ],
+              "Velocity": {
+                "Min": [ -30.0, 100.0, -30.0 ],
+                "Max": [ 30.0, 200.0, 30.0 ]
+              },
+              "GravityScale": 6.0,
+              "Color": [
+                {
+                  "Time": 0.0,
+                  "Value": [ 1.0, 1.0, 1.0, 0.0 ]
+                },
+                {
+                  "Time": 0.5,
+                  "Value": [ 0.8, 0.8, 0.8, 0.75 ]
+                },
+                {
+                  "Time": 1.0,
+                  "Value": [ 0.6, 0.6, 0.6, 0.0 ]
+                }
+              ],
+              "ChannelMask": [ 1.0, 0.0, 0.0, 0.0 ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "TrailTest",
+      "Active": true,
+      "Static": false,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ -100.0, 50.0, 900.0 ],
+          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Scale": [ 50.0, 50.0, 50.0 ]
+        },
+        {
+          "Type": "Model",
+          "Model": "SM_CubePrimitive",
+          "Materials": [
+            "DefaultMaterial"
+          ]
+        },
+        {
+          "Type": "MoveBetweenPoints",
+          "Speed": 100.0,
+          "Points": [
+            [-100.0, 50.0, 900.0],
+            [-200.0, 100.0, 950.0],
+            [-300.0, 50.0, 1000.0],
+            [-400.0, 100.0, 1050.0],
+            [-500.0, 50.0, 1000.0],
+            [-600.0, 100.0, 950.0],
+            [-700.0, 50.0, 900.0],
+            [-600.0, 100.0, 850.0],
+            [-500.0, 50.0, 800.0],
+            [-400.0, 100.0, 750.0],
+            [-300.0, 50.0, 700.0],
+            [-200.0, 100.0, 650.0],
+            [-100.0, 50.0, 600.0]
+          ]
+        },
+        {
+          "Type": "TrailSystem",
+          "Emitters": [
+            {
+              "Material": "Materials/MAT_DefaultTrail.MAT",
+              "Length": 24,
+              "Vertices": 36.0,
+              "Width": [
+                {
+                  "Time": 0.0,
+                  "Value": 40.0
+                },
+                {
+                  "Time": 1.0,
+                  "Value": 0.0
+                }
+              ],
+              "Color": [
+                {
+                  "Time": 0.0,
+                  "Value": [ 1.0, 0.0, 0.0, 1.0 ]
+                },
+                {
+                  "Time": 0.5,
+                  "Value": [ 0.0, 1.0, 0.0, 1.0 ]
+                },
+                {
+                  "Time": 1.0,
+                  "Value": [ 0.0, 0.0, 1.0, 1.0 ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

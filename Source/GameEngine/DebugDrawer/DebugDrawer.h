@@ -23,7 +23,7 @@ public:
     void ClearObjects();
     void DrawLine(Math::Vector3f aFromPosition, Math::Vector3f aToPosition, Math::Vector4f aColor = { 1.0f, 1.0f, 1.0f, 1.0f });
     void DrawLine(DebugLine aLine);
-    void DrawCameraFrustum(std::shared_ptr<Camera> aCamera, Math::Vector4f aColor = { 1.0f, 1.0f, 1.0f, 1.0f });
+    void DrawCameraFrustum(std::shared_ptr<Camera> aCamera, Math::Vector4f aColor = { 0.0f, 0.0f, 1.0f, 1.0f });
     void DrawBoundingBox(Math::AABB3D<float> aAABB, Math::Matrix4x4f aWorldMatrix = Math::Matrix4x4f(), Math::Vector4f aColor = { 1.0f, 1.0f, 1.0f, 1.0f });
     void DrawBoundingBox(std::shared_ptr<Model> aModel, Math::Vector4f aColor = { 1.0f, 1.0f, 1.0f, 1.0f });
     void DrawBoundingBox(std::shared_ptr<AnimatedModel> aModel, Math::Vector4f aColor = { 1.0f, 1.0f, 1.0f, 1.0f });

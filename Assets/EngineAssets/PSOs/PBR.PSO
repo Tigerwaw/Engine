@@ -1,0 +1,11 @@
+{
+  "VertexType": "Default",
+  "VertexShader": "SH_Mesh_VS.cso",
+  "GeometryShader": "",
+  "PixelShader": "SH_PBRMesh_PS.cso",
+  "Samplers": {
+    "LinearWrapSS": 0,
+    "LutSS": 14,
+    "ShadowSS": 15
+  }
+}

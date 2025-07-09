@@ -1,0 +1,6 @@
+{
+  "VertexType": "Default",
+  "VertexShader": "SH_Mesh_VS.cso",
+  "GeometryShader": "",
+  "PixelShader": "SH_DebugVertexColor_PS.cso"
+}

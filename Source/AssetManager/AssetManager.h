@@ -4,6 +4,7 @@
 #include <chrono>
 #include "Asset.h"
 #include "WinPixEventRuntime/pix3.h"
+#include "CommonUtilities/StringUtilities.hpp"
 
 class AssetManager
 {
@@ -33,7 +34,6 @@ public:
 	bool RegisterNavMeshAsset(const std::filesystem::path& aPath);
 	std::filesystem::path& GetContentRoot() { return myContentRoot; }
 	std::filesystem::path MakeRelative(const std::filesystem::path& aPath) const;
-	bool DoesAssetExist(const std::filesystem::path& aPath);
 private:
 	AssetManager();
 	~AssetManager();
@@ -45,6 +45,9 @@ private:
 	bool RegisterPlanePrimitive();
 	bool RegisterCubePrimitive();
 	bool RegisterRampPrimitive();
+	
+	bool FilenameHasPrefix(const std::filesystem::path& aPath, const char* aPrefixCompare) const;
+	bool FilenameHasExtension(const std::filesystem::path& aPath, const char* aExtensionCompare) const;
 
 	void LogAssetLoadError(const std::filesystem::path& aPath);
 
@@ -61,15 +64,16 @@ inline std::shared_ptr<T> AssetManager::GetAsset(const std::filesystem::path& aP
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(6), "AssetManager Get Asset");
 	std::shared_ptr<T> asset = nullptr;
-
-	if (myAssets.contains(aPath.stem()))
+	
+	std::filesystem::path filename(Utilities::ToLowerCopy(aPath.filename().string()));
+	if (myAssets.contains(filename))
 	{
-		asset = std::dynamic_pointer_cast<T>(myAssets.at(aPath.stem()));
+		asset = std::dynamic_pointer_cast<T>(myAssets.at(filename));
 	}
 	else
 	{
-		LogAssetLoadError(aPath);
-		assert(myAssets.contains(aPath));
+		LogAssetLoadError(filename);
+		assert(myAssets.contains(filename));
 		return nullptr;
 	}
 
