@@ -9,7 +9,7 @@ namespace nl = nlohmann;
 
 bool FontAsset::Load()
 {
-    std::ifstream streamPath(path);
+    std::ifstream streamPath(GetPath());
     nl::json data = nl::json();
 
     try
@@ -24,7 +24,7 @@ bool FontAsset::Load()
 
     Font newFont;
 
-    std::filesystem::path texturePath = path;
+    std::filesystem::path texturePath = GetPath();
     texturePath = texturePath.replace_extension(".dds");
     if (!AssetManager::Get().IsAssetRegistered(texturePath))
     {

@@ -14,7 +14,7 @@ namespace nl = nlohmann;
 
 bool PSOAsset::Load()
 {
-    std::ifstream streamPath(path);
+    std::ifstream streamPath(GetPath());
     nl::json data = nl::json();
 
     try
@@ -29,7 +29,7 @@ bool PSOAsset::Load()
 
     PSODescription psoDesc = {};
 
-    psoDesc.name = name.string();
+    psoDesc.name = GetName().string();
 
     if (data.contains("VertexType"))
     {
@@ -74,7 +74,7 @@ bool PSOAsset::Load()
         vsShaderAsset = assetManager.GetAsset<ShaderAsset>(data["VertexShader"].get<std::string>());
         if (vsShaderAsset)
         {
-            vsPath = vsShaderAsset->path;
+            vsPath = vsShaderAsset->GetPath();
         }
     }
 
@@ -83,7 +83,7 @@ bool PSOAsset::Load()
         gsShaderAsset = assetManager.GetAsset<ShaderAsset>(data["GeometryShader"].get<std::string>());
         if (gsShaderAsset)
         {
-            gsPath = gsShaderAsset->path;
+            gsPath = gsShaderAsset->GetPath();
         }
     }
 
@@ -92,7 +92,7 @@ bool PSOAsset::Load()
         psShaderAsset = assetManager.GetAsset<ShaderAsset>(data["PixelShader"].get<std::string>());
         if (psShaderAsset)
         {
-            psPath = psShaderAsset->path;
+            psPath = psShaderAsset->GetPath();
         }
     }
 

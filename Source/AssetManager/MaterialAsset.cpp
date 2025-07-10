@@ -9,7 +9,7 @@ namespace nl = nlohmann;
 
 bool MaterialAsset::Load()
 {
-    std::ifstream streamPath(path);
+    std::ifstream streamPath(GetPath());
     nl::json data = nl::json();
 
     try

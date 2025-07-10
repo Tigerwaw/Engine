@@ -152,7 +152,7 @@ bool GraphicsEngine::LoadTexture(std::string_view aName, const uint8_t* aTexture
 	return myRHI->LoadTexture(aName, aTextureDataPtr, aTextureDataSize, outTexture);
 }
 
-bool GraphicsEngine::LoadTexture(std::filesystem::path& aFilePath, Texture& outTexture) const
+bool GraphicsEngine::LoadTexture(const std::filesystem::path& aFilePath, Texture& outTexture) const
 {
 	std::ifstream file(aFilePath, std::ios::binary);
 	file.seekg(0, std::ios::end);

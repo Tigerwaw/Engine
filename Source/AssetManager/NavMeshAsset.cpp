@@ -8,7 +8,7 @@ std::vector<NavPortal> CreateNavPortals(const std::vector<NavPolygon>& navPolygo
 bool NavMeshAsset::Load()
 {
     TGA::FBX::NavMesh tgaNavMesh;
-    TGA::FBX::Importer::LoadNavMesh(path, tgaNavMesh, true);
+    TGA::FBX::Importer::LoadNavMesh(GetPath(), tgaNavMesh, true);
 
     // Create Nav Polygons.
     std::vector<NavPolygon> navPolygons = CreateNavPolygons(tgaNavMesh);

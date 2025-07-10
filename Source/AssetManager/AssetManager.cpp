@@ -166,37 +166,37 @@ void AssetManager::RegisterEngineAssets()
         asset->material->SetTexture(Material::TextureType::Normal, GetAsset<TextureAsset>("default_n")->texture);
         asset->material->SetTexture(Material::TextureType::Material, GetAsset<TextureAsset>("default_m")->texture);
         asset->material->SetTexture(Material::TextureType::Effects, GetAsset<TextureAsset>("default_fx")->texture);
-        asset->name = "defaultmaterial";
+        asset->myName = "defaultmaterial";
         asset->myIsLoaded = true;
-        myAssets.emplace(asset->name, asset);
-        LOG(LogAssetManager, Log, "Registered material asset {}", asset->name.string());
+        myAssets.emplace(asset->myName, asset);
+        LOG(LogAssetManager, Log, "Registered material asset {}", asset->myName.string());
     }
 
     {
         std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
         asset->mesh = std::make_shared<Mesh>(std::move(GraphicsEngine::Get().CreatePlanePrimitive()));
-        asset->name = "sm_planeprimitive";
+        asset->myName = "sm_planeprimitive";
         asset->myIsLoaded = true;
-        myAssets.emplace(asset->name, asset);
-        LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
+        myAssets.emplace(asset->myName, asset);
+        LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->myName.string());
     }
 
     {
         std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
         asset->mesh = std::make_shared<Mesh>(std::move(GraphicsEngine::Get().CreateCubePrimitive()));
-        asset->name = "sm_cubeprimitive";
+        asset->myName = "sm_cubeprimitive";
         asset->myIsLoaded = true;
-        myAssets.emplace(asset->name, asset);
-        LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
+        myAssets.emplace(asset->myName, asset);
+        LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->myName.string());
     }
     
     {
         std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
         asset->mesh = std::make_shared<Mesh>(std::move(GraphicsEngine::Get().CreateRampPrimitive()));
-        asset->name = "sm_rampprimitive";
+        asset->myName = "sm_rampprimitive";
         asset->myIsLoaded = true;
-        myAssets.emplace(asset->name, asset);
-        LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
+        myAssets.emplace(asset->myName, asset);
+        LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->myName.string());
     }
 
     for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "EngineAssets/Models/"))
@@ -290,73 +290,73 @@ void AssetManager::LoadAllRegisteredAssets()
 bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
 {
     std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
-    asset->path = aPath;
-    asset->name = Utilities::ToLowerCopy(aPath.filename().string());
+    asset->myPath = aPath;
+    asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
 
-    myAssets.emplace(asset->name, asset);
+    myAssets.emplace(asset->myName, asset);
     return true;
 }
 
 bool AssetManager::RegisterAnimationAsset(const std::filesystem::path& aPath)
 {
     std::shared_ptr<AnimationAsset> asset = std::make_shared<AnimationAsset>();
-    asset->path = aPath;
-    asset->name = Utilities::ToLowerCopy(aPath.filename().string());
-    myAssets.emplace(asset->name, asset);
+    asset->myPath = aPath;
+    asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
+    myAssets.emplace(asset->myName, asset);
     return true;
 }
 
 bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
 {
     std::shared_ptr<MaterialAsset> asset = std::make_shared<MaterialAsset>();
-    asset->path = aPath;
-    asset->name = Utilities::ToLowerCopy(aPath.filename().string());
-    myAssets.emplace(asset->name, asset);
+    asset->myPath = aPath;
+    asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
+    myAssets.emplace(asset->myName, asset);
     return true;
 }
 
 bool AssetManager::RegisterTextureAsset(const std::filesystem::path& aPath)
 {
     std::shared_ptr<TextureAsset> asset = std::make_shared<TextureAsset>();
-    asset->path = aPath;
-    asset->name = Utilities::ToLowerCopy(aPath.filename().string());
-    myAssets.emplace(asset->name, asset);
+    asset->myPath = aPath;
+    asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
+    myAssets.emplace(asset->myName, asset);
     return true;
 }
 
 bool AssetManager::RegisterShaderAsset(const std::filesystem::path& aPath)
 {
     std::shared_ptr<ShaderAsset> asset = std::make_shared<ShaderAsset>();
-    asset->path = aPath;
-    asset->name = Utilities::ToLowerCopy(aPath.filename().string());
-    myAssets.emplace(asset->name, asset);
+    asset->myPath = aPath;
+    asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
+    myAssets.emplace(asset->myName, asset);
     return true;
 }
 
 bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
 {
     std::shared_ptr<PSOAsset> asset = std::make_shared<PSOAsset>();
-    asset->path = aPath;
-    asset->name = Utilities::ToLowerCopy(aPath.filename().string());
-    myAssets.emplace(asset->name, asset);
+    asset->myPath = aPath;
+    asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
+    myAssets.emplace(asset->myName, asset);
     return true;
 }
 
 bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
 {
     std::shared_ptr<FontAsset> asset = std::make_shared<FontAsset>();
-    asset->path = aPath;
-    asset->name = Utilities::ToLowerCopy(aPath.filename().string());
-    myAssets.emplace(asset->name, asset);
+    asset->myPath = aPath;
+    asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
+    myAssets.emplace(asset->myName, asset);
     return true;
 }
 
 bool AssetManager::RegisterNavMeshAsset(const std::filesystem::path& aPath)
 {
     std::shared_ptr<NavMeshAsset> asset = std::make_shared<NavMeshAsset>();
-    asset->path = aPath;
-    asset->name = Utilities::ToLowerCopy(aPath.filename().string());
-    myAssets.emplace(asset->name, asset);
+    asset->myPath = aPath;
+    asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
+    myAssets.emplace(asset->myName, asset);
     return true;
 }
 
@@ -420,17 +420,17 @@ bool AssetManager::RegisterEngineTextureAsset(std::string_view aName, const uint
 {
     std::shared_ptr<TextureAsset> asset = std::make_shared<TextureAsset>();
     asset->texture = std::make_shared<Texture>();
-    asset->name = Utilities::ToLowerCopy(aName.data());
-    if (!GraphicsEngine::Get().LoadTexture(asset->name.string(), aTextureDataPtr, aTextureDataSize, *asset->texture))
+    asset->myName = Utilities::ToLowerCopy(aName.data());
+    if (!GraphicsEngine::Get().LoadTexture(asset->myName.string(), aTextureDataPtr, aTextureDataSize, *asset->texture))
     {
-        LOG(LogAssetManager, Error, "Failed to register default texture asset {}", asset->name.string());
+        LOG(LogAssetManager, Error, "Failed to register default texture asset {}", asset->myName.string());
         return false;
     }
     
     asset->myIsLoaded = true;
-    myAssets.emplace(asset->name, asset);
+    myAssets.emplace(asset->myName, asset);
 
-    LOG(LogAssetManager, Log, "Registered default texture asset {}", asset->name.string());
+    LOG(LogAssetManager, Log, "Registered default texture asset {}", asset->myName.string());
 
     return true;
 }

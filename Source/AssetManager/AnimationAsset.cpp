@@ -5,7 +5,7 @@
 bool AnimationAsset::Load()
 {
     TGA::FBX::Animation tgaAnimation;
-    TGA::FBX::Importer::LoadAnimation(path, tgaAnimation);
+    TGA::FBX::Importer::LoadAnimation(GetPath(), tgaAnimation);
 
     Animation newAnimation;
     newAnimation.Duration = static_cast<float>(tgaAnimation.Duration);

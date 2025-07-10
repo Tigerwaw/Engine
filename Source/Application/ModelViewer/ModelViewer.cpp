@@ -960,26 +960,26 @@ void ModelViewer::SetShader(std::filesystem::path& aAssetPath)
 		return;
 	}
 
-	if (shaderAsset->name.string().ends_with("VS"))
+	if (shaderAsset->myName.string().ends_with("VS"))
 	{
 		myPSO->VertexShader = shaderAsset->shader;
 		myMaterial->SetPSO(myPSO);
-		myShaderNames[ShaderType::VertexShader] = shaderAsset->name.string();
-		myShaderPaths[ShaderType::VertexShader] = shaderAsset->path.string();
+		myShaderNames[ShaderType::VertexShader] = shaderAsset->myName.string();
+		myShaderPaths[ShaderType::VertexShader] = shaderAsset->myPath.string();
 	}
-	else if (shaderAsset->name.string().ends_with("GS"))
+	else if (shaderAsset->myName.string().ends_with("GS"))
 	{
 		myPSO->GeometryShader = shaderAsset->shader;
 		myMaterial->SetPSO(myPSO);
-		myShaderNames[ShaderType::GeometryShader] = shaderAsset->name.string();
-		myShaderPaths[ShaderType::GeometryShader] = shaderAsset->path.string();
+		myShaderNames[ShaderType::GeometryShader] = shaderAsset->myName.string();
+		myShaderPaths[ShaderType::GeometryShader] = shaderAsset->myPath.string();
 	}
-	else if (shaderAsset->name.string().ends_with("PS"))
+	else if (shaderAsset->myName.string().ends_with("PS"))
 	{
 		myPSO->PixelShader = shaderAsset->shader;
 		myMaterial->SetPSO(myPSO);
-		myShaderNames[ShaderType::PixelShader] = shaderAsset->name.string();
-		myShaderPaths[ShaderType::PixelShader] = shaderAsset->path.string();
+		myShaderNames[ShaderType::PixelShader] = shaderAsset->myName.string();
+		myShaderPaths[ShaderType::PixelShader] = shaderAsset->myPath.string();
 	}
 	else
 	{

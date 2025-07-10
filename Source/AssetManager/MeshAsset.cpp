@@ -6,7 +6,7 @@
 bool MeshAsset::Load()
 {
     TGA::FBX::Mesh tgaMesh;
-    TGA::FBX::Importer::LoadMesh(path, tgaMesh);
+    TGA::FBX::Importer::LoadMesh(GetPath(), tgaMesh);
 
     std::vector<Vertex> vertices;
     std::vector<unsigned> indices;

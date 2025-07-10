@@ -137,7 +137,7 @@ public:
 		RHITextureFormat aFormat, Texture& outTexture, bool aStaging, bool aShaderResource, bool aRenderTarget,
 		bool aCpuAccessRead, bool aCpuAccessWrite) const;
 	bool LoadTexture(std::string_view aName, const uint8_t* aTextureDataPtr, size_t aTextureDataSize, Texture& outTexture) const;
-	bool LoadTexture(std::filesystem::path& aFilePath, Texture& outTexture) const;
+	bool LoadTexture(const std::filesystem::path& aFilePath, Texture& outTexture) const;
 	bool SetTextureResource_PS(unsigned aSlot, Texture& aTexture);
 	bool SetTextureResource_VS(unsigned aSlot, Texture& aTexture);
 	bool ClearTextureResource_PS(unsigned aSlot);

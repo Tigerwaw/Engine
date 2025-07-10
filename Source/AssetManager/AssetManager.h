@@ -24,7 +24,7 @@ public:
 		return myInstance;
 	}
 
-	template<typename T>
+	template<typename T> requires std::is_base_of_v<Asset, T>
 	std::shared_ptr<T> GetAsset(const std::filesystem::path& aPath);
 
 	bool RegisterAsset(const std::filesystem::path& aPath);
@@ -70,7 +70,7 @@ private:
 	std::filesystem::path myContentRoot;
 };
 
-template<typename T>
+template<typename T> requires std::is_base_of_v<Asset, T>
 inline std::shared_ptr<T> AssetManager::GetAsset(const std::filesystem::path& aPath)
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(6), "AssetManager Get Asset");

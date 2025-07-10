@@ -11,4 +11,3 @@ public:
 	bool Load() override;
 	bool Unload() override;
 };
-
