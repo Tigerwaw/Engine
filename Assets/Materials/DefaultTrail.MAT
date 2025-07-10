@@ -8,6 +8,6 @@
   },
   "EmissiveStrength": 1.0,
   "Textures": [
-    "EngineAssets/Textures/Utility/T_perlin.dds"
+    "perlin.dds"
   ]
 }

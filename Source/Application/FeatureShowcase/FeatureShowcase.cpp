@@ -41,7 +41,7 @@ void FeatureShowcase::InitializeApplication()
 	Engine::Get().GetAudioEngine().AddBus(BusType::Ambience, "Ambience");
 	Engine::Get().GetAudioEngine().AddBus(BusType::SFX, "SFX");
 
-	Engine::Get().GetSceneHandler().LoadScene("Scenes/SC_FeatureShowCaseScene.SCENE");
+	Engine::Get().GetSceneHandler().LoadScene("Scenes/FeatureShowCaseScene.SCENE");
 
 	InputHandler& inputHandler = Engine::Get().GetInputHandler();
 	inputHandler.RegisterBinaryAction("W", Keys::W, GenericInput::ActionType::Held);
@@ -83,7 +83,7 @@ void FeatureShowcase::InitializeApplication()
 	instancedModelObj->AddComponent<Transform>(Math::Vector3f(-500.0f, 0, 1500.0f));
 	std::shared_ptr<InstancedModel> instancedModel = instancedModelObj->AddComponent<InstancedModel>();
 	instancedModel->SetMesh(AssetManager::Get().GetAsset<MeshAsset>("SM_Chest.fbx")->mesh);
-	instancedModel->SetMaterialOnSlot(0, AssetManager::Get().GetAsset<MaterialAsset>("Materials/MAT_Chest.mat")->material);
+	instancedModel->SetMaterialOnSlot(0, AssetManager::Get().GetAsset<MaterialAsset>("Chest.mat")->material);
 
 	for (int outer = 0; outer < 10; outer++)
 	{

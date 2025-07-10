@@ -16,7 +16,7 @@
           "ShouldViewcull": false,
           "Model": "SM_PlanePrimitive",
           "Materials": [
-            "MAT_DefaultMaterial"
+            "DefaultMaterial"
           ]
         }
       ]
@@ -59,7 +59,7 @@
         },
         {
           "Type": "AmbientLight",
-          "Cubemap": "EngineAssets/Textures/Cubemaps/T_Skansen_Cube.dds",
+          "Cubemap": "Skansen_Cube.dds",
           "Intensity": 0.2
         }
       ]

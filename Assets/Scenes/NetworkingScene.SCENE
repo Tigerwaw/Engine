@@ -16,7 +16,7 @@
           "ShouldViewcull": false,
           "Model": "SM_PlanePrimitive",
           "Materials": [
-            "MAT_DefaultMaterial"
+            "DefaultMaterial"
           ]
         }
       ]
@@ -28,19 +28,16 @@
       "Components": [
         {
           "Type": "Transform",
-          "Position": [ 0.0, 1500.0, 0.0 ],
+          "Position": [ 0.0, 1000.0, 0.0 ],
           "Rotation": [ 90.0, 0.0, 0.0 ],
           "Scale": [ 1.0, 1.0, 1.0 ]
         },
         {
           "Type": "Camera",
-          "Perspective": false,
-          "LeftPlane": -1600.0,
-          "RightPlane": 1600.0,
-          "TopPlane": 900.0,
-          "BottomPlane": -900.0,
+          "Perspective": true,
+          "FOV": 90.0,
           "NearPlane": 1.0,
-          "FarPlane": 6000.0
+          "FarPlane": 10000.0
         }
       ]
     },
@@ -57,7 +54,7 @@
         },
         {
           "Type": "AmbientLight",
-          "Cubemap": "Textures/Cubemaps/T_Skansen_Cube.dds",
+          "Cubemap": "Skansen_Cube.dds",
           "Intensity": 0.2
         }
       ]

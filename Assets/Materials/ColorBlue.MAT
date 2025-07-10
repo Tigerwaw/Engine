@@ -1,0 +1,14 @@
+{
+  "PSO": "Deferred.pso",
+  "AlbedoTint": {
+    "R": 0.0,
+    "G": 0.0,
+    "B": 1.0,
+    "A": 1.0
+  },
+  "Textures": [
+    "Matball_One_c.dds",
+    "Matball_One_n.dds",
+    "Matball_One_m.dds"
+  ]
+}

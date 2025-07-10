@@ -7,6 +7,6 @@
     "A": 1.0
   },
   "Textures": [
-    "Textures/Explosion_VFX/T_explosion_C.dds"
+    "explosion_C.dds"
   ]
 }

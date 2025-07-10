@@ -7,8 +7,8 @@
     "A": 1.0
   },
   "Textures": [
-    "Textures/TGABro/T_TGA_Bro_C.dds",
-    "Textures/TGABro/T_TGA_Bro_N.dds",
-    "Textures/TGABro/T_TGA_Bro_M.dds"
+    "TestCube_C.dds",
+    "TestCube_N.dds",
+    "TestCube_M.dds"
   ]
 }

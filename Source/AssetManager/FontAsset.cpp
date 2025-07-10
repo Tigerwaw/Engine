@@ -25,7 +25,7 @@ bool FontAsset::Load()
     Font newFont;
 
     std::filesystem::path texturePath = path;
-    texturePath = texturePath.replace_filename("T" + texturePath.stem().string().substr(1) + ".dds");
+    texturePath = texturePath.replace_extension(".dds");
     if (!AssetManager::Get().IsAssetRegistered(texturePath))
     {
         return false;

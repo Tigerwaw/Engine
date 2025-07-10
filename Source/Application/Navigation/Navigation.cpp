@@ -27,7 +27,7 @@ void Navigation::InitializeApplication()
 	inputHandler.RegisterAnalog2DAction("MousePosNDC", MouseMovement2D::MousePosNDC);
 
 	GraphicsEngine::Get().RecalculateShadowFrustum = false;
-	Engine::Get().GetSceneHandler().LoadScene("Scenes/SC_Navigation.json");
+	Engine::Get().GetSceneHandler().LoadScene("Navigation.json");
 
 	myNavMesh = AssetManager::Get().GetAsset<NavMeshAsset>("NM_Navmesh")->navmesh;
 	Engine::Get().GetSceneHandler().FindGameObjectByName("Companion")->AddComponent<NavMeshAgent>(myNavMesh.get(), 150.0f);

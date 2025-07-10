@@ -96,7 +96,7 @@
           "Type": "Model",
           "Model": "SM_Castle_Wall_sbxuw_High.fbx",
           "Materials": [
-            "MAT_Chest.MAT"
+            "Chest.MAT"
           ]
         }
       ]
@@ -116,7 +116,7 @@
           "Type": "Model",
           "Model": "SM_Castle_Wall_sctv3_High.fbx",
           "Materials": [
-            "MAT_Chest.MAT"
+            "Chest.MAT"
           ]
         }
       ]
@@ -136,7 +136,7 @@
           "Type": "Model",
           "Model": "SM_Castle_Stairs_scfdy_High.fbx",
           "Materials": [
-            "Materials/MAT_Chest.MAT"
+            "Chest.MAT"
           ]
         }
       ]
@@ -156,7 +156,7 @@
           "Type": "Model",
           "Model": "SM_Castle_Structure_sczvi_High.fbx",
           "Materials": [
-            "Materials/MAT_Chest.MAT"
+            "Chest.MAT"
           ]
         }
       ]
@@ -174,9 +174,9 @@
         },
         {
           "Type": "Model",
-          "Model": "Models/SM_Chest.fbx",
+          "Model": "SM_Chest.fbx",
           "Materials": [
-            "Materials/MAT_Chest.MAT"
+            "Chest.MAT"
           ]
         },
         {
@@ -198,9 +198,9 @@
         },
         {
           "Type": "Model",
-          "Model": "Models/SM_Chest.fbx",
+          "Model": "SM_Chest.fbx",
           "Materials": [
-            "Materials/MAT_Chest.MAT"
+            "Chest.MAT"
           ]
         }
       ]
@@ -218,9 +218,9 @@
         },
         {
           "Type": "Model",
-          "Model": "Models/SM_Chest.fbx",
+          "Model": "SM_Chest.fbx",
           "Materials": [
-            "Materials/MAT_Chest.MAT"
+            "Chest.MAT"
           ]
         }
       ]
@@ -238,9 +238,9 @@
         },
         {
           "Type": "Model",
-          "Model": "Models/SM_Chest.fbx",
+          "Model": "SM_Chest.fbx",
           "Materials": [
-            "Materials/MAT_Chest.MAT"
+            "Chest.MAT"
           ]
         }
       ]
@@ -258,9 +258,9 @@
         },
         {
           "Type": "Model",
-          "Model": "Models/SM_Chest.fbx",
+          "Model": "SM_Chest.fbx",
           "Materials": [
-            "Materials/MAT_Chest.MAT"
+            "Chest.MAT"
           ]
         }
       ]
@@ -278,9 +278,9 @@
         },
         {
           "Type": "Model",
-          "Model": "EngineAssets/Models/SM_Color_Checker.fbx",
+          "Model": "SM_Color_Checker.fbx",
           "Materials": [
-            "EngineAssets/Materials/MAT_ColorChecker.MAT"
+            "ColorChecker.MAT"
           ]
         },
         {
@@ -311,10 +311,10 @@
         },
         {
           "Type": "Model",
-          "Model": "Models/SM_TMA_Matball.fbx",
+          "Model": "SM_TMA_Matball.fbx",
           "Materials": [
-            "Materials/MAT_MatballOne.MAT",
-            "Materials/MAT_MatballTwo.MAT"
+            "MatballOne.MAT",
+            "MatballTwo.MAT"
           ]
         },
         {
@@ -336,10 +336,10 @@
             },
             {
               "Type": "Model",
-              "Model": "Models/SM_TMA_Matball.fbx",
+              "Model": "SM_TMA_Matball.fbx",
               "Materials": [
-                "Materials/MAT_MatballOne_Transparent.MAT",
-                "Materials/MAT_MatballOne_Transparent.MAT"
+                "MatballOne_Transparent.MAT",
+                "MatballOne_Transparent.MAT"
               ]
             },
             {
@@ -375,9 +375,9 @@
         },
         {
           "Type": "AnimatedModel",
-          "Model": "Models/SK_C_TGA_Bro.fbx",
+          "Model": "SK_C_TGA_Bro.fbx",
           "Materials": [
-            "Materials/MAT_TgaBro.MAT"
+            "TgaBro.MAT"
           ],
           "AnimationLayers": [
             {
@@ -385,12 +385,12 @@
               "Animations": [
                 {
                   "Name": "Idle",
-                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx",
+                  "Path": "A_C_TGA_Bro_Idle_Breathing.fbx",
                   "Loop": true
                 },
                 {
                   "Name": "Walk",
-                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Walk.fbx",
+                  "Path": "A_C_TGA_Bro_Walk.fbx",
                   "Loop": true,
                   "Events": [
                     {
@@ -405,7 +405,7 @@
                 },
                 {
                   "Name": "Run",
-                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx",
+                  "Path": "A_C_TGA_Bro_Run.fbx",
                   "Loop": true,
                   "Events": [
                     {
@@ -420,7 +420,7 @@
                 },
                 {
                   "Name": "Wave",
-                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Wave.fbx",
+                  "Path": "A_C_TGA_Bro_Idle_Wave.fbx",
                   "Loop": true
                 }
               ]
@@ -430,7 +430,7 @@
               "Animations": [
                 {
                   "Name": "Wave",
-                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Wave.fbx",
+                  "Path": "A_C_TGA_Bro_Idle_Wave.fbx",
                   "Loop": true
                 }
               ]
@@ -484,7 +484,7 @@
         },
         {
           "Type": "AmbientLight",
-          "Cubemap": "Textures/Cubemaps/T_Skansen_Cube.dds",
+          "Cubemap": "Skansen_Cube.dds",
           "Intensity": 0.2
         }
       ]
@@ -601,7 +601,7 @@
           "ShouldViewcull": true,
           "Model": "SM_PlanePrimitive",
           "Materials": [
-            "Materials/MAT_ExplosionVFX.MAT"
+            "ExplosionVFX.MAT"
           ]
         },
         {
@@ -634,7 +634,7 @@
           "Emitters": [
             {
               "EmitterSize": [ 100.0, 100.0, 100.0 ],
-              "Material": "Materials/MAT_ExplosionParticle.MAT",
+              "Material": "ExplosionParticle.MAT",
               "SpawnRate": 100.0,
               "Lifetime": 1.0,
               "Size": [
@@ -669,7 +669,7 @@
             },
             {
               "EmitterSize": [ 20.0, 20.0, 20.0 ],
-              "Material": "Materials/MAT_SmokeParticle.MAT",
+              "Material": "SmokeParticle.MAT",
               "SpawnRate": 20.0,
               "Lifetime": 5.0,
               "Size": [
@@ -758,7 +758,7 @@
           "Type": "TrailSystem",
           "Emitters": [
             {
-              "Material": "Materials/MAT_DefaultTrail.MAT",
+              "Material": "DefaultTrail.MAT",
               "Length": 24,
               "Vertices": 36.0,
               "Width": [

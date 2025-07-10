@@ -8,9 +8,9 @@
   },
   "EmissiveStrength": 1.0,
   "Textures": [
-    "Textures/Chest/T_Chest_C.dds",
-    "Textures/Chest/T_Chest_N.dds",
-    "Textures/Chest/T_Chest_M.dds",
-    "Textures/Chest/T_Chest_FX.dds"
+    "Chest_C.dds",
+    "Chest_N.dds",
+    "Chest_M.dds",
+    "Chest_FX.dds"
   ]
 }

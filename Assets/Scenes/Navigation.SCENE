@@ -16,7 +16,7 @@
           "ShouldViewcull": false,
           "Model": "SM_PlanePrimitive",
           "Materials": [
-            "MAT_DefaultMaterial"
+            "DefaultMaterial"
           ]
         },
         {
@@ -43,9 +43,9 @@
         },
         {
           "Type": "AnimatedModel",
-          "Model": "Models/SK_C_TGA_Bro.fbx",
+          "Model": "SK_C_TGA_Bro.fbx",
           "Materials": [
-            "Materials/MAT_TgaBro.mat"
+            "TgaBro.mat"
           ],
           "AnimationLayers": [
             {
@@ -53,12 +53,12 @@
               "Animations": [
                 {
                   "Name": "Idle",
-                  "Path": "Animations/TgaBro/Idle/A_C_TGA_Bro_Idle_Breathing.fbx",
+                  "Path": "A_C_TGA_Bro_Idle_Breathing.fbx",
                   "Loop": true
                 },
                 {
                   "Name": "Run",
-                  "Path": "Animations/TgaBro/Locomotion/A_C_TGA_Bro_Run.fbx",
+                  "Path": "A_C_TGA_Bro_Run.fbx",
                   "Loop": true
                 }
               ]

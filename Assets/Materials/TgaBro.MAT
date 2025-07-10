@@ -1,0 +1,14 @@
+{
+  "PSO": "Deferred.pso",
+  "AlbedoTint": {
+    "R": 1.0,
+    "G": 1.0,
+    "B": 1.0,
+    "A": 1.0
+  },
+  "Textures": [
+    "TGA_Bro_C.dds",
+    "TGA_Bro_N.dds",
+    "TGA_Bro_M.dds"
+  ]
+}

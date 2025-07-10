@@ -50,7 +50,7 @@ bool SceneLoader::LoadScene(std::shared_ptr<Scene> aScene, std::filesystem::path
     }
     catch (nl::json::parse_error e)
     {
-        LOG(LogSceneLoader, Error, "Couldn't read scene file, {}!", e.what());
+        LOG(LogSceneLoader, Error, "Couldn't read scene file {}, {}!", aSceneFilepath.string(), e.what());
         return false;
     }
     path.close();

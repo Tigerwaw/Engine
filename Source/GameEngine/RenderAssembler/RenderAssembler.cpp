@@ -326,7 +326,7 @@ void RenderAssembler::RenderDeferred(SceneRenderData& aRenderData)
 
 		// Downsampled SSAO
 		gfxList.Enqueue<BeginEvent>("SSAO Pass");
-		gfxList.Enqueue<SetTextureResource>(51, AssetManager::Get().GetAsset<TextureAsset>("T_BlueNoise.dds")->texture);
+		gfxList.Enqueue<SetTextureResource>(51, AssetManager::Get().GetAsset<TextureAsset>("BlueNoise.dds")->texture);
 		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>("SSAO.PSO")->pso);
 		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HalfScreenA), nullptr, true, false);
 		gfxList.Enqueue<SetGBufferAsResource>();
