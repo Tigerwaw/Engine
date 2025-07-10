@@ -51,11 +51,6 @@ private:
 	void RegisterEngineAssets();
 	bool RegisterEngineTextureAsset(std::string_view aName, const uint8_t* aTextureDataPtr, size_t aTextureDataSize);
 
-	// Move to Graphics Engine
-	bool RegisterPlanePrimitive();
-	bool RegisterCubePrimitive();
-	bool RegisterRampPrimitive();
-
 	// Make Generic
 	bool RegisterMeshAsset(const std::filesystem::path& aPath);
 	bool RegisterAnimationAsset(const std::filesystem::path& aPath);

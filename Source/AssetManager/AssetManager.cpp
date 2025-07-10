@@ -151,29 +151,53 @@ bool AssetManager::Initialize(const std::filesystem::path& aContentRootPath, boo
 
 void AssetManager::RegisterEngineAssets()
 {
-    RegisterEngineTextureAsset("default_c", BuiltIn_Default_C_ByteCode, sizeof(BuiltIn_Default_C_ByteCode));
-    RegisterEngineTextureAsset("default_n", BuiltIn_Default_N_ByteCode, sizeof(BuiltIn_Default_N_ByteCode));
-    RegisterEngineTextureAsset("default_m", BuiltIn_Default_M_ByteCode, sizeof(BuiltIn_Default_M_ByteCode));
-    RegisterEngineTextureAsset("default_fx", BuiltIn_Default_FX_ByteCode, sizeof(BuiltIn_Default_FX_ByteCode));
+    {
+        RegisterEngineTextureAsset("default_c", BuiltIn_Default_C_ByteCode, sizeof(BuiltIn_Default_C_ByteCode));
+        RegisterEngineTextureAsset("default_n", BuiltIn_Default_N_ByteCode, sizeof(BuiltIn_Default_N_ByteCode));
+        RegisterEngineTextureAsset("default_m", BuiltIn_Default_M_ByteCode, sizeof(BuiltIn_Default_M_ByteCode));
+        RegisterEngineTextureAsset("default_fx", BuiltIn_Default_FX_ByteCode, sizeof(BuiltIn_Default_FX_ByteCode));
 
-    std::shared_ptr<MaterialAsset> asset = std::make_shared<MaterialAsset>();
-    asset->material = std::make_shared<Material>();
-    asset->material->SetPSO(GraphicsEngine::Get().GetDefaultPSO());
-    asset->material->MaterialSettings().albedoTint = { 1.0f, 1.0f, 1.0f, 1.0f };
-    asset->material->MaterialSettings().emissiveStrength = 0.0f;
-    asset->material->SetTexture(Material::TextureType::Albedo, GetAsset<TextureAsset>("default_c")->texture);
-    asset->material->SetTexture(Material::TextureType::Normal, GetAsset<TextureAsset>("default_n")->texture);
-    asset->material->SetTexture(Material::TextureType::Material, GetAsset<TextureAsset>("default_m")->texture);
-    asset->material->SetTexture(Material::TextureType::Effects, GetAsset<TextureAsset>("default_fx")->texture);
-    asset->name = "defaultmaterial";
-    asset->myIsLoaded = true;
-    myAssets.emplace(asset->name, asset);
+        std::shared_ptr<MaterialAsset> asset = std::make_shared<MaterialAsset>();
+        asset->material = std::make_shared<Material>();
+        asset->material->SetPSO(GraphicsEngine::Get().GetDefaultPSO());
+        asset->material->MaterialSettings().albedoTint = { 1.0f, 1.0f, 1.0f, 1.0f };
+        asset->material->MaterialSettings().emissiveStrength = 0.0f;
+        asset->material->SetTexture(Material::TextureType::Albedo, GetAsset<TextureAsset>("default_c")->texture);
+        asset->material->SetTexture(Material::TextureType::Normal, GetAsset<TextureAsset>("default_n")->texture);
+        asset->material->SetTexture(Material::TextureType::Material, GetAsset<TextureAsset>("default_m")->texture);
+        asset->material->SetTexture(Material::TextureType::Effects, GetAsset<TextureAsset>("default_fx")->texture);
+        asset->name = "defaultmaterial";
+        asset->myIsLoaded = true;
+        myAssets.emplace(asset->name, asset);
+        LOG(LogAssetManager, Log, "Registered material asset {}", asset->name.string());
+    }
 
-    LOG(LogAssetManager, Log, "Registered material asset {}", asset->name.string());
+    {
+        std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
+        asset->mesh = std::make_shared<Mesh>(std::move(GraphicsEngine::Get().CreatePlanePrimitive()));
+        asset->name = "sm_planeprimitive";
+        asset->myIsLoaded = true;
+        myAssets.emplace(asset->name, asset);
+        LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
+    }
 
-    RegisterPlanePrimitive();
-    RegisterCubePrimitive();
-    RegisterRampPrimitive();
+    {
+        std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
+        asset->mesh = std::make_shared<Mesh>(std::move(GraphicsEngine::Get().CreateCubePrimitive()));
+        asset->name = "sm_cubeprimitive";
+        asset->myIsLoaded = true;
+        myAssets.emplace(asset->name, asset);
+        LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
+    }
+    
+    {
+        std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
+        asset->mesh = std::make_shared<Mesh>(std::move(GraphicsEngine::Get().CreateRampPrimitive()));
+        asset->name = "sm_rampprimitive";
+        asset->myIsLoaded = true;
+        myAssets.emplace(asset->name, asset);
+        LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
+    }
 
     for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "EngineAssets/Models/"))
     {
@@ -408,421 +432,6 @@ bool AssetManager::RegisterEngineTextureAsset(std::string_view aName, const uint
 
     LOG(LogAssetManager, Log, "Registered default texture asset {}", asset->name.string());
 
-    return true;
-}
-
-bool AssetManager::RegisterPlanePrimitive()
-{
-    float emptyColor[4][4] = { {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f} };
-    float uv[4][4][2] = { {{1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{0.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}}
-    };
-    float pos[4][4] = {
-        {1, 0, 1, 1},
-        {1, 0, -1, 1},
-        {-1, 0, -1, 1},
-        {-1, 0, 1, 1}
-    };
-    float normals[4][3] = {
-        { 0, 1, 0 },
-        { 0, 1, 0 },
-        { 0, 1, 0 },
-        { 0, 1, 0 }
-    };
-    float tangents[4][3] = {
-        { 1, 0, 0 },
-        { 1, 0, 0 },
-        { 1, 0, 0 },
-        { 1, 0, 0 }
-    };
-
-    std::vector<Vertex> vertexList;
-    vertexList.reserve(4);
-    vertexList.emplace_back(pos[0], emptyColor, uv[0], normals[0], tangents[0]);
-    vertexList.emplace_back(pos[1], emptyColor, uv[1], normals[1], tangents[1]);
-    vertexList.emplace_back(pos[2], emptyColor, uv[2], normals[2], tangents[2]);
-    vertexList.emplace_back(pos[3], emptyColor, uv[3], normals[3], tangents[3]);
-
-    std::vector<unsigned> indexList = {
-        0, 1, 2,
-        2, 3, 0,
-    };
-
-    std::vector<Mesh::Element> elementList;
-    Mesh::Element& element = elementList.emplace_back();
-    element.VertexOffset = 0;
-    element.IndexOffset = 0;
-    element.NumVertices = static_cast<unsigned>(vertexList.size());
-    element.NumIndices = static_cast<unsigned>(indexList.size());
-
-    Mesh plane;
-    plane.InitBoundingBox({ -1.0f, -0.001f, -1.0f }, { 1.0f, 0.001f, 1.0f });
-    plane.Initialize(std::move(vertexList), std::move(indexList), std::move(elementList), Mesh::Skeleton());
-    
-    std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
-    asset->mesh = std::make_shared<Mesh>(std::move(plane));
-    asset->name = "sm_planeprimitive";
-    asset->myIsLoaded = true;
-
-    myAssets.emplace(asset->name, asset);
-
-    LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
-    return true;
-}
-
-bool AssetManager::RegisterCubePrimitive()
-{
-    float emptyColor[4][4] = { {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f} };
-    float uv[24][4][2] = { {{1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{0.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-
-                          {{0.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-
-                          {{0.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-
-                          {{1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{0.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-
-                          {{1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{0.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-
-                          {{1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                          {{0.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-    };
-
-    float pos[24][4] = {
-        {1,1,-1, 1}, // BACK
-        {1,-1,-1, 1},
-        {-1,-1,-1, 1},
-        {-1,1,-1, 1},
-
-        {1,1,1, 1}, // FRONT
-        {-1,1,1, 1},
-        {-1,-1,1, 1},
-        {1,-1,1, 1},
-
-        {1,1,-1, 1}, // RIGHT
-        {1,1,1, 1},
-        {1,-1,1, 1},
-        {1,-1,-1, 1},
-
-        {1,-1,-1, 1}, // DOWN
-        {1,-1,1, 1},
-        {-1,-1,1, 1},
-        {-1,-1,-1, 1},
-
-        {-1,-1,-1, 1}, // LEFT
-        {-1,-1,1, 1},
-        {-1,1,1, 1},
-        {-1,1,-1, 1},
-
-        {1,1,1, 1}, // UP
-        {1,1,-1, 1},
-        {-1,1,-1, 1},
-        {-1,1,1, 1},
-    };
-
-    float normals[24][3] = {
-    { 0, 0, -1 }, // BACK
-    { 0, 0, -1 },
-    { 0, 0, -1 },
-    { 0, 0, -1 },
-
-    { 0, 0, 1 }, // FRONT
-    { 0, 0, 1 },
-    { 0, 0, 1 },
-    { 0, 0, 1 },
-
-    { 1, 0, 0 }, // RIGHT
-    { 1, 0, 0 },
-    { 1, 0, 0 },
-    { 1, 0, 0 },
-
-    { 0, -1, 0 }, // DOWN
-    { 0, -1, 0 },
-    { 0, -1, 0 },
-    { 0, -1, 0 },
-
-    { -1, 0, 0 }, // LEFT
-    { -1, 0, 0 },
-    { -1, 0, 0 },
-    { -1, 0, 0 },
-
-    { 0, 1, 0 }, // UP
-    { 0, 1, 0 },
-    { 0, 1, 0 },
-    { 0, 1, 0 }
-    };
-    float tangents[24][3] = {
-    { 1, 0, 0 }, // BACK
-    { 1, 0, 0 },
-    { 1, 0, 0 },
-    { 1, 0, 0 },
-
-    { -1, 0, 0 }, // FRONT
-    { -1, 0, 0 },
-    { -1, 0, 0 },
-    { -1, 0, 0 },
-
-    { 0, 0, 1 }, // RIGHT
-    { 0, 0, 1 },
-    { 0, 0, 1 },
-    { 0, 0, 1 },
-
-    { 1, 0, 0 }, // DOWN
-    { 1, 0, 0 },
-    { 1, 0, 0 },
-    { 1, 0, 0 },
-
-    { 0, 0, -1 }, // LEFT
-    { 0, 0, -1 },
-    { 0, 0, -1 },
-    { 0, 0, -1 },
-
-    { 1, 0, 0 }, // UP
-    { 1, 0, 0 },
-    { 1, 0, 0 },
-    { 1, 0, 0 }
-    };
-
-    std::vector<Vertex> vertexList;
-    vertexList.reserve(24);
-
-    vertexList.emplace_back(pos[0], emptyColor, uv[0], normals[0], tangents[0]);
-    vertexList.emplace_back(pos[1], emptyColor, uv[1], normals[1], tangents[1]);
-    vertexList.emplace_back(pos[2], emptyColor, uv[2], normals[2], tangents[2]);
-    vertexList.emplace_back(pos[3], emptyColor, uv[3], normals[3], tangents[3]);
-    vertexList.emplace_back(pos[4], emptyColor, uv[4], normals[4], tangents[4]);
-    vertexList.emplace_back(pos[5], emptyColor, uv[5], normals[5], tangents[5]);
-    vertexList.emplace_back(pos[6], emptyColor, uv[6], normals[6], tangents[6]);
-    vertexList.emplace_back(pos[7], emptyColor, uv[7], normals[7], tangents[7]);
-    vertexList.emplace_back(pos[8], emptyColor, uv[8], normals[8], tangents[8]);
-    vertexList.emplace_back(pos[9], emptyColor, uv[9], normals[9], tangents[9]);
-    vertexList.emplace_back(pos[10], emptyColor, uv[10], normals[10], tangents[10]);
-    vertexList.emplace_back(pos[11], emptyColor, uv[11], normals[11], tangents[11]);
-    vertexList.emplace_back(pos[12], emptyColor, uv[12], normals[12], tangents[12]);
-    vertexList.emplace_back(pos[13], emptyColor, uv[13], normals[13], tangents[13]);
-    vertexList.emplace_back(pos[14], emptyColor, uv[14], normals[14], tangents[14]);
-    vertexList.emplace_back(pos[15], emptyColor, uv[15], normals[15], tangents[15]);
-    vertexList.emplace_back(pos[16], emptyColor, uv[16], normals[16], tangents[16]);
-    vertexList.emplace_back(pos[17], emptyColor, uv[17], normals[17], tangents[17]);
-    vertexList.emplace_back(pos[18], emptyColor, uv[18], normals[18], tangents[18]);
-    vertexList.emplace_back(pos[19], emptyColor, uv[19], normals[19], tangents[19]);
-    vertexList.emplace_back(pos[20], emptyColor, uv[20], normals[20], tangents[20]);
-    vertexList.emplace_back(pos[21], emptyColor, uv[21], normals[21], tangents[21]);
-    vertexList.emplace_back(pos[22], emptyColor, uv[22], normals[22], tangents[22]);
-    vertexList.emplace_back(pos[23], emptyColor, uv[23], normals[23], tangents[23]);
-
-    std::vector<unsigned> indexList = {
-        0,1,2,
-        0,2,3,
-        4,5,6,
-        4,6,7,
-        8,9,10,
-        8,10,11,
-        12,13,14,
-        12,14,15,
-        16,17,18,
-        16,18,19,
-        20,21,22,
-        20,22,23
-    };
-
-    std::vector<Mesh::Element> elementList;
-    Mesh::Element& element = elementList.emplace_back();
-    element.VertexOffset = 0;
-    element.IndexOffset = 0;
-    element.NumVertices = static_cast<unsigned>(vertexList.size());
-    element.NumIndices = static_cast<unsigned>(indexList.size());
-
-    Mesh cube;
-    cube.InitBoundingBox({ -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f });
-    cube.Initialize(std::move(vertexList), std::move(indexList), std::move(elementList), Mesh::Skeleton());
-
-    std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
-    asset->mesh = std::make_shared<Mesh>(std::move(cube));
-    asset->name = "sm_cubeprimitive";
-    asset->myIsLoaded = true;
-    
-    myAssets.emplace(asset->name, asset);
-
-    LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
-    return true;
-}
-
-bool AssetManager::RegisterRampPrimitive()
-{
-    float emptyColor[4][4] = { {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f} };
-    float uv[18][4][2] = { {{0.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                           {{1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                           {{1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                           {{0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-
-                           {{0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                           {{1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                           {{1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                           {{0.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-
-                           {{1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                           {{1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                           {{0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                           {{0.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-
-                           {{1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                           {{1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                           {{0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-
-                           {{1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                           {{0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-                           {{0.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 1.0f}},
-    };
-
-    float pos[18][4] = {
-        {-1, 1, 1, 1}, // LEFT
-        {-1, 1, -1, 1},
-        {-1, -1, -1, 1},
-        {-1, -1, 1, 1},
-
-        {1, -1, -1, 1}, // DOWN
-        {1, -1, 1, 1},
-        {-1, -1, 1, 1},
-        {-1, -1, -1, 1},
-
-        {-1, 1, 1, 1}, // DIAGONAL
-        {1, -1, 1, 1},
-        {1, -1, -1, 1},
-        {-1, 1, -1, 1},
-
-        {-1, 1, 1, 1}, // FRONT
-        {-1, -1, 1, 1},
-        {1, -1, 1, 1},
-
-        {1, -1, -1, 1}, // BACK
-        {-1, -1, -1, 1},
-        { -1, 1, -1, 1 },
-    };
-
-    float normals[18][3] = {
-        { -1, 0, 0 }, // LEFT
-        { -1, 0, 0 },
-        { -1, 0, 0 },
-        { -1, 0, 0 },
-
-        { 0, -1, 0 }, // DOWN
-        { 0, -1, 0 },
-        { 0, -1, 0 },
-        { 0, -1, 0 },
-
-        { 1, 1, 0 }, // DIAGONAL
-        { 1, 1, 0 },
-        { 1, 1, 0 },
-        { 1, 1, 0 },
-
-        { 0, 0, 1 }, // FRONT
-        { 0, 0, 1 },
-        { 0, 0, 1 },
-
-        { 0, 0, -1 }, // BACK
-        { 0, 0, -1 },
-        { 0, 0, -1 }
-    };
-
-    float tangents[18][3] = {
-        { 0, 0, -1 }, // LEFT
-        { 0, 0, -1 },
-        { 0, 0, -1 },
-        { 0, 0, -1 },
-
-        { 0, 0, 1 }, // DOWN
-        { 0, 0, 1 },
-        { 0, 0, 1 },
-        { 0, 0, 1 },
-
-        { 0, 0, 1 }, // DIAGONAL
-        { 0, 0, 1 },
-        { 0, 0, 1 },
-        { 0, 0, 1 },
-
-        { -1, 0, 0 }, // FRONT
-        { -1, 0, 0 },
-        { -1, 0, 0 },
-
-        { 1, 0, 0 }, // BACK
-        { 1, 0, 0 },
-        { 1, 0, 0 }
-    };
-
-    std::vector<Vertex> vertexList;
-    vertexList.reserve(18);
-
-    vertexList.emplace_back(pos[0], emptyColor, uv[0], normals[0], tangents[0]);
-    vertexList.emplace_back(pos[1], emptyColor, uv[1], normals[1], tangents[1]);
-    vertexList.emplace_back(pos[2], emptyColor, uv[2], normals[2], tangents[2]);
-    vertexList.emplace_back(pos[3], emptyColor, uv[3], normals[3], tangents[3]);
-    vertexList.emplace_back(pos[4], emptyColor, uv[4], normals[4], tangents[4]);
-    vertexList.emplace_back(pos[5], emptyColor, uv[5], normals[5], tangents[5]);
-    vertexList.emplace_back(pos[6], emptyColor, uv[6], normals[6], tangents[6]);
-    vertexList.emplace_back(pos[7], emptyColor, uv[7], normals[7], tangents[7]);
-    vertexList.emplace_back(pos[8], emptyColor, uv[8], normals[8], tangents[8]);
-    vertexList.emplace_back(pos[9], emptyColor, uv[9], normals[9], tangents[9]);
-    vertexList.emplace_back(pos[10], emptyColor, uv[10], normals[10], tangents[10]);
-    vertexList.emplace_back(pos[11], emptyColor, uv[11], normals[11], tangents[11]);
-    vertexList.emplace_back(pos[12], emptyColor, uv[12], normals[12], tangents[12]);
-    vertexList.emplace_back(pos[13], emptyColor, uv[13], normals[13], tangents[13]);
-    vertexList.emplace_back(pos[14], emptyColor, uv[14], normals[14], tangents[14]);
-    vertexList.emplace_back(pos[15], emptyColor, uv[15], normals[15], tangents[15]);
-    vertexList.emplace_back(pos[16], emptyColor, uv[16], normals[16], tangents[16]);
-    vertexList.emplace_back(pos[17], emptyColor, uv[17], normals[17], tangents[17]);
-
-    std::vector<unsigned> indexList = {
-        0, 1, 2,
-        2, 3, 0,
-
-        4, 5, 6,
-        6, 7, 4,
-
-        8, 9, 10,
-        10, 11, 8,
-
-        12, 13, 14,
-        15, 16, 17,
-    };
-
-    std::vector<Mesh::Element> elementList;
-    Mesh::Element& element = elementList.emplace_back();
-    element.VertexOffset = 0;
-    element.IndexOffset = 0;
-    element.NumVertices = static_cast<unsigned>(vertexList.size());
-    element.NumIndices = static_cast<unsigned>(indexList.size());
-
-    Mesh ramp;
-    ramp.InitBoundingBox({ -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f });
-    ramp.Initialize(std::move(vertexList), std::move(indexList), std::move(elementList), Mesh::Skeleton());
-
-    std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
-    asset->mesh = std::make_shared<Mesh>(std::move(ramp));
-    asset->name = "sm_rampprimitive";
-    asset->myIsLoaded = true;
-    
-    myAssets.emplace(asset->name, asset);
-
-    LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->name.string());
     return true;
 }
 

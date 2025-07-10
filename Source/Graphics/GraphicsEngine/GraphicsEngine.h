@@ -196,6 +196,10 @@ public:
 
 	const unsigned GetDrawcallAmount() const { return myLastFrameDrawcallAmount; }
 
+	Mesh CreatePlanePrimitive();
+	Mesh CreateCubePrimitive();
+	Mesh CreateRampPrimitive();
+
 	std::vector<std::string> DebugModeNames = {
 		"None",
 		"Unlit.pso",
