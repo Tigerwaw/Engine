@@ -3,6 +3,7 @@
 #include <Math/Vector.hpp>
 #include "DebugDrawer/DebugLine.hpp"
 #include "Pathfinding/NavMeshPath.h"
+#include <Math/Quaternion.hpp>
 
 class NavMesh;
 

@@ -8,7 +8,7 @@ class NavMeshAsset : public Asset
 public:
 	std::shared_ptr<NavMesh> navmesh;
 
-	//bool Load() override;
-	//bool Unload() override;
+	bool Load() override;
+	bool Unload() override;
 };
 

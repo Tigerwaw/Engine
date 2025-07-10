@@ -8,7 +8,7 @@ class ShaderAsset : public Asset
 public:
 	std::shared_ptr<Shader> shader;
 
-	//bool Load() override;
-	//bool Unload() override;
+	bool Load() override;
+	bool Unload() override;
 };
 

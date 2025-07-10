@@ -8,7 +8,7 @@ class PSOAsset : public Asset
 public:
 	std::shared_ptr<PipelineStateObject> pso;
 
-	//bool Load() override;
-	//bool Unload() override;
+	bool Load() override;
+	bool Unload() override;
 };
 

@@ -8,7 +8,7 @@ class MaterialAsset : public Asset
 public:
 	std::shared_ptr<Material> material;
 
-	//bool Load() override;
-	//bool Unload() override;
+	bool Load() override;
+	bool Unload() override;
 };
 

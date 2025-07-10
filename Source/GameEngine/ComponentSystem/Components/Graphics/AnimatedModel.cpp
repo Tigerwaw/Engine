@@ -9,7 +9,6 @@
 #include "Time/Timer.h"
 #include "Math/Quaternion.hpp"
 
-
 AnimatedModel::~AnimatedModel()
 {
     myMesh = nullptr;

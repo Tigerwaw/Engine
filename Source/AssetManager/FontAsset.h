@@ -8,7 +8,7 @@ class FontAsset : public Asset
 public:
 	std::shared_ptr<Font> font;
 
-	//bool Load() override;
-	//bool Unload() override;
+	bool Load() override;
+	bool Unload() override;
 };
 

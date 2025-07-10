@@ -8,7 +8,7 @@ class TextureAsset : public Asset
 public:
 	std::shared_ptr<Texture> texture;
 
-	//bool Load() override;
-	//bool Unload() override;
+	bool Load() override;
+	bool Unload() override;
 };
 

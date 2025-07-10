@@ -6,8 +6,6 @@
 struct ID3D11Buffer;
 struct Vertex;
 
-
-
 class Mesh
 {
 public:
