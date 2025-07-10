@@ -52,21 +52,21 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle, Math::Vector2f aResolution, 
 		defaultPSO.VertexStride = sizeof(Vertex);
 
 		std::wstring root = aContentRoot.wstring();
-		if (!rhi.CreateInputLayout(defaultPSO.InputLayout, Vertex::InputLayoutDefinition, root + L"EngineAssets/Shaders/SH_Mesh_VS.cso"))
+		if (!rhi.CreateInputLayout(defaultPSO.InputLayout, Vertex::InputLayoutDefinition, root + L"EngineAssets/Shaders/Mesh_VS.cso"))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to load default input layout!");
 			return false;
 		}
 
 		defaultPSO.VertexShader = std::make_shared<Shader>();
-		if (!rhi.LoadShaderFromFilePath("Default_VS", *defaultPSO.VertexShader, root + L"EngineAssets/Shaders/SH_Mesh_VS.cso"))
+		if (!rhi.LoadShaderFromFilePath("Default_VS", *defaultPSO.VertexShader, root + L"EngineAssets/Shaders/Mesh_VS.cso"))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to load default vertex shader!");
 			return false;
 		}
 
 		defaultPSO.PixelShader = std::make_shared<Shader>();
-		if (!rhi.LoadShaderFromFilePath("Default_PS", *defaultPSO.PixelShader, root + L"EngineAssets/Shaders/SH_Deferred_PS.cso"))
+		if (!rhi.LoadShaderFromFilePath("Default_PS", *defaultPSO.PixelShader, root + L"EngineAssets/Shaders/Deferred_PS.cso"))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to load default pixel shader!");
 			return false;
@@ -77,7 +77,7 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle, Math::Vector2f aResolution, 
 	}
 
 	myLUTtexture = std::make_shared<Texture>();
-	rhi.CreateLUT("LUT", 512, 512, myLUTtexture, aContentRoot / L"EngineAssets/Shaders/SH_Quad_VS.cso", aContentRoot / L"EngineAssets/Shaders/SH_brdfLUT_PS.cso");
+	rhi.CreateLUT("LUT", 512, 512, myLUTtexture, aContentRoot / L"EngineAssets/Shaders/Quad_VS.cso", aContentRoot / L"EngineAssets/Shaders/brdfLUT_PS.cso");
 
 	CreateConstantBuffers();
 	

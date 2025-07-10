@@ -1,8 +1,8 @@
 {
   "VertexType": "Trail",
-  "VertexShader": "SH_Trail_VS.cso",
-  "GeometryShader": "SH_Trail_GS.cso",
-  "PixelShader": "SH_Trail_PS.cso",
+  "VertexShader": "Trail_VS.cso",
+  "GeometryShader": "Trail_GS.cso",
+  "PixelShader": "Trail_PS.cso",
   "BlendStateDesc": {
     "BlendMode": "Alpha"
   },

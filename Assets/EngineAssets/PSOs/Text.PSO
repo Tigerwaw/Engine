@@ -1,7 +1,7 @@
 {
   "VertexType": "Text",
-  "VertexShader": "SH_UI_Text_VS.cso",
-  "PixelShader": "SH_UI_Text_PS.cso",
+  "VertexShader": "UI_Text_VS.cso",
+  "PixelShader": "UI_Text_PS.cso",
   "Samplers": {
     "LinearWrapSS": 0
   }

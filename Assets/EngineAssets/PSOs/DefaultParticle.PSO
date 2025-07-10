@@ -1,8 +1,8 @@
 {
   "VertexType": "Particle",
-  "VertexShader": "SH_Particle_VS.cso",
-  "GeometryShader": "SH_Particle_GS.cso",
-  "PixelShader": "SH_Particle_PS.cso",
+  "VertexShader": "Particle_VS.cso",
+  "GeometryShader": "Particle_GS.cso",
+  "PixelShader": "Particle_PS.cso",
   "BlendStateDesc": {
     "BlendMode": "Alpha"
   },

@@ -1,8 +1,8 @@
 {
   "VertexType": "Default",
-  "VertexShader": "SH_Sprite_VS.cso",
-  "GeometryShader": "SH_Sprite_GS.cso",
-  "PixelShader": "SH_Sprite_PS.cso",
+  "VertexShader": "Sprite_VS.cso",
+  "GeometryShader": "Sprite_GS.cso",
+  "PixelShader": "Sprite_PS.cso",
   "Samplers": {
     "LinearWrapSS": 0
   }

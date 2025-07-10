@@ -26,7 +26,7 @@ project "GraphicsEngineShaders"
 
 	filter("files:**.hlsl")
 		flags("ExcludeFromBuild")
-		shaderobjectfileoutput(outputdir .."/SH_%{file.basename}.cso")
+		shaderobjectfileoutput(outputdir .."/%{file.basename}.cso")
 
 	filter("files:**VS.hlsl")
 		removeflags("ExcludeFromBuild")

@@ -90,7 +90,7 @@ project "DecisionMaking"
 
 	filter("files:**.hlsl")
 		flags("ExcludeFromBuild")
-		shaderobjectfileoutput(dirs.shaders.absolute .."/SH_%{file.basename}.cso")
+		shaderobjectfileoutput(dirs.shaders.absolute .."/%{file.basename}.cso")
 
 	filter("files:**VS.hlsl")
 		removeflags("ExcludeFromBuild")

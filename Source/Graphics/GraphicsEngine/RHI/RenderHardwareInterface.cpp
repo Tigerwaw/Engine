@@ -586,7 +586,7 @@ bool RenderHardwareInterface::LoadShaderFromFilePath(std::string_view aName, Sha
 
 	if (FAILED(result))
 	{
-		LOG(LogRHI, Error, "Failed to read shader from filepath!");
+		LOG(LogRHI, Error, "Failed to read shader from filepath {}!", Utilities::wide_to_utf8(aFilePath));
 		return false;
 	}
 
