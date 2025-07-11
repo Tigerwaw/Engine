@@ -23,7 +23,7 @@ Application* CreateApplication()
 
 void DecisionMaking::InitializeApplication()
 {
-	GraphicsEngine::Get().RecalculateShadowFrustum = false;
+	Engine::Get().RecalculateShadowFrustum = false;
 	Engine::Get().GetSceneHandler().LoadScene("BaseScene.json");
 
 	for (int x = -2; x < 3; x++)

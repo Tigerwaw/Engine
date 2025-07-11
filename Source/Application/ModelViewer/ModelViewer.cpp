@@ -19,7 +19,7 @@ Application* CreateApplication()
 void ModelViewer::InitializeApplication()
 {
 	myLogs.emplace_back("[LOG] Started ModelViewer");
-	GraphicsEngine::Get().RecalculateShadowFrustum = false;
+	Engine::Get().RecalculateShadowFrustum = false;
 	Engine::Get().GetSceneHandler().LoadScene("ModelViewerScene.json");
 	std::shared_ptr<GameObject> newGO = std::make_shared<GameObject>();
 	newGO->SetName("Model");
@@ -244,18 +244,18 @@ void ModelViewer::InitializeApplication()
 						// Rendering
 						{
 							ImGui::Text("Rendering Mode");
-							if (ImGui::BeginCombo("##RenderModeDropdown", debugModeNames[static_cast<int>(GraphicsEngine::Get().CurrentDebugMode)].c_str()))
+							if (ImGui::BeginCombo("##RenderModeDropdown", debugModeNames[static_cast<int>(Engine::Get().CurrentDebugMode)].c_str()))
 							{
 								for (unsigned i = 0; i < static_cast<unsigned>(DebugMode::COUNT); i++)
 								{
-									if (ImGui::Selectable(debugModeNames[i].c_str())) GraphicsEngine::Get().CurrentDebugMode = static_cast<DebugMode>(i);
+									if (ImGui::Selectable(debugModeNames[i].c_str())) Engine::Get().CurrentDebugMode = static_cast<DebugMode>(i);
 								}
 
 								ImGui::EndCombo();
 							}
 						}
 
-						currentDebugMode = static_cast<unsigned>(GraphicsEngine::Get().CurrentDebugMode);
+						currentDebugMode = static_cast<unsigned>(Engine::Get().CurrentDebugMode);
 
 						// Tonemapping
 						{
@@ -635,7 +635,7 @@ void ModelViewer::UpdateApplication()
 			currentDebugMode = 0;
 		}
 
-		GraphicsEngine::Get().CurrentDebugMode = static_cast<DebugMode>(currentDebugMode);
+		Engine::Get().CurrentDebugMode = static_cast<DebugMode>(currentDebugMode);
 	}
 
 	if (Engine::Get().GetInputHandler().GetBinaryAction("F7"))
@@ -680,7 +680,7 @@ void ModelViewer::ResetScene()
 	camTransform->SetRotation(cameraStartingRot);
 
 	currentDebugMode = 0;
-	GraphicsEngine::Get().CurrentDebugMode = DebugMode::None;
+	Engine::Get().CurrentDebugMode = DebugMode::None;
 	currentTonemapper = 0;
 	GraphicsEngine::Get().GetPostProcessingSettings().Tonemapper = Tonemapper::UE;
 	currentBlendtime = 0.5f;

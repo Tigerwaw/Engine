@@ -18,7 +18,7 @@ Application* CreateApplication()
 
 void Movement1::InitializeApplication()
 {
-	GraphicsEngine::Get().RecalculateShadowFrustum = false;
+	Engine::Get().RecalculateShadowFrustum = false;
 	Engine::Get().GetSceneHandler().LoadScene("Movement.json");
 
 	{

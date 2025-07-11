@@ -26,7 +26,7 @@ void Navigation::InitializeApplication()
 	inputHandler.RegisterBinaryAction("LMB", Keys::MOUSELBUTTON, GenericInput::ActionType::Held);
 	inputHandler.RegisterAnalog2DAction("MousePosNDC", MouseMovement2D::MousePosNDC);
 
-	GraphicsEngine::Get().RecalculateShadowFrustum = false;
+	Engine::Get().RecalculateShadowFrustum = false;
 	Engine::Get().GetSceneHandler().LoadScene("Navigation.json");
 
 	myNavMesh = AssetManager::Get().GetAsset<NavMeshAsset>("NM_Navmesh")->navmesh;

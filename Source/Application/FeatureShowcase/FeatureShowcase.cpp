@@ -107,21 +107,21 @@ void FeatureShowcase::InitializeApplication()
 			bool open = true;
 			ImGui::Begin("FeatureShowcase", &open, ImGuiWindowFlags_NoSavedSettings);
 
-			ImGui::Checkbox("Use Viewculling", &GraphicsEngine::Get().UseViewCulling);
-			ImGui::Checkbox("Draw Bounding Boxes", &GraphicsEngine::Get().DrawBoundingBoxes);
-			ImGui::Checkbox("Draw Camera Frustums", &GraphicsEngine::Get().DrawCameraFrustums);
-			ImGui::Checkbox("Draw Colliders", &GraphicsEngine::Get().DrawColliders);
+			ImGui::Checkbox("Use Viewculling", &Engine::Get().UseViewCulling);
+			ImGui::Checkbox("Draw Bounding Boxes", &Engine::Get().DrawBoundingBoxes);
+			ImGui::Checkbox("Draw Camera Frustums", &Engine::Get().DrawCameraFrustums);
+			ImGui::Checkbox("Draw Colliders", &Engine::Get().DrawColliders);
 
 			PostProcessingSettings& ppSettings = GraphicsEngine::Get().GetPostProcessingSettings();
 
 			// Rendering
 			{
 				ImGui::Text("Rendering Mode");
-				if (ImGui::BeginCombo("##RenderModeDropdown", GraphicsEngine::Get().DebugModeNames[static_cast<int>(GraphicsEngine::Get().CurrentDebugMode)].c_str()))
+				if (ImGui::BeginCombo("##RenderModeDropdown", DebugModeNames[static_cast<int>(Engine::Get().CurrentDebugMode)].c_str()))
 				{
 					for (unsigned i = 0; i < static_cast<unsigned>(DebugMode::COUNT); i++)
 					{
-						if (ImGui::Selectable(GraphicsEngine::Get().DebugModeNames[i].c_str())) GraphicsEngine::Get().CurrentDebugMode = static_cast<DebugMode>(i);
+						if (ImGui::Selectable(DebugModeNames[i].c_str())) Engine::Get().CurrentDebugMode = static_cast<DebugMode>(i);
 					}
 					ImGui::EndCombo();
 				}
@@ -684,7 +684,7 @@ void FeatureShowcase::UpdateApplication()
 			currentDebugMode = 0;
 		}
 
-		GraphicsEngine::Get().CurrentDebugMode = static_cast<DebugMode>(currentDebugMode);
+		Engine::Get().CurrentDebugMode = static_cast<DebugMode>(currentDebugMode);
 	}
 
 	if (Engine::Get().GetInputHandler().GetBinaryAction("F7"))

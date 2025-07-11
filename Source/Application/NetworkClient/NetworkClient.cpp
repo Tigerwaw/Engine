@@ -22,8 +22,8 @@ Application* CreateApplication()
 
 void NetworkClient::InitializeApplication()
 {
-	GraphicsEngine::Get().RecalculateShadowFrustum = false;
-	GraphicsEngine::Get().DrawColliders = false;
+	Engine::Get().RecalculateShadowFrustum = false;
+	Engine::Get().DrawColliders = false;
 	Engine::Get().GetSceneHandler().LoadScene("Scenes/SC_NetworkingScene.json");
 	myClient.SetUsername(clientNames[Utilities::RandomInRange(0, 9)]);
 	myClient.ConnectClient("");

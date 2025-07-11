@@ -37,7 +37,7 @@ void RenderAssembler::RenderScene(Scene& aScene)
 
 	SceneRenderData sceneRenderData = AssembleLists(aScene);
 
-	if (GraphicsEngine::Get().CurrentDebugMode != DebugMode::None)
+	if (Engine::Get().CurrentDebugMode != DebugMode::None)
 	{
 		RenderDebug(sceneRenderData);
 	}
@@ -61,9 +61,9 @@ RenderAssembler::SceneRenderData RenderAssembler::AssembleLists(Scene& aScene)
 	sceneRenderData.drawForward.reserve(100);
 	sceneRenderData.pointLights.reserve(4);
 	sceneRenderData.spotLights.reserve(4);
-	if (GraphicsEngine::Get().DrawColliders)
+	if (Engine::Get().DrawColliders)
 		sceneRenderData.drawCollidersObjects.reserve(100);
-	if (GraphicsEngine::Get().DrawBoundingBoxes)
+	if (Engine::Get().DrawBoundingBoxes)
 		sceneRenderData.drawBoundingBoxesObjects.reserve(100);
 
 	sceneRenderData.sceneBoundingBox = aScene.myBoundingBox;
@@ -90,7 +90,7 @@ RenderAssembler::SceneRenderData RenderAssembler::AssembleLists(Scene& aScene)
 					sceneRenderData.drawDeferred.emplace_back(gameObject);
 				}
 
-				if (GraphicsEngine::Get().DrawBoundingBoxes)
+				if (Engine::Get().DrawBoundingBoxes)
 				{
 					sceneRenderData.drawBoundingBoxesObjects.emplace_back(gameObject);
 				}
@@ -115,7 +115,7 @@ RenderAssembler::SceneRenderData RenderAssembler::AssembleLists(Scene& aScene)
 					sceneRenderData.drawDeferred.emplace_back(gameObject);
 				}
 
-				if (GraphicsEngine::Get().DrawBoundingBoxes)
+				if (Engine::Get().DrawBoundingBoxes)
 				{
 					sceneRenderData.drawBoundingBoxesObjects.emplace_back(gameObject);
 				}
@@ -140,7 +140,7 @@ RenderAssembler::SceneRenderData RenderAssembler::AssembleLists(Scene& aScene)
 					sceneRenderData.drawDeferred.emplace_back(gameObject);
 				}
 
-				if (GraphicsEngine::Get().DrawBoundingBoxes)
+				if (Engine::Get().DrawBoundingBoxes)
 				{
 					sceneRenderData.drawBoundingBoxesObjects.emplace_back(gameObject);
 				}
@@ -200,13 +200,13 @@ RenderAssembler::SceneRenderData RenderAssembler::AssembleLists(Scene& aScene)
 			{
 				sceneRenderData.mainCamera = cam;
 			}
-			else if (GraphicsEngine::Get().DrawCameraFrustums)
+			else if (Engine::Get().DrawCameraFrustums)
 			{
 				sceneRenderData.drawCameraFrustumsObjects.emplace_back(gameObject);
 			}
 		}
 
-		if (GraphicsEngine::Get().DrawColliders)
+		if (Engine::Get().DrawColliders)
 		{
 			std::shared_ptr<BoxCollider> boxCollider = gameObject->GetComponent<BoxCollider>();
 			if (boxCollider && boxCollider->GetActive())
@@ -230,7 +230,7 @@ void RenderAssembler::RenderDebug(SceneRenderData& aRenderData)
 	GraphicsEngine& gfx = GraphicsEngine::Get();
 	GraphicsCommandList& gfxList = gfx.GetGraphicsCommandList();
 
-	if (gfx.RecalculateShadowFrustum)
+	if (Engine::Get().RecalculateShadowFrustum)
 	{
 		aRenderData.directionalLight->RecalculateShadowFrustum(aRenderData.mainCamera, myVisibleObjectsBB);
 		myVisibleObjectsBB.InitWithCenterAndExtents(Math::Vector3f(), Math::Vector3f());
@@ -276,7 +276,7 @@ void RenderAssembler::RenderDeferred(SceneRenderData& aRenderData)
 	PostProcessingSettings& ppSettings = GraphicsEngine::Get().GetPostProcessingSettings();
 	GraphicsCommandList& gfxList = gfx.GetGraphicsCommandList();
 
-	if (gfx.RecalculateShadowFrustum)
+	if (Engine::Get().RecalculateShadowFrustum)
 	{
 		aRenderData.directionalLight->RecalculateShadowFrustum(aRenderData.mainCamera, myVisibleObjectsBB);
 		myVisibleObjectsBB.InitWithCenterAndExtents(Math::Vector3f(), Math::Vector3f());
@@ -1019,7 +1019,7 @@ void RenderAssembler::QueueObjectShadows(SceneRenderData& aRenderData, std::shar
 
 void RenderAssembler::QueueObjectDebug(SceneRenderData& aRenderData)
 {
-	std::shared_ptr<PipelineStateObject> pso = AssetManager::Get().GetAsset<PSOAsset>(GraphicsEngine::Get().DebugModeNames[static_cast<int>(GraphicsEngine::Get().CurrentDebugMode)])->pso;
+	std::shared_ptr<PipelineStateObject> pso = AssetManager::Get().GetAsset<PSOAsset>(DebugModeNames[static_cast<int>(Engine::Get().CurrentDebugMode)])->pso;
 
 	for (auto& gameObject : aRenderData.drawForward)
 	{
@@ -1132,7 +1132,7 @@ void RenderAssembler::QueueDebugLines(SceneRenderData& aRenderData)
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Debug Lines");
 
-	if (GraphicsEngine::Get().DrawBoundingBoxes)
+	if (Engine::Get().DrawBoundingBoxes)
 	{
 		Engine::Get().GetDebugDrawer().DrawBoundingBox(aRenderData.sceneBoundingBox);
 		Engine::Get().GetDebugDrawer().DrawBoundingBox(myVisibleObjectsBB);
@@ -1159,7 +1159,7 @@ void RenderAssembler::QueueDebugLines(SceneRenderData& aRenderData)
 		}
 	}
 
-	if (GraphicsEngine::Get().DrawColliders)
+	if (Engine::Get().DrawColliders)
 	{
 		for (auto& gameObject : aRenderData.drawCollidersObjects)
 		{
@@ -1179,7 +1179,7 @@ void RenderAssembler::QueueDebugLines(SceneRenderData& aRenderData)
 		}
 	}
 
-	if (GraphicsEngine::Get().DrawCameraFrustums)
+	if (Engine::Get().DrawCameraFrustums)
 	{
 		for (auto& gameObject : aRenderData.drawCameraFrustumsObjects)
 		{
@@ -1195,7 +1195,7 @@ void RenderAssembler::QueueDebugLines(SceneRenderData& aRenderData)
 bool RenderAssembler::IsInsideFrustum(std::shared_ptr<Camera> aRenderCamera, std::shared_ptr<Transform> aObjectTransform, const Math::AABB3D<float>& aObjectAABB)
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Is Inside Frustum");
-	if (!GraphicsEngine::Get().UseViewCulling) return true;
+	if (!Engine::Get().UseViewCulling) return true;
 
 	return aRenderCamera->GetViewcullingIntersection(aObjectTransform, aObjectAABB);
 }
@@ -1203,7 +1203,7 @@ bool RenderAssembler::IsInsideFrustum(std::shared_ptr<Camera> aRenderCamera, std
 bool RenderAssembler::IsInsideRadius(std::shared_ptr<PointLight> aPointLight, std::shared_ptr<Transform> aObjectTransform, const Math::AABB3D<float>& aObjectAABB)
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Is Inside Radius");
-	if (!GraphicsEngine::Get().UseViewCulling) return true;
+	if (!Engine::Get().UseViewCulling) return true;
 
 	std::shared_ptr<Transform> pointLightTransform = aPointLight->gameObject->GetComponent<Transform>();
 	std::shared_ptr<Camera> pointLightCam = aPointLight->gameObject->GetComponent<Camera>();

@@ -25,25 +25,6 @@ struct ID3D11InputLayout;
 
 struct Vertex;
 
-enum class DebugMode
-{
-	None,
-	Unlit,
-	DebugAO,
-	DebugRoughness,
-	DebugMetallic,
-	DebugFX,
-	Wireframe,
-	DebugVertexNormals,
-	DebugVertexTangents,
-	DebugVertexBinormals,
-	DebugPixelNormals,
-	DebugTextureNormals,
-	DebugUVs,
-	DebugVertexColor,
-	COUNT
-};
-
 enum class ConstantBufferType
 {
 	ObjectBuffer,
@@ -176,30 +157,6 @@ public:
 	Mesh CreatePlanePrimitive();
 	Mesh CreateCubePrimitive();
 	Mesh CreateRampPrimitive();
-
-	std::vector<std::string> DebugModeNames = {
-		"None",
-		"Unlit.pso",
-		"DebugAO.pso",
-		"DebugRoughness.pso",
-		"DebugMetallic.pso",
-		"DebugFX.pso",
-		"Wireframe.pso",
-		"DebugVertexNormals.pso",
-		"DebugVertexTangents.pso",
-		"DebugVertexBinormals.pso",
-		"DebugPixelNormals.pso",
-		"DebugTextureNormals.pso",
-		"DebugUVs.pso",
-		"DebugVertexColor.pso"
-	};
-
-	DebugMode CurrentDebugMode = DebugMode::None;
-	bool DrawBoundingBoxes = false;
-	bool DrawCameraFrustums = false;
-	bool DrawColliders = false;
-	bool UseViewCulling = true;
-	bool RecalculateShadowFrustum = true;
 
 private:
 	GraphicsEngine();
