@@ -28,6 +28,7 @@
 bool GraphicsEngine::Initialize(HWND aWindowHandle, Math::Vector2f aResolution, const std::filesystem::path& aContentRoot)
 {
 	myRHI = std::make_unique<RenderHardwareInterface>();
+	myPostProcessingSettings = std::make_unique<PostProcessingSettings>();
 
 	LOG(LogGraphicsEngine, Log, "Initializing Graphics Engine...");
 
@@ -40,8 +41,15 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle, Math::Vector2f aResolution, 
 	RenderHardwareInterface& rhi = *myRHI;
 	if (!rhi.Initialize(aWindowHandle, createDebugLayer))
 	{
-		myRHI.reset();
-		LOG(LogGraphicsEngine, Error, "Failed to initialize graphics engine!");
+		myRHI = nullptr;
+		LOG(LogGraphicsEngine, Error, "Failed to initialize RHI!");
+		return false;
+	}
+
+	if (!myPostProcessingSettings->Initialize())
+	{
+		myPostProcessingSettings = nullptr;
+		LOG(LogGraphicsEngine, Error, "Failed to initialize Post Processing Settings!");
 		return false;
 	}
 
@@ -85,8 +93,6 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle, Math::Vector2f aResolution, 
 	myGBuffer = std::make_unique<GBuffer>();
 	Math::Vector2f resolution = aResolution;
 	myGBuffer->CreateGBuffer(static_cast<unsigned>(resolution.x), static_cast<unsigned>(resolution.y));
-
-	CreateRandomKernel(64);
 
 	LOG(LogGraphicsEngine, Log, "Initialized Graphics Engine!");
 	return true;
@@ -1010,27 +1016,4 @@ void GraphicsEngine::CreateConstantBuffers()
 	ConstantBuffer postProcessBuffer;
 	myRHI->CreateConstantBuffer("PostProcessBuffer", sizeof(PostProcessBuffer), 7, PIPELINE_STAGE_PIXEL_SHADER, postProcessBuffer);
 	myConstantBuffers.emplace(ConstantBufferType::PostProcessBuffer, std::move(postProcessBuffer));
-}
-
-void GraphicsEngine::CreateRandomKernel(unsigned aKernelSize)
-{
-	myRandomKernel.resize(aKernelSize);
-
-	std::uniform_real_distribution<float> randomValues(0, 1);
-	std::default_random_engine rng;
-
-	for (unsigned i = 0; i < aKernelSize; ++i)
-	{
-		Math::Vector4f v = {
-		randomValues(rng) * 2.0f - 1.0f,
-		randomValues(rng) * 2.0f - 1.0f,
-		randomValues(rng),
-		0
-		};
-		v = v.GetNormalized();
-		float s = static_cast<float>(i) / static_cast<float>(aKernelSize);
-		s = std::lerp(0.1f, 1.0f, s * s);
-		v *= s;
-		myRandomKernel[i] = v;
-	}
 }

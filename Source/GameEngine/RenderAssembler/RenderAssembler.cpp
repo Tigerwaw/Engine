@@ -273,6 +273,7 @@ void RenderAssembler::RenderDeferred(SceneRenderData& aRenderData)
 	PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Deferred Pass");
 
 	GraphicsEngine& gfx = GraphicsEngine::Get();
+	PostProcessingSettings& ppSettings = GraphicsEngine::Get().GetPostProcessingSettings();
 	GraphicsCommandList& gfxList = gfx.GetGraphicsCommandList();
 
 	if (gfx.RecalculateShadowFrustum)
@@ -320,7 +321,7 @@ void RenderAssembler::RenderDeferred(SceneRenderData& aRenderData)
 		QueueShadowmapTextureResources(aRenderData);
 	}
 
-	if (gfx.SSAOEnabled)
+	if (ppSettings.SSAOEnabled)
 	{
 		PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler SSAO");
 
@@ -406,7 +407,7 @@ void RenderAssembler::RenderDeferred(SceneRenderData& aRenderData)
 	Engine::Get().GetDebugDrawer().DrawObjects();
 
 	std::shared_ptr<Texture> renderTarget;
-	if (gfx.BloomEnabled)
+	if (ppSettings.BloomEnabled)
 	{
 		renderTarget = gfx.GetIntermediateTexture(IntermediateTexture::LDR);
 	}
@@ -419,7 +420,7 @@ void RenderAssembler::RenderDeferred(SceneRenderData& aRenderData)
 	{
 		PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Tonemapping");
 		gfxList.Enqueue<BeginEvent>("Tonemapping Pass");
-		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>(gfx.TonemapperNames[static_cast<unsigned>(gfx.Tonemapper)])->pso);
+		gfxList.Enqueue<ChangePipelineState>(AssetManager::Get().GetAsset<PSOAsset>(ppSettings.TonemapperNames[static_cast<unsigned>(ppSettings.Tonemapper)])->pso);
 		gfxList.Enqueue<SetRenderTarget>(renderTarget, nullptr, true, false);
 		gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::HDR));
 		gfxList.Enqueue<RenderFullscreenQuad>();
@@ -437,7 +438,7 @@ void RenderAssembler::RenderDeferred(SceneRenderData& aRenderData)
 		gfxList.Enqueue<EndEvent>();
 	}
 
-	if (gfx.BloomEnabled)
+	if (ppSettings.BloomEnabled)
 	{
 		PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Bloom Pass");
 

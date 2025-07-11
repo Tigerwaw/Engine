@@ -8,6 +8,7 @@
 #include "Objects/PipelineStateObject.h"
 #include "GraphicsCommands/GraphicsCommandList.h"
 #include "Objects/ConstantBuffers/ConstantBuffer.h"
+#include "PostProcessingSettings.h"
 
 class Shader;
 class Mesh;
@@ -40,31 +41,6 @@ enum class DebugMode
 	DebugTextureNormals,
 	DebugUVs,
 	DebugVertexColor,
-	COUNT
-};
-
-enum class Tonemapper
-{
-	UE,
-	ACES,
-	Lottes,
-	COUNT
-};
-
-enum class Luminance
-{
-	RandomGain,
-	Contrast,
-	ReductionAndGain,
-	Fade,
-	COUNT
-};
-
-enum class Bloom
-{
-	Additive,
-	ScaledToScene,
-	ScaledToLuminance,
 	COUNT
 };
 
@@ -120,6 +96,9 @@ public:
 #ifndef _RETAIL
 	bool InitializeImGui();
 #endif
+
+	PostProcessingSettings& GetPostProcessingSettings() { return *myPostProcessingSettings; }
+
 	void BeginFrame();
 	void RenderFrame();
 	void EndFrame();
@@ -190,8 +169,6 @@ public:
 	std::shared_ptr<Texture> GetIntermediateTexture(IntermediateTexture aIntermediateTexture);
 	GBuffer& GetGBuffer() { return *myGBuffer; }
 
-	const std::vector<Math::Vector4f>& GetRandomKernel() const { return myRandomKernel; }
-
 	GraphicsCommandList& GetGraphicsCommandList() const { return *myCommandList; }
 
 	const unsigned GetDrawcallAmount() const { return myLastFrameDrawcallAmount; }
@@ -216,59 +193,29 @@ public:
 		"DebugUVs.pso",
 		"DebugVertexColor.pso"
 	};
-	
-	std::vector<std::string> TonemapperNames = {
-		"TonemapUE.pso",
-		"TonemapACES.pso",
-		"TonemapLottes.pso"
-	};
-	
-	std::vector<std::string> LuminanceNames = {
-		"RandomGain",
-		"Contrast",
-		"ReductionAndGain",
-		"Fade"
-	};
-	
-	std::vector<std::string> BloomNames = {
-		"Additive",
-		"ScaledToScene",
-		"ScaledToLuminance"
-	};
 
+	DebugMode CurrentDebugMode = DebugMode::None;
 	bool DrawBoundingBoxes = false;
 	bool DrawCameraFrustums = false;
 	bool DrawColliders = false;
 	bool UseViewCulling = true;
 	bool RecalculateShadowFrustum = true;
 
-	Tonemapper Tonemapper = Tonemapper::UE;
-	DebugMode CurrentDebugMode = DebugMode::None;
-
-	bool BloomEnabled = true;
-	bool SSAOEnabled = true;
-	Bloom BloomFunction = Bloom::ScaledToLuminance;
-	Luminance LuminanceFunction = Luminance::Fade;
-	float BloomStrength = 0.5f;
-	float SSAONoisePower = 0.25f;
-	float SSAORadius = 0.05f;
-	float SSAOBias = 0.025f;
-
 private:
 	GraphicsEngine();
 	~GraphicsEngine();
 
 	void CreateConstantBuffers();
-	void CreateRandomKernel(unsigned aKernelSize);
 
 	std::unique_ptr<RenderHardwareInterface> myRHI;
+	std::unique_ptr<PostProcessingSettings> myPostProcessingSettings;
+
 	std::unordered_map<ConstantBufferType, ConstantBuffer> myConstantBuffers;
 	
 	std::shared_ptr<PipelineStateObject> myCurrentPSO;
 	std::shared_ptr<PipelineStateObject> myDefaultPSO;
 
 	std::shared_ptr<Texture> myLUTtexture;
-	std::vector<Math::Vector4f> myRandomKernel;
 	
 	std::unique_ptr<GBuffer> myGBuffer;
 	std::unique_ptr<GraphicsCommandList> myCommandList;

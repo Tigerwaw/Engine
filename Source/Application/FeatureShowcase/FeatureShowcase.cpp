@@ -112,6 +112,8 @@ void FeatureShowcase::InitializeApplication()
 			ImGui::Checkbox("Draw Camera Frustums", &GraphicsEngine::Get().DrawCameraFrustums);
 			ImGui::Checkbox("Draw Colliders", &GraphicsEngine::Get().DrawColliders);
 
+			PostProcessingSettings& ppSettings = GraphicsEngine::Get().GetPostProcessingSettings();
+
 			// Rendering
 			{
 				ImGui::Text("Rendering Mode");
@@ -128,18 +130,18 @@ void FeatureShowcase::InitializeApplication()
 			// Tonemapping
 			{
 				ImGui::Text("Tonemapper");
-				if (ImGui::BeginCombo("##TonemapperDropdown", GraphicsEngine::Get().TonemapperNames[static_cast<int>(GraphicsEngine::Get().Tonemapper)].c_str()))
+				if (ImGui::BeginCombo("##TonemapperDropdown", ppSettings.TonemapperNames[static_cast<int>(ppSettings.Tonemapper)].c_str()))
 				{
 					for (unsigned i = 0; i < static_cast<unsigned>(Tonemapper::COUNT); i++)
 					{
-						if (ImGui::Selectable(GraphicsEngine::Get().TonemapperNames[i].c_str())) GraphicsEngine::Get().Tonemapper = static_cast<Tonemapper>(i);
+						if (ImGui::Selectable(ppSettings.TonemapperNames[i].c_str())) ppSettings.Tonemapper = static_cast<Tonemapper>(i);
 					}
 					ImGui::EndCombo();
 				}
 			}
 
-			ImGui::Checkbox("Enable Bloom", &GraphicsEngine::Get().BloomEnabled);
-			ImGui::Checkbox("Enable SSAO", &GraphicsEngine::Get().SSAOEnabled);
+			ImGui::Checkbox("Enable Bloom", &ppSettings.BloomEnabled);
+			ImGui::Checkbox("Enable SSAO", &ppSettings.SSAOEnabled);
 
 			ImGui::Separator();
 
@@ -188,6 +190,9 @@ void FeatureShowcase::InitializeApplication()
 			Math::Vector2f resolution = Engine::Get().GetResolution();
 			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.4f * resolution.y });
 			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.55f * resolution.y });
+
+			PostProcessingSettings& ppSettings = GraphicsEngine::Get().GetPostProcessingSettings();
+
 			bool open = true;
 			ImGui::Begin("Lighting Settings", &open, ImGuiWindowFlags_NoSavedSettings);
 			{
@@ -212,30 +217,30 @@ void FeatureShowcase::InitializeApplication()
 
 						// Luminance
 						ImGui::Text("Luminance");
-						if (ImGui::BeginCombo("##LuminanceDropdown", GraphicsEngine::Get().LuminanceNames[static_cast<int>(GraphicsEngine::Get().LuminanceFunction)].c_str()))
+						if (ImGui::BeginCombo("##LuminanceDropdown", ppSettings.LuminanceNames[static_cast<int>(ppSettings.LuminanceFunction)].c_str()))
 						{
 							for (unsigned i = 0; i < static_cast<unsigned>(Luminance::COUNT); i++)
 							{
-								if (ImGui::Selectable(GraphicsEngine::Get().LuminanceNames[i].c_str())) GraphicsEngine::Get().LuminanceFunction = static_cast<Luminance>(i);
+								if (ImGui::Selectable(ppSettings.LuminanceNames[i].c_str())) ppSettings.LuminanceFunction = static_cast<Luminance>(i);
 							}
 							ImGui::EndCombo();
 						}
 
 						// Bloom
 						ImGui::Text("Bloom");
-						if (ImGui::BeginCombo("##BloomDropdown", GraphicsEngine::Get().BloomNames[static_cast<int>(GraphicsEngine::Get().BloomFunction)].c_str()))
+						if (ImGui::BeginCombo("##BloomDropdown", ppSettings.BloomNames[static_cast<int>(ppSettings.BloomFunction)].c_str()))
 						{
 							for (unsigned i = 0; i < static_cast<unsigned>(Bloom::COUNT); i++)
 							{
-								if (ImGui::Selectable(GraphicsEngine::Get().BloomNames[i].c_str())) GraphicsEngine::Get().BloomFunction = static_cast<Bloom>(i);
+								if (ImGui::Selectable(ppSettings.BloomNames[i].c_str())) ppSettings.BloomFunction = static_cast<Bloom>(i);
 							}
 							ImGui::EndCombo();
 						}
 
-						ImGui::SliderFloat("Bloom Intensity", &GraphicsEngine::Get().BloomStrength, 0, 1.0f);
-						ImGui::SliderFloat("SSAO Noise Power", &GraphicsEngine::Get().SSAONoisePower, 0, 1.0f);
-						ImGui::SliderFloat("SSAO Radius", &GraphicsEngine::Get().SSAORadius, 0, 0.5f);
-						ImGui::SliderFloat("SSAO Bias", &GraphicsEngine::Get().SSAOBias, 0, 0.1f);
+						ImGui::SliderFloat("Bloom Intensity", &ppSettings.BloomStrength, 0, 1.0f);
+						ImGui::SliderFloat("SSAO Noise Power", &ppSettings.SSAONoisePower, 0, 1.0f);
+						ImGui::SliderFloat("SSAO Radius", &ppSettings.SSAORadius, 0, 0.5f);
+						ImGui::SliderFloat("SSAO Bias", &ppSettings.SSAOBias, 0, 0.1f);
 					}
 
 					if (ImGui::BeginTabItem("Directional Light"))
@@ -684,6 +689,6 @@ void FeatureShowcase::UpdateApplication()
 
 	if (Engine::Get().GetInputHandler().GetBinaryAction("F7"))
 	{
-		GraphicsEngine::Get().SSAOEnabled = !GraphicsEngine::Get().SSAOEnabled;
+		GraphicsEngine::Get().GetPostProcessingSettings().SSAOEnabled = !GraphicsEngine::Get().GetPostProcessingSettings().SSAOEnabled;
 	}
 }

@@ -229,6 +229,8 @@ void ModelViewer::InitializeApplication()
 			windowPos.x -= size.x + offset;
 			windowPos.y += 270.0f;
 
+			PostProcessingSettings& ppSettings = GraphicsEngine::Get().GetPostProcessingSettings();
+
 			ImGui::SetNextWindowPos({ windowPos.x, windowPos.y });
 			ImGui::SetNextWindowContentSize({ size.x, size.y });
 			ImGui::PushFont(newFont);
@@ -258,26 +260,26 @@ void ModelViewer::InitializeApplication()
 						// Tonemapping
 						{
 							ImGui::Text("Tonemapper");
-							if (ImGui::BeginCombo("##TonemapperDropdown", tonemapperNames[static_cast<int>(GraphicsEngine::Get().Tonemapper)].c_str()))
+							if (ImGui::BeginCombo("##TonemapperDropdown", tonemapperNames[static_cast<int>(ppSettings.Tonemapper)].c_str()))
 							{
 								for (unsigned i = 0; i < static_cast<unsigned>(Tonemapper::COUNT); i++)
 								{
-									if (ImGui::Selectable(tonemapperNames[i].c_str())) GraphicsEngine::Get().Tonemapper = static_cast<Tonemapper>(i);
+									if (ImGui::Selectable(tonemapperNames[i].c_str())) ppSettings.Tonemapper = static_cast<Tonemapper>(i);
 								}
 
 								ImGui::EndCombo();
 							}
 						}
 
-						currentTonemapper = static_cast<unsigned>(GraphicsEngine::Get().Tonemapper);
+						currentTonemapper = static_cast<unsigned>(ppSettings.Tonemapper);
 
 						// Luminance
 						ImGui::Text("Luminance");
-						if (ImGui::BeginCombo("##LuminanceDropdown", GraphicsEngine::Get().LuminanceNames[static_cast<int>(GraphicsEngine::Get().LuminanceFunction)].c_str()))
+						if (ImGui::BeginCombo("##LuminanceDropdown", ppSettings.LuminanceNames[static_cast<int>(ppSettings.LuminanceFunction)].c_str()))
 						{
 							for (unsigned i = 0; i < static_cast<unsigned>(Luminance::COUNT); i++)
 							{
-								if (ImGui::Selectable(GraphicsEngine::Get().LuminanceNames[i].c_str())) GraphicsEngine::Get().LuminanceFunction = static_cast<Luminance>(i);
+								if (ImGui::Selectable(ppSettings.LuminanceNames[i].c_str())) ppSettings.LuminanceFunction = static_cast<Luminance>(i);
 							}
 							ImGui::EndCombo();
 						}
@@ -285,26 +287,26 @@ void ModelViewer::InitializeApplication()
 						ImGui::Separator();
 
 						// Bloom
-						ImGui::Checkbox("Enable Bloom", &GraphicsEngine::Get().BloomEnabled);
+						ImGui::Checkbox("Enable Bloom", &ppSettings.BloomEnabled);
 						ImGui::Text("Mode");
-						if (ImGui::BeginCombo("##BloomDropdown", GraphicsEngine::Get().BloomNames[static_cast<int>(GraphicsEngine::Get().BloomFunction)].c_str()))
+						if (ImGui::BeginCombo("##BloomDropdown", ppSettings.BloomNames[static_cast<int>(ppSettings.BloomFunction)].c_str()))
 						{
 							for (unsigned i = 0; i < static_cast<unsigned>(Bloom::COUNT); i++)
 							{
-								if (ImGui::Selectable(GraphicsEngine::Get().BloomNames[i].c_str())) GraphicsEngine::Get().BloomFunction = static_cast<Bloom>(i);
+								if (ImGui::Selectable(ppSettings.BloomNames[i].c_str())) ppSettings.BloomFunction = static_cast<Bloom>(i);
 							}
 							ImGui::EndCombo();
 						}
 
 						ImGui::Text("Intensity");
-						ImGui::SliderFloat("##BloomIntensity", &GraphicsEngine::Get().BloomStrength, 0, 1.0f);
+						ImGui::SliderFloat("##BloomIntensity", &ppSettings.BloomStrength, 0, 1.0f);
 
 						ImGui::Separator();
 
-						ImGui::Checkbox("Enable SSAO", &GraphicsEngine::Get().SSAOEnabled);
-						ImGui::SliderFloat("Noise Power", &GraphicsEngine::Get().SSAONoisePower, 0, 1.0f);
-						ImGui::SliderFloat("Radius", &GraphicsEngine::Get().SSAORadius, 0, 0.5f);
-						ImGui::SliderFloat("Bias", &GraphicsEngine::Get().SSAOBias, 0, 0.1f);
+						ImGui::Checkbox("Enable SSAO", &ppSettings.SSAOEnabled);
+						ImGui::SliderFloat("Noise Power", &ppSettings.SSAONoisePower, 0, 1.0f);
+						ImGui::SliderFloat("Radius", &ppSettings.SSAORadius, 0, 0.5f);
+						ImGui::SliderFloat("Bias", &ppSettings.SSAOBias, 0, 0.1f);
 
 						ImGui::EndTabItem();
 					}
@@ -644,7 +646,7 @@ void ModelViewer::UpdateApplication()
 			currentTonemapper = 0;
 		}
 
-		GraphicsEngine::Get().Tonemapper = static_cast<Tonemapper>(currentTonemapper);
+		GraphicsEngine::Get().GetPostProcessingSettings().Tonemapper = static_cast<Tonemapper>(currentTonemapper);
 	}
 }
 
@@ -680,7 +682,7 @@ void ModelViewer::ResetScene()
 	currentDebugMode = 0;
 	GraphicsEngine::Get().CurrentDebugMode = DebugMode::None;
 	currentTonemapper = 0;
-	GraphicsEngine::Get().Tonemapper = Tonemapper::UE;
+	GraphicsEngine::Get().GetPostProcessingSettings().Tonemapper = Tonemapper::UE;
 	currentBlendtime = 0.5f;
 
 	engine.GetSceneHandler().FindGameObjectByName("Plane")->SetActive(true);
@@ -960,26 +962,26 @@ void ModelViewer::SetShader(std::filesystem::path& aAssetPath)
 		return;
 	}
 
-	if (shaderAsset->myName.string().ends_with("VS"))
+	if (shaderAsset->GetName().string().ends_with("VS"))
 	{
 		myPSO->VertexShader = shaderAsset->shader;
 		myMaterial->SetPSO(myPSO);
-		myShaderNames[ShaderType::VertexShader] = shaderAsset->myName.string();
-		myShaderPaths[ShaderType::VertexShader] = shaderAsset->myPath.string();
+		myShaderNames[ShaderType::VertexShader] = shaderAsset->GetName().string();
+		myShaderPaths[ShaderType::VertexShader] = shaderAsset->GetPath().string();
 	}
-	else if (shaderAsset->myName.string().ends_with("GS"))
+	else if (shaderAsset->GetName().string().ends_with("GS"))
 	{
 		myPSO->GeometryShader = shaderAsset->shader;
 		myMaterial->SetPSO(myPSO);
-		myShaderNames[ShaderType::GeometryShader] = shaderAsset->myName.string();
-		myShaderPaths[ShaderType::GeometryShader] = shaderAsset->myPath.string();
+		myShaderNames[ShaderType::GeometryShader] = shaderAsset->GetName().string();
+		myShaderPaths[ShaderType::GeometryShader] = shaderAsset->GetPath().string();
 	}
-	else if (shaderAsset->myName.string().ends_with("PS"))
+	else if (shaderAsset->GetName().string().ends_with("PS"))
 	{
 		myPSO->PixelShader = shaderAsset->shader;
 		myMaterial->SetPSO(myPSO);
-		myShaderNames[ShaderType::PixelShader] = shaderAsset->myName.string();
-		myShaderPaths[ShaderType::PixelShader] = shaderAsset->myPath.string();
+		myShaderNames[ShaderType::PixelShader] = shaderAsset->GetName().string();
+		myShaderPaths[ShaderType::PixelShader] = shaderAsset->GetPath().string();
 	}
 	else
 	{
