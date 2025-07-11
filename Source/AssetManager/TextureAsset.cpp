@@ -5,7 +5,7 @@
 bool TextureAsset::Load()
 {
     Texture tex;
-    if (!GraphicsEngine::Get().LoadTexture(GetPath(), tex))
+    if (!GraphicsEngine::Get().GetResourceVendor().LoadTexture(GetPath(), tex))
     {
         return false;
     }

@@ -16,7 +16,7 @@ void Text::Initialize()
 {
 	myTextData.vertexBuffer = std::make_shared<DynamicVertexBuffer>();
 	myTextData.vertexBuffer->CreateBuffer("Text Vertex Buffer", myTextData.vertices, myTextData.vertices.size());
-	GraphicsEngine::Get().CreateIndexBuffer("Text Index Buffer", myTextData.indices, myTextData.indexBuffer, true);
+	GraphicsEngine::Get().GetResourceVendor().CreateIndexBuffer("Text Index Buffer", myTextData.indices, myTextData.indexBuffer, true);
 }
 
 void Text::UpdateBuffers()

@@ -26,7 +26,7 @@ template<typename VertexType>
 inline bool DynamicVertexBuffer::CreateBuffer(std::string_view aName, std::vector<VertexType>& aVertexList, size_t aMaxVertexCount)
 {
     myMaxVertexCount = aMaxVertexCount;
-    return GraphicsEngine::Get().CreateDynamicVertexBuffer(aName, aVertexList, myVertexBuffer, aMaxVertexCount);
+    return GraphicsEngine::Get().GetResourceVendor().CreateDynamicVertexBuffer(aName, aVertexList, myVertexBuffer, aMaxVertexCount);
 }
 
 template<typename VertexType>

@@ -97,7 +97,7 @@ bool PSOAsset::Load()
     }
 
 #ifndef _RETAIL
-    if (!GraphicsEngine::Get().ValidateShaderCombination(vsPath, gsPath, psPath))
+    if (!GraphicsEngine::Get().GetResourceVendor().ValidateShaderCombination(vsPath, gsPath, psPath))
     {
         return false;
     }
@@ -202,7 +202,7 @@ bool PSOAsset::Load()
     }
 
     pso = std::make_shared<PipelineStateObject>();
-    if (!GraphicsEngine::Get().CreatePSO(pso, psoDesc))
+    if (!GraphicsEngine::Get().GetResourceVendor().CreatePSO(pso, psoDesc))
     {
         pso = nullptr;
         return false;

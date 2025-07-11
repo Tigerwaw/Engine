@@ -5,7 +5,7 @@
 bool ShaderAsset::Load()
 {
     Shader sh;
-    if (!GraphicsEngine::Get().LoadShader(GetPath(), sh))
+    if (!GraphicsEngine::Get().GetResourceVendor().LoadShader(GetPath(), sh))
     {
         return false;
     }

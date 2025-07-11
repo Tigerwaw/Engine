@@ -174,7 +174,7 @@ void AssetManager::RegisterEngineAssets()
 
     {
         std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
-        asset->mesh = std::make_shared<Mesh>(std::move(GraphicsEngine::Get().CreatePlanePrimitive()));
+        asset->mesh = std::make_shared<Mesh>(GraphicsEngine::Get().GetResourceVendor().CreatePlanePrimitive());
         asset->myName = "sm_planeprimitive";
         asset->myIsLoaded = true;
         myAssets.emplace(asset->myName, asset);
@@ -183,7 +183,7 @@ void AssetManager::RegisterEngineAssets()
 
     {
         std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
-        asset->mesh = std::make_shared<Mesh>(std::move(GraphicsEngine::Get().CreateCubePrimitive()));
+        asset->mesh = std::make_shared<Mesh>(GraphicsEngine::Get().GetResourceVendor().CreateCubePrimitive());
         asset->myName = "sm_cubeprimitive";
         asset->myIsLoaded = true;
         myAssets.emplace(asset->myName, asset);
@@ -192,7 +192,7 @@ void AssetManager::RegisterEngineAssets()
     
     {
         std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
-        asset->mesh = std::make_shared<Mesh>(std::move(GraphicsEngine::Get().CreateRampPrimitive()));
+        asset->mesh = std::make_shared<Mesh>(GraphicsEngine::Get().GetResourceVendor().CreateRampPrimitive());
         asset->myName = "sm_rampprimitive";
         asset->myIsLoaded = true;
         myAssets.emplace(asset->myName, asset);
@@ -421,7 +421,7 @@ bool AssetManager::RegisterEngineTextureAsset(std::string_view aName, const uint
     std::shared_ptr<TextureAsset> asset = std::make_shared<TextureAsset>();
     asset->texture = std::make_shared<Texture>();
     asset->myName = Utilities::ToLowerCopy(aName.data());
-    if (!GraphicsEngine::Get().LoadTexture(asset->myName.string(), aTextureDataPtr, aTextureDataSize, *asset->texture))
+    if (!GraphicsEngine::Get().GetResourceVendor().LoadTexture(asset->myName.string(), aTextureDataPtr, aTextureDataSize, *asset->texture))
     {
         LOG(LogAssetManager, Error, "Failed to register default texture asset {}", asset->myName.string());
         return false;

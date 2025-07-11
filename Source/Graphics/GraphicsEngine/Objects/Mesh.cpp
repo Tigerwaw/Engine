@@ -14,8 +14,8 @@ void Mesh::Initialize(std::vector<Vertex>&& aVertexList, std::vector<unsigned>&&
 	myIndices = std::move(aIndexList);
 	myElements = std::move(aElementList);
 	mySkeleton = aSkeleton;
-	GraphicsEngine::Get().CreateVertexBuffer("Vertex Buffer", myVertices, myVertexBuffer);
-	GraphicsEngine::Get().CreateIndexBuffer("Index Buffer", myIndices, myIndexBuffer);
+	GraphicsEngine::Get().GetResourceVendor().CreateVertexBuffer("Vertex Buffer", myVertices, myVertexBuffer);
+	GraphicsEngine::Get().GetResourceVendor().CreateIndexBuffer("Index Buffer", myIndices, myIndexBuffer);
 }
 
 void Mesh::InitBoundingBox(Math::Vector3f aMinPoint, Math::Vector3f aMaxPoint)
