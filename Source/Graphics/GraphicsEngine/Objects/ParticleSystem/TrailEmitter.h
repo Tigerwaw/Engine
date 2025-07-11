@@ -6,7 +6,7 @@ class DynamicVertexBuffer;
 
 class TrailEmitter
 {
-	friend class GraphicsEngine;
+	friend class Drawer;
 	friend class TrailSystem;
 
 public:

@@ -34,13 +34,13 @@ void RenderSpritesheet::Execute()
     {
         GraphicsEngine::Get().ChangePipelineState(myData.material->GetPSO());
         GraphicsEngine::Get().SetTextureResource_PS(0, myData.material->GetTexture(Material::TextureType::Albedo));
-        GraphicsEngine::Get().RenderSprite();
+        GraphicsEngine::Get().GetDrawer().RenderSprite();
         GraphicsEngine::Get().ClearTextureResource_PS(0);
     }
     else
     {
         GraphicsEngine::Get().SetTextureResource_PS(0, *myData.texture);
-        GraphicsEngine::Get().RenderSprite();
+        GraphicsEngine::Get().GetDrawer().RenderSprite();
         GraphicsEngine::Get().ClearTextureResource_PS(0);
     }
 }

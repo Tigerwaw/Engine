@@ -30,7 +30,7 @@ void RenderInstancedMesh::Execute()
     objBufferData.isInstanced = true;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
-    GraphicsEngine::Get().RenderInstancedMesh(*myData.mesh, myData.meshCount, myData.materialList, *myData.instanceBuffer);
+    GraphicsEngine::Get().GetDrawer().RenderInstancedMesh(*myData.mesh, myData.meshCount, myData.materialList, *myData.instanceBuffer);
 }
 
 void RenderInstancedMesh::Destroy()

@@ -33,7 +33,7 @@ void RenderAnimatedMesh::Execute()
     memcpy_s(animBufferData.JointTransforms, sizeof(Math::Matrix4x4<float>) * 128, myData.jointTransforms.data(), sizeof(Math::Matrix4x4<float>) * 128);
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::AnimationBuffer, animBufferData);
 
-    GraphicsEngine::Get().RenderMesh(*myData.mesh, myData.materialList);
+    GraphicsEngine::Get().GetDrawer().RenderMesh(*myData.mesh, myData.materialList);
 }
 
 void RenderAnimatedMesh::Destroy()

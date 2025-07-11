@@ -28,8 +28,6 @@ enum class Bloom
 class PostProcessingSettings
 {
 public:
-	bool Initialize();
-
 	std::vector<std::string> TonemapperNames = {
 	"TonemapUE.pso",
 	"TonemapACES.pso",
@@ -49,6 +47,7 @@ public:
 		"ScaledToLuminance"
 	};
 
+	void CreateRandomKernel(unsigned aKernelSize);
 	const std::vector<Math::Vector4f>& GetRandomKernel() const { return myRandomKernel; }
 
 	Tonemapper Tonemapper = Tonemapper::UE;
@@ -61,6 +60,5 @@ public:
 	float SSAORadius = 0.05f;
 	float SSAOBias = 0.025f;
 private:
-	void CreateRandomKernel(unsigned aKernelSize);
 	std::vector<Math::Vector4f> myRandomKernel;
 };

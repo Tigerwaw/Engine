@@ -31,7 +31,7 @@ void RenderMesh::Execute()
     objBufferData.customData_2 = myData.customShaderParams_2;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
-    GraphicsEngine::Get().RenderMesh(*myData.mesh, myData.materialList);
+    GraphicsEngine::Get().GetDrawer().RenderMesh(*myData.mesh, myData.materialList);
 }
 
 void RenderMesh::Destroy()

@@ -8,7 +8,7 @@ struct ParticleVertex;
 
 class ParticleEmitter
 {
-	friend class GraphicsEngine;
+	friend class Drawer;
 	friend class ParticleSystem;
 
 	public:

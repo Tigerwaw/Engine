@@ -27,7 +27,7 @@ void RenderParticles::Execute()
 
     for (auto& emitter : myData.emitters)
     {
-        gfx.RenderParticleEmitter(emitter);
+        gfx.GetDrawer().RenderParticleEmitter(emitter);
     }
 }
 

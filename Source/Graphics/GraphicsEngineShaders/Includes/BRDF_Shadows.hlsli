@@ -61,11 +61,13 @@ float PCSS(Texture2D shadowMap, float3 coords, float lightWorldSize, float light
     {
         return 0.0f;
     }
+    else
+    {
+        float penumbraRatio = PenumbraSize(zReceiver, avgBlockerDepth);
+        float filterRadiusUV = penumbraRatio * lightSizeUV * lightNearPlane / zReceiver;
     
-    float penumbraRatio = PenumbraSize(zReceiver, avgBlockerDepth);
-    float filterRadiusUV = penumbraRatio * lightSizeUV * lightNearPlane / zReceiver;
-    
-    return PCF_Filter(shadowMap, uv, zReceiver, filterRadiusUV);
+        return PCF_Filter(shadowMap, uv, zReceiver, filterRadiusUV);
+    }
 }
 
 
@@ -123,11 +125,13 @@ float PCSS_Cube(TextureCube shadowCubemap, float3 direction, float zReceiver, fl
     {
         return 0.0f;
     }
+    else
+    {
+        float penumbraRatio = PenumbraSize(zReceiver, avgBlockerDepth);
+        float filterRadiusUV = penumbraRatio * lightSizeUV * lightNearPlane / zReceiver;
     
-    float penumbraRatio = PenumbraSize(zReceiver, avgBlockerDepth);
-    float filterRadiusUV = penumbraRatio * lightSizeUV * lightNearPlane / zReceiver;
-    
-    return PCF_Filter_Cube(shadowCubemap, direction, zReceiver, filterRadiusUV);
+        return PCF_Filter_Cube(shadowCubemap, direction, zReceiver, filterRadiusUV);
+    }
 }
 
 
@@ -148,22 +152,24 @@ float ShadowFactorDLightSpotLight(float4x4 lightView, float4x4 lightProj, float3
     {
         return 1.0f;
     }
+    else
+    {
+        return PCSS(shadowMap, float3(shadowUV, D), lightWorldSize, lightFrustumWidth, lightNearPlane);
     
-    return PCSS(shadowMap, float3(shadowUV, D), lightWorldSize, lightFrustumWidth, lightNearPlane);
+        //float2 shadowMapDim;
+        //shadowMap.GetDimensions(shadowMapDim.x, shadowMapDim.y);
+        //float2 texelSize = 1 / shadowMapDim;
+        //float shadowFactor = 0;
+        //[unroll(64)]
+        //for (int i = 0; i < samples; i++)
+        //{
+        //    float2 uv = shadowUV + PoissonDisk[i] * texelSize * ((float) samples / 15.0);
+        //    shadowFactor += shadowMap.SampleCmpLevelZero(ShadowCmpSampler, uv, D).r;
+        //}
+        //shadowFactor /= samples;
     
-    //float2 shadowMapDim;
-    //shadowMap.GetDimensions(shadowMapDim.x, shadowMapDim.y);
-    //float2 texelSize = 1 / shadowMapDim;
-    //float shadowFactor = 0;
-    //[unroll(64)]
-    //for (int i = 0; i < samples; i++)
-    //{
-    //    float2 uv = shadowUV + PoissonDisk[i] * texelSize * ((float) samples / 15.0);
-    //    shadowFactor += shadowMap.SampleCmpLevelZero(ShadowCmpSampler, uv, D).r;
-    //}
-    //shadowFactor /= samples;
-    
-    //return saturate(shadowFactor);
+        //return saturate(shadowFactor);   
+    }
 }
 
 float ShadowFactorPointLight(PointLightData pointLight, float4 worldPos, float3 pixelNormal, float minBias, float maxBias, TextureCube shadowCubemap, float lightWorldSize, float lightFrustumWidth, float lightNearPlane)

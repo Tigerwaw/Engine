@@ -18,7 +18,7 @@ RenderText::RenderText(TextData&& aTextData)
 void RenderText::Execute()
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderText Execute");
-	GraphicsEngine::Get().RenderText(*myData.text);
+	GraphicsEngine::Get().GetDrawer().RenderText(*myData.text);
 }
 
 void RenderText::Destroy()

@@ -1,12 +1,6 @@
 #include "GraphicsEngine.pch.h"
 #include "PostProcessingSettings.h"
 
-bool PostProcessingSettings::Initialize()
-{
-	CreateRandomKernel(64);
-	return true;
-}
-
 void PostProcessingSettings::CreateRandomKernel(unsigned aKernelSize)
 {
 	myRandomKernel.resize(aKernelSize);

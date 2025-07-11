@@ -21,7 +21,7 @@ void RenderDebugLines::Execute()
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(1), "GFXCMD RenderDebugLines Execute");
 	GraphicsEngine::Get().UpdateDynamicVertexBuffer(myLineVertices, *myLineBuffer);
-	GraphicsEngine::Get().RenderDebugLines(*myLineBuffer, static_cast<unsigned>(myLineVertices.size()));
+	GraphicsEngine::Get().GetDrawer().RenderDebugLines(*myLineBuffer, static_cast<unsigned>(myLineVertices.size()));
 }
 
 void RenderDebugLines::Destroy()

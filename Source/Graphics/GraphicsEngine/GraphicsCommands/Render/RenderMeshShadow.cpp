@@ -27,7 +27,7 @@ void RenderMeshShadow::Execute()
     objBufferData.hasSkinning = false;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
-    GraphicsEngine::Get().RenderMeshShadow(*myData.mesh);
+    GraphicsEngine::Get().GetDrawer().RenderMeshShadow(*myData.mesh);
 }
 
 void RenderMeshShadow::Destroy()

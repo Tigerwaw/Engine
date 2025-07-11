@@ -32,7 +32,7 @@ void RenderAnimatedMeshShadow::Execute()
     memcpy_s(animBufferData.JointTransforms, sizeof(Math::Matrix4x4<float>) * 128, myData.jointTransforms.data(), sizeof(Math::Matrix4x4<float>) * 128);
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::AnimationBuffer, animBufferData);
 
-    GraphicsEngine::Get().RenderMeshShadow(*myData.mesh);
+    GraphicsEngine::Get().GetDrawer().RenderMeshShadow(*myData.mesh);
 }
 
 void RenderAnimatedMeshShadow::Destroy()

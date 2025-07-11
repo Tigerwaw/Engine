@@ -27,7 +27,7 @@ void RenderTrail::Execute()
 
     for (auto& emitter : myData.emitters)
     {
-        gfx.RenderTrailEmitter(emitter);
+        gfx.GetDrawer().RenderTrailEmitter(emitter);
     }
 }
 

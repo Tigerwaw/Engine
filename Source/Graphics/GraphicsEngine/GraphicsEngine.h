@@ -9,6 +9,7 @@
 #include "GraphicsCommands/GraphicsCommandList.h"
 #include "Objects/ConstantBuffers/ConstantBuffer.h"
 #include "PostProcessingSettings.h"
+#include "Drawer.h"
 
 class Shader;
 class Mesh;
@@ -66,6 +67,8 @@ struct PSODescription
 
 class GraphicsEngine
 {
+	friend class Drawer;
+
 public:
 	static GraphicsEngine& Get()
 	{
@@ -79,6 +82,7 @@ public:
 #endif
 
 	PostProcessingSettings& GetPostProcessingSettings() { return *myPostProcessingSettings; }
+	Drawer& GetDrawer() { return *myDrawer; }
 
 	void BeginFrame();
 	void RenderFrame();
@@ -120,17 +124,6 @@ public:
 	void SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
 	void SetRenderTargets(const std::vector<std::shared_ptr<Texture>>& aRenderTargets, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget = true, bool aClearDepthStencil = true);
 
-	void RenderQuad();
-	void RenderMesh(const Mesh& aMesh, const std::vector<std::shared_ptr<Material>>& aMaterialList);
-	void RenderMeshShadow(const Mesh& aMesh);
-	void RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, const std::vector<std::shared_ptr<Material>>& aMaterialList, DynamicVertexBuffer& aInstanceBuffer);
-	void RenderInstancedMeshShadow(const Mesh& aMesh, unsigned aMeshCount, DynamicVertexBuffer& aInstanceBuffer);
-	void RenderSprite();
-	void RenderText(const Text& aText);
-	void RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsigned aLineAmount);
-	void RenderParticleEmitter(ParticleEmitter& aParticleEmitter);
-	void RenderTrailEmitter(TrailEmitter& aTrailEmitter);
-
 	template <typename VertexType>
 	bool CreateVertexBuffer(std::string_view aName, const std::vector<VertexType>& aVertexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer) const;
 	template <typename VertexType>
@@ -166,6 +159,7 @@ private:
 
 	std::unique_ptr<RenderHardwareInterface> myRHI;
 	std::unique_ptr<PostProcessingSettings> myPostProcessingSettings;
+	std::unique_ptr<Drawer> myDrawer;
 
 	std::unordered_map<ConstantBufferType, ConstantBuffer> myConstantBuffers;
 	

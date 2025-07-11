@@ -28,7 +28,7 @@ void RenderInstancedMeshShadow::Execute()
     objBufferData.isInstanced = true;
     GraphicsEngine::Get().UpdateAndSetConstantBuffer(ConstantBufferType::ObjectBuffer, objBufferData);
 
-    GraphicsEngine::Get().RenderInstancedMeshShadow(*myData.mesh, myData.meshCount, *myData.instanceBuffer);
+    GraphicsEngine::Get().GetDrawer().RenderInstancedMeshShadow(*myData.mesh, myData.meshCount, *myData.instanceBuffer);
 }
 
 void RenderInstancedMeshShadow::Destroy()

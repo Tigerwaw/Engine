@@ -29,6 +29,7 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle, Math::Vector2f aResolution, 
 {
 	myRHI = std::make_unique<RenderHardwareInterface>();
 	myPostProcessingSettings = std::make_unique<PostProcessingSettings>();
+	myDrawer = std::make_unique<Drawer>();
 
 	LOG(LogGraphicsEngine, Log, "Initializing Graphics Engine...");
 
@@ -43,13 +44,6 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle, Math::Vector2f aResolution, 
 	{
 		myRHI = nullptr;
 		LOG(LogGraphicsEngine, Error, "Failed to initialize RHI!");
-		return false;
-	}
-
-	if (!myPostProcessingSettings->Initialize())
-	{
-		myPostProcessingSettings = nullptr;
-		LOG(LogGraphicsEngine, Error, "Failed to initialize Post Processing Settings!");
 		return false;
 	}
 
@@ -88,6 +82,8 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle, Math::Vector2f aResolution, 
 	rhi.CreateLUT("LUT", 512, 512, myLUTtexture, aContentRoot / L"EngineAssets/Shaders/Quad_VS.cso", aContentRoot / L"EngineAssets/Shaders/brdfLUT_PS.cso");
 
 	CreateConstantBuffers();
+
+	myPostProcessingSettings->CreateRandomKernel(64);
 	
 	myCommandList = std::make_unique<GraphicsCommandList>();
 	myGBuffer = std::make_unique<GBuffer>();
@@ -364,217 +360,6 @@ void GraphicsEngine::SetRenderTarget(std::shared_ptr<Texture> aRenderTarget, std
 void GraphicsEngine::SetRenderTargets(const std::vector<std::shared_ptr<Texture>>& aRenderTargets, std::shared_ptr<Texture> aDepthStencil, bool aClearRenderTarget, bool aClearDepthStencil)
 {
 	myRHI->SetRenderTargets(aRenderTargets, aDepthStencil, aClearRenderTarget, aClearDepthStencil);
-}
-
-void GraphicsEngine::RenderQuad()
-{
-	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Quad");
-	SetTextureResource_PS(127, *myLUTtexture);
-
-	myRHI->SetPrimitiveTopology(Topology::TRIANGLESTRIP);
-	myRHI->SetVertexBuffer(nullptr, 0, 0);
-	myRHI->SetIndexBuffer(nullptr);
-	myRHI->SetInputLayout(nullptr);
-	myRHI->Draw(4);
-	ClearTextureResource_PS(127);
-}
-
-void GraphicsEngine::RenderMesh(const Mesh& aMesh, const std::vector<std::shared_ptr<Material>>& aMaterialList)
-{
-	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Mesh");
-	myRHI->SetVertexBuffer(aMesh.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
-	myRHI->SetIndexBuffer(aMesh.GetIndexBuffer());
-	myRHI->SetPrimitiveTopology(Topology::TRIANGLELIST);
-
-	SetTextureResource_PS(127, *myLUTtexture);
-
-	for (const auto& element : aMesh.GetElements())
-	{
-		if (aMaterialList.size() > element.MaterialIndex)
-		{
-			MaterialBuffer matBufferData = aMaterialList[element.MaterialIndex]->MaterialSettings();
-			UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, matBufferData);
-
-			ChangePipelineState(aMaterialList[element.MaterialIndex]->GetPSO());
-
-			for (auto& [slot, texture] : aMaterialList[element.MaterialIndex]->GetTextures())
-			{
-				SetTextureResource_PS(slot, *texture);
-			}
-		}
-
-		myRHI->DrawIndexed(element.IndexOffset, element.NumIndices);
-		myDrawcallAmount++;
-
-		for (auto& [slot, texture] : aMaterialList[element.MaterialIndex]->GetTextures())
-		{
-			ClearTextureResource_PS(slot);
-		}
-	}
-
-	ClearTextureResource_PS(127);
-}
-
-void GraphicsEngine::RenderMeshShadow(const Mesh& aMesh)
-{
-	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Mesh Shadow");
-	myRHI->SetVertexBuffer(aMesh.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
-	myRHI->SetIndexBuffer(aMesh.GetIndexBuffer());
-	myRHI->SetPrimitiveTopology(Topology::TRIANGLELIST);
-
-	for (const auto& element : aMesh.GetElements())
-	{
-		myRHI->DrawIndexed(element.IndexOffset, element.NumIndices);
-		myDrawcallAmount++;
-	}
-}
-
-void GraphicsEngine::RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, const std::vector<std::shared_ptr<Material>>& aMaterialList, DynamicVertexBuffer& aInstanceBuffer)
-{
-	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Instanced Mesh");
-	std::vector<ID3D11Buffer*> buffers;
-	std::vector<unsigned> strides;
-	std::vector<unsigned> offsets;
-
-	buffers.emplace_back(*aMesh.GetVertexBuffer().GetAddressOf());
-	buffers.emplace_back(*aInstanceBuffer.GetVertexBuffer().GetAddressOf());
-
-	strides.emplace_back(myCurrentPSO->VertexStride);
-	strides.emplace_back(static_cast<unsigned>(sizeof(Math::Matrix4x4f)));
-
-	offsets.emplace_back(0);
-	offsets.emplace_back(0);
-
-	myRHI->SetVertexBuffers(buffers, strides, offsets);
-	myRHI->SetIndexBuffer(aMesh.GetIndexBuffer());
-	myRHI->SetPrimitiveTopology(Topology::TRIANGLELIST);
-
-	SetTextureResource_PS(127, *myLUTtexture);
-
-	for (const auto& element : aMesh.GetElements())
-	{
-		if (aMaterialList.size() > element.MaterialIndex)
-		{
-			MaterialBuffer matBufferData = aMaterialList[element.MaterialIndex]->MaterialSettings();
-			UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, matBufferData);
-
-			ChangePipelineState(aMaterialList[element.MaterialIndex]->GetPSO());
-
-			for (auto& [slot, texture] : aMaterialList[element.MaterialIndex]->GetTextures())
-			{
-				SetTextureResource_PS(slot, *texture);
-			}
-		}
-
-		myRHI->DrawIndexedInstanced(element.NumIndices, aMeshCount, element.IndexOffset, 0, 0);
-		myDrawcallAmount++;
-
-		for (auto& [slot, texture] : aMaterialList[element.MaterialIndex]->GetTextures())
-		{
-			ClearTextureResource_PS(slot);
-		}
-	}
-
-	ClearTextureResource_PS(127);
-}
-
-void GraphicsEngine::RenderInstancedMeshShadow(const Mesh& aMesh, unsigned aMeshCount, DynamicVertexBuffer& aInstanceBuffer)
-{
-	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Instanced Mesh Shadow");
-	std::vector<ID3D11Buffer*> buffers;
-	std::vector<unsigned> strides;
-	std::vector<unsigned> offsets;
-
-	buffers.emplace_back(*aMesh.GetVertexBuffer().GetAddressOf());
-	buffers.emplace_back(*aInstanceBuffer.GetVertexBuffer().GetAddressOf());
-
-	strides.emplace_back(myCurrentPSO->VertexStride);
-	strides.emplace_back(static_cast<unsigned>(sizeof(Math::Matrix4x4f)));
-
-	offsets.emplace_back(0);
-	offsets.emplace_back(0);
-
-	myRHI->SetVertexBuffers(buffers, strides, offsets);
-	myRHI->SetIndexBuffer(aMesh.GetIndexBuffer());
-	myRHI->SetPrimitiveTopology(Topology::TRIANGLELIST);
-
-	for (const auto& element : aMesh.GetElements())
-	{
-		myRHI->DrawIndexedInstanced(element.NumIndices, aMeshCount, element.IndexOffset, 0, 0);
-		myDrawcallAmount++;
-	}
-}
-
-void GraphicsEngine::RenderSprite()
-{
-	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Sprite");
-	myRHI->SetPrimitiveTopology(Topology::POINTLIST);
-	myRHI->Draw(1);
-}
-
-void GraphicsEngine::RenderText(const Text& aText)
-{
-	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Text");
-	SetTextureResource_PS(10, *aText.GetTexture());
-
-	const Text::TextData& textData = aText.GetTextData();
-	myRHI->SetVertexBuffer(textData.vertexBuffer->GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
-	myRHI->SetIndexBuffer(textData.indexBuffer);
-	myRHI->SetPrimitiveTopology(Topology::TRIANGLELIST);
-
-	myRHI->DrawIndexed(0, textData.numIndices);
-	myDrawcallAmount++;
-
-	ClearTextureResource_PS(10);
-}
-
-void GraphicsEngine::RenderDebugLines(DynamicVertexBuffer& aDynamicBuffer, unsigned aLineAmount)
-{
-	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Debug Lines");
-	myRHI->SetVertexBuffer(aDynamicBuffer.GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
-	myRHI->SetPrimitiveTopology(Topology::POINTLIST);
-	myRHI->Draw(aLineAmount);
-}
-
-void GraphicsEngine::RenderParticleEmitter(ParticleEmitter& aParticleEmitter)
-{
-	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Particle Emitter");
-	ChangePipelineState(aParticleEmitter.GetMaterial()->GetPSO());
-
-	for (const auto& [slot, texture] : aParticleEmitter.GetMaterial()->GetTextures())
-	{
-		SetTextureResource_PS(slot, *texture);
-	}
-
-	myRHI->SetPrimitiveTopology(Topology::POINTLIST);
-	myRHI->SetVertexBuffer(aParticleEmitter.myVertexBuffer->GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
-	myRHI->Draw(static_cast<unsigned>(aParticleEmitter.myParticles.size()));
-
-	for (const auto& [slot, texture] : aParticleEmitter.GetMaterial()->GetTextures())
-	{
-		ClearTextureResource_PS(slot);
-	}
-}
-
-void GraphicsEngine::RenderTrailEmitter(TrailEmitter& aTrailEmitter)
-{
-	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Trail Emitter");
-	ChangePipelineState(aTrailEmitter.GetMaterial()->GetPSO());
-
-	for (const auto& [slot, texture] : aTrailEmitter.GetMaterial()->GetTextures())
-	{
-		SetTextureResource_PS(slot, *texture);
-	}
-
-	myRHI->SetPrimitiveTopology(Topology::LINESTRIP);
-	myRHI->SetVertexBuffer(aTrailEmitter.myVertexBuffer->GetVertexBuffer(), myCurrentPSO->VertexStride, 0);
-	unsigned count = aTrailEmitter.GetCurrentLength();
-	myRHI->Draw(count);
-
-	for (const auto& [slot, texture] : aTrailEmitter.GetMaterial()->GetTextures())
-	{
-		ClearTextureResource_PS(slot);
-	}
 }
 
 bool GraphicsEngine::CreateIndexBuffer(std::string_view aName, const std::vector<unsigned>& aIndexList, Microsoft::WRL::ComPtr<ID3D11Buffer>& outIxBuffer, bool aIsDynamic)
