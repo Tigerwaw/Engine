@@ -202,7 +202,7 @@ bool PSOAsset::Load()
     }
 
     pso = std::make_shared<PipelineStateObject>();
-    if (!GraphicsEngine::Get().GetResourceVendor().CreatePSO(pso, psoDesc))
+    if (!GraphicsEngine::Get().GetResourceVendor().CreatePSO(*pso, psoDesc))
     {
         pso = nullptr;
         return false;

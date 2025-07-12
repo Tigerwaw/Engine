@@ -43,7 +43,7 @@ public:
 	bool CreateShadowCubemap(std::string_view aName, unsigned aWidth, unsigned aHeight, Texture& outTexture);
 
 	bool LoadShader(const std::filesystem::path& aFilePath, Shader& outShader);
-	bool CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, PSODescription& aPSOdesc);
+	bool CreatePSO(PipelineStateObject& aPSO, PSODescription& aPSOdesc);
 
 	const bool CompareShaderParameters(const std::filesystem::path& aShaderOnePath, const std::filesystem::path& aShaderTwoPath) const;
 

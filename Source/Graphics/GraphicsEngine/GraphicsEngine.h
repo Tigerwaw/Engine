@@ -114,7 +114,7 @@ private:
 	std::shared_ptr<PipelineStateObject> myCurrentPSO;
 	std::shared_ptr<PipelineStateObject> myDefaultPSO;
 
-	std::shared_ptr<Texture> myLUTtexture;
+	std::shared_ptr<Texture> myBRDFLUTTexture;
 	
 	std::unique_ptr<GBuffer> myGBuffer;
 	std::unique_ptr<GraphicsCommandList> myCommandList;

@@ -158,7 +158,7 @@ namespace Math
 	template<class T>
 	inline const Vector3<T> AABB3D<T>::GetCenter() const
 	{
-		return Vector3<T>::Abs(maxPoint) - Vector3<T>::Abs(minPoint);
+		return (Vector3<T>::Abs(maxPoint) - Vector3<T>::Abs(minPoint)) * 0.5f;
 	}
 
 	template<class T>

@@ -51,22 +51,22 @@ bool ResourceVendor::LoadShader(const std::filesystem::path& aFilePath, Shader& 
 	return myRHI->LoadShaderFromFilePath(aFilePath.stem().string(), outShader, aFilePath.generic_wstring());
 }
 
-bool ResourceVendor::CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, PSODescription& aPSOdesc)
+bool ResourceVendor::CreatePSO(PipelineStateObject& aPSO, PSODescription& aPSOdesc)
 {
-	aPSO->VertexStride = aPSOdesc.vertexStride;
+	aPSO.VertexStride = aPSOdesc.vertexStride;
 
 	if (aPSOdesc.vsPath != L"")
 	{
-		if (!myRHI->CreateInputLayout(aPSO->InputLayout, aPSOdesc.inputLayoutDefinition, aPSOdesc.vsPath))
+		if (!myRHI->CreateInputLayout(aPSO.InputLayout, aPSOdesc.inputLayoutDefinition, aPSOdesc.vsPath))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to create PSO!");
 			return false;
 		}
 	}
 
-	aPSO->VertexShader = aPSOdesc.vsShader;
-	aPSO->GeometryShader = aPSOdesc.gsShader;
-	aPSO->PixelShader = aPSOdesc.psShader;
+	aPSO.VertexShader = aPSOdesc.vsShader;
+	aPSO.GeometryShader = aPSOdesc.gsShader;
+	aPSO.PixelShader = aPSOdesc.psShader;
 
 	if (!(aPSOdesc.fillMode == 3 && aPSOdesc.cullMode == 3 && aPSOdesc.antiAliasedLine == false))
 	{
@@ -75,7 +75,7 @@ bool ResourceVendor::CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, PSODes
 		rastDesc.CullMode = static_cast<D3D11_CULL_MODE>(aPSOdesc.cullMode);
 		rastDesc.AntialiasedLineEnable = aPSOdesc.antiAliasedLine;
 
-		if (!myRHI->CreateRasterizerState(aPSOdesc.name + "_Rasterizer", rastDesc, *aPSO))
+		if (!myRHI->CreateRasterizerState(aPSOdesc.name + "_Rasterizer", rastDesc, aPSO))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to create rasterizer for PSO {}!", aPSOdesc.name);
 			return false;
@@ -119,7 +119,7 @@ bool ResourceVendor::CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, PSODes
 			blendDesc.RenderTarget[i] = defaultRenderTargetBlendDesc;
 		}
 
-		if (!myRHI->CreateBlendState(aPSOdesc.name + "_BlendState", blendDesc, *aPSO))
+		if (!myRHI->CreateBlendState(aPSOdesc.name + "_BlendState", blendDesc, aPSO))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to create blend state for PSO {}!", aPSOdesc.name);
 			return false;
@@ -136,7 +136,7 @@ bool ResourceVendor::CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, PSODes
 		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
 		depthStencilDesc.StencilEnable = false;
 
-		if (!myRHI->CreateDepthStencilState(aPSOdesc.name + "_DepthStencilState", depthStencilDesc, *aPSO))
+		if (!myRHI->CreateDepthStencilState(aPSOdesc.name + "_DepthStencilState", depthStencilDesc, aPSO))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to create depth stencil state for PSO {}!", aPSOdesc.name);
 			return false;
@@ -145,7 +145,7 @@ bool ResourceVendor::CreatePSO(std::shared_ptr<PipelineStateObject> aPSO, PSODes
 
 	for (auto& sampler : aPSOdesc.samplerList)
 	{
-		aPSO->SamplerStates[sampler.first] = myRHI->GetSamplerState(sampler.second);
+		aPSO.SamplerStates[sampler.first] = myRHI->GetSamplerState(sampler.second);
 	}
 
 	LOG(LogGraphicsEngine, Log, "Created PSO {}!", aPSOdesc.name);

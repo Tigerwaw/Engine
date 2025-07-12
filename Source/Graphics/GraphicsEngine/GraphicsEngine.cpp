@@ -86,8 +86,8 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle, Math::Vector2f aResolution, 
 		myCurrentPSO = myDefaultPSO;
 	}
 
-	myLUTtexture = std::make_shared<Texture>();
-	rhi.CreateLUT("LUT", 512, 512, myLUTtexture, aContentRoot / L"EngineAssets/Shaders/Quad_VS.cso", aContentRoot / L"EngineAssets/Shaders/brdfLUT_PS.cso");
+	myBRDFLUTTexture = std::make_shared<Texture>();
+	rhi.CreateLUT("LUT", 512, 512, myBRDFLUTTexture, aContentRoot / L"EngineAssets/Shaders/Quad_VS.cso", aContentRoot / L"EngineAssets/Shaders/brdfLUT_PS.cso");
 
 	CreateConstantBuffers();
 

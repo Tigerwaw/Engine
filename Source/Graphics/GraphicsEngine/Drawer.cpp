@@ -15,7 +15,7 @@ void Drawer::RenderQuad()
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Quad");
 	GraphicsEngine& ge = GraphicsEngine::Get();
-	ge.SetTextureResource_PS(127, *ge.myLUTtexture);
+	ge.SetTextureResource_PS(127, *ge.myBRDFLUTTexture);
 
 	ge.myRHI->SetPrimitiveTopology(Topology::TRIANGLESTRIP);
 	ge.myRHI->SetVertexBuffer(nullptr, 0, 0);
@@ -33,7 +33,7 @@ void Drawer::RenderMesh(const Mesh& aMesh, const std::vector<std::shared_ptr<Mat
 	ge.myRHI->SetIndexBuffer(aMesh.GetIndexBuffer());
 	ge.myRHI->SetPrimitiveTopology(Topology::TRIANGLELIST);
 
-	ge.SetTextureResource_PS(127, *ge.myLUTtexture);
+	ge.SetTextureResource_PS(127, *ge.myBRDFLUTTexture);
 
 	for (const auto& element : aMesh.GetElements())
 	{
@@ -99,7 +99,7 @@ void Drawer::RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, const s
 	ge.myRHI->SetIndexBuffer(aMesh.GetIndexBuffer());
 	ge.myRHI->SetPrimitiveTopology(Topology::TRIANGLELIST);
 
-	ge.SetTextureResource_PS(127, *ge.myLUTtexture);
+	ge.SetTextureResource_PS(127, *ge.myBRDFLUTTexture);
 
 	for (const auto& element : aMesh.GetElements())
 	{

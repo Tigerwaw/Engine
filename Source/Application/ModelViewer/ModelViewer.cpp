@@ -67,8 +67,46 @@ void ModelViewer::InitializeApplication()
 			{
 				DragQueryFile(hDrop, i, name, MAX_PATH);
 				std::filesystem::path filePath = name;
-				
-				AssetManager::Get().RegisterAsset(filePath);
+
+				std::string extension = Utilities::ToLowerCopy(filePath.extension().string());
+				std::string filename = Utilities::ToLowerCopy(filePath.filename().string());
+
+				if (extension == ".fbx")
+				{
+					if (filename.starts_with("sm") || filename.starts_with("sk"))
+					{
+						AssetManager::Get().RegisterAsset<MeshAsset>(filePath);
+					}
+					else if (filename.starts_with("a"))
+					{
+						AssetManager::Get().RegisterAsset<AnimationAsset>(filePath);
+					}
+					else if (filename.starts_with("nm"))
+					{
+						AssetManager::Get().RegisterAsset<NavMeshAsset>(filePath);
+					}
+				}
+				else if (extension == ".mat")
+				{
+					AssetManager::Get().RegisterAsset<MaterialAsset>(filePath);
+				}
+				else if (extension == ".dds")
+				{
+					AssetManager::Get().RegisterAsset<TextureAsset>(filePath);
+				}
+				else if (extension == ".cso")
+				{
+					AssetManager::Get().RegisterAsset<ShaderAsset>(filePath);
+				}
+				else if (extension == ".pso")
+				{
+					AssetManager::Get().RegisterAsset<PSOAsset>(filePath);
+				}
+				else if (extension == ".font")
+				{
+					AssetManager::Get().RegisterAsset<FontAsset>(filePath);
+				}
+
 				std::filesystem::path assetPath = AssetManager::Get().MakeRelative(filePath);
 				if (assetPath == "")
 				{
