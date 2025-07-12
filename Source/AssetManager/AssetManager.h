@@ -4,6 +4,7 @@
 #include "Asset.h"
 #include "WinPixEventRuntime/pix3.h"
 #include "CommonUtilities/StringUtilities.hpp"
+#include <functional>
 
 // TEMP INCLUDES
 #include "MeshAsset.h"
@@ -27,6 +28,9 @@ public:
 	template<typename T> requires std::is_base_of_v<Asset, T>
 	std::shared_ptr<T> GetAsset(const std::filesystem::path& aPath);
 
+	template<typename T>  requires std::is_base_of_v<Asset, T>
+	bool RegisterAsset(const std::filesystem::path& aPath);
+
 	bool RegisterAsset(const std::filesystem::path& aPath);
 	bool DeregisterAsset(const std::filesystem::path& aPath);
 	bool IsAssetRegistered(const std::filesystem::path& aPath);
@@ -40,7 +44,7 @@ public:
 private:
 	AssetManager();
 	~AssetManager();
-	bool ValidateAsset(const std::filesystem::path& aPath);
+	bool ValidateAssetPath(const std::filesystem::path& aPath);
 
 	std::shared_ptr<Asset> GetAssetBase(const std::filesystem::path& aPath);
 
@@ -50,24 +54,15 @@ private:
 	// All assets that are required for the engine to function should be part of the .exe.
 	void RegisterEngineAssets();
 	bool RegisterEngineTextureAsset(std::string_view aName, const uint8_t* aTextureDataPtr, size_t aTextureDataSize);
-
-	// Make Generic
-	bool RegisterMeshAsset(const std::filesystem::path& aPath);
-	bool RegisterAnimationAsset(const std::filesystem::path& aPath);
-	bool RegisterMaterialAsset(const std::filesystem::path& aPath);
-	bool RegisterTextureAsset(const std::filesystem::path& aPath);
-	bool RegisterShaderAsset(const std::filesystem::path& aPath);
-	bool RegisterPSOAsset(const std::filesystem::path& aPath);
-	bool RegisterFontAsset(const std::filesystem::path& aPath);
-	bool RegisterNavMeshAsset(const std::filesystem::path& aPath);
 	
 	bool FilenameHasPrefix(const std::filesystem::path& aPath, const char* aPrefixCompare) const;
 	bool FilenameHasExtension(const std::filesystem::path& aPath, const char* aExtensionCompare) const;
 
 	void LogAssetLoadError(const std::filesystem::path& aPath);
 	
-	std::unordered_map<std::filesystem::path, std::shared_ptr<Asset>> myAssets;
 	std::filesystem::path myContentRoot;
+	std::unordered_map<std::filesystem::path, std::shared_ptr<Asset>> myAssets;
+	std::unordered_map<std::string, std::function<bool(const std::string&, const std::filesystem::path&)>> myFileExtensionToRegisterFunc;
 };
 
 template<typename T> requires std::is_base_of_v<Asset, T>
@@ -97,4 +92,15 @@ inline std::shared_ptr<T> AssetManager::GetAsset(const std::filesystem::path& aP
 	}
 
 	return nullptr;
+}
+
+template<typename T>  requires std::is_base_of_v<Asset, T>
+bool AssetManager::RegisterAsset(const std::filesystem::path& aPath)
+{
+	std::shared_ptr<T> asset = std::make_shared<T>();
+	asset->myPath = aPath;
+	asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
+
+	myAssets.emplace(asset->myName, asset);
+	return true;
 }

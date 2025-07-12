@@ -23,57 +23,6 @@ AssetManager::~AssetManager()
     TGA::FBX::Importer::UninitImporter();
 }
 
-bool AssetManager::RegisterAsset(const std::filesystem::path& aPath)
-{
-    if (!ValidateAsset(aPath)) return false;
-
-    std::string extension = Utilities::ToLowerCopy(aPath.extension().string());
-    std::string name = Utilities::ToLowerCopy(aPath.filename().string());
-
-    if (extension == ".fbx")
-    {
-        if (name.starts_with("sm") || name.starts_with("sk"))
-        {
-            return RegisterMeshAsset(aPath);
-        }
-        else if (name.starts_with("a"))
-        {
-            return RegisterAnimationAsset(aPath);
-        }
-        else if (name.starts_with("nm"))
-        {
-            return RegisterNavMeshAsset(aPath);
-        }
-    }
-    else if (extension == ".mat")
-    {
-        return RegisterMaterialAsset(aPath);
-    }
-    else if (extension == ".dds")
-    {
-        return RegisterTextureAsset(aPath);
-    }
-    else if (extension == ".cso")
-    {
-        return RegisterShaderAsset(aPath);
-    }
-    else if (extension == ".pso")
-    {
-        return RegisterPSOAsset(aPath);
-    }
-    else if (extension == ".font")
-    {
-        return RegisterFontAsset(aPath);
-    }
-    else if (extension == ".font")
-    {
-        return RegisterFontAsset(aPath);
-    }
-
-    LOG(LogAssetManager, Error, "Asset {} with extension {} could not be correctly identified!", name, extension);
-    return false;
-}
-
 bool AssetManager::DeregisterAsset(const std::filesystem::path& aPath)
 {
     if (!IsAssetRegistered(aPath))
@@ -125,6 +74,49 @@ bool AssetManager::UnloadAsset(const std::filesystem::path& aPath)
 bool AssetManager::Initialize(const std::filesystem::path& aContentRootPath, bool aAutoRegisterAllAssetsInRoot)
 {
     LOG(LogAssetManager, Log, "Initializing Asset Manager...");
+
+    myFileExtensionToRegisterFunc[".fbx"] = std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string& aFilename, const std::filesystem::path& aPath)
+        {
+            if (aFilename.starts_with("sm") || aFilename.starts_with("sk"))
+            {
+                return AssetManager::Get().RegisterAsset<MeshAsset>(aPath);
+            }
+            else if (aFilename.starts_with("a"))
+            {
+                return AssetManager::Get().RegisterAsset<AnimationAsset>(aPath);
+            }
+            else if (aFilename.starts_with("nm"))
+            {
+                return AssetManager::Get().RegisterAsset<NavMeshAsset>(aPath);
+            }
+
+            return false;
+        });
+
+    myFileExtensionToRegisterFunc[".mat"] = std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string&, const std::filesystem::path& aPath)
+        {
+            return AssetManager::Get().RegisterAsset<MaterialAsset>(aPath);
+        });
+
+    myFileExtensionToRegisterFunc[".dds"] = std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string&, const std::filesystem::path& aPath)
+        {
+            return AssetManager::Get().RegisterAsset<TextureAsset>(aPath);
+        });
+
+    myFileExtensionToRegisterFunc[".cso"] = std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string&, const std::filesystem::path& aPath)
+        {
+            return AssetManager::Get().RegisterAsset<ShaderAsset>(aPath);
+        });
+
+    myFileExtensionToRegisterFunc[".pso"] = std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string&, const std::filesystem::path& aPath)
+        {
+            return AssetManager::Get().RegisterAsset<PSOAsset>(aPath);
+        });
+
+    myFileExtensionToRegisterFunc[".font"] = std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string&, const std::filesystem::path& aPath)
+        {
+            return AssetManager::Get().RegisterAsset<FontAsset>(aPath);
+        });
 
     myContentRoot = std::filesystem::absolute(aContentRootPath);
     if (!std::filesystem::exists(aContentRootPath))
@@ -201,37 +193,37 @@ void AssetManager::RegisterEngineAssets()
 
     for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "EngineAssets/Models/"))
     {
-        if (!ValidateAsset(file.path())) continue;
+        if (!ValidateAssetPath(file.path())) continue;
         if (!FilenameHasExtension(file.path(), ".fbx")) continue;
-        RegisterMeshAsset(file.path());
+        RegisterAsset<MeshAsset>(file.path());
     }
 
     for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "EngineAssets/Textures/"))
     {
-        if (!ValidateAsset(file.path())) continue;
+        if (!ValidateAssetPath(file.path())) continue;
         if (!FilenameHasExtension(file.path(), ".dds")) continue;
-        RegisterTextureAsset(file.path());
+        RegisterAsset<TextureAsset>(file.path());
     }
 
     for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "EngineAssets/Shaders/"))
     {
-        if (!ValidateAsset(file.path())) continue;
+        if (!ValidateAssetPath(file.path())) continue;
         if (!FilenameHasExtension(file.path(), ".cso")) continue;
-        RegisterShaderAsset(file.path());
+        RegisterAsset<ShaderAsset>(file.path());
     }
 
     for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "EngineAssets/PSOs/"))
     {
-        if (!ValidateAsset(file.path())) continue;
+        if (!ValidateAssetPath(file.path())) continue;
         if (!FilenameHasExtension(file.path(), ".pso")) continue;
-        RegisterPSOAsset(file.path());
+        RegisterAsset<PSOAsset>(file.path());
     }
 
     for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "EngineAssets/Materials/"))
     {
-        if (!ValidateAsset(file.path())) continue;
+        if (!ValidateAssetPath(file.path())) continue;
         if (!FilenameHasExtension(file.path(), ".mat")) continue;
-        RegisterMaterialAsset(file.path());
+        RegisterAsset<MaterialAsset>(file.path());
     }
 }
 
@@ -241,19 +233,27 @@ void AssetManager::RegisterAllAssetsInDirectory()
 
     for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot))
     {
-        if (!ValidateAsset(file.path())) continue;
+        if (!ValidateAssetPath(file.path())) continue;
 
         std::chrono::system_clock::time_point registerStartTime = std::chrono::system_clock::now();
 
-        std::filesystem::path filename(Utilities::ToLowerCopy(file.path().filename().string()));
-        if (RegisterAsset(file.path()))
+        std::string extension = Utilities::ToLowerCopy(file.path().extension().string());
+        std::string name = Utilities::ToLowerCopy(file.path().filename().string());
+        if (myFileExtensionToRegisterFunc.contains(extension))
         {
-            std::chrono::duration<float, std::ratio<1, 1000>> registerTime = std::chrono::system_clock::now() - registerStartTime;
-            LOG(LogAssetManager, Log, "Registered asset {} in {}ms", filename.string(), std::round(registerTime.count()));
+            if (myFileExtensionToRegisterFunc.at(extension)(name, file.path()))
+            {
+                std::chrono::duration<float, std::ratio<1, 1000>> registerTime = std::chrono::system_clock::now() - registerStartTime;
+                LOG(LogAssetManager, Log, "Registered asset {} in {}ms", name, std::round(registerTime.count()));
+            }
+            else
+            {
+                LOG(LogAssetManager, Error, "Failed to register asset {}", name);
+            }
         }
         else
         {
-            LOG(LogAssetManager, Error, "Failed to register asset {}", filename.string());
+            LOG(LogAssetManager, Error, "Extension {} has not been registered to an asset type!", extension);
         }
     }
 
@@ -287,80 +287,7 @@ void AssetManager::LoadAllRegisteredAssets()
     LOG(LogAssetManager, Log, "Loaded all assets in {}ms", std::round(loadAllTime.count()));
 }
 
-bool AssetManager::RegisterMeshAsset(const std::filesystem::path& aPath)
-{
-    std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
-    asset->myPath = aPath;
-    asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
-
-    myAssets.emplace(asset->myName, asset);
-    return true;
-}
-
-bool AssetManager::RegisterAnimationAsset(const std::filesystem::path& aPath)
-{
-    std::shared_ptr<AnimationAsset> asset = std::make_shared<AnimationAsset>();
-    asset->myPath = aPath;
-    asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
-    myAssets.emplace(asset->myName, asset);
-    return true;
-}
-
-bool AssetManager::RegisterMaterialAsset(const std::filesystem::path& aPath)
-{
-    std::shared_ptr<MaterialAsset> asset = std::make_shared<MaterialAsset>();
-    asset->myPath = aPath;
-    asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
-    myAssets.emplace(asset->myName, asset);
-    return true;
-}
-
-bool AssetManager::RegisterTextureAsset(const std::filesystem::path& aPath)
-{
-    std::shared_ptr<TextureAsset> asset = std::make_shared<TextureAsset>();
-    asset->myPath = aPath;
-    asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
-    myAssets.emplace(asset->myName, asset);
-    return true;
-}
-
-bool AssetManager::RegisterShaderAsset(const std::filesystem::path& aPath)
-{
-    std::shared_ptr<ShaderAsset> asset = std::make_shared<ShaderAsset>();
-    asset->myPath = aPath;
-    asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
-    myAssets.emplace(asset->myName, asset);
-    return true;
-}
-
-bool AssetManager::RegisterPSOAsset(const std::filesystem::path& aPath)
-{
-    std::shared_ptr<PSOAsset> asset = std::make_shared<PSOAsset>();
-    asset->myPath = aPath;
-    asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
-    myAssets.emplace(asset->myName, asset);
-    return true;
-}
-
-bool AssetManager::RegisterFontAsset(const std::filesystem::path& aPath)
-{
-    std::shared_ptr<FontAsset> asset = std::make_shared<FontAsset>();
-    asset->myPath = aPath;
-    asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
-    myAssets.emplace(asset->myName, asset);
-    return true;
-}
-
-bool AssetManager::RegisterNavMeshAsset(const std::filesystem::path& aPath)
-{
-    std::shared_ptr<NavMeshAsset> asset = std::make_shared<NavMeshAsset>();
-    asset->myPath = aPath;
-    asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
-    myAssets.emplace(asset->myName, asset);
-    return true;
-}
-
-bool AssetManager::ValidateAsset(const std::filesystem::path& aPath)
+bool AssetManager::ValidateAssetPath(const std::filesystem::path& aPath)
 {
     if (std::filesystem::is_directory(aPath)) return false;
 
