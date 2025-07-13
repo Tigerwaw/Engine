@@ -1,8 +1,0 @@
-{
-  "VertexType": "Default",
-  "VertexShader": "ShadowCube_VS.cso",
-  "GeometryShader": "ShadowCube_GS.cso",
-  "PixelShader": "",
-  "Samplers": {
-  }
-}

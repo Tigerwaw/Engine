@@ -3,12 +3,18 @@
 #include "Model.h"
 #include "ComponentSystem/GameObject.h"
 #include "ComponentSystem/Components/Transform.h"
+#include "GraphicsEngine.h"
 
 #undef min
 #undef max
 
 InstancedModel::~InstancedModel()
 {
+}
+
+InstancedModel::InstancedModel()
+{
+	SetMaterialOnSlot(0, GraphicsEngine::Get().GetDefaultMaterial());
 }
 
 void InstancedModel::Start()
@@ -23,6 +29,10 @@ void InstancedModel::Update()
 void InstancedModel::SetMesh(std::shared_ptr<Mesh> aMesh)
 {
 	myMesh = aMesh;
+	for (auto& element : myMesh->GetElements())
+	{
+		SetMaterialOnSlot(element.MaterialIndex, GraphicsEngine::Get().GetDefaultMaterial());
+	}
 }
 
 void InstancedModel::AddInstance(Math::Matrix4x4f aTransform)

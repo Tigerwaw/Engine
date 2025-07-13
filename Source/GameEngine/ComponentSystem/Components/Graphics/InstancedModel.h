@@ -8,7 +8,7 @@ class InstancedModel : public Component
 {
 public:
     ~InstancedModel() override;
-    InstancedModel() = default;
+    InstancedModel();
 
     void Start() override;
     void Update() override;

@@ -16,7 +16,6 @@
           "ShouldViewcull": false,
           "Model": "SM_PlanePrimitive",
           "Materials": [
-            "DefaultMaterial"
           ]
         },
         {

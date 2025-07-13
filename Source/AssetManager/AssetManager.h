@@ -42,7 +42,6 @@ public:
 
 	bool Initialize(const std::filesystem::path& aContentRootPath, bool aAutoRegisterAllAssetsInRoot = true);
 	std::filesystem::path& GetContentRoot() { return myContentRoot; }
-	std::filesystem::path MakeRelative(const std::filesystem::path& aPath) const;
 private:
 	AssetManager();
 	~AssetManager();
@@ -54,7 +53,6 @@ private:
 
 	// All assets that are required for the engine to function should be part of the .exe.
 	void RegisterEngineAssets();
-	bool RegisterEngineTextureAsset(std::string_view aName, const uint8_t* aTextureDataPtr, size_t aTextureDataSize);
 	
 	bool FilenameHasPrefix(const std::filesystem::path& aPath, const char* aPrefixCompare) const;
 	bool FilenameHasExtension(const std::filesystem::path& aPath, const char* aExtensionCompare) const;

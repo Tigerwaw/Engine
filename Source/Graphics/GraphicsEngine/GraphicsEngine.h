@@ -8,6 +8,7 @@
 #include "Objects/PipelineStateObject.h"
 #include "GraphicsCommands/GraphicsCommandList.h"
 #include "Objects/ConstantBuffers/ConstantBuffer.h"
+#include "GraphicsSettings.hpp"
 #include "PostProcessingSettings.h"
 #include "Drawer.h"
 #include "ResourceVendor.h"
@@ -94,7 +95,17 @@ public:
 	GBuffer& GetGBuffer() { return *myGBuffer; }
 
 	GraphicsCommandList& GetGraphicsCommandList() const { return *myCommandList; }
-	std::shared_ptr<PipelineStateObject> GetDefaultPSO() { return myDefaultPSO; }
+	std::shared_ptr<PipelineStateObject> GetDefaultPSO() const { return myDefaultPSO; }
+	bool HasPSO(const char* aPSOName) const;
+	std::shared_ptr<PipelineStateObject> GetPSO(const char* aPSOName) const;
+	std::shared_ptr<PipelineStateObject> GetPSO(PSOType aPSOType) const;
+	std::shared_ptr<PipelineStateObject> RegisterPSO(const char* aPSOName, std::shared_ptr<PipelineStateObject> aPSO);
+
+	std::shared_ptr<Texture> GetDefaultAlbedoTexture() const { return myDefaultAlbedoTexture; }
+	std::shared_ptr<Texture> GetDefaultNormalTexture() const { return myDefaultNormalTexture; }
+	std::shared_ptr<Texture> GetDefaultARMTexture() const { return myDefaultARMTexture; }
+	std::shared_ptr<Texture> GetDefaultFXTexture() const { return myDefaultFXTexture; }
+	std::shared_ptr<Material> GetDefaultMaterial() const { return myDefaultMaterial; }
 
 	const unsigned GetDrawcallAmount() const { return myLastFrameDrawcallAmount; }
 
@@ -102,7 +113,9 @@ private:
 	GraphicsEngine();
 	~GraphicsEngine();
 
-	void CreateConstantBuffers();
+	bool CreateDefaultPSOs(const std::filesystem::path& aContentRoot);
+	bool CreateDefaultTextures(const std::filesystem::path& aContentRoot);
+	bool CreateConstantBuffers();
 
 	std::shared_ptr<RenderHardwareInterface> myRHI;
 	std::unique_ptr<PostProcessingSettings> myPostProcessingSettings;
@@ -113,11 +126,19 @@ private:
 	
 	std::shared_ptr<PipelineStateObject> myCurrentPSO;
 	std::shared_ptr<PipelineStateObject> myDefaultPSO;
+	std::unordered_map<std::string, std::shared_ptr<PipelineStateObject>> myPSOs;
 
 	std::shared_ptr<Texture> myBRDFLUTTexture;
 	
 	std::unique_ptr<GBuffer> myGBuffer;
 	std::unique_ptr<GraphicsCommandList> myCommandList;
+
+	std::shared_ptr<Texture> myDefaultAlbedoTexture;
+	std::shared_ptr<Texture> myDefaultNormalTexture;
+	std::shared_ptr<Texture> myDefaultARMTexture;
+	std::shared_ptr<Texture> myDefaultFXTexture;
+
+	std::shared_ptr<Material> myDefaultMaterial;
 
 	unsigned myDrawcallAmount = 0;
 	unsigned myLastFrameDrawcallAmount = 0;

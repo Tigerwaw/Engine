@@ -179,20 +179,24 @@ void Scene::SortGameObjects()
 
 			if (model1)
 			{
-				hasBlendState1 = model1->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr;
+				if (model1->GetMaterials().size() > 0)
+					hasBlendState1 = model1->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr;
 			}
 			else if (animModel1)
 			{
-				hasBlendState1 = animModel1->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr;
+				if (animModel1->GetMaterials().size() > 0)
+					hasBlendState1 = animModel1->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr;
 			}
 
 			if (model2)
 			{
-				hasBlendState2 = model2->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr;
+				if (model2->GetMaterials().size() > 0)
+					hasBlendState2 = model2->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr;
 			}
 			else if (animModel2)
 			{
-				hasBlendState2 = animModel2->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr;
+				if (animModel2->GetMaterials().size() > 0)
+					hasBlendState2 = animModel2->GetMaterialOnSlot(0)->GetPSO()->BlendState != nullptr;
 			}
 
 			if (hasBlendState1 && !hasBlendState2)

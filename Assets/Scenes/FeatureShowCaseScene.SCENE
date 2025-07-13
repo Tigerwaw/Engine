@@ -16,7 +16,6 @@
           "ShouldViewcull": false,
           "Model": "SM_PlanePrimitive",
           "Materials": [
-            "DefaultMaterial"
           ]
         }
       ]
@@ -36,7 +35,6 @@
           "Type": "Model",
           "Model": "SM_CubePrimitive",
           "Materials": [
-            "DefaultMaterial"
           ]
         }
       ]
@@ -56,7 +54,6 @@
           "Type": "Model",
           "Model": "SM_CubePrimitive",
           "Materials": [
-            "DefaultMaterial"
           ]
         }
       ]
@@ -76,7 +73,6 @@
           "Type": "Model",
           "Model": "SM_RampPrimitive",
           "Materials": [
-            "DefaultMaterial"
           ]
         }
       ]
@@ -96,7 +92,6 @@
           "Type": "Model",
           "Model": "SM_Castle_Wall_sbxuw_High.fbx",
           "Materials": [
-            "Chest.MAT"
           ]
         }
       ]
@@ -116,7 +111,6 @@
           "Type": "Model",
           "Model": "SM_Castle_Wall_sctv3_High.fbx",
           "Materials": [
-            "Chest.MAT"
           ]
         }
       ]
@@ -136,7 +130,6 @@
           "Type": "Model",
           "Model": "SM_Castle_Stairs_scfdy_High.fbx",
           "Materials": [
-            "Chest.MAT"
           ]
         }
       ]
@@ -156,7 +149,6 @@
           "Type": "Model",
           "Model": "SM_Castle_Structure_sczvi_High.fbx",
           "Materials": [
-            "Chest.MAT"
           ]
         }
       ]
@@ -732,7 +724,6 @@
           "Type": "Model",
           "Model": "SM_CubePrimitive",
           "Materials": [
-            "DefaultMaterial"
           ]
         },
         {

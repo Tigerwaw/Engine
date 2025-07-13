@@ -4,6 +4,7 @@
 #include "Objects/Mesh.h"
 #include "Objects/Material.h"
 #include "ComponentSystem/GameObject.h"
+#include "GraphicsEngine.h"
 
 Model::~Model()
 {
@@ -12,9 +13,18 @@ Model::~Model()
     mySlotToIndex.clear();
 }
 
+Model::Model()
+{
+    SetMaterialOnSlot(0, GraphicsEngine::Get().GetDefaultMaterial());
+}
+
 Model::Model(std::shared_ptr<Mesh> aMesh)
 {
     myMesh = aMesh;
+    for (auto& element : myMesh->GetElements())
+    {
+        SetMaterialOnSlot(element.MaterialIndex, GraphicsEngine::Get().GetDefaultMaterial());
+    }
 }
 
 Model::Model(std::shared_ptr<Mesh> aMesh, std::shared_ptr<Material> aMaterial)

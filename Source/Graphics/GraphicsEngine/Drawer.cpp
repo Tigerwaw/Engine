@@ -1,6 +1,7 @@
 #include "GraphicsEngine.pch.h"
 #include "Drawer.h"
 
+#include "GraphicsSettings.hpp"
 #include "Objects/ParticleSystem/ParticleEmitter.h"
 #include "Objects/ParticleSystem/TrailEmitter.h"
 #include "Objects/Mesh.h"
@@ -37,6 +38,9 @@ void Drawer::RenderMesh(const Mesh& aMesh, const std::vector<std::shared_ptr<Mat
 
 	for (const auto& element : aMesh.GetElements())
 	{
+		std::array<unsigned, GraphicsSettings::MAX_TEXTURES> slotsToClear = { 0 };
+		unsigned currentSlotIndex = 0;
+
 		if (aMaterialList.size() > element.MaterialIndex)
 		{
 			MaterialBuffer matBufferData = aMaterialList[element.MaterialIndex]->MaterialSettings();
@@ -47,15 +51,31 @@ void Drawer::RenderMesh(const Mesh& aMesh, const std::vector<std::shared_ptr<Mat
 			for (auto& [slot, texture] : aMaterialList[element.MaterialIndex]->GetTextures())
 			{
 				ge.SetTextureResource_PS(slot, *texture);
+				slotsToClear[currentSlotIndex] = slot;
+				++currentSlotIndex;
+			}
+		}
+		else
+		{
+			auto defaultMat = GraphicsEngine::Get().GetDefaultMaterial();
+			ge.UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, defaultMat->MaterialSettings());
+
+			ge.ChangePipelineState(defaultMat->GetPSO());
+
+			for (auto& [slot, texture] : defaultMat->GetTextures())
+			{
+				ge.SetTextureResource_PS(slot, *texture);
+				slotsToClear[currentSlotIndex] = slot;
+				++currentSlotIndex;
 			}
 		}
 
 		ge.myRHI->DrawIndexed(element.IndexOffset, element.NumIndices);
 		ge.myDrawcallAmount++;
 
-		for (auto& [slot, texture] : aMaterialList[element.MaterialIndex]->GetTextures())
+		for (unsigned slotIndex = 0; slotIndex < currentSlotIndex; slotIndex++)
 		{
-			ge.ClearTextureResource_PS(slot);
+			ge.ClearTextureResource_PS(slotsToClear[slotIndex]);
 		}
 	}
 
@@ -103,6 +123,9 @@ void Drawer::RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, const s
 
 	for (const auto& element : aMesh.GetElements())
 	{
+		std::array<unsigned, GraphicsSettings::MAX_TEXTURES> slotsToClear = { 0 };
+		unsigned currentSlotIndex = 0;
+
 		if (aMaterialList.size() > element.MaterialIndex)
 		{
 			MaterialBuffer matBufferData = aMaterialList[element.MaterialIndex]->MaterialSettings();
@@ -113,15 +136,31 @@ void Drawer::RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, const s
 			for (auto& [slot, texture] : aMaterialList[element.MaterialIndex]->GetTextures())
 			{
 				ge.SetTextureResource_PS(slot, *texture);
+				slotsToClear[currentSlotIndex] = slot;
+				++currentSlotIndex;
+			}
+		}
+		else
+		{
+			auto defaultMat = GraphicsEngine::Get().GetDefaultMaterial();
+			ge.UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, defaultMat->MaterialSettings());
+
+			ge.ChangePipelineState(defaultMat->GetPSO());
+
+			for (auto& [slot, texture] : defaultMat->GetTextures())
+			{
+				ge.SetTextureResource_PS(slot, *texture);
+				slotsToClear[currentSlotIndex] = slot;
+				++currentSlotIndex;
 			}
 		}
 
 		ge.myRHI->DrawIndexedInstanced(element.NumIndices, aMeshCount, element.IndexOffset, 0, 0);
 		ge.myDrawcallAmount++;
 
-		for (auto& [slot, texture] : aMaterialList[element.MaterialIndex]->GetTextures())
+		for (unsigned slotIndex = 0; slotIndex < currentSlotIndex; slotIndex++)
 		{
-			ge.ClearTextureResource_PS(slot);
+			ge.ClearTextureResource_PS(slotsToClear[slotIndex]);
 		}
 	}
 
@@ -199,20 +238,45 @@ void Drawer::RenderParticleEmitter(ParticleEmitter& aParticleEmitter)
 	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Particle Emitter");
 	GraphicsEngine& ge = GraphicsEngine::Get();
 
-	ge.ChangePipelineState(aParticleEmitter.GetMaterial()->GetPSO());
+	std::array<unsigned, GraphicsSettings::MAX_TEXTURES> slotsToClear = { 0 };
+	unsigned currentSlotIndex = 0;
 
-	for (const auto& [slot, texture] : aParticleEmitter.GetMaterial()->GetTextures())
+	if (aParticleEmitter.GetMaterial())
 	{
-		ge.SetTextureResource_PS(slot, *texture);
+		Material& mat = *aParticleEmitter.GetMaterial();
+		ge.UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, mat.MaterialSettings());
+
+		ge.ChangePipelineState(mat.GetPSO());
+
+		for (auto& [slot, texture] : mat.GetTextures())
+		{
+			ge.SetTextureResource_PS(slot, *texture);
+			slotsToClear[currentSlotIndex] = slot;
+			++currentSlotIndex;
+		}
+	}
+	else
+	{
+		Material& defaultMat = *GraphicsEngine::Get().GetDefaultMaterial();
+		ge.UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, defaultMat.MaterialSettings());
+
+		ge.ChangePipelineState(ge.GetPSO(PSOType::Particle));
+
+		for (auto& [slot, texture] : defaultMat.GetTextures())
+		{
+			ge.SetTextureResource_PS(slot, *texture);
+			slotsToClear[currentSlotIndex] = slot;
+			++currentSlotIndex;
+		}
 	}
 
 	ge.myRHI->SetPrimitiveTopology(Topology::POINTLIST);
 	ge.myRHI->SetVertexBuffer(aParticleEmitter.myVertexBuffer->GetVertexBuffer(), ge.myCurrentPSO->VertexStride, 0);
 	ge.myRHI->Draw(static_cast<unsigned>(aParticleEmitter.myParticles.size()));
 
-	for (const auto& [slot, texture] : aParticleEmitter.GetMaterial()->GetTextures())
+	for (unsigned slotIndex = 0; slotIndex < currentSlotIndex; slotIndex++)
 	{
-		ge.ClearTextureResource_PS(slot);
+		ge.ClearTextureResource_PS(slotsToClear[slotIndex]);
 	}
 }
 
@@ -221,11 +285,36 @@ void Drawer::RenderTrailEmitter(TrailEmitter& aTrailEmitter)
 	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Trail Emitter");
 	GraphicsEngine& ge = GraphicsEngine::Get();
 
-	ge.ChangePipelineState(aTrailEmitter.GetMaterial()->GetPSO());
+	std::array<unsigned, GraphicsSettings::MAX_TEXTURES> slotsToClear = { 0 };
+	unsigned currentSlotIndex = 0;
 
-	for (const auto& [slot, texture] : aTrailEmitter.GetMaterial()->GetTextures())
+	if (aTrailEmitter.GetMaterial())
 	{
-		ge.SetTextureResource_PS(slot, *texture);
+		Material& mat = *aTrailEmitter.GetMaterial();
+		ge.UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, mat.MaterialSettings());
+
+		ge.ChangePipelineState(mat.GetPSO());
+
+		for (auto& [slot, texture] : mat.GetTextures())
+		{
+			ge.SetTextureResource_PS(slot, *texture);
+			slotsToClear[currentSlotIndex] = slot;
+			++currentSlotIndex;
+		}
+	}
+	else
+	{
+		Material& defaultMat = *GraphicsEngine::Get().GetDefaultMaterial();
+		ge.UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, defaultMat.MaterialSettings());
+
+		ge.ChangePipelineState(ge.GetPSO(PSOType::Trail));
+
+		for (auto& [slot, texture] : defaultMat.GetTextures())
+		{
+			ge.SetTextureResource_PS(slot, *texture);
+			slotsToClear[currentSlotIndex] = slot;
+			++currentSlotIndex;
+		}
 	}
 
 	ge.myRHI->SetPrimitiveTopology(Topology::LINESTRIP);
@@ -233,8 +322,8 @@ void Drawer::RenderTrailEmitter(TrailEmitter& aTrailEmitter)
 	unsigned count = aTrailEmitter.GetCurrentLength();
 	ge.myRHI->Draw(count);
 
-	for (const auto& [slot, texture] : aTrailEmitter.GetMaterial()->GetTextures())
+	for (unsigned slotIndex = 0; slotIndex < currentSlotIndex; slotIndex++)
 	{
-		ge.ClearTextureResource_PS(slot);
+		ge.ClearTextureResource_PS(slotsToClear[slotIndex]);
 	}
 }

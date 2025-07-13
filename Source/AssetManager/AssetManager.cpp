@@ -8,11 +8,6 @@
 #include "Math/Matrix.hpp"
 #include "Math/Vector.hpp"
 
-#include "DefaultTextures/Default_C.h"
-#include "DefaultTextures/Default_N.h"
-#include "DefaultTextures/Default_M.h"
-#include "DefaultTextures/Default_FX.h"
-
 AssetManager::AssetManager()
 {
     TGA::FBX::Importer::InitImporter();
@@ -101,27 +96,6 @@ bool AssetManager::Initialize(const std::filesystem::path& aContentRootPath, boo
 void AssetManager::RegisterEngineAssets()
 {
     {
-        RegisterEngineTextureAsset("default_c", BuiltIn_Default_C_ByteCode, sizeof(BuiltIn_Default_C_ByteCode));
-        RegisterEngineTextureAsset("default_n", BuiltIn_Default_N_ByteCode, sizeof(BuiltIn_Default_N_ByteCode));
-        RegisterEngineTextureAsset("default_m", BuiltIn_Default_M_ByteCode, sizeof(BuiltIn_Default_M_ByteCode));
-        RegisterEngineTextureAsset("default_fx", BuiltIn_Default_FX_ByteCode, sizeof(BuiltIn_Default_FX_ByteCode));
-
-        std::shared_ptr<MaterialAsset> asset = std::make_shared<MaterialAsset>();
-        asset->material = std::make_shared<Material>();
-        asset->material->SetPSO(GraphicsEngine::Get().GetDefaultPSO());
-        asset->material->MaterialSettings().albedoTint = { 1.0f, 1.0f, 1.0f, 1.0f };
-        asset->material->MaterialSettings().emissiveStrength = 0.0f;
-        asset->material->SetTexture(Material::TextureType::Albedo, GetAsset<TextureAsset>("default_c")->texture);
-        asset->material->SetTexture(Material::TextureType::Normal, GetAsset<TextureAsset>("default_n")->texture);
-        asset->material->SetTexture(Material::TextureType::Material, GetAsset<TextureAsset>("default_m")->texture);
-        asset->material->SetTexture(Material::TextureType::Effects, GetAsset<TextureAsset>("default_fx")->texture);
-        asset->myName = "defaultmaterial";
-        asset->myIsLoaded = true;
-        myAssets.emplace(asset->myName, asset);
-        LOG(LogAssetManager, Log, "Registered material asset {}", asset->myName.string());
-    }
-
-    {
         std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
         asset->mesh = std::make_shared<Mesh>(GraphicsEngine::Get().GetResourceVendor().CreatePlanePrimitive());
         asset->myName = "sm_planeprimitive";
@@ -147,41 +121,6 @@ void AssetManager::RegisterEngineAssets()
         myAssets.emplace(asset->myName, asset);
         LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->myName.string());
     }
-
-    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "EngineAssets/Models/"))
-    {
-        if (!ValidateAssetPath(file.path())) continue;
-        if (!FilenameHasExtension(file.path(), ".fbx")) continue;
-        RegisterAsset<MeshAsset>(file.path());
-    }
-
-    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "EngineAssets/Textures/"))
-    {
-        if (!ValidateAssetPath(file.path())) continue;
-        if (!FilenameHasExtension(file.path(), ".dds")) continue;
-        RegisterAsset<TextureAsset>(file.path());
-    }
-
-    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "EngineAssets/Shaders/"))
-    {
-        if (!ValidateAssetPath(file.path())) continue;
-        if (!FilenameHasExtension(file.path(), ".cso")) continue;
-        RegisterAsset<ShaderAsset>(file.path());
-    }
-
-    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "EngineAssets/PSOs/"))
-    {
-        if (!ValidateAssetPath(file.path())) continue;
-        if (!FilenameHasExtension(file.path(), ".pso")) continue;
-        RegisterAsset<PSOAsset>(file.path());
-    }
-
-    for (const auto& file : std::filesystem::recursive_directory_iterator(myContentRoot / "EngineAssets/Materials/"))
-    {
-        if (!ValidateAssetPath(file.path())) continue;
-        if (!FilenameHasExtension(file.path(), ".mat")) continue;
-        RegisterAsset<MaterialAsset>(file.path());
-    }
 }
 
 void AssetManager::RegisterAllAssetsInDirectory()
@@ -192,16 +131,13 @@ void AssetManager::RegisterAllAssetsInDirectory()
     {
         if (!ValidateAssetPath(file.path())) continue;
 
-        std::chrono::system_clock::time_point registerStartTime = std::chrono::system_clock::now();
-
         std::string extension = Utilities::ToLowerCopy(file.path().extension().string());
         std::string name = Utilities::ToLowerCopy(file.path().filename().string());
         if (myFileExtensionToRegisterFunc.contains(extension))
         {
             if (myFileExtensionToRegisterFunc.at(extension)(name, file.path()))
             {
-                std::chrono::duration<float, std::ratio<1, 1000>> registerTime = std::chrono::system_clock::now() - registerStartTime;
-                LOG(LogAssetManager, Log, "Registered asset {} in {}ms", name, std::round(registerTime.count()));
+                LOG(LogAssetManager, Log, "Registered asset {}", name);
             }
             else
             {
@@ -251,46 +187,6 @@ std::shared_ptr<Asset> AssetManager::GetAssetBase(const std::filesystem::path& a
     }
 
     return myAssets[std::filesystem::path(Utilities::ToLowerCopy(aPath.filename().string()))];
-}
-
-std::filesystem::path AssetManager::MakeRelative(const std::filesystem::path& aPath) const
-{
-    std::filesystem::path targetPath = relative(aPath, myContentRoot);
-    targetPath = myContentRoot / targetPath;
-    targetPath = weakly_canonical(targetPath);
-
-    //auto [rootEnd, nothing] = std::mismatch(myContentRoot.begin(), myContentRoot.end(), targetPath.begin());
-    //if (rootEnd != myContentRoot.end())
-    //{
-    //    LOG(AssetManagerLog, Error, "Path '{}' is not below the root '{}'!", targetPath.string(), myContentRoot.string());
-    //    throw std::invalid_argument("Path is not below the root!");
-    //}
-
-    if (aPath.is_absolute())
-    {
-        return relative(aPath, myContentRoot);
-    }
-
-    return aPath;
-}
-
-bool AssetManager::RegisterEngineTextureAsset(std::string_view aName, const uint8_t* aTextureDataPtr, size_t aTextureDataSize)
-{
-    std::shared_ptr<TextureAsset> asset = std::make_shared<TextureAsset>();
-    asset->texture = std::make_shared<Texture>();
-    asset->myName = Utilities::ToLowerCopy(aName.data());
-    if (!GraphicsEngine::Get().GetResourceVendor().LoadTexture(asset->myName.string(), aTextureDataPtr, aTextureDataSize, *asset->texture))
-    {
-        LOG(LogAssetManager, Error, "Failed to register default texture asset {}", asset->myName.string());
-        return false;
-    }
-    
-    asset->myIsLoaded = true;
-    myAssets.emplace(asset->myName, asset);
-
-    LOG(LogAssetManager, Log, "Registered default texture asset {}", asset->myName.string());
-
-    return true;
 }
 
 bool AssetManager::FilenameHasPrefix(const std::filesystem::path& aPath, const char* aPrefixCompare) const

@@ -1,9 +1,0 @@
-{
-  "VertexType": "Default",
-  "VertexShader": "Mesh_VS.cso",
-  "GeometryShader": "",
-  "PixelShader": "DebugMetallic_PS.cso",
-  "Samplers": {
-    "LinearWrapSS": 0
-  }
-}

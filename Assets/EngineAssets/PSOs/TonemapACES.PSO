@@ -1,9 +1,0 @@
-{
-  "VertexType": "Default",
-  "VertexShader": "Quad_VS.cso",
-  "GeometryShader": "",
-  "PixelShader": "PP_TonemapACES_PS.cso",
-  "Samplers": {
-    "LinearWrapSS": 0
-  }
-}

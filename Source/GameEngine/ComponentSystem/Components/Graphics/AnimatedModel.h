@@ -49,7 +49,7 @@ public:
     };
 
     ~AnimatedModel() override;
-    AnimatedModel() = default;
+    AnimatedModel();
     AnimatedModel(std::shared_ptr<Mesh> aMesh);
     AnimatedModel(std::shared_ptr<Mesh> aMesh, std::shared_ptr<Material> aMaterial);
 

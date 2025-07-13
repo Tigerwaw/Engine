@@ -107,14 +107,6 @@ void ModelViewer::InitializeApplication()
 					AssetManager::Get().RegisterAsset<FontAsset>(filePath);
 				}
 
-				std::filesystem::path assetPath = AssetManager::Get().MakeRelative(filePath);
-				if (assetPath == "")
-				{
-					LOG(LogApplication, Error, "Couldn't find asset path!");
-					myLogs.emplace_back("[ERROR] Couldn't find asset path!", Math::Vector3f(1.0f, 0, 0));
-					return;
-				}
-
 				std::shared_ptr<GameObject> go = Engine::Get().GetSceneHandler().FindGameObjectByName("Model");
 				if (!go)
 				{
@@ -122,21 +114,21 @@ void ModelViewer::InitializeApplication()
 					myLogs.emplace_back("[ERROR] Couldn't find game object!", Math::Vector3f(1.0f, 0, 0));
 				}
 
-				const std::string assetExt = assetPath.extension().string();
-				const std::string assetName = assetPath.filename().stem().string();
+				const std::string assetExt = filePath.extension().string();
+				const std::string assetName = filePath.filename().stem().string();
 				if (assetExt == ".fbx")
 				{
 					if (assetName.starts_with("SM") || assetName.starts_with("sm"))
 					{
-						SetModel(go, assetPath);
+						SetModel(go, filePath);
 					}
 					else if (assetName.starts_with("SK") || assetName.starts_with("sk"))
 					{
-						SetAnimatedModel(go, assetPath);
+						SetAnimatedModel(go, filePath);
 					}
 					else if (assetName.starts_with("A") || assetName.starts_with("a"))
 					{
-						SetAnimation(go, assetPath);
+						SetAnimation(go, filePath);
 					}
 					else
 					{
@@ -148,7 +140,7 @@ void ModelViewer::InitializeApplication()
 				{
 					if (assetName.starts_with("T"))
 					{
-						SetTexture(go, assetPath);
+						SetTexture(go, filePath);
 					}
 					else
 					{
@@ -160,11 +152,11 @@ void ModelViewer::InitializeApplication()
 				{
 					if (assetName.starts_with("MAT") || assetName.starts_with("mat"))
 					{
-						SetMaterial(go, assetPath);
+						SetMaterial(go, filePath);
 					}
 					else if (assetName.starts_with("PSO") || assetName.starts_with("pso"))
 					{
-						SetPSO(assetPath);
+						SetPSO(filePath);
 					}
 					else
 					{
@@ -177,7 +169,7 @@ void ModelViewer::InitializeApplication()
 					if (assetName.starts_with("SH") || assetName.starts_with("sh"))
 					{
 						//myLogs.emplace_back("[ERROR] Modelviewer does not support loading in individual shaders currently!", Math::Vector3f(1.0f, 0, 0));
-						SetShader(assetPath);
+						SetShader(filePath);
 					}
 					else
 					{

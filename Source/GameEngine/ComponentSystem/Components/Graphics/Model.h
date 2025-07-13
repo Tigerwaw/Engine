@@ -12,7 +12,7 @@ class Model : public Component
 {
 public:
     ~Model() override;
-    Model() = default;
+    Model();
     Model(std::shared_ptr<Mesh> aMesh);
     Model(std::shared_ptr<Mesh> aMesh, std::shared_ptr<Material> aMaterial);
 

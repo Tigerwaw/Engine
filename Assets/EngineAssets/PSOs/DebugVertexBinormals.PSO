@@ -1,8 +1,0 @@
-{
-  "VertexType": "Default",
-  "VertexShader": "Mesh_VS.cso",
-  "GeometryShader": "",
-  "PixelShader": "DebugVertexBinormals_PS.cso",
-  "Samplers": {
-  }
-}

@@ -1,9 +1,0 @@
-{
-  "VertexType": "Default",
-  "VertexShader": "Sprite_VS.cso",
-  "GeometryShader": "Sprite_GS.cso",
-  "PixelShader": "Sprite_PS.cso",
-  "Samplers": {
-    "LinearWrapSS": 0
-  }
-}

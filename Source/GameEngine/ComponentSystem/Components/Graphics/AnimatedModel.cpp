@@ -8,6 +8,7 @@
 #include "Engine.h"
 #include "Time/Timer.h"
 #include "Math/Quaternion.hpp"
+#include "GraphicsEngine.h"
 
 AnimatedModel::~AnimatedModel()
 {
@@ -17,9 +18,18 @@ AnimatedModel::~AnimatedModel()
     myAnimationLayers.clear();
 }
 
+AnimatedModel::AnimatedModel()
+{
+    SetMaterialOnSlot(0, GraphicsEngine::Get().GetDefaultMaterial());
+}
+
 AnimatedModel::AnimatedModel(std::shared_ptr<Mesh> aMesh)
 {
     SetMesh(aMesh);
+    for (auto& element : myMesh->GetElements())
+    {
+        SetMaterialOnSlot(element.MaterialIndex, GraphicsEngine::Get().GetDefaultMaterial());
+    }
 }
 
 AnimatedModel::AnimatedModel(std::shared_ptr<Mesh> aMesh, std::shared_ptr<Material> aMaterial)

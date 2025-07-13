@@ -5,6 +5,12 @@
 
 Material::Material()
 {
+	MaterialSettings().albedoTint = { 1.0f, 1.0f, 1.0f, 1.0f };
+	MaterialSettings().emissiveStrength = 0.0f;
+	SetTexture(Material::TextureType::Albedo, GraphicsEngine::Get().GetDefaultAlbedoTexture());
+	SetTexture(Material::TextureType::Normal, GraphicsEngine::Get().GetDefaultNormalTexture());
+	SetTexture(Material::TextureType::Material, GraphicsEngine::Get().GetDefaultARMTexture());
+	SetTexture(Material::TextureType::Effects, GraphicsEngine::Get().GetDefaultFXTexture());
 }
 
 std::shared_ptr<Material> Material::CreateInstance() const

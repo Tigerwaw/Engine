@@ -6,6 +6,7 @@ namespace nl = nlohmann;
 #include "AssetManager.h"
 #include "PSOAsset.h"
 #include "TextureAsset.h"
+#include "GraphicsEngine.h"
 
 bool MaterialAsset::Load()
 {
@@ -26,15 +27,23 @@ bool MaterialAsset::Load()
 
     if (data.contains("PSO"))
     {
-        mat.SetPSO(AssetManager::Get().GetAsset<PSOAsset>(data["PSO"].get<std::string>())->pso);
+        std::string psoName = data["PSO"].get<std::string>();
+        if (GraphicsEngine::Get().HasPSO(psoName.c_str()))
+        {
+            mat.SetPSO(GraphicsEngine::Get().GetPSO(psoName.c_str()));
+        }
+        else
+        {
+            mat.SetPSO(AssetManager::Get().GetAsset<PSOAsset>(psoName)->pso);
+        }
     }
 
     if (data.contains("AlbedoTint"))
     {
         mat.MaterialSettings().albedoTint = { data["AlbedoTint"]["R"].get<float>(),
-                                                    data["AlbedoTint"]["G"].get<float>(),
-                                                    data["AlbedoTint"]["B"].get<float>(),
-                                                    data["AlbedoTint"]["A"].get<float>() };
+                                              data["AlbedoTint"]["G"].get<float>(),
+                                              data["AlbedoTint"]["B"].get<float>(),
+                                              data["AlbedoTint"]["A"].get<float>() };
     }
 
     if (data.contains("EmissiveStrength"))
