@@ -97,6 +97,7 @@ private:
     ~Engine();
     Engine(Engine const&) = delete;
     void operator=(Engine const&) = delete;
+    void RegisterDefaultAssetTypes();
     
     std::unique_ptr<Window> myWindow;
     std::unique_ptr<WindowsEventHandler> myEventHandler;

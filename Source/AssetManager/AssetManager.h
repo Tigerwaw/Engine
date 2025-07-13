@@ -25,6 +25,8 @@ public:
 		return myInstance;
 	}
 
+	void RegisterAssetType(const std::string& aFileExtension, std::function<bool(const std::string&, const std::filesystem::path&)> aRegisterFunction);
+
 	template<typename T> requires std::is_base_of_v<Asset, T>
 	std::shared_ptr<T> GetAsset(const std::filesystem::path& aPath);
 
@@ -49,7 +51,6 @@ private:
 	std::shared_ptr<Asset> GetAssetBase(const std::filesystem::path& aPath);
 
 	void RegisterAllAssetsInDirectory();
-	void LoadAllRegisteredAssets();
 
 	// All assets that are required for the engine to function should be part of the .exe.
 	void RegisterEngineAssets();
@@ -94,12 +95,18 @@ inline std::shared_ptr<T> AssetManager::GetAsset(const std::filesystem::path& aP
 	return nullptr;
 }
 
+inline void AssetManager::RegisterAssetType(const std::string& aFileExtension, std::function<bool(const std::string&, const std::filesystem::path&)> aRegisterFunction)
+{
+	myFileExtensionToRegisterFunc[aFileExtension] = aRegisterFunction;
+}
+
 template<typename T>  requires std::is_base_of_v<Asset, T>
 bool AssetManager::RegisterAsset(const std::filesystem::path& aPath)
 {
 	std::shared_ptr<T> asset = std::make_shared<T>();
 	asset->myPath = aPath;
 	asset->myName = Utilities::ToLowerCopy(aPath.filename().string());
+	asset->myIsLoaded = false;
 
 	myAssets.emplace(asset->myName, asset);
 	return true;

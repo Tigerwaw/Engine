@@ -75,49 +75,6 @@ bool AssetManager::Initialize(const std::filesystem::path& aContentRootPath, boo
 {
     LOG(LogAssetManager, Log, "Initializing Asset Manager...");
 
-    myFileExtensionToRegisterFunc[".fbx"] = std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string& aFilename, const std::filesystem::path& aPath)
-        {
-            if (aFilename.starts_with("sm") || aFilename.starts_with("sk"))
-            {
-                return AssetManager::Get().RegisterAsset<MeshAsset>(aPath);
-            }
-            else if (aFilename.starts_with("a"))
-            {
-                return AssetManager::Get().RegisterAsset<AnimationAsset>(aPath);
-            }
-            else if (aFilename.starts_with("nm"))
-            {
-                return AssetManager::Get().RegisterAsset<NavMeshAsset>(aPath);
-            }
-
-            return false;
-        });
-
-    myFileExtensionToRegisterFunc[".mat"] = std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string&, const std::filesystem::path& aPath)
-        {
-            return AssetManager::Get().RegisterAsset<MaterialAsset>(aPath);
-        });
-
-    myFileExtensionToRegisterFunc[".dds"] = std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string&, const std::filesystem::path& aPath)
-        {
-            return AssetManager::Get().RegisterAsset<TextureAsset>(aPath);
-        });
-
-    myFileExtensionToRegisterFunc[".cso"] = std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string&, const std::filesystem::path& aPath)
-        {
-            return AssetManager::Get().RegisterAsset<ShaderAsset>(aPath);
-        });
-
-    myFileExtensionToRegisterFunc[".pso"] = std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string&, const std::filesystem::path& aPath)
-        {
-            return AssetManager::Get().RegisterAsset<PSOAsset>(aPath);
-        });
-
-    myFileExtensionToRegisterFunc[".font"] = std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string&, const std::filesystem::path& aPath)
-        {
-            return AssetManager::Get().RegisterAsset<FontAsset>(aPath);
-        });
-
     myContentRoot = std::filesystem::absolute(aContentRootPath);
     if (!std::filesystem::exists(aContentRootPath))
     {
@@ -259,32 +216,6 @@ void AssetManager::RegisterAllAssetsInDirectory()
 
     std::chrono::duration<float, std::ratio<1, 1000>> registerAllTime = std::chrono::system_clock::now() - registerAllStartTime;
     LOG(LogAssetManager, Log, "Registered all assets in {}ms", std::round(registerAllTime.count()));
-}
-
-void AssetManager::LoadAllRegisteredAssets()
-{
-    std::chrono::system_clock::time_point loadAllStartTime = std::chrono::system_clock::now();
-
-    for (auto& [name, asset] : myAssets)
-    {
-        if (!name.has_extension()) continue;
-
-        std::chrono::system_clock::time_point loadStartTime = std::chrono::system_clock::now();
-
-        if (asset->Load())
-        {
-            asset->myIsLoaded = true;
-            std::chrono::duration<float, std::ratio<1, 1000>> loadTime = std::chrono::system_clock::now() - loadStartTime;
-            LOG(LogAssetManager, Log, "Loaded asset {} in {}ms", name.string(), std::round(loadTime.count()));
-        }
-        else
-        {
-            LOG(LogAssetManager, Error, "Failed to load asset {}", name.string());
-        }
-    }
-
-    std::chrono::duration<float, std::ratio<1, 1000>> loadAllTime = std::chrono::system_clock::now() - loadAllStartTime;
-    LOG(LogAssetManager, Log, "Loaded all assets in {}ms", std::round(loadAllTime.count()));
 }
 
 bool AssetManager::ValidateAssetPath(const std::filesystem::path& aPath)

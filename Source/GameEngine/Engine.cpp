@@ -15,6 +15,15 @@
 #include "Application/WindowsEventHandler.h"
 #include "Application/AppSettings.h"
 
+#include "MeshAsset.h"
+#include "NavMeshAsset.h"
+#include "AnimationAsset.h"
+#include "FontAsset.h"
+#include "MaterialAsset.h"
+#include "PSOAsset.h"
+#include "ShaderAsset.h"
+#include "TextureAsset.h"
+
 static Engine* sInstance = nullptr;
 
 Engine& Engine::Get()
@@ -56,6 +65,7 @@ void Engine::Initialize()
     GraphicsEngine::Get().SetResolution(instance.myResolution.x, instance.myResolution.y);
     GraphicsEngine::Get().SetWindowSize(instance.myWindowSize.x, instance.myWindowSize.y);
 
+    instance.RegisterDefaultAssetTypes();
     AssetManager::Get().Initialize(instance.myContentRoot, instance.myAutoRegisterAssets);
     instance.myAudioEngine->Initialize();
 
@@ -134,3 +144,51 @@ void Engine::ToggleFullscreen(bool aIsFullscreen)
 
 Engine::Engine() = default;
 Engine::~Engine() = default;
+
+void Engine::RegisterDefaultAssetTypes()
+{
+    AssetManager& am = AssetManager::Get();
+
+    am.RegisterAssetType(".fbx", std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string& aFilename, const std::filesystem::path& aPath)
+        {
+            if (aFilename.starts_with("sm") || aFilename.starts_with("sk"))
+            {
+                return AssetManager::Get().RegisterAsset<MeshAsset>(aPath);
+            }
+            else if (aFilename.starts_with("a"))
+            {
+                return AssetManager::Get().RegisterAsset<AnimationAsset>(aPath);
+            }
+            else if (aFilename.starts_with("nm"))
+            {
+                return AssetManager::Get().RegisterAsset<NavMeshAsset>(aPath);
+            }
+
+            return false;
+        }));
+
+    am.RegisterAssetType(".mat", std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string&, const std::filesystem::path& aPath)
+        {
+            return AssetManager::Get().RegisterAsset<MaterialAsset>(aPath);
+        }));
+
+    am.RegisterAssetType(".dds", std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string&, const std::filesystem::path& aPath)
+        {
+            return AssetManager::Get().RegisterAsset<TextureAsset>(aPath);
+        }));
+
+    am.RegisterAssetType(".cso", std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string&, const std::filesystem::path& aPath)
+        {
+            return AssetManager::Get().RegisterAsset<ShaderAsset>(aPath);
+        }));
+
+    am.RegisterAssetType(".pso", std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string&, const std::filesystem::path& aPath)
+        {
+            return AssetManager::Get().RegisterAsset<PSOAsset>(aPath);
+        }));
+
+    am.RegisterAssetType(".font", std::function<bool(const std::string&, const std::filesystem::path&)>([](const std::string&, const std::filesystem::path& aPath)
+        {
+            return AssetManager::Get().RegisterAsset<FontAsset>(aPath);
+        }));
+}
