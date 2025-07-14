@@ -97,6 +97,7 @@ void Engine::Prepare()
 
 void Engine::Update()
 {
+    AssetManager::Get().Update();
     myTimer->Update();
     mySceneHandler->UpdateActiveScene();
     myInputHandler->UpdateInput();

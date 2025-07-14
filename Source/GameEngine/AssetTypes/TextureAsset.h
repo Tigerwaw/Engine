@@ -10,4 +10,5 @@ public:
 
 	bool Load() override;
 	bool Unload() override;
+	int GetRefCount() override { return static_cast<int>(texture.use_count()); }
 };

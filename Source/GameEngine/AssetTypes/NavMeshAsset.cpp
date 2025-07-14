@@ -1,5 +1,6 @@
 #include "Enginepch.h"
 #include "NavMeshAsset.h"
+#include "TGAFBX/TGAFbx.h"
 
 std::vector<NavPolygon> CreateNavPolygons(const TGA::FBX::NavMesh& tgaNavMesh);
 std::vector<NavNode> CreateNavNodes(const std::vector<NavPolygon>& navPolygons);

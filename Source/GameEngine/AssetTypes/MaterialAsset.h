@@ -10,5 +10,6 @@ public:
 
 	bool Load() override;
 	bool Unload() override;
+	int GetRefCount() override { return static_cast<int>(material.use_count()); }
 };
 

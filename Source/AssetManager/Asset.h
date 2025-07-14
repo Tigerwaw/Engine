@@ -2,6 +2,8 @@
 
 class Asset
 {
+	friend class AssetManager;
+
 public:
 	virtual ~Asset() = default;
 
@@ -11,11 +13,9 @@ public:
 	bool IsLoaded() const { return myIsLoaded; }
 	virtual bool Load() = 0;
 	virtual bool Unload() = 0;
-protected:
-	bool myIsLoaded = false;
+	virtual int GetRefCount() = 0;
 private:
 	std::filesystem::path myPath;
 	std::filesystem::path myName;
-
-	friend class AssetManager;
+	bool myIsLoaded = false;
 };

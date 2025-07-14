@@ -1375,6 +1375,9 @@ bool GraphicsEngine::CreateDefaultTextures(const std::filesystem::path& aContent
 	myBRDFLUTTexture = std::make_shared<Texture>();
 	myRHI->CreateLUT("LUT", 512, 512, myBRDFLUTTexture, aContentRoot / L"EngineAssets/Shaders/Quad_VS.cso", aContentRoot / L"EngineAssets/Shaders/brdfLUT_PS.cso");
 
+	myBlueNoiseTexture = std::make_shared<Texture>();
+	myResourceVendor->LoadTexture(aContentRoot / "EngineAssets/Textures/Utility/BlueNoise.dds", *myBlueNoiseTexture);
+
 	myDefaultAlbedoTexture = std::make_shared<Texture>();
 	if (!GraphicsEngine::Get().GetResourceVendor().LoadTexture("default_c", BuiltIn_Default_C_ByteCode, sizeof(BuiltIn_Default_C_ByteCode), *myDefaultAlbedoTexture))
 	{
