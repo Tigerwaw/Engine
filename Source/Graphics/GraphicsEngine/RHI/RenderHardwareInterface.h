@@ -121,6 +121,7 @@ private:
 	std::shared_ptr<Texture> myDepthBuffer;
 	std::unordered_map<IntermediateTexture, std::shared_ptr<Texture>> myIntermediateTextures;
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D11SamplerState>> mySamplerStates;
+	//std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D11InputLayout>> myInputLayouts;
 };
 
 template<typename VertexType>

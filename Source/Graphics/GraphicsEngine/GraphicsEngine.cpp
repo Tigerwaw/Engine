@@ -611,7 +611,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		deferredDesc.vsPath = defaultMeshVSPath;
 		deferredDesc.vsShader = defaultMeshVS;
 		deferredDesc.psShader = deferredMeshPS;
-		deferredDesc.samplerList[0] = "LinearWrapSS";
+		deferredDesc.samplerList[0] = "LinearWrap";
 
 		std::shared_ptr<PipelineStateObject> deferred = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*deferred, deferredDesc))
@@ -632,9 +632,9 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = forwardPBRMeshPS;
-		desc.samplerList[0] = "LinearWrapSS";
-		desc.samplerList[14] = "LutSS";
-		desc.samplerList[15] = "ShadowSS";
+		desc.samplerList[0] = "LinearWrap";
+		desc.samplerList[14] = "LUT";
+		desc.samplerList[15] = "Shadow";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -654,9 +654,9 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = forwardPBRMeshPS;
-		desc.samplerList[0] = "LinearWrapSS";
-		desc.samplerList[14] = "LutSS";
-		desc.samplerList[15] = "ShadowSS";
+		desc.samplerList[0] = "LinearWrap";
+		desc.samplerList[14] = "LUT";
+		desc.samplerList[15] = "Shadow";
 		desc.blendMode = BlendMode::Alpha;
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
@@ -715,7 +715,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsShader = spriteVS;
 		desc.gsShader = spriteGS;
 		desc.psShader = spritePS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -736,7 +736,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsShader = spriteVS;
 		desc.gsShader = spriteGS;
 		desc.psShader = spritesheetPS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -756,7 +756,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = textVSPath;
 		desc.vsShader = textVS;
 		desc.psShader = textPS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -777,7 +777,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsShader = particleVS;
 		desc.gsShader = particleGS;
 		desc.psShader = particlePS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 		desc.blendMode = BlendMode::Alpha;
 		desc.useReadOnlyDepthStencilState = true;
 
@@ -800,7 +800,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsShader = trailVS;
 		desc.gsShader = trailGS;
 		desc.psShader = trailPS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 		desc.fillMode = 3;
 		desc.cullMode = 1;
 		desc.blendMode = BlendMode::Alpha;
@@ -825,7 +825,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsShader = particleVS;
 		desc.gsShader = particleGS;
 		desc.psShader = particleSpritesheetPS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 		desc.blendMode = BlendMode::Alpha;
 		desc.useReadOnlyDepthStencilState = true;
 
@@ -847,9 +847,9 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = vfxSpritesheetPS;
-		desc.samplerList[0] = "LinearWrapSS";
-		desc.samplerList[14] = "LutSS";
-		desc.samplerList[15] = "ShadowSS";
+		desc.samplerList[0] = "LinearWrap";
+		desc.samplerList[14] = "LUT";
+		desc.samplerList[15] = "Shadow";
 		desc.blendMode = BlendMode::Alpha;
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
@@ -893,9 +893,9 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = deferredDirectionalLightPS;
-		desc.samplerList[0] = "LinearWrapSS";
-		desc.samplerList[14] = "LutSS";
-		desc.samplerList[15] = "ShadowSS";
+		desc.samplerList[0] = "LinearWrap";
+		desc.samplerList[14] = "LUT";
+		desc.samplerList[15] = "Shadow";
 		desc.blendMode = BlendMode::Additive;
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
@@ -916,9 +916,9 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = deferredPointlightPS;
-		desc.samplerList[0] = "LinearWrapSS";
-		desc.samplerList[14] = "LutSS";
-		desc.samplerList[15] = "ShadowSS";
+		desc.samplerList[0] = "LinearWrap";
+		desc.samplerList[14] = "LUT";
+		desc.samplerList[15] = "Shadow";
 		desc.blendMode = BlendMode::Additive;
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
@@ -939,9 +939,9 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = deferredSpotlightPS;
-		desc.samplerList[0] = "LinearWrapSS";
-		desc.samplerList[14] = "LutSS";
-		desc.samplerList[15] = "ShadowSS";
+		desc.samplerList[0] = "LinearWrap";
+		desc.samplerList[14] = "LUT";
+		desc.samplerList[15] = "Shadow";
 		desc.blendMode = BlendMode::Additive;
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
@@ -962,7 +962,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = bloomPS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 		desc.blendMode = BlendMode::Alpha;
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
@@ -983,7 +983,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = gaussianhPS;
-		desc.samplerList[1] = "LinearClampSS";
+		desc.samplerList[1] = "LinearClamp";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -1003,7 +1003,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = gaussianvPS;
-		desc.samplerList[1] = "LinearClampSS";
+		desc.samplerList[1] = "LinearClamp";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -1023,7 +1023,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = luminancePS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -1043,7 +1043,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = radialBlurPS;
-		desc.samplerList[1] = "LinearClampSS";
+		desc.samplerList[1] = "LinearClamp";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -1063,7 +1063,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = resamplePS;
-		desc.samplerList[1] = "LinearClampSS";
+		desc.samplerList[1] = "LinearClamp";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -1083,8 +1083,8 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = ssaoPS;
-		desc.samplerList[2] = "PointWrapSS";
-		desc.samplerList[3] = "PointClampSS";
+		desc.samplerList[2] = "PointWrap";
+		desc.samplerList[3] = "PointClamp";
 		desc.blendMode = BlendMode::Alpha;
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
@@ -1105,7 +1105,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = tonemapACESPS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -1125,7 +1125,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = tonemapLottesPS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -1145,7 +1145,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = tonemapUEPS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -1186,7 +1186,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugAOPS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -1206,7 +1206,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugAOPS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -1226,7 +1226,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugAOPS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -1246,7 +1246,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugMetallicPS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -1266,7 +1266,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugPixelNormalsPS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -1286,7 +1286,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugFXPS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -1357,7 +1357,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugTextureNormalsPS;
-		desc.samplerList[0] = "LinearWrapSS";
+		desc.samplerList[0] = "LinearWrap";
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))
@@ -1417,7 +1417,7 @@ bool GraphicsEngine::CreateConstantBuffers()
 		LOG(LogGraphicsEngine, Error, "Failed to create Frame Buffer!");
 		return false;
 	}
-	myConstantBuffers.emplace(ConstantBufferType::FrameBuffer, std::move(frameBuffer));
+	myConstantBuffers.emplace(ConstantBufferName(ConstantBufferType::FrameBuffer), std::move(frameBuffer));
 
 	ConstantBuffer objectBuffer;
 	if (!myRHI->CreateConstantBuffer("ObjectBuffer", sizeof(ObjectBuffer), 1, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_GEOMETRY_SHADER | PIPELINE_STAGE_PIXEL_SHADER, objectBuffer))
@@ -1425,7 +1425,7 @@ bool GraphicsEngine::CreateConstantBuffers()
 		LOG(LogGraphicsEngine, Error, "Failed to create Object Buffer!");
 		return false;
 	}
-	myConstantBuffers.emplace(ConstantBufferType::ObjectBuffer, std::move(objectBuffer));
+	myConstantBuffers.emplace(ConstantBufferName(ConstantBufferType::ObjectBuffer), std::move(objectBuffer));
 
 	ConstantBuffer animationBuffer;
 	if (!myRHI->CreateConstantBuffer("AnimationBuffer", sizeof(AnimationBuffer), 2, PIPELINE_STAGE_VERTEX_SHADER, animationBuffer))
@@ -1433,7 +1433,7 @@ bool GraphicsEngine::CreateConstantBuffers()
 		LOG(LogGraphicsEngine, Error, "Failed to create Animation Buffer!");
 		return false;
 	}
-	myConstantBuffers.emplace(ConstantBufferType::AnimationBuffer, std::move(animationBuffer));
+	myConstantBuffers.emplace(ConstantBufferName(ConstantBufferType::AnimationBuffer), std::move(animationBuffer));
 
 	ConstantBuffer materialBuffer;
 	if (!myRHI->CreateConstantBuffer("MaterialBuffer", sizeof(MaterialBuffer), 3, PIPELINE_STAGE_PIXEL_SHADER, materialBuffer))
@@ -1441,7 +1441,7 @@ bool GraphicsEngine::CreateConstantBuffers()
 		LOG(LogGraphicsEngine, Error, "Failed to create Material Buffer!");
 		return false;
 	}
-	myConstantBuffers.emplace(ConstantBufferType::MaterialBuffer, std::move(materialBuffer));
+	myConstantBuffers.emplace(ConstantBufferName(ConstantBufferType::MaterialBuffer), std::move(materialBuffer));
 
 	ConstantBuffer lightBuffer;
 	if (!myRHI->CreateConstantBuffer("LightBuffer", sizeof(LightBuffer), 4, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_PIXEL_SHADER, lightBuffer))
@@ -1449,7 +1449,7 @@ bool GraphicsEngine::CreateConstantBuffers()
 		LOG(LogGraphicsEngine, Error, "Failed to create Light Buffer!");
 		return false;
 	}
-	myConstantBuffers.emplace(ConstantBufferType::LightBuffer, std::move(lightBuffer));
+	myConstantBuffers.emplace(ConstantBufferName(ConstantBufferType::LightBuffer), std::move(lightBuffer));
 
 	ConstantBuffer shadowBuffer;
 	if (!myRHI->CreateConstantBuffer("ShadowBuffer", sizeof(ShadowBuffer), 5, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_GEOMETRY_SHADER | PIPELINE_STAGE_PIXEL_SHADER, shadowBuffer))
@@ -1457,7 +1457,7 @@ bool GraphicsEngine::CreateConstantBuffers()
 		LOG(LogGraphicsEngine, Error, "Failed to create Shadow Buffer!");
 		return false;
 	}
-	myConstantBuffers.emplace(ConstantBufferType::ShadowBuffer, std::move(shadowBuffer));
+	myConstantBuffers.emplace(ConstantBufferName(ConstantBufferType::ShadowBuffer), std::move(shadowBuffer));
 
 	ConstantBuffer spriteBuffer;
 	if (!myRHI->CreateConstantBuffer("SpriteBuffer", sizeof(SpriteBuffer), 6, PIPELINE_STAGE_VERTEX_SHADER | PIPELINE_STAGE_GEOMETRY_SHADER | PIPELINE_STAGE_PIXEL_SHADER, spriteBuffer))
@@ -1465,7 +1465,7 @@ bool GraphicsEngine::CreateConstantBuffers()
 		LOG(LogGraphicsEngine, Error, "Failed to create Sprite Buffer!");
 		return false;
 	}
-	myConstantBuffers.emplace(ConstantBufferType::SpriteBuffer, std::move(spriteBuffer));
+	myConstantBuffers.emplace(ConstantBufferName(ConstantBufferType::SpriteBuffer), std::move(spriteBuffer));
 
 	ConstantBuffer postProcessBuffer;
 	if (!myRHI->CreateConstantBuffer("PostProcessBuffer", sizeof(PostProcessBuffer), 7, PIPELINE_STAGE_PIXEL_SHADER, postProcessBuffer))
@@ -1473,7 +1473,7 @@ bool GraphicsEngine::CreateConstantBuffers()
 		LOG(LogGraphicsEngine, Error, "Failed to create Post Process Buffer!");
 		return false;
 	}
-	myConstantBuffers.emplace(ConstantBufferType::PostProcessBuffer, std::move(postProcessBuffer));
+	myConstantBuffers.emplace(ConstantBufferName(ConstantBufferType::PostProcessBuffer), std::move(postProcessBuffer));
 
 	return true;
 }

@@ -1,5 +1,6 @@
 #include "GraphicsEngine.pch.h"
 #include "RenderHardwareInterface.h"
+#include "GraphicsSettings.hpp"
 #include <d3d11_1.h>
 
 #include <d3dcompiler.h>
@@ -670,7 +671,7 @@ void RenderHardwareInterface::CreateDefaultSamplerStates()
 	pointWrapDesc.BorderColor[3] = 1.0f;
 	pointWrapDesc.MinLOD = -D3D11_FLOAT32_MAX;
 	pointWrapDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	CreateSamplerState("PointWrapSS", pointWrapDesc);
+	CreateSamplerState(SamplerName(SamplerType::PointWrap), pointWrapDesc);
 
 	D3D11_SAMPLER_DESC linearWrapDesc = {};
 	linearWrapDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -686,7 +687,7 @@ void RenderHardwareInterface::CreateDefaultSamplerStates()
 	linearWrapDesc.BorderColor[3] = 1.0f;
 	linearWrapDesc.MinLOD = -D3D11_FLOAT32_MAX;
 	linearWrapDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	CreateSamplerState("LinearWrapSS", linearWrapDesc);
+	CreateSamplerState(SamplerName(SamplerType::LinearWrap), linearWrapDesc);
 
 	D3D11_SAMPLER_DESC anisoWrapDesc = {};
 	anisoWrapDesc.Filter = D3D11_FILTER_ANISOTROPIC;
@@ -702,7 +703,7 @@ void RenderHardwareInterface::CreateDefaultSamplerStates()
 	anisoWrapDesc.BorderColor[3] = 1.0f;
 	anisoWrapDesc.MinLOD = -D3D11_FLOAT32_MAX;
 	anisoWrapDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	CreateSamplerState("AnisoWrapSS", anisoWrapDesc);
+	CreateSamplerState(SamplerName(SamplerType::AnisotropicWrap), anisoWrapDesc);
 
 	D3D11_SAMPLER_DESC pointClampDesc = {};
 	pointClampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
@@ -718,7 +719,7 @@ void RenderHardwareInterface::CreateDefaultSamplerStates()
 	pointClampDesc.BorderColor[3] = 1.0f;
 	pointClampDesc.MinLOD = -D3D11_FLOAT32_MAX;
 	pointClampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	CreateSamplerState("PointClampSS", pointClampDesc);
+	CreateSamplerState(SamplerName(SamplerType::PointClamp), pointClampDesc);
 
 	D3D11_SAMPLER_DESC linearClampDesc = {};
 	linearClampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -734,7 +735,7 @@ void RenderHardwareInterface::CreateDefaultSamplerStates()
 	linearClampDesc.BorderColor[3] = 1.0f;
 	linearClampDesc.MinLOD = -D3D11_FLOAT32_MAX;
 	linearClampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	CreateSamplerState("LinearClampSS", linearClampDesc);
+	CreateSamplerState(SamplerName(SamplerType::LinearClamp), linearClampDesc);
 
 	D3D11_SAMPLER_DESC anisoClampDesc = {};
 	anisoClampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
@@ -750,7 +751,7 @@ void RenderHardwareInterface::CreateDefaultSamplerStates()
 	anisoClampDesc.BorderColor[3] = 1.0f;
 	anisoClampDesc.MinLOD = -D3D11_FLOAT32_MAX;
 	anisoClampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	CreateSamplerState("AnisoClampSS", anisoClampDesc);
+	CreateSamplerState(SamplerName(SamplerType::AnisotropicClamp), anisoClampDesc);
 
 	D3D11_SAMPLER_DESC shadowSamplerDesc = {};
 	shadowSamplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
@@ -766,7 +767,7 @@ void RenderHardwareInterface::CreateDefaultSamplerStates()
 	shadowSamplerDesc.BorderColor[3] = 1.0f;
 	shadowSamplerDesc.MinLOD = -D3D11_FLOAT32_MAX;
 	shadowSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	CreateSamplerState("ShadowSS", shadowSamplerDesc);
+	CreateSamplerState(SamplerName(SamplerType::Shadow), shadowSamplerDesc);
 
 	D3D11_SAMPLER_DESC lutSamplerDesc = {};
 	lutSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
@@ -782,7 +783,7 @@ void RenderHardwareInterface::CreateDefaultSamplerStates()
 	lutSamplerDesc.BorderColor[3] = 0.0f;
 	lutSamplerDesc.MinLOD = 0;
 	lutSamplerDesc.MaxLOD = 0;
-	CreateSamplerState("LutSS", lutSamplerDesc);
+	CreateSamplerState(SamplerName(SamplerType::LUT), lutSamplerDesc);
 }
 
 void RenderHardwareInterface::CreateIntermediateTextures(unsigned aClientWidth, unsigned aClientHeight)
@@ -829,6 +830,7 @@ bool RenderHardwareInterface::CreateSamplerState(std::string_view aName, const D
 
 const Microsoft::WRL::ComPtr<ID3D11SamplerState>& RenderHardwareInterface::GetSamplerState(const std::string& aName) const
 {
+	assert(mySamplerStates.contains(aName));
 	return mySamplerStates.at(aName);
 }
 

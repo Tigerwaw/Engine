@@ -50,7 +50,59 @@ enum class PSOType
 	DebugUVs,
 	DebugVertexColor,
 	DebugVertexNormals,
-	DebugTextureNormals
+	DebugTextureNormals,
+	COUNT
+};
+
+enum class SamplerType
+{
+	PointWrap,
+	LinearWrap,
+	AnisotropicWrap,
+	PointClamp,
+	LinearClamp,
+	AnisotropicClamp,
+	Shadow,
+	LUT,
+	COUNT
+};
+
+enum class ConstantBufferType
+{
+	ObjectBuffer,
+	FrameBuffer,
+	AnimationBuffer,
+	MaterialBuffer,
+	LightBuffer,
+	ShadowBuffer,
+	SpriteBuffer,
+	PostProcessBuffer,
+	COUNT
+};
+
+enum class TonemapperType
+{
+	UE,
+	ACES,
+	Lottes,
+	COUNT
+};
+
+enum class LuminanceType
+{
+	RandomGain,
+	Contrast,
+	ReductionAndGain,
+	Fade,
+	COUNT
+};
+
+enum class BloomType
+{
+	Additive,
+	ScaledToScene,
+	ScaledToLuminance,
+	COUNT
 };
 
 namespace GraphicsSettings
@@ -94,10 +146,86 @@ namespace GraphicsSettings
 		{	PSOType::DebugVertexNormals,		"Debug Vertex Normals"			},
 		{	PSOType::DebugTextureNormals,		"Debug Texture Normals"			},
 	};
+
+	static const std::unordered_map<SamplerType, const char*> globalEnumToSamplerName
+	{
+		{	SamplerType::PointWrap,					"PointWrap"					},
+		{	SamplerType::LinearWrap,				"LinearWrap"				},
+		{	SamplerType::AnisotropicWrap,			"AnisotropicWrap"			},
+		{	SamplerType::PointClamp,				"PointClamp"				},
+		{	SamplerType::LinearClamp,				"LinearClamp"				},
+		{	SamplerType::AnisotropicClamp,			"AnisotropicClamp"			},
+		{	SamplerType::Shadow,					"Shadow"					},
+		{	SamplerType::LUT,						"LUT"						},
+	};
+
+	static const std::unordered_map<ConstantBufferType, const char*> globalEnumToConstantBufferName
+	{
+		{	ConstantBufferType::ObjectBuffer,			"ObjectBuffer"				},
+		{	ConstantBufferType::FrameBuffer,			"FrameBuffer"				},
+		{	ConstantBufferType::AnimationBuffer,		"AnimationBuffer"			},
+		{	ConstantBufferType::MaterialBuffer,			"MaterialBuffer"			},
+		{	ConstantBufferType::LightBuffer,			"LightBuffer"				},
+		{	ConstantBufferType::ShadowBuffer,			"ShadowBuffer"				},
+		{	ConstantBufferType::SpriteBuffer,			"SpriteBuffer"				},
+		{	ConstantBufferType::PostProcessBuffer,		"PostProcessBuffer"			},
+	};
+
+	static const std::unordered_map<TonemapperType, const char*> globalEnumToTonemapperName
+	{
+		{	TonemapperType::ACES,			"ACES"			},
+		{	TonemapperType::Lottes,			"Lottes"		},
+		{	TonemapperType::UE,				"UE"			},
+	};
+
+	static const std::unordered_map<LuminanceType, const char*> globalEnumToLuminanceName
+	{
+		{	LuminanceType::RandomGain,			"Random Gain"			},
+		{	LuminanceType::Contrast,			"Contrast"				},
+		{	LuminanceType::ReductionAndGain,	"Reduction and Gain"	},
+		{	LuminanceType::Fade,				"Fade"					},
+	};
+
+	static const std::unordered_map<BloomType, const char*> globalEnumToBloomName
+	{
+		{	BloomType::Additive,				"Additive"				},
+		{	BloomType::ScaledToScene,			"Scaled to Scene"		},
+		{	BloomType::ScaledToLuminance,		"Scaled to Luminance"	},
+	};
 }
 
 inline const char* PSOName(PSOType aPSOType)
 {
 	assert(GraphicsSettings::globalEnumToPSOName.contains(aPSOType));
 	return GraphicsSettings::globalEnumToPSOName.find(aPSOType)->second;
+}
+
+inline const char* SamplerName(SamplerType aSamplerType)
+{
+	assert(GraphicsSettings::globalEnumToSamplerName.contains(aSamplerType));
+	return GraphicsSettings::globalEnumToSamplerName.find(aSamplerType)->second;
+}
+
+inline const char* ConstantBufferName(ConstantBufferType aConstantBufferType)
+{
+	assert(GraphicsSettings::globalEnumToConstantBufferName.contains(aConstantBufferType));
+	return GraphicsSettings::globalEnumToConstantBufferName.find(aConstantBufferType)->second;
+}
+
+inline const char* TonemapperName(TonemapperType aTonemapperType)
+{
+	assert(GraphicsSettings::globalEnumToTonemapperName.contains(aTonemapperType));
+	return GraphicsSettings::globalEnumToTonemapperName.find(aTonemapperType)->second;
+}
+
+inline const char* LuminanceName(LuminanceType aLuminanceType)
+{
+	assert(GraphicsSettings::globalEnumToLuminanceName.contains(aLuminanceType));
+	return GraphicsSettings::globalEnumToLuminanceName.find(aLuminanceType)->second;
+}
+
+inline const char* BloomName(BloomType aBloomType)
+{
+	assert(GraphicsSettings::globalEnumToBloomName.contains(aBloomType));
+	return GraphicsSettings::globalEnumToBloomName.find(aBloomType)->second;
 }

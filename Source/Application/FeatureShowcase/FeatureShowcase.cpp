@@ -134,11 +134,11 @@ void FeatureShowcase::InitializeApplication()
 			// Tonemapping
 			{
 				ImGui::Text("Tonemapper");
-				if (ImGui::BeginCombo("##TonemapperDropdown", ppSettings.TonemapperNames[static_cast<int>(ppSettings.Tonemapper)].c_str()))
+				if (ImGui::BeginCombo("##TonemapperDropdown", TonemapperName(ppSettings.Tonemapper)))
 				{
-					for (unsigned i = 0; i < static_cast<unsigned>(Tonemapper::COUNT); i++)
+					for (unsigned i = 0; i < static_cast<unsigned>(TonemapperType::COUNT); i++)
 					{
-						if (ImGui::Selectable(ppSettings.TonemapperNames[i].c_str())) ppSettings.Tonemapper = static_cast<Tonemapper>(i);
+						if (ImGui::Selectable(TonemapperName(static_cast<TonemapperType>(i)))) ppSettings.Tonemapper = static_cast<TonemapperType>(i);
 					}
 					ImGui::EndCombo();
 				}
@@ -221,22 +221,22 @@ void FeatureShowcase::InitializeApplication()
 
 						// Luminance
 						ImGui::Text("Luminance");
-						if (ImGui::BeginCombo("##LuminanceDropdown", ppSettings.LuminanceNames[static_cast<int>(ppSettings.LuminanceFunction)].c_str()))
+						if (ImGui::BeginCombo("##LuminanceDropdown", LuminanceName(ppSettings.LuminanceFunction)))
 						{
-							for (unsigned i = 0; i < static_cast<unsigned>(Luminance::COUNT); i++)
+							for (unsigned i = 0; i < static_cast<unsigned>(LuminanceType::COUNT); i++)
 							{
-								if (ImGui::Selectable(ppSettings.LuminanceNames[i].c_str())) ppSettings.LuminanceFunction = static_cast<Luminance>(i);
+								if (ImGui::Selectable(LuminanceName(static_cast<LuminanceType>(i)))) ppSettings.LuminanceFunction = static_cast<LuminanceType>(i);
 							}
 							ImGui::EndCombo();
 						}
 
 						// Bloom
 						ImGui::Text("Bloom");
-						if (ImGui::BeginCombo("##BloomDropdown", ppSettings.BloomNames[static_cast<int>(ppSettings.BloomFunction)].c_str()))
+						if (ImGui::BeginCombo("##BloomDropdown", BloomName(ppSettings.BloomFunction)))
 						{
-							for (unsigned i = 0; i < static_cast<unsigned>(Bloom::COUNT); i++)
+							for (unsigned i = 0; i < static_cast<unsigned>(BloomType::COUNT); i++)
 							{
-								if (ImGui::Selectable(ppSettings.BloomNames[i].c_str())) ppSettings.BloomFunction = static_cast<Bloom>(i);
+								if (ImGui::Selectable(BloomName(static_cast<BloomType>(i)))) ppSettings.BloomFunction = static_cast<BloomType>(i);
 							}
 							ImGui::EndCombo();
 						}

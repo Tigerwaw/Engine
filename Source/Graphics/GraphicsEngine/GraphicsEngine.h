@@ -28,18 +28,6 @@ struct ID3D11InputLayout;
 
 struct Vertex;
 
-enum class ConstantBufferType
-{
-	ObjectBuffer,
-	FrameBuffer,
-	AnimationBuffer,
-	MaterialBuffer,
-	LightBuffer,
-	ShadowBuffer,
-	SpriteBuffer,
-	PostProcessBuffer
-};
-
 class GraphicsEngine
 {
 	friend class Drawer;
@@ -67,6 +55,9 @@ public:
 	void SetResolution(float aNewWidth, float aNewHeight);
 	void SetWindowSize(float aNewWidth, float aNewHeight);
 	void MaximizeWindowSize();
+
+	template<typename BufferData>
+	bool UpdateAndSetConstantBuffer(const char* aBufferType, const BufferData& aDataBlock);
 
 	template<typename BufferData>
 	bool UpdateAndSetConstantBuffer(ConstantBufferType aBufferType, const BufferData& aDataBlock);
@@ -130,11 +121,11 @@ private:
 	std::unique_ptr<Drawer> myDrawer;
 	std::unique_ptr<ResourceVendor> myResourceVendor;
 
-	std::unordered_map<ConstantBufferType, ConstantBuffer> myConstantBuffers;
+	std::unordered_map<std::string, ConstantBuffer> myConstantBuffers;
+	std::unordered_map<std::string, std::shared_ptr<PipelineStateObject>> myPSOs;
 	
 	std::shared_ptr<PipelineStateObject> myCurrentPSO;
 	std::shared_ptr<PipelineStateObject> myDefaultPSO;
-	std::unordered_map<std::string, std::shared_ptr<PipelineStateObject>> myPSOs;
 
 	std::shared_ptr<Texture> myBRDFLUTTexture;
 	std::shared_ptr<Texture> myBlueNoiseTexture;
@@ -158,7 +149,7 @@ private:
 };
 
 template<typename BufferData>
-bool GraphicsEngine::UpdateAndSetConstantBuffer(ConstantBufferType aBufferType, const BufferData& aDataBlock)
+bool GraphicsEngine::UpdateAndSetConstantBuffer(const char* aBufferType, const BufferData& aDataBlock)
 {
 	if (!myConstantBuffers.contains(aBufferType))
 	{
@@ -173,6 +164,12 @@ bool GraphicsEngine::UpdateAndSetConstantBuffer(ConstantBufferType aBufferType, 
 
 	myRHI->SetConstantBuffer(buffer);
 	return true;
+}
+
+template<typename BufferData>
+bool GraphicsEngine::UpdateAndSetConstantBuffer(ConstantBufferType aBufferType, const BufferData& aDataBlock)
+{
+	return UpdateAndSetConstantBuffer(ConstantBufferName(aBufferType), aDataBlock);
 }
 
 template<typename VertexType>
