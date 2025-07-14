@@ -1,6 +1,10 @@
 #pragma once
+#include <unordered_map>
+#include <string>
+#include <vector>
 #include "GameEngine/Application/Application.h"
 #include "GameEngine/Application/EntryPoint.h"
+#include "Objects/Shader.h"
 
 class GameObject;
 class Material;

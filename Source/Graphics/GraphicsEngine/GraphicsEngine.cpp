@@ -78,6 +78,12 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle, Math::Vector2f aResolution, 
 		return false;
 	}
 
+	if (!CreateMeshPrimitives())
+	{
+		LOG(LogGraphicsEngine, Error, "Failed to create mesh primitives!");
+		return false;
+	}
+
 	ChangePipelineState(myDefaultPSO);
 	myDefaultMaterial = std::make_shared<Material>();
 	myDefaultMaterial->SetPSO(myDefaultPSO);
@@ -215,6 +221,16 @@ std::shared_ptr<PipelineStateObject> GraphicsEngine::RegisterPSO(const char* aPS
 
 GraphicsEngine::GraphicsEngine() = default;
 GraphicsEngine::~GraphicsEngine() = default;
+
+bool GraphicsEngine::CreateMeshPrimitives()
+{
+	ResourceVendor& rv = GetResourceVendor();
+	myPlanePrimitive = std::make_shared<Mesh>(rv.CreatePlanePrimitive());
+	myCubePrimitive = std::make_shared<Mesh>(rv.CreateCubePrimitive());
+	myRampPrimitive = std::make_shared<Mesh>(rv.CreateRampPrimitive());
+
+	return true;
+}
 
 bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot)
 {

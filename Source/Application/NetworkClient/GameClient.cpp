@@ -33,6 +33,10 @@
 
 #include "Controller.h"
 
+#include "AssetTypes/MeshAsset.h"
+#include "AssetTypes/AnimationAsset.h"
+#include "AssetTypes/MaterialAsset.h"
+
 void GameClient::ConnectClient(const char* aIP)
 {
     myComm.Init(false, false, aIP);

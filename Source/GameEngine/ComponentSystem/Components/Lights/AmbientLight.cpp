@@ -3,6 +3,7 @@
 #include "AmbientLight.h"
 #include "GraphicsEngine.h"
 #include "Objects/Texture.h"
+#include "AssetTypes/TextureAsset.h"
 
 AmbientLight::AmbientLight(std::shared_ptr<Texture> aCubemap, Math::Vector3f aColor, float aIntensity)
 {

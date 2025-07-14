@@ -5,6 +5,8 @@
 #include "Objects/Material.h"
 #include "ComponentSystem/GameObject.h"
 #include "GraphicsEngine.h"
+#include "AssetTypes/MaterialAsset.h"
+#include "AssetTypes/MeshAsset.h"
 
 Model::~Model()
 {
@@ -89,7 +91,24 @@ bool Model::Deserialize(nl::json& aJsonObject)
         SetCastShadows(aJsonObject["CastShadows"].get<bool>());
     }
 
-    SetMesh(AssetManager::Get().GetAsset<MeshAsset>(aJsonObject["Model"].get<std::string>())->mesh);
+    std::string meshName = aJsonObject["Model"].get<std::string>();
+    Utilities::ToLower(meshName);
+    if (meshName == "sm_planeprimitive")
+    {
+        SetMesh(GraphicsEngine::Get().GetPlanePrimitive());
+    }
+    else if (meshName == "sm_cubeprimitive")
+    {
+        SetMesh(GraphicsEngine::Get().GetCubePrimitive());
+    }
+    else if (meshName == "sm_rampprimitive")
+    {
+        SetMesh(GraphicsEngine::Get().GetRampPrimitive());
+    }
+    else
+    {
+        SetMesh(AssetManager::Get().GetAsset<MeshAsset>(meshName)->mesh);
+    }
 
     if (aJsonObject.contains("Materials"))
     {

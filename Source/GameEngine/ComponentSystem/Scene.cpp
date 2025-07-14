@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "GraphicsEngine.h"
 #include "Objects/Sprite.h"
+#include "Objects/Material.h"
 #include "ComponentSystem/GameObject.h"
 #include "ComponentSystem/Components/Transform.h"
 #include "ComponentSystem/Components/Graphics/Model.h"

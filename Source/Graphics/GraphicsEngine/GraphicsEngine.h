@@ -106,6 +106,9 @@ public:
 	std::shared_ptr<Texture> GetDefaultARMTexture() const { return myDefaultARMTexture; }
 	std::shared_ptr<Texture> GetDefaultFXTexture() const { return myDefaultFXTexture; }
 	std::shared_ptr<Material> GetDefaultMaterial() const { return myDefaultMaterial; }
+	std::shared_ptr<Mesh> GetPlanePrimitive() const { return myPlanePrimitive; }
+	std::shared_ptr<Mesh> GetCubePrimitive() const { return myCubePrimitive; }
+	std::shared_ptr<Mesh> GetRampPrimitive() const { return myRampPrimitive; }
 
 	const unsigned GetDrawcallAmount() const { return myLastFrameDrawcallAmount; }
 
@@ -113,6 +116,7 @@ private:
 	GraphicsEngine();
 	~GraphicsEngine();
 
+	bool CreateMeshPrimitives();
 	bool CreateDefaultPSOs(const std::filesystem::path& aContentRoot);
 	bool CreateDefaultTextures(const std::filesystem::path& aContentRoot);
 	bool CreateConstantBuffers();
@@ -139,6 +143,10 @@ private:
 	std::shared_ptr<Texture> myDefaultFXTexture;
 
 	std::shared_ptr<Material> myDefaultMaterial;
+
+	std::shared_ptr<Mesh> myPlanePrimitive;
+	std::shared_ptr<Mesh> myCubePrimitive;
+	std::shared_ptr<Mesh> myRampPrimitive;
 
 	unsigned myDrawcallAmount = 0;
 	unsigned myLastFrameDrawcallAmount = 0;

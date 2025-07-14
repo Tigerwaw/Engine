@@ -6,16 +6,6 @@
 #include "CommonUtilities/StringUtilities.hpp"
 #include <functional>
 
-// TEMP INCLUDES
-#include "MeshAsset.h"
-#include "NavMeshAsset.h"
-#include "AnimationAsset.h"
-#include "FontAsset.h"
-#include "MaterialAsset.h"
-#include "PSOAsset.h"
-#include "ShaderAsset.h"
-#include "TextureAsset.h"
-
 class AssetManager
 {
 public:
@@ -50,9 +40,6 @@ private:
 	std::shared_ptr<Asset> GetAssetBase(const std::filesystem::path& aPath);
 
 	void RegisterAllAssetsInDirectory();
-
-	// All assets that are required for the engine to function should be part of the .exe.
-	void RegisterEngineAssets();
 	
 	bool FilenameHasPrefix(const std::filesystem::path& aPath, const char* aPrefixCompare) const;
 	bool FilenameHasExtension(const std::filesystem::path& aPath, const char* aExtensionCompare) const;

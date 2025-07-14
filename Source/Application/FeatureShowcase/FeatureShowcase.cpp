@@ -19,6 +19,10 @@
 
 #include <ComponentSystem/Components/Graphics/ParticleSystem.h>
 
+#include "AssetTypes/MeshAsset.h"
+#include "AssetTypes/AnimationAsset.h"
+#include "AssetTypes/MaterialAsset.h"
+
 static int sRamUsage = 0;
 static int sRamUsageChange = 0;
 static float sTimeSinceLastMemoryCheck = 0.0f;

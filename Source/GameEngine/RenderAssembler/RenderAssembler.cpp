@@ -7,6 +7,7 @@
 #include "GraphicsEngine.h"
 #include "Objects/Sprite.h"
 #include "Objects/Text/Text.h"
+#include "Objects/Material.h"
 #include "Math/Vector.hpp"
 #include "Math/AABB3D.hpp"
 #include "Math/Intersection3D.hpp"
@@ -27,6 +28,10 @@
 #include "ComponentSystem/Components/Lights/SpotLight.h"
 #include "ComponentSystem/Components/Physics/Colliders/BoxCollider.h"
 #include "ComponentSystem/Components/Physics/Colliders/SphereCollider.h"
+
+#include "AssetTypes/TextureAsset.h"
+#include "AssetTypes/PSOAsset.h"
+
 
 RenderAssembler::RenderAssembler() = default;
 RenderAssembler::~RenderAssembler() = default;

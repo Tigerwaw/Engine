@@ -82,8 +82,6 @@ bool AssetManager::Initialize(const std::filesystem::path& aContentRootPath, boo
         }
     }
 
-    RegisterEngineAssets();
-
     if (aAutoRegisterAllAssetsInRoot)
     {
         RegisterAllAssetsInDirectory();
@@ -91,36 +89,6 @@ bool AssetManager::Initialize(const std::filesystem::path& aContentRootPath, boo
 
     LOG(LogAssetManager, Log, "Asset Manager Initialized! Root content directory set to '{}'.", myContentRoot.string());
     return true;
-}
-
-void AssetManager::RegisterEngineAssets()
-{
-    {
-        std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
-        asset->mesh = std::make_shared<Mesh>(GraphicsEngine::Get().GetResourceVendor().CreatePlanePrimitive());
-        asset->myName = "sm_planeprimitive";
-        asset->myIsLoaded = true;
-        myAssets.emplace(asset->myName, asset);
-        LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->myName.string());
-    }
-
-    {
-        std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
-        asset->mesh = std::make_shared<Mesh>(GraphicsEngine::Get().GetResourceVendor().CreateCubePrimitive());
-        asset->myName = "sm_cubeprimitive";
-        asset->myIsLoaded = true;
-        myAssets.emplace(asset->myName, asset);
-        LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->myName.string());
-    }
-    
-    {
-        std::shared_ptr<MeshAsset> asset = std::make_shared<MeshAsset>();
-        asset->mesh = std::make_shared<Mesh>(GraphicsEngine::Get().GetResourceVendor().CreateRampPrimitive());
-        asset->myName = "sm_rampprimitive";
-        asset->myIsLoaded = true;
-        myAssets.emplace(asset->myName, asset);
-        LOG(LogAssetManager, Log, "Registered mesh asset {}", asset->myName.string());
-    }
 }
 
 void AssetManager::RegisterAllAssetsInDirectory()

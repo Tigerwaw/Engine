@@ -15,14 +15,14 @@
 #include "Application/WindowsEventHandler.h"
 #include "Application/AppSettings.h"
 
-#include "MeshAsset.h"
-#include "NavMeshAsset.h"
-#include "AnimationAsset.h"
-#include "FontAsset.h"
-#include "MaterialAsset.h"
-#include "PSOAsset.h"
-#include "ShaderAsset.h"
-#include "TextureAsset.h"
+#include "AssetTypes/MeshAsset.h"
+#include "AssetTypes/NavMeshAsset.h"
+#include "AssetTypes/AnimationAsset.h"
+#include "AssetTypes/FontAsset.h"
+#include "AssetTypes/MaterialAsset.h"
+#include "AssetTypes/PSOAsset.h"
+#include "AssetTypes/ShaderAsset.h"
+#include "AssetTypes/TextureAsset.h"
 
 static Engine* sInstance = nullptr;
 

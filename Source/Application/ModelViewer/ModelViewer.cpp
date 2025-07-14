@@ -10,6 +10,15 @@
 #include "GameEngine/Application/WindowsEventHandler.h"
 #include "GameEngine/Application/Window.h"
 
+#include "AssetTypes/MeshAsset.h"
+#include "AssetTypes/NavMeshAsset.h"
+#include "AssetTypes/AnimationAsset.h"
+#include "AssetTypes/FontAsset.h"
+#include "AssetTypes/MaterialAsset.h"
+#include "AssetTypes/PSOAsset.h"
+#include "AssetTypes/ShaderAsset.h"
+#include "AssetTypes/TextureAsset.h"
+
 Application* CreateApplication()
 {
 	AppSettings::LoadSettings(std::filesystem::current_path() / APP_SETTINGS_PATH);
@@ -20,7 +29,7 @@ void ModelViewer::InitializeApplication()
 {
 	myLogs.emplace_back("[LOG] Started ModelViewer");
 	Engine::Get().RecalculateShadowFrustum = false;
-	Engine::Get().GetSceneHandler().LoadScene("ModelViewerScene.json");
+	Engine::Get().GetSceneHandler().LoadScene("Scenes/ModelViewerScene.scene");
 	std::shared_ptr<GameObject> newGO = std::make_shared<GameObject>();
 	newGO->SetName("Model");
 	newGO->AddComponent<Transform>(Math::Vector3f(0, 0, 0), Math::Vector3f(0, -180.0f, 0));

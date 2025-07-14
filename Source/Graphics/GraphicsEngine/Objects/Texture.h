@@ -1,9 +1,7 @@
 #pragma once
+#include <d3d11.h>
 
 class RenderHardwareInterface;
-struct ID3D11RenderTargetView;
-struct ID3D11DepthStencilView;
-struct ID3D11ShaderResourceView;
 
 #pragma warning( disable : 4471)
 enum D3D11_USAGE;

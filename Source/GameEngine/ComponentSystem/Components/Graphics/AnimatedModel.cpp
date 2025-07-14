@@ -9,6 +9,9 @@
 #include "Time/Timer.h"
 #include "Math/Quaternion.hpp"
 #include "GraphicsEngine.h"
+#include "AssetTypes/MaterialAsset.h"
+#include "AssetTypes/MeshAsset.h"
+#include "AssetTypes/AnimationAsset.h"
 
 AnimatedModel::~AnimatedModel()
 {

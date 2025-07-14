@@ -32,6 +32,10 @@
 #include <Utilities/CommonUtilities/VectorUtilities.hpp>
 #include <GameEngine/DebugDrawer/DebugDrawer.h>
 
+#include "AssetTypes/MeshAsset.h"
+#include "AssetTypes/AnimationAsset.h"
+#include "AssetTypes/MaterialAsset.h"
+
 constexpr int objectLimit = 16;
 constexpr float objectSpawnRate = 1.0f;
 constexpr float playerAwarenessCircleRadius = 500.0f;
