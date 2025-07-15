@@ -42,13 +42,13 @@ void RenderAssembler::RenderScene(Scene& aScene)
 
 	SceneRenderData sceneRenderData = AssembleLists(aScene);
 
-	if (GraphicsEngine::Get().CurrentDebugRenderMode != DebugRenderMode::None)
+	if (GraphicsEngine::Get().CurrentDebugRenderMode == DebugRenderMode::None)
 	{
-		RenderDebug(sceneRenderData);
+		RenderDeferred(sceneRenderData);
 	}
 	else
 	{
-		RenderDeferred(sceneRenderData);
+		RenderDebug(sceneRenderData);
 	}
 
 	DrawTestUI();
@@ -267,6 +267,7 @@ void RenderAssembler::RenderDebug(SceneRenderData& aRenderData)
 	if (debugMode <= 7)
 	{
 		gfxList.Enqueue<SetGBufferAsRenderTarget>();
+		gfxList.Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::Deferred));
 		QueueObjectsDebug(aRenderData);
 		gfxList.Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::DebugGBuffer));
 		gfxList.Enqueue<SetRenderTarget>(gfx.GetBackBuffer(), nullptr, true, false);
@@ -1050,14 +1051,14 @@ void RenderAssembler::QueueObjectsDebug(SceneRenderData& aRenderData)
 		{
 			if (!model->GetShouldViewcull() || IsInsideFrustum(aRenderData.mainCamera, transform, model->GetBoundingBox()))
 			{
-				RenderMesh::RenderMeshData data;
+				RenderMeshDebugPass::RenderMeshData data;
 				data.mesh = model->GetMesh();
 				data.transform = transform->GetWorldMatrix();
 				data.materialList = model->GetMaterials();
 				data.customShaderParams_1 = model->GetCustomShaderData_1();
 				data.customShaderParams_2 = model->GetCustomShaderData_2();
 
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(std::move(data));
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMeshDebugPass>(std::move(data));
 			}
 		}
 
@@ -1066,13 +1067,13 @@ void RenderAssembler::QueueObjectsDebug(SceneRenderData& aRenderData)
 		{
 			if (!animModel->GetShouldViewcull() || IsInsideFrustum(aRenderData.mainCamera, transform, animModel->GetBoundingBox()))
 			{
-				RenderAnimatedMesh::AnimMeshRenderData data;
+				RenderAnimatedMeshDebugPass::AnimMeshRenderData data;
 				data.mesh = animModel->GetMesh();
 				data.transform = transform->GetWorldMatrix();
 				data.materialList = animModel->GetMaterials();
 				data.jointTransforms = animModel->GetCurrentPose();
 
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(std::move(data));
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMeshDebugPass>(std::move(data));
 			}
 		}
 
@@ -1081,14 +1082,14 @@ void RenderAssembler::QueueObjectsDebug(SceneRenderData& aRenderData)
 		{
 			if (!instancedModel->GetShouldViewcull() || IsInsideFrustum(aRenderData.mainCamera, transform, instancedModel->GetBoundingBox()))
 			{
-				RenderInstancedMesh::InstancedMeshRenderData data;
+				RenderInstancedMeshDebugPass::InstancedMeshRenderData data;
 				data.mesh = instancedModel->GetMesh();
 				data.transform = transform->GetWorldMatrix();
 				data.materialList = instancedModel->GetMaterials();
 				data.instanceBuffer = &instancedModel->GetInstanceBuffer();
 				data.meshCount = instancedModel->GetMeshCount();
 
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(std::move(data));
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMeshDebugPass>(std::move(data));
 			}
 		}
 	}
@@ -1103,14 +1104,14 @@ void RenderAssembler::QueueObjectsDebug(SceneRenderData& aRenderData)
 		{
 			if (!model->GetShouldViewcull() || IsInsideFrustum(aRenderData.mainCamera, transform, model->GetBoundingBox()))
 			{
-				RenderMesh::RenderMeshData data;
+				RenderMeshDebugPass::RenderMeshData data;
 				data.mesh = model->GetMesh();
 				data.transform = transform->GetWorldMatrix();
 				data.materialList = model->GetMaterials();
 				data.customShaderParams_1 = model->GetCustomShaderData_1();
 				data.customShaderParams_2 = model->GetCustomShaderData_2();
 
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMesh>(std::move(data));
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMeshDebugPass>(std::move(data));
 			}
 		}
 
@@ -1119,13 +1120,13 @@ void RenderAssembler::QueueObjectsDebug(SceneRenderData& aRenderData)
 		{
 			if (!animModel->GetShouldViewcull() || IsInsideFrustum(aRenderData.mainCamera, transform, animModel->GetBoundingBox()))
 			{
-				RenderAnimatedMesh::AnimMeshRenderData data;
+				RenderAnimatedMeshDebugPass::AnimMeshRenderData data;
 				data.mesh = animModel->GetMesh();
 				data.transform = transform->GetWorldMatrix();
 				data.materialList = animModel->GetMaterials();
 				data.jointTransforms = animModel->GetCurrentPose();
 
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMesh>(std::move(data));
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMeshDebugPass>(std::move(data));
 			}
 		}
 
@@ -1134,14 +1135,14 @@ void RenderAssembler::QueueObjectsDebug(SceneRenderData& aRenderData)
 		{
 			if (!instancedModel->GetShouldViewcull() || IsInsideFrustum(aRenderData.mainCamera, transform, instancedModel->GetBoundingBox()))
 			{
-				RenderInstancedMesh::InstancedMeshRenderData data;
+				RenderInstancedMeshDebugPass::InstancedMeshRenderData data;
 				data.mesh = instancedModel->GetMesh();
 				data.transform = transform->GetWorldMatrix();
 				data.materialList = instancedModel->GetMaterials();
 				data.instanceBuffer = &instancedModel->GetInstanceBuffer();
 				data.meshCount = instancedModel->GetMeshCount();
 
-				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(std::move(data));
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMeshDebugPass>(std::move(data));
 			}
 		}
 	}

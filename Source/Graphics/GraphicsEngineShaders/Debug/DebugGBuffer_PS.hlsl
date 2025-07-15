@@ -1,5 +1,5 @@
-#include "Includes/DefaultShaderIncludes.hlsli"
-#include "Includes/DeferredShaderIncludes.hlsli"
+#include "../Includes/DefaultShaderIncludes.hlsli"
+#include "../Includes/DeferredShaderIncludes.hlsli"
 
 float4 main(Quad_VS_to_PS input) : SV_TARGET
 {    

@@ -97,6 +97,58 @@ void Drawer::RenderMeshShadow(const Mesh& aMesh)
 	}
 }
 
+void Drawer::RenderMeshDebugPass(const Mesh& aMesh, const std::vector<std::shared_ptr<Material>>& aMaterialList)
+{
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Mesh");
+	GraphicsEngine& ge = GraphicsEngine::Get();
+	ge.myRHI->SetVertexBuffer(aMesh.GetVertexBuffer(), ge.myCurrentPSO->VertexStride, 0);
+	ge.myRHI->SetIndexBuffer(aMesh.GetIndexBuffer());
+	ge.myRHI->SetPrimitiveTopology(Topology::TRIANGLELIST);
+
+	ge.SetTextureResource_PS(127, *ge.myBRDFLUTTexture);
+
+	for (const auto& element : aMesh.GetElements())
+	{
+		std::array<unsigned, GraphicsSettings::MAX_MATERIAL_TEXTURES> slotsToClear = { 0 };
+		unsigned currentSlotIndex = 0;
+
+		if (aMaterialList.size() > element.MaterialIndex)
+		{
+			MaterialBuffer matBufferData = aMaterialList[element.MaterialIndex]->MaterialSettings();
+			ge.UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, matBufferData);
+
+			for (auto& [slot, texture] : aMaterialList[element.MaterialIndex]->GetTextures())
+			{
+				ge.SetTextureResource_PS(slot, *texture);
+				slotsToClear[currentSlotIndex] = slot;
+				++currentSlotIndex;
+			}
+		}
+		else
+		{
+			auto defaultMat = GraphicsEngine::Get().GetDefaultMaterial();
+			ge.UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, defaultMat->MaterialSettings());
+
+			for (auto& [slot, texture] : defaultMat->GetTextures())
+			{
+				ge.SetTextureResource_PS(slot, *texture);
+				slotsToClear[currentSlotIndex] = slot;
+				++currentSlotIndex;
+			}
+		}
+
+		ge.myRHI->DrawIndexed(element.IndexOffset, element.NumIndices);
+		ge.myDrawcallAmount++;
+
+		for (unsigned slotIndex = 0; slotIndex < currentSlotIndex; slotIndex++)
+		{
+			ge.ClearTextureResource_PS(slotsToClear[slotIndex]);
+		}
+	}
+
+	ge.ClearTextureResource_PS(127);
+}
+
 void Drawer::RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, const std::vector<std::shared_ptr<Material>>& aMaterialList, DynamicVertexBuffer& aInstanceBuffer)
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Instanced Mesh");
@@ -194,6 +246,72 @@ void Drawer::RenderInstancedMeshShadow(const Mesh& aMesh, unsigned aMeshCount, D
 		ge.myRHI->DrawIndexedInstanced(element.NumIndices, aMeshCount, element.IndexOffset, 0, 0);
 		ge.myDrawcallAmount++;
 	}
+}
+
+void Drawer::RenderInstancedMeshDebugPass(const Mesh& aMesh, unsigned aMeshCount, const std::vector<std::shared_ptr<Material>>& aMaterialList, DynamicVertexBuffer& aInstanceBuffer)
+{
+	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Instanced Mesh Debug Pass");
+	GraphicsEngine& ge = GraphicsEngine::Get();
+
+	std::vector<ID3D11Buffer*> buffers;
+	std::vector<unsigned> strides;
+	std::vector<unsigned> offsets;
+
+	buffers.emplace_back(*aMesh.GetVertexBuffer().GetAddressOf());
+	buffers.emplace_back(*aInstanceBuffer.GetVertexBuffer().GetAddressOf());
+
+	strides.emplace_back(ge.myCurrentPSO->VertexStride);
+	strides.emplace_back(static_cast<unsigned>(sizeof(Math::Matrix4x4f)));
+
+	offsets.emplace_back(0);
+	offsets.emplace_back(0);
+
+	ge.myRHI->SetVertexBuffers(buffers, strides, offsets);
+	ge.myRHI->SetIndexBuffer(aMesh.GetIndexBuffer());
+	ge.myRHI->SetPrimitiveTopology(Topology::TRIANGLELIST);
+
+	ge.SetTextureResource_PS(127, *ge.myBRDFLUTTexture);
+
+	for (const auto& element : aMesh.GetElements())
+	{
+		std::array<unsigned, GraphicsSettings::MAX_MATERIAL_TEXTURES> slotsToClear = { 0 };
+		unsigned currentSlotIndex = 0;
+
+		if (aMaterialList.size() > element.MaterialIndex)
+		{
+			MaterialBuffer matBufferData = aMaterialList[element.MaterialIndex]->MaterialSettings();
+			ge.UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, matBufferData);
+
+			for (auto& [slot, texture] : aMaterialList[element.MaterialIndex]->GetTextures())
+			{
+				ge.SetTextureResource_PS(slot, *texture);
+				slotsToClear[currentSlotIndex] = slot;
+				++currentSlotIndex;
+			}
+		}
+		else
+		{
+			auto defaultMat = GraphicsEngine::Get().GetDefaultMaterial();
+			ge.UpdateAndSetConstantBuffer(ConstantBufferType::MaterialBuffer, defaultMat->MaterialSettings());
+
+			for (auto& [slot, texture] : defaultMat->GetTextures())
+			{
+				ge.SetTextureResource_PS(slot, *texture);
+				slotsToClear[currentSlotIndex] = slot;
+				++currentSlotIndex;
+			}
+		}
+
+		ge.myRHI->DrawIndexedInstanced(element.NumIndices, aMeshCount, element.IndexOffset, 0, 0);
+		ge.myDrawcallAmount++;
+
+		for (unsigned slotIndex = 0; slotIndex < currentSlotIndex; slotIndex++)
+		{
+			ge.ClearTextureResource_PS(slotsToClear[slotIndex]);
+		}
+	}
+
+	ge.ClearTextureResource_PS(127);
 }
 
 void Drawer::RenderSprite()
