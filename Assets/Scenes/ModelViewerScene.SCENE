@@ -41,7 +41,7 @@
         {
           "Type": "FreecamController",
           "MoveSpeed": 400.0,
-          "RotationSpeed": 300.0
+          "RotationSpeed": 3.0
         }
       ]
     },

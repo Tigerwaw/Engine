@@ -36,7 +36,6 @@ void FreecamController::Start()
 
 void FreecamController::Update()
 {
-	float deltaTime = Engine::Get().GetTimer().GetDeltaTime();
 	InputHandler& inputHandler = Engine::Get().GetInputHandler();
 
 	if (!inputHandler.GetBinaryAction("CameraActivate"))
@@ -73,9 +72,10 @@ void FreecamController::Update()
 
 	Math::Vector2f rotInput = inputHandler.GetAnalogAction2D("CameraRotation");
 	Math::Vector3f rotationDelta;
-	rotationDelta.x = -rotInput.y * myRotSpeed.y * deltaTime;
-	rotationDelta.y = rotInput.x * myRotSpeed.x * deltaTime;
+	rotationDelta.x = -rotInput.y * myRotSpeed.y;
+	rotationDelta.y = rotInput.x * myRotSpeed.x;
 
+	float deltaTime = Engine::Get().GetTimer().GetDeltaTime();
 	gameObject->GetComponent<Transform>()->AddRotation(rotationDelta);
 	gameObject->GetComponent<Transform>()->SetTranslation(gameObject->GetComponent<Transform>()->GetTranslation() + inputDelta * myMoveSpeed * myMoveSpeedMultiplier * deltaTime);
 }

@@ -19,38 +19,30 @@ const void MKBInput::UpdateEvents(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_LBUTTONDOWN:
 		myCurrentBinaryState[VK_LBUTTON] = true;
 		return;
-		break;
 	case WM_LBUTTONUP:
 		myCurrentBinaryState[VK_LBUTTON] = false;
 		return;
-		break;
 
 	case WM_RBUTTONDOWN:
 		myCurrentBinaryState[VK_RBUTTON] = true;
 		return;
-		break;
 	case WM_RBUTTONUP:
 		myCurrentBinaryState[VK_RBUTTON] = false;
 		return;
-		break;
 
 	case WM_MBUTTONDOWN:
 		myCurrentBinaryState[VK_MBUTTON] = true;
 		return;
-		break;
 	case WM_MBUTTONUP:
 		myCurrentBinaryState[VK_MBUTTON] = false;
 		return;
-		break;
 
 	case WM_KEYDOWN:
 		myCurrentBinaryState[wParam] = true;
 		return;
-		break;
 	case WM_KEYUP:
 		myCurrentBinaryState[wParam] = false;
 		return;
-		break;
 
 	case WM_MOUSEMOVE:
 	{
@@ -62,28 +54,21 @@ const void MKBInput::UpdateEvents(UINT message, WPARAM wParam, LPARAM lParam)
 		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePosNDC_X)] = ((myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_X)] / windowSize.x) - 0.5f) * 2;
 		myCurrentAnalogState[static_cast<int>(MouseMovement::MousePosNDC_Y)] = ((myCurrentAnalogState[static_cast<int>(MouseMovement::MousePos_Y)] / windowSize.y) - 0.5f) * 2;
 		return;
-		break;
 	}
 	case WM_MOUSEWHEEL:
-		myDeltaAnalogState[static_cast<int>(MouseMovement::ScrollwheelDelta)] = std::clamp(static_cast<float>(GET_WHEEL_DELTA_WPARAM(wParam)), -1.0f, 1.0f);
+		myDeltaAnalogState[static_cast<int>(MouseMovement::ScrollwheelDelta)] = static_cast<float>(GET_WHEEL_DELTA_WPARAM(wParam));
 		return;
-		break;
-
-	default:
-		return;
-		break;
 	}
 }
 
 const void MKBInput::UpdateInput()
 {
 	int index = static_cast<int>(MouseMovement::MousePos_X);
-	myDeltaAnalogState[static_cast<int>(MouseMovement::MousePosDelta_X)] = std::clamp(myCurrentAnalogState[index] - myPreviousAnalogState[index], -1.0f, 1.0f);
-
+	myDeltaAnalogState[static_cast<int>(MouseMovement::MousePosDelta_X)] = myCurrentAnalogState[index] - myPreviousAnalogState[index];
 	index = static_cast<int>(MouseMovement::MousePos_Y);
-	myDeltaAnalogState[static_cast<int>(MouseMovement::MousePosDelta_Y)] = std::clamp(myCurrentAnalogState[index] - myPreviousAnalogState[index], -1.0f, 1.0f);
+	myDeltaAnalogState[static_cast<int>(MouseMovement::MousePosDelta_Y)] = myCurrentAnalogState[index] - myPreviousAnalogState[index];
 
-	myDeltaAnalogState[static_cast<int>(MouseMovement::ScrollwheelDelta)] = 0;
+	myDeltaAnalogState[static_cast<int>(MouseMovement::ScrollwheelDelta)] = 0.0f;
 
 	myPreviousBinaryState = myCurrentBinaryState;
 	myPreviousAnalogState = myCurrentAnalogState;
