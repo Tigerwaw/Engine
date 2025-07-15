@@ -74,7 +74,7 @@ bool GraphicsEngine::Initialize(HWND aWindowHandle, Math::Vector2f aResolution, 
 
 	if (!CreateDefaultPSOs(aContentRoot))
 	{
-		LOG(LogGraphicsEngine, Error, "Failed to create default PSO!");
+		LOG(LogGraphicsEngine, Error, "Failed to create default PSOs!");
 		return false;
 	}
 
@@ -523,83 +523,19 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		return false;
 	}
 	
-	std::filesystem::path wireframePSPath = aContentRoot / "EngineAssets/Shaders/Wireframe_PS.cso";
-	std::shared_ptr<Shader> wireframePS = std::make_shared<Shader>();
-	if (!rv.LoadShader(wireframePSPath, *wireframePS))
+	std::filesystem::path debugForwardPSPath = aContentRoot / "EngineAssets/Shaders/DebugForward_PS.cso";
+	std::shared_ptr<Shader> debugForwardPS = std::make_shared<Shader>();
+	if (!rv.LoadShader(debugForwardPSPath, *debugForwardPS))
 	{
-		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", wireframePSPath.filename().string());
+		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", debugForwardPSPath.filename().string());
 		return false;
 	}
 	
-	std::filesystem::path debugAOPSPath = aContentRoot / "EngineAssets/Shaders/DebugAO_PS.cso";
-	std::shared_ptr<Shader> debugAOPS = std::make_shared<Shader>();
-	if (!rv.LoadShader(debugAOPSPath, *debugAOPS))
+	std::filesystem::path debugGBufferPSPath = aContentRoot / "EngineAssets/Shaders/DebugGBuffer_PS.cso";
+	std::shared_ptr<Shader> debugGBufferPS = std::make_shared<Shader>();
+	if (!rv.LoadShader(debugGBufferPSPath, *debugGBufferPS))
 	{
-		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", debugAOPSPath.filename().string());
-		return false;
-	}
-	
-	std::filesystem::path debugRoughnessPSPath = aContentRoot / "EngineAssets/Shaders/DebugRoughness_PS.cso";
-	std::shared_ptr<Shader> debugRoughnessPS = std::make_shared<Shader>();
-	if (!rv.LoadShader(debugRoughnessPSPath, *debugRoughnessPS))
-	{
-		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", debugRoughnessPSPath.filename().string());
-		return false;
-	}
-	
-	std::filesystem::path debugMetallicPSPath = aContentRoot / "EngineAssets/Shaders/DebugMetallic_PS.cso";
-	std::shared_ptr<Shader> debugMetallicPS = std::make_shared<Shader>();
-	if (!rv.LoadShader(debugMetallicPSPath, *debugMetallicPS))
-	{
-		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", debugMetallicPSPath.filename().string());
-		return false;
-	}
-	
-	std::filesystem::path debugPixelNormalsPSPath = aContentRoot / "EngineAssets/Shaders/DebugPixelNormals_PS.cso";
-	std::shared_ptr<Shader> debugPixelNormalsPS = std::make_shared<Shader>();
-	if (!rv.LoadShader(debugPixelNormalsPSPath, *debugPixelNormalsPS))
-	{
-		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", debugPixelNormalsPSPath.filename().string());
-		return false;
-	}
-	
-	std::filesystem::path debugFXPSPath = aContentRoot / "EngineAssets/Shaders/DebugFX_PS.cso";
-	std::shared_ptr<Shader> debugFXPS = std::make_shared<Shader>();
-	if (!rv.LoadShader(debugFXPSPath, *debugFXPS))
-	{
-		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", debugFXPSPath.filename().string());
-		return false;
-	}
-	
-	std::filesystem::path debugUVsPSPath = aContentRoot / "EngineAssets/Shaders/DebugUVs_PS.cso";
-	std::shared_ptr<Shader> debugUVsPS = std::make_shared<Shader>();
-	if (!rv.LoadShader(debugUVsPSPath, *debugUVsPS))
-	{
-		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", debugUVsPSPath.filename().string());
-		return false;
-	}
-	
-	std::filesystem::path debugVertexColorPSPath = aContentRoot / "EngineAssets/Shaders/DebugVertexColor_PS.cso";
-	std::shared_ptr<Shader> debugVertexColorPS = std::make_shared<Shader>();
-	if (!rv.LoadShader(debugVertexColorPSPath, *debugVertexColorPS))
-	{
-		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", debugVertexColorPSPath.filename().string());
-		return false;
-	}
-	
-	std::filesystem::path debugVertexNormalsPSPath = aContentRoot / "EngineAssets/Shaders/DebugVertexNormals_PS.cso";
-	std::shared_ptr<Shader> debugVertexNormalsPS = std::make_shared<Shader>();
-	if (!rv.LoadShader(debugVertexNormalsPSPath, *debugVertexNormalsPS))
-	{
-		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", debugVertexNormalsPSPath.filename().string());
-		return false;
-	}
-	
-	std::filesystem::path debugTextureNormalsPSPath = aContentRoot / "EngineAssets/Shaders/DebugTextureNormals_PS.cso";
-	std::shared_ptr<Shader> debugTextureNormalsPS = std::make_shared<Shader>();
-	if (!rv.LoadShader(debugTextureNormalsPSPath, *debugTextureNormalsPS))
-	{
-		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", debugTextureNormalsPSPath.filename().string());
+		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", debugGBufferPSPath.filename().string());
 		return false;
 	}
 
@@ -1139,7 +1075,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
-		desc.psShader = wireframePS;
+		desc.psShader = debugForwardPS;
 		desc.fillMode = FillMode::Wireframe;
 		desc.cullMode = CullMode::None;
 
@@ -1155,11 +1091,11 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 
 	{
 		PSODescription desc;
-		desc.name = PSOName(PSOType::DebugAO);
+		desc.name = PSOName(PSOType::DebugForward);
 		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
-		desc.psShader = debugAOPS;
+		desc.psShader = debugForwardPS;
 		desc.samplerList[0] = SamplerName(SamplerType::LinearWrap);
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
@@ -1174,11 +1110,11 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 
 	{
 		PSODescription desc;
-		desc.name = PSOName(PSOType::DebugAO);
+		desc.name = PSOName(PSOType::DebugGBuffer);
 		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
-		desc.vsShader = defaultMeshVS;
-		desc.psShader = debugAOPS;
+		desc.vsShader = quadVS;
+		desc.psShader = debugGBufferPS;
 		desc.samplerList[0] = SamplerName(SamplerType::LinearWrap);
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
@@ -1189,147 +1125,6 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		}
 
 		RegisterPSO(desc.name.c_str(), pso);
-	}
-
-	{
-		PSODescription desc;
-		desc.name = PSOName(PSOType::DebugRoughness);
-		desc.vertexType = VertexType::MeshVertex;
-		desc.vsPath = defaultMeshVSPath;
-		desc.vsShader = defaultMeshVS;
-		desc.psShader = debugAOPS;
-		desc.samplerList[0] = SamplerName(SamplerType::LinearWrap);
-
-		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
-		if (!rv.CreatePSO(*pso, desc))
-		{
-			LOG(LogGraphicsEngine, Error, "Failed to create {} PSO", desc.name);
-			return false;
-		}
-
-		RegisterPSO(desc.name.c_str(), pso);
-	}
-
-	{
-		PSODescription desc;
-		desc.name = PSOName(PSOType::DebugMetallic);
-		desc.vertexType = VertexType::MeshVertex;
-		desc.vsPath = defaultMeshVSPath;
-		desc.vsShader = defaultMeshVS;
-		desc.psShader = debugMetallicPS;
-		desc.samplerList[0] = SamplerName(SamplerType::LinearWrap);
-
-		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
-		if (!rv.CreatePSO(*pso, desc))
-		{
-			LOG(LogGraphicsEngine, Error, "Failed to create {} PSO", desc.name);
-			return false;
-		}
-
-		RegisterPSO(desc.name.c_str(), pso);
-	}
-
-	{
-		PSODescription desc;
-		desc.name = PSOName(PSOType::DebugPixelNormals);
-		desc.vertexType = VertexType::MeshVertex;
-		desc.vsPath = defaultMeshVSPath;
-		desc.vsShader = defaultMeshVS;
-		desc.psShader = debugPixelNormalsPS;
-		desc.samplerList[0] = SamplerName(SamplerType::LinearWrap);
-
-		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
-		if (!rv.CreatePSO(*pso, desc))
-		{
-			LOG(LogGraphicsEngine, Error, "Failed to create {} PSO", desc.name);
-			return false;
-		}
-
-		RegisterPSO(desc.name.c_str(), pso);
-	}
-
-	{
-		PSODescription desc;
-		desc.name = PSOName(PSOType::DebugFX);
-		desc.vertexType = VertexType::MeshVertex;
-		desc.vsPath = defaultMeshVSPath;
-		desc.vsShader = defaultMeshVS;
-		desc.psShader = debugFXPS;
-		desc.samplerList[0] = SamplerName(SamplerType::LinearWrap);
-
-		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
-		if (!rv.CreatePSO(*pso, desc))
-		{
-			LOG(LogGraphicsEngine, Error, "Failed to create {} PSO", desc.name);
-			return false;
-		}
-
-		RegisterPSO(desc.name.c_str(), pso);
-	}
-
-	{
-		PSODescription desc;
-		desc.name = PSOName(PSOType::DebugUVs);
-		desc.vertexType = VertexType::MeshVertex;
-		desc.vsPath = defaultMeshVSPath;
-		desc.vsShader = defaultMeshVS;
-		desc.psShader = debugUVsPS;
-
-		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
-		if (!rv.CreatePSO(*pso, desc))
-		{
-			LOG(LogGraphicsEngine, Error, "Failed to create {} PSO", desc.name);
-			return false;
-		}
-	}
-
-	{
-		PSODescription desc;
-		desc.name = PSOName(PSOType::DebugVertexColor);
-		desc.vertexType = VertexType::MeshVertex;
-		desc.vsPath = defaultMeshVSPath;
-		desc.vsShader = defaultMeshVS;
-		desc.psShader = debugVertexColorPS;
-
-		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
-		if (!rv.CreatePSO(*pso, desc))
-		{
-			LOG(LogGraphicsEngine, Error, "Failed to create {} PSO", desc.name);
-			return false;
-		}
-	}
-
-	{
-		PSODescription desc;
-		desc.name = PSOName(PSOType::DebugVertexNormals);
-		desc.vertexType = VertexType::MeshVertex;
-		desc.vsPath = defaultMeshVSPath;
-		desc.vsShader = defaultMeshVS;
-		desc.psShader = debugVertexNormalsPS;
-
-		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
-		if (!rv.CreatePSO(*pso, desc))
-		{
-			LOG(LogGraphicsEngine, Error, "Failed to create {} PSO", desc.name);
-			return false;
-		}
-	}
-
-	{
-		PSODescription desc;
-		desc.name = PSOName(PSOType::DebugTextureNormals);
-		desc.vertexType = VertexType::MeshVertex;
-		desc.vsPath = defaultMeshVSPath;
-		desc.vsShader = defaultMeshVS;
-		desc.psShader = debugTextureNormalsPS;
-		desc.samplerList[0] = SamplerName(SamplerType::LinearWrap);
-
-		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
-		if (!rv.CreatePSO(*pso, desc))
-		{
-			LOG(LogGraphicsEngine, Error, "Failed to create {} PSO", desc.name);
-			return false;
-		}
 	}
 
 	return true;

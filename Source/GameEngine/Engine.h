@@ -14,42 +14,6 @@ class Application;
 class WindowsEventHandler;
 class Window;
 
-enum class DebugMode
-{
-    None,
-    Unlit,
-    DebugAO,
-    DebugRoughness,
-    DebugMetallic,
-    DebugFX,
-    Wireframe,
-    DebugVertexNormals,
-    DebugVertexTangents,
-    DebugVertexBinormals,
-    DebugPixelNormals,
-    DebugTextureNormals,
-    DebugUVs,
-    DebugVertexColor,
-    COUNT
-};
-
-inline 	std::vector<std::string> DebugModeNames = {
-        "None",
-        "Unlit.pso",
-        "DebugAO.pso",
-        "DebugRoughness.pso",
-        "DebugMetallic.pso",
-        "DebugFX.pso",
-        "Wireframe.pso",
-        "DebugVertexNormals.pso",
-        "DebugVertexTangents.pso",
-        "DebugVertexBinormals.pso",
-        "DebugPixelNormals.pso",
-        "DebugTextureNormals.pso",
-        "DebugUVs.pso",
-        "DebugVertexColor.pso"
-};
-
 class Engine
 {
 public:
@@ -86,7 +50,6 @@ public:
     bool GetAllowDropFiles() const { return myAllowDropFiles; }
     bool GetAutoRegisterAssets() const { return myAutoRegisterAssets; }
 
-    DebugMode CurrentDebugMode = DebugMode::None;
     bool DrawBoundingBoxes = false;
     bool DrawCameraFrustums = false;
     bool DrawColliders = false;

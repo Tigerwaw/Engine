@@ -9,7 +9,8 @@ struct FrameBuffer
 	Math::Vector4f ViewDirection;
 	float NearPlane = 0;
 	float FarPlane = 0;
-	Math::Vector2f Padding;
+	int DebugRenderMode = 0;
+	float Padding;
 	Math::Vector2f Time; // x = TotalTime, y = Delta Time
 	Math::Vector2f Resolution;
 };

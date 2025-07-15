@@ -53,15 +53,8 @@ enum class PSOType
 
 	// DEBUG
 	Wireframe,
-	DebugAO, // Combine into Gbuffer debug pso
-	DebugRoughness, // Combine into Gbuffer debug pso
-	DebugMetallic, // Combine into Gbuffer debug pso
-	DebugPixelNormals, // Combine into Gbuffer debug pso
-	DebugFX, // Combine into Gbuffer debug pso
-	DebugUVs,
-	DebugVertexColor,
-	DebugVertexNormals,
-	DebugTextureNormals,
+	DebugForward,
+	DebugGBuffer,
 	COUNT
 };
 
@@ -146,6 +139,24 @@ enum class VertexType
 	TrailVertex
 };
 
+enum class DebugRenderMode
+{
+	None,
+	Unlit,
+	DebugAO,
+	DebugRoughness,
+	DebugMetallic,
+	DebugFX,
+	DebugWorldNormals,
+	DebugWorldPosition,
+	Wireframe,
+	DebugVertexNormals,
+	DebugTextureNormals,
+	DebugVertexColor,
+	DebugUVs,
+	COUNT
+};
+
 namespace GraphicsSettings
 {
 	static const std::unordered_map<PSOType, const char*> globalEnumToPSOName
@@ -177,15 +188,8 @@ namespace GraphicsSettings
 		{	PSOType::TonemapLottes,				"Tonemap Lottes"				},
 		{	PSOType::TonemapUE,					"Tonemap UE"					},
 		{	PSOType::Wireframe,					"Wireframe"						},
-		{	PSOType::DebugAO,					"Debug AO"						},
-		{	PSOType::DebugRoughness,			"Debug Roughness"				},
-		{	PSOType::DebugMetallic,				"Debug Metallic"				},
-		{	PSOType::DebugPixelNormals,			"Debug Pixel Normals"			},
-		{	PSOType::DebugFX,					"Debug FX"						},
-		{	PSOType::DebugUVs,					"Debug UVs"						},
-		{	PSOType::DebugVertexColor,			"Debug Vertex Color"			},
-		{	PSOType::DebugVertexNormals,		"Debug Vertex Normals"			},
-		{	PSOType::DebugTextureNormals,		"Debug Texture Normals"			},
+		{	PSOType::DebugForward,				"Debug Forward"					},
+		{	PSOType::DebugGBuffer,				"Debug GBuffer"					},
 	};
 
 	static const std::unordered_map<SamplerType, const char*> globalEnumToSamplerName
@@ -262,6 +266,23 @@ namespace GraphicsSettings
 		{	"particle",				VertexType::ParticleVertex,		},
 		{	"trail",				VertexType::TrailVertex,		},
 	};
+
+	static const std::unordered_map<DebugRenderMode, const char*> globalEnumToDebugRenderModeName
+	{
+		{	DebugRenderMode::None,						"None"				},
+		{	DebugRenderMode::Unlit,						"Unlit"				},
+		{	DebugRenderMode::DebugAO,					"Ambient Occlusion"	},
+		{	DebugRenderMode::DebugRoughness,			"Roughness"			},
+		{	DebugRenderMode::DebugMetallic,				"Metallic"			},
+		{	DebugRenderMode::DebugFX,					"Effects"			},
+		{	DebugRenderMode::DebugWorldNormals,			"World Normals"		},
+		{	DebugRenderMode::DebugWorldPosition,		"World Position"	},
+		{	DebugRenderMode::Wireframe,					"Wireframe"			},
+		{	DebugRenderMode::DebugVertexNormals,		"Vertex Normals"	},
+		{	DebugRenderMode::DebugTextureNormals,		"Texture Normals"	},
+		{	DebugRenderMode::DebugVertexColor,			"Vertex Color"		},
+		{	DebugRenderMode::DebugUVs,					"UVs"				},
+	};
 }
 
 inline const char* PSOName(PSOType aPSOType)
@@ -330,4 +351,10 @@ inline VertexType VertexTypeFromName(const char* aVertexTypeName)
 	Utilities::ToLowerCopy(aVertexTypeName, vertexTypeName);
 	assert(GraphicsSettings::globalVertexTypeNameToEnum.contains(vertexTypeName));
 	return GraphicsSettings::globalVertexTypeNameToEnum.find(vertexTypeName)->second;
+}
+
+inline const char* DebugRenderModeName(DebugRenderMode aDebugRenderMode)
+{
+	assert(GraphicsSettings::globalEnumToDebugRenderModeName.contains(aDebugRenderMode));
+	return GraphicsSettings::globalEnumToDebugRenderModeName.find(aDebugRenderMode)->second;
 }

@@ -121,11 +121,12 @@ void FeatureShowcase::InitializeApplication()
 			// Rendering
 			{
 				ImGui::Text("Rendering Mode");
-				if (ImGui::BeginCombo("##RenderModeDropdown", DebugModeNames[static_cast<int>(Engine::Get().CurrentDebugMode)].c_str()))
+				if (ImGui::BeginCombo("##RenderModeDropdown", DebugRenderModeName(static_cast<DebugRenderMode>(GraphicsEngine::Get().CurrentDebugRenderMode))))
 				{
-					for (unsigned i = 0; i < static_cast<unsigned>(DebugMode::COUNT); i++)
+					for (unsigned i = 0; i < static_cast<unsigned>(DebugRenderMode::COUNT); i++)
 					{
-						if (ImGui::Selectable(DebugModeNames[i].c_str())) Engine::Get().CurrentDebugMode = static_cast<DebugMode>(i);
+						if (ImGui::Selectable(DebugRenderModeName(static_cast<DebugRenderMode>(i))))
+							GraphicsEngine::Get().CurrentDebugRenderMode = static_cast<DebugRenderMode>(i);
 					}
 					ImGui::EndCombo();
 				}
@@ -683,12 +684,12 @@ void FeatureShowcase::UpdateApplication()
 	if (Engine::Get().GetInputHandler().GetBinaryAction("F6"))
 	{
 		currentDebugMode += 1;
-		if (currentDebugMode >= static_cast<unsigned>(DebugMode::COUNT))
+		if (currentDebugMode >= static_cast<unsigned>(DebugRenderMode::COUNT))
 		{
 			currentDebugMode = 0;
 		}
 
-		Engine::Get().CurrentDebugMode = static_cast<DebugMode>(currentDebugMode);
+		GraphicsEngine::Get().CurrentDebugRenderMode = static_cast<DebugRenderMode>(currentDebugMode);
 	}
 
 	if (Engine::Get().GetInputHandler().GetBinaryAction("F7"))

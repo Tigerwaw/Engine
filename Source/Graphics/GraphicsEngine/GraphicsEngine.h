@@ -107,6 +107,8 @@ public:
 
 	const unsigned GetDrawcallAmount() const { return myLastFrameDrawcallAmount; }
 
+	DebugRenderMode CurrentDebugRenderMode = DebugRenderMode::None;
+
 private:
 	GraphicsEngine();
 	~GraphicsEngine();

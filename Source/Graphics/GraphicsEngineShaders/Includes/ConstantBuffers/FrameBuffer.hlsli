@@ -9,7 +9,8 @@ cbuffer FrameBuffer : register(b0)
     float4 FB_ViewDirection;
     float FB_NearPlane;
     float FB_FarPlane;
-    float2 FB_Padding;
+    int FB_DebugRenderMode;
+    float FB_Padding;
     float2 FB_Time; // x = TotalTime, y = Delta Time
     float2 FB_Resolution;
 }

@@ -14,7 +14,6 @@ class AnimatedModel;
 class InstancedModel;
 class ParticleSystem;
 class TrailSystem;
-struct PipelineStateObject;
 
 // TEMP
 class Sprite;
@@ -68,7 +67,7 @@ private:
     void QueueDirectionalLightShadows(SceneRenderData& aRenderData);
     void QueueObjectShadows(SceneRenderData& aRenderData, std::shared_ptr<Camera> aRenderCamera);
     void QueueObjectShadows(SceneRenderData& aRenderData, std::shared_ptr<PointLight> aPointLight);
-    void QueueObjectDebug(SceneRenderData& aRenderData);
+    void QueueObjectsDebug(SceneRenderData& aRenderData);
     void QueueDebugLines(SceneRenderData& aRenderData);
 
     bool IsInsideFrustum(std::shared_ptr<Camera> aRenderCamera, std::shared_ptr<Transform> aObjectTransform, const Math::AABB3D<float>& aObjectAABB);

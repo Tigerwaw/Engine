@@ -42,7 +42,7 @@ void RenderAssembler::RenderScene(Scene& aScene)
 
 	SceneRenderData sceneRenderData = AssembleLists(aScene);
 
-	if (Engine::Get().CurrentDebugMode != DebugMode::None)
+	if (GraphicsEngine::Get().CurrentDebugRenderMode != DebugRenderMode::None)
 	{
 		RenderDebug(sceneRenderData);
 	}
@@ -244,17 +244,7 @@ void RenderAssembler::RenderDebug(SceneRenderData& aRenderData)
 	GraphicsEngine& gfx = GraphicsEngine::Get();
 	GraphicsCommandList& gfxList = gfx.GetGraphicsCommandList();
 
-	if (Engine::Get().RecalculateShadowFrustum)
-	{
-		aRenderData.directionalLight->RecalculateShadowFrustum(aRenderData.mainCamera, myVisibleObjectsBB);
-		myVisibleObjectsBB.InitWithCenterAndExtents(Math::Vector3f(), Math::Vector3f());
-	}
-
-	gfxList.Enqueue<UpdatePostProcessBuffer>();
-	QueueDirectionalLightShadows(aRenderData);
-	QueuePointLightShadows(aRenderData);
-	QueueSpotLightShadows(aRenderData);
-	QueueUpdateLightBuffer(aRenderData);
+	gfxList.Enqueue<BeginEvent>("Rendering Debug Mode");
 
 	// Final Render
 	auto camTransform = aRenderData.mainCamera->gameObject->GetComponent<Transform>();
@@ -267,19 +257,38 @@ void RenderAssembler::RenderDebug(SceneRenderData& aRenderData)
 	frameBuffer.FarPlane = aRenderData.mainCamera->GetFarPlane();
 	frameBuffer.Time = { static_cast<float>(Engine::Get().GetTimer().GetTimeSinceProgramStart()), Engine::Get().GetTimer().GetDeltaTime() };
 	frameBuffer.Resolution = Engine::Get().GetResolution();
+	frameBuffer.DebugRenderMode = static_cast<int>(GraphicsEngine::Get().CurrentDebugRenderMode);
 
 	gfxList.Enqueue<UpdateFrameBuffer>(std::move(frameBuffer));
-	gfxList.Enqueue<SetDefaultRenderTarget>();
-	QueueObjectDebug(aRenderData);
 
-	for (int i = 100; i < 110; i++)
+	std::shared_ptr<PipelineStateObject> pso;
+
+	int debugMode = static_cast<int>(GraphicsEngine::Get().CurrentDebugRenderMode);
+	if (debugMode <= 7)
 	{
-		gfxList.Enqueue<ClearTextureResource>(i);
+		gfxList.Enqueue<SetGBufferAsRenderTarget>();
+		QueueObjectsDebug(aRenderData);
+		gfxList.Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::DebugGBuffer));
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetBackBuffer(), nullptr, true, false);
+		gfxList.Enqueue<SetGBufferAsResource>();
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		for (int i = 0; i < 5; i++)
+		{
+			gfxList.Enqueue<ClearTextureResource>(i);
+		}
 	}
-	gfxList.Enqueue<ClearTextureResource>(126);
-
-	QueueDebugLines(aRenderData);
-	Engine::Get().GetDebugDrawer().DrawObjects();
+	else if (debugMode == 8)
+	{
+		gfxList.Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::Wireframe));
+		gfxList.Enqueue<SetDefaultRenderTarget>();
+		QueueObjectsDebug(aRenderData);
+	}
+	else
+	{
+		gfxList.Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::DebugForward));
+		gfxList.Enqueue<SetDefaultRenderTarget>();
+		QueueObjectsDebug(aRenderData);
+	}
 }
 
 void RenderAssembler::RenderDeferred(SceneRenderData& aRenderData)
@@ -345,7 +354,6 @@ void RenderAssembler::RenderDeferred(SceneRenderData& aRenderData)
 		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HalfScreenA), nullptr, true, false);
 		gfxList.Enqueue<SetGBufferAsResource>();
 		gfxList.Enqueue<RenderFullscreenQuad>();
-		gfxList.Enqueue<ClearTextureResource>(51);
 		gfxList.Enqueue<EndEvent>();
 
 		// Blur
@@ -1030,10 +1038,8 @@ void RenderAssembler::QueueObjectShadows(SceneRenderData& aRenderData, std::shar
 	}
 }
 
-void RenderAssembler::QueueObjectDebug(SceneRenderData& aRenderData)
+void RenderAssembler::QueueObjectsDebug(SceneRenderData& aRenderData)
 {
-	std::shared_ptr<PipelineStateObject> pso = AssetManager::Get().GetAsset<PSOAsset>(DebugModeNames[static_cast<int>(Engine::Get().CurrentDebugMode)])->pso;
-
 	for (auto& gameObject : aRenderData.drawForward)
 	{
 		if (!gameObject->GetActive()) continue;
