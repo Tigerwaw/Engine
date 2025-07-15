@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <cassert>
+#include "CommonUtilities/StringUtilities.hpp"
 
 namespace GraphicsSettings
 {
@@ -105,6 +106,36 @@ enum class BloomType
 	COUNT
 };
 
+enum class BlendMode
+{
+	None,
+	Alpha,
+	Additive,
+	COUNT
+};
+
+enum class FillMode
+{
+	Wireframe = 2,
+	Solid = 3
+};
+
+enum class CullMode
+{
+	None = 1,
+	Front = 2,
+	Back = 3
+};
+
+enum class VertexType
+{
+	MeshVertex,
+	DebugLineVertex,
+	TextVertex,
+	ParticleVertex,
+	TrailVertex
+};
+
 namespace GraphicsSettings
 {
 	static const std::unordered_map<PSOType, const char*> globalEnumToPSOName
@@ -192,6 +223,35 @@ namespace GraphicsSettings
 		{	BloomType::ScaledToScene,			"Scaled to Scene"		},
 		{	BloomType::ScaledToLuminance,		"Scaled to Luminance"	},
 	};
+
+	static const std::unordered_map<const char*, BlendMode> globalBlendModeNameToEnum
+	{
+		{	"none",				BlendMode::None			},
+		{	"alpha",			BlendMode::Alpha,		},
+		{	"additive",			BlendMode::Additive,	},
+	};
+
+	static const std::unordered_map<const char*, FillMode> globalFillModeNameToEnum
+	{
+		{	"wireframe",		FillMode::Wireframe,	},
+		{	"solid",			FillMode::Solid			},
+	};
+
+	static const std::unordered_map<const char*, CullMode> globalCullModeNameToEnum
+	{
+		{	"none",				CullMode::None,		},
+		{	"front",			CullMode::Front,	},
+		{	"back",				CullMode::Back,		},
+	};
+
+	static const std::unordered_map<const char*, VertexType> globalVertexTypeNameToEnum
+	{
+		{	"mesh",					VertexType::MeshVertex,			},
+		{	"line",					VertexType::DebugLineVertex,	},
+		{	"text",					VertexType::TextVertex,			},
+		{	"particle",				VertexType::ParticleVertex,		},
+		{	"trail",				VertexType::TrailVertex,		},
+	};
 }
 
 inline const char* PSOName(PSOType aPSOType)
@@ -228,4 +288,36 @@ inline const char* BloomName(BloomType aBloomType)
 {
 	assert(GraphicsSettings::globalEnumToBloomName.contains(aBloomType));
 	return GraphicsSettings::globalEnumToBloomName.find(aBloomType)->second;
+}
+
+inline BlendMode BlendModeFromName(const char* aBlendModeName)
+{
+	char blendModeName[512]{ 0 };
+	Utilities::ToLowerCopy(aBlendModeName, blendModeName);
+	assert(GraphicsSettings::globalBlendModeNameToEnum.contains(blendModeName));
+	return GraphicsSettings::globalBlendModeNameToEnum.find(blendModeName)->second;
+}
+
+inline FillMode FillModeFromName(const char* aFillModeName)
+{
+	char fillModeName[512]{ 0 };
+	Utilities::ToLowerCopy(aFillModeName, fillModeName);
+	assert(GraphicsSettings::globalFillModeNameToEnum.contains(fillModeName));
+	return GraphicsSettings::globalFillModeNameToEnum.find(fillModeName)->second;
+}
+
+inline CullMode CullModeFromName(const char* aCullModeName)
+{
+	char cullModeName[512]{ 0 };
+	Utilities::ToLowerCopy(aCullModeName, cullModeName);
+	assert(GraphicsSettings::globalCullModeNameToEnum.contains(cullModeName));
+	return GraphicsSettings::globalCullModeNameToEnum.find(cullModeName)->second;
+}
+
+inline VertexType VertexTypeFromName(const char* aVertexTypeName)
+{
+	char vertexTypeName[512]{ 0 };
+	Utilities::ToLowerCopy(aVertexTypeName, vertexTypeName);
+	assert(GraphicsSettings::globalVertexTypeNameToEnum.contains(vertexTypeName));
+	return GraphicsSettings::globalVertexTypeNameToEnum.find(vertexTypeName)->second;
 }

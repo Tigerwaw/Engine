@@ -4,6 +4,26 @@
 
 namespace Utilities
 {
+	inline void ToLowerCopy(const char* aString, char* tempBuffer)
+	{
+		for (size_t i = 0; i < strlen(aString); i++)
+		{
+			tempBuffer[i] = static_cast<unsigned char>(std::tolower(aString[i]));
+		}
+
+		tempBuffer[strlen(aString)] = '\0';
+	}
+
+	inline void ToUpperCopy(const char* aString, char* tempBuffer)
+	{
+		for (size_t i = 0; i < strlen(aString); i++)
+		{
+			tempBuffer[i] = static_cast<unsigned char>(std::toupper(aString[i]));
+		}
+
+		tempBuffer[strlen(aString)] = '\0';
+	}
+
 	inline void ToLower(std::string& aString)
 	{
 		std::transform(aString.begin(), aString.end(), aString.begin(),

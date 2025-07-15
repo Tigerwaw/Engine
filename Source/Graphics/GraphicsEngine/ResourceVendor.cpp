@@ -68,7 +68,7 @@ bool ResourceVendor::CreatePSO(PipelineStateObject& aPSO, PSODescription& aPSOde
 	aPSO.GeometryShader = aPSOdesc.gsShader;
 	aPSO.PixelShader = aPSOdesc.psShader;
 
-	if (!(aPSOdesc.fillMode == 3 && aPSOdesc.cullMode == 3 && aPSOdesc.antiAliasedLine == false))
+	if (!(aPSOdesc.fillMode == FillMode::Solid && aPSOdesc.cullMode == CullMode::Back && aPSOdesc.antiAliasedLine == false))
 	{
 		D3D11_RASTERIZER_DESC rastDesc = {};
 		rastDesc.FillMode = static_cast<D3D11_FILL_MODE>(aPSOdesc.fillMode);

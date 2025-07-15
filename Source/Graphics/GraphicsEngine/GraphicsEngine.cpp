@@ -801,8 +801,8 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.gsShader = trailGS;
 		desc.psShader = trailPS;
 		desc.samplerList[0] = "LinearWrap";
-		desc.fillMode = 3;
-		desc.cullMode = 1;
+		desc.fillMode = FillMode::Solid;
+		desc.cullMode = CullMode::None;
 		desc.blendMode = BlendMode::Alpha;
 		desc.useReadOnlyDepthStencilState = true;
 
@@ -871,8 +871,8 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsShader = debugLineVS;
 		desc.gsShader = debugLineGS;
 		desc.psShader = debugLinePS;
-		desc.fillMode = 3;
-		desc.cullMode = 1;
+		desc.fillMode = FillMode::Solid;
+		desc.cullMode = CullMode::None;
 		desc.antiAliasedLine = true;
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
@@ -1165,8 +1165,8 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = wireframePS;
-		desc.fillMode = 2;
-		desc.cullMode = 1;
+		desc.fillMode = FillMode::Wireframe;
+		desc.cullMode = CullMode::None;
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))

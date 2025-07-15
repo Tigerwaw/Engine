@@ -1,13 +1,6 @@
 #pragma once
 #include "RHI/RenderHardwareInterface.h"
-
-enum class BlendMode
-{
-	None,
-	Alpha,
-	Additive,
-	COUNT
-};
+#include "GraphicsSettings.hpp"
 
 struct PSODescription
 {
@@ -19,10 +12,10 @@ struct PSODescription
 	std::shared_ptr<Shader> gsShader;
 	std::shared_ptr<Shader> psShader;
 	std::unordered_map<unsigned, std::string> samplerList;
-	unsigned fillMode = 3;
-	unsigned cullMode = 3;
-	bool antiAliasedLine = false;
+	FillMode fillMode = FillMode::Solid;
+	CullMode cullMode = CullMode::Back;
 	BlendMode blendMode = BlendMode::None;
+	bool antiAliasedLine = false;
 	bool alphaToCoverage = false;
 	bool independentBlend = false;
 	bool useReadOnlyDepthStencilState = false;

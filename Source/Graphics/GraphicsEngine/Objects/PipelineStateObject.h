@@ -10,7 +10,6 @@ struct ID3D11SamplerState;
 
 class Shader;
 
-
 struct PipelineStateObject
 {
 	PipelineStateObject();

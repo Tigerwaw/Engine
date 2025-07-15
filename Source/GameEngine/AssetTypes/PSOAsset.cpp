@@ -124,32 +124,12 @@ bool PSOAsset::Load()
     {
         if (data["RasterizerDesc"].contains("FillMode"))
         {
-            std::string fillMode = data["RasterizerDesc"]["FillMode"].get<std::string>();
-            if (fillMode == "Wireframe" || fillMode == "wireframe")
-            {
-                psoDesc.fillMode = 2;
-            }
-            else
-            {
-                psoDesc.fillMode = 3;
-            }
+            psoDesc.fillMode = FillModeFromName(data["RasterizerDesc"]["FillMode"].get<std::string>().c_str());
         }
 
         if (data["RasterizerDesc"].contains("CullMode"))
         {
-            std::string cullMode = data["RasterizerDesc"]["CullMode"].get<std::string>();
-            if (cullMode == "None")
-            {
-                psoDesc.cullMode = 1;
-            }
-            else if (cullMode == "Front")
-            {
-                psoDesc.cullMode = 2;
-            }
-            else
-            {
-                psoDesc.cullMode = 3;
-            }
+            psoDesc.cullMode = CullModeFromName(data["RasterizerDesc"]["CullMode"].get<std::string>().c_str());
         }
 
         if (data["RasterizerDesc"].contains("AntialiasedLine"))
@@ -162,19 +142,7 @@ bool PSOAsset::Load()
     {
         if (data["BlendStateDesc"].contains("BlendMode"))
         {
-            std::string blendMode = data["BlendStateDesc"]["BlendMode"].get<std::string>();
-            if (blendMode == "Alpha")
-            {
-                psoDesc.blendMode = BlendMode::Alpha;
-            }
-            else if (blendMode == "Additive")
-            {
-                psoDesc.blendMode = BlendMode::Additive;
-            }
-            else
-            {
-                psoDesc.blendMode = BlendMode::None;
-            }
+            psoDesc.blendMode = BlendModeFromName(data["BlendStateDesc"]["BlendMode"].get<std::string>().c_str());
         }
 
         if (data["BlendStateDesc"].contains("AlphaToCoverage"))
