@@ -104,9 +104,9 @@ bool ResourceVendor::CreatePSO(PipelineStateObject& aPSO, PSODescription& aPSOde
 		}
 	}
 
-	aPSO.VertexShader = aPSOdesc.vsShader;
-	aPSO.GeometryShader = aPSOdesc.gsShader;
-	aPSO.PixelShader = aPSOdesc.psShader;
+	aPSO.SetShader(ShaderType::Vertex, aPSOdesc.vsShader);
+	aPSO.SetShader(ShaderType::Geometry, aPSOdesc.gsShader);
+	aPSO.SetShader(ShaderType::Pixel, aPSOdesc.psShader);
 
 	if (!(aPSOdesc.fillMode == FillMode::Solid && aPSOdesc.cullMode == CullMode::Back && aPSOdesc.antiAliasedLine == false))
 	{

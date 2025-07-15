@@ -38,7 +38,7 @@ void Drawer::RenderMesh(const Mesh& aMesh, const std::vector<std::shared_ptr<Mat
 
 	for (const auto& element : aMesh.GetElements())
 	{
-		std::array<unsigned, GraphicsSettings::MAX_TEXTURES> slotsToClear = { 0 };
+		std::array<unsigned, GraphicsSettings::MAX_MATERIAL_TEXTURES> slotsToClear = { 0 };
 		unsigned currentSlotIndex = 0;
 
 		if (aMaterialList.size() > element.MaterialIndex)
@@ -123,7 +123,7 @@ void Drawer::RenderInstancedMesh(const Mesh& aMesh, unsigned aMeshCount, const s
 
 	for (const auto& element : aMesh.GetElements())
 	{
-		std::array<unsigned, GraphicsSettings::MAX_TEXTURES> slotsToClear = { 0 };
+		std::array<unsigned, GraphicsSettings::MAX_MATERIAL_TEXTURES> slotsToClear = { 0 };
 		unsigned currentSlotIndex = 0;
 
 		if (aMaterialList.size() > element.MaterialIndex)
@@ -238,7 +238,7 @@ void Drawer::RenderParticleEmitter(ParticleEmitter& aParticleEmitter)
 	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Particle Emitter");
 	GraphicsEngine& ge = GraphicsEngine::Get();
 
-	std::array<unsigned, GraphicsSettings::MAX_TEXTURES> slotsToClear = { 0 };
+	std::array<unsigned, GraphicsSettings::MAX_MATERIAL_TEXTURES> slotsToClear = { 0 };
 	unsigned currentSlotIndex = 0;
 
 	if (aParticleEmitter.GetMaterial())
@@ -285,7 +285,7 @@ void Drawer::RenderTrailEmitter(TrailEmitter& aTrailEmitter)
 	PIXScopedEvent(PIX_COLOR_INDEX(1), "GE Render Trail Emitter");
 	GraphicsEngine& ge = GraphicsEngine::Get();
 
-	std::array<unsigned, GraphicsSettings::MAX_TEXTURES> slotsToClear = { 0 };
+	std::array<unsigned, GraphicsSettings::MAX_MATERIAL_TEXTURES> slotsToClear = { 0 };
 	unsigned currentSlotIndex = 0;
 
 	if (aTrailEmitter.GetMaterial())

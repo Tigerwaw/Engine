@@ -551,7 +551,7 @@ bool RenderHardwareInterface::LoadShaderFromMemory(std::string_view aName, Shade
 	{
 	case D3D11_SHVER_VERTEX_SHADER:
 	{
-		outShader.myType = ShaderType::VertexShader;
+		outShader.myType = ShaderType::Vertex;
 		ComPtr<ID3D11VertexShader> vsShader;
 		result = myDevice->CreateVertexShader(aShaderDataPtr, aShaderDataSize, nullptr, &vsShader);
 		outShader.myShader = vsShader;
@@ -559,7 +559,7 @@ bool RenderHardwareInterface::LoadShaderFromMemory(std::string_view aName, Shade
 	}
 	case D3D11_SHVER_PIXEL_SHADER:
 	{
-		outShader.myType = ShaderType::PixelShader;
+		outShader.myType = ShaderType::Pixel;
 		ComPtr<ID3D11PixelShader> psShader;
 		result = myDevice->CreatePixelShader(aShaderDataPtr, aShaderDataSize, nullptr, &psShader);
 		outShader.myShader = psShader;
@@ -567,7 +567,7 @@ bool RenderHardwareInterface::LoadShaderFromMemory(std::string_view aName, Shade
 	}
 	case D3D11_SHVER_GEOMETRY_SHADER:
 	{
-		outShader.myType = ShaderType::GeometryShader;
+		outShader.myType = ShaderType::Geometry;
 		ComPtr<ID3D11GeometryShader> gsShader;
 		result = myDevice->CreateGeometryShader(aShaderDataPtr, aShaderDataSize, nullptr, &gsShader);
 		outShader.myShader = gsShader;
@@ -616,9 +616,15 @@ void RenderHardwareInterface::DrawIndexedInstanced(unsigned aIndexCount, unsigne
 	myContext->DrawIndexedInstanced(aIndexCount, aInstanceCount, aStartIndex, aStartVertex, aStartInstance);
 }
 
-void RenderHardwareInterface::ChangePipelineState(const PipelineStateObject& aNewPSO)
+void RenderHardwareInterface::ChangePipelineState(const PipelineStateObject& aCurrentPSO, const PipelineStateObject& aNewPSO)
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(1), "RHI Change Pipeline State");
+
+	for (auto& [slot, texture] : aCurrentPSO.TextureResources)
+	{
+		ClearTextureResourceSlot(PIPELINE_STAGE_PIXEL_SHADER, slot);
+	}
+
 	const std::array<float, 4> blendFactor = { 0, 0, 0, 0 };
 	constexpr unsigned samplerMask = 0xffffffff;
 	myContext->OMSetBlendState(aNewPSO.BlendState.Get(), blendFactor.data(), samplerMask);
@@ -627,32 +633,43 @@ void RenderHardwareInterface::ChangePipelineState(const PipelineStateObject& aNe
 
 	for (const auto& [slot, sampler] : aNewPSO.SamplerStates)
 	{
-		myContext->VSSetSamplers(slot, 1, sampler.GetAddressOf());
-		myContext->PSSetSamplers(slot, 1, sampler.GetAddressOf());
+		if (aNewPSO.GetShader(ShaderType::Vertex))
+			myContext->VSSetSamplers(slot, 1, sampler.GetAddressOf());
+
+		if (aNewPSO.GetShader(ShaderType::Geometry))
+			myContext->GSSetSamplers(slot, 1, sampler.GetAddressOf());
+		
+		if (aNewPSO.GetShader(ShaderType::Pixel))
+			myContext->PSSetSamplers(slot, 1, sampler.GetAddressOf());
 	}
 
 	ComPtr<ID3D11VertexShader> vsShader;
-	if (aNewPSO.VertexShader)
+	if (aNewPSO.GetShader(ShaderType::Vertex))
 	{
-		aNewPSO.VertexShader->myShader.As(&vsShader);
+		aNewPSO.GetShader(ShaderType::Vertex)->myShader.As(&vsShader);
 	}
 	myContext->VSSetShader(vsShader.Get(), nullptr, 0);
 
 	ComPtr<ID3D11GeometryShader> gsShader;
-	if (aNewPSO.GeometryShader)
+	if (aNewPSO.GetShader(ShaderType::Geometry))
 	{
-		aNewPSO.GeometryShader->myShader.As(&gsShader);
+		aNewPSO.GetShader(ShaderType::Geometry)->myShader.As(&gsShader);
 	}
 	myContext->GSSetShader(gsShader.Get(), nullptr, 0);
 
 	ComPtr<ID3D11PixelShader> psShader;
-	if (aNewPSO.PixelShader)
+	if (aNewPSO.GetShader(ShaderType::Pixel))
 	{
-		aNewPSO.PixelShader->myShader.As(&psShader);
+		aNewPSO.GetShader(ShaderType::Pixel)->myShader.As(&psShader);
 	}
 	myContext->PSSetShader(psShader.Get(), nullptr, 0);
 
 	myContext->IASetInputLayout(aNewPSO.InputLayout.Get());
+
+	for (auto& [slot, texture] : aNewPSO.TextureResources)
+	{
+		SetTextureResource(PIPELINE_STAGE_PIXEL_SHADER, slot, *texture);
+	}
 }
 
 void RenderHardwareInterface::CreateDefaultSamplerStates()

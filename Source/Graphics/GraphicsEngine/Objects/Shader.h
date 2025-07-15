@@ -1,15 +1,8 @@
 #pragma once
 #include <wrl.h>
+#include "GraphicsSettings.hpp"
 
 struct ID3D11DeviceChild;
-
-enum class ShaderType : unsigned
-{
-	Unknown,
-	VertexShader,
-	GeometryShader,
-	PixelShader
-};
 
 class Shader
 {

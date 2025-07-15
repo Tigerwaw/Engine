@@ -641,14 +641,14 @@ void ModelViewer::InitializeApplication()
 							ImGui::EndDisabled();
 						}
 
-						ImGui::Text(std::string("Vertex Shader - " + myShaderNames[ShaderType::VertexShader]).c_str());
-						ImGui::SetItemTooltip(myShaderPaths[ShaderType::VertexShader].c_str());
+						ImGui::Text(std::string("Vertex Shader - " + myShaderNames[ShaderType::Vertex]).c_str());
+						ImGui::SetItemTooltip(myShaderPaths[ShaderType::Vertex].c_str());
 
-						ImGui::Text(std::string("Geometry Shader - " + myShaderNames[ShaderType::GeometryShader]).c_str());
-						ImGui::SetItemTooltip(myShaderPaths[ShaderType::GeometryShader].c_str());
+						ImGui::Text(std::string("Geometry Shader - " + myShaderNames[ShaderType::Geometry]).c_str());
+						ImGui::SetItemTooltip(myShaderPaths[ShaderType::Geometry].c_str());
 
-						ImGui::Text(std::string("Pixel Shader - " + myShaderNames[ShaderType::PixelShader]).c_str());
-						ImGui::SetItemTooltip(myShaderPaths[ShaderType::PixelShader].c_str());
+						ImGui::Text(std::string("Pixel Shader - " + myShaderNames[ShaderType::Pixel]).c_str());
+						ImGui::SetItemTooltip(myShaderPaths[ShaderType::Pixel].c_str());
 
 						ImGui::EndTabItem();
 					}
@@ -787,12 +787,12 @@ void ModelViewer::ResetPSO()
 
 	myShaderNames.clear();
 	myShaderPaths.clear();
-	myShaderNames[ShaderType::VertexShader] = "";
-	myShaderPaths[ShaderType::VertexShader] = "";
-	myShaderNames[ShaderType::GeometryShader] = "";
-	myShaderPaths[ShaderType::GeometryShader] = "";
-	myShaderNames[ShaderType::PixelShader] = "";
-	myShaderPaths[ShaderType::PixelShader] = "";
+	myShaderNames[ShaderType::Vertex] = "";
+	myShaderPaths[ShaderType::Vertex] = "";
+	myShaderNames[ShaderType::Geometry] = "";
+	myShaderPaths[ShaderType::Geometry] = "";
+	myShaderNames[ShaderType::Pixel] = "";
+	myShaderPaths[ShaderType::Pixel] = "";
 
 	myLogs.emplace_back("[LOG] Reset PSO to default");
 }
@@ -968,22 +968,22 @@ void ModelViewer::SetPSO(std::filesystem::path& aAssetPath)
 	if (data.contains("VertexShader"))
 	{
 		std::filesystem::path vsPath = data["VertexShader"].get<std::string>();
-		myShaderNames[ShaderType::VertexShader] = vsPath.filename().stem().string();
-		myShaderPaths[ShaderType::VertexShader] = vsPath.string();
+		myShaderNames[ShaderType::Vertex] = vsPath.filename().stem().string();
+		myShaderPaths[ShaderType::Vertex] = vsPath.string();
 	}
 
 	if (data.contains("GeometryShader"))
 	{
 		std::filesystem::path gsPath = data["GeometryShader"].get<std::string>();
-		myShaderNames[ShaderType::GeometryShader] = gsPath.filename().stem().string();
-		myShaderNames[ShaderType::GeometryShader] = gsPath.string();
+		myShaderNames[ShaderType::Geometry] = gsPath.filename().stem().string();
+		myShaderNames[ShaderType::Geometry] = gsPath.string();
 	}
 
 	if (data.contains("PixelShader"))
 	{
 		std::filesystem::path psPath = data["PixelShader"].get<std::string>();
-		myShaderNames[ShaderType::PixelShader] = psPath.filename().stem().string();
-		myShaderNames[ShaderType::PixelShader] = psPath.string();
+		myShaderNames[ShaderType::Pixel] = psPath.filename().stem().string();
+		myShaderNames[ShaderType::Pixel] = psPath.string();
 	}
 
 	myMaterial->SetPSO(myPSO);
@@ -1005,22 +1005,22 @@ void ModelViewer::SetShader(std::filesystem::path& aAssetPath)
 	{
 		myPSO->VertexShader = shaderAsset->shader;
 		myMaterial->SetPSO(myPSO);
-		myShaderNames[ShaderType::VertexShader] = shaderAsset->GetName().string();
-		myShaderPaths[ShaderType::VertexShader] = shaderAsset->GetPath().string();
+		myShaderNames[ShaderType::Vertex] = shaderAsset->GetName().string();
+		myShaderPaths[ShaderType::Vertex] = shaderAsset->GetPath().string();
 	}
 	else if (shaderAsset->GetName().string().ends_with("GS"))
 	{
 		myPSO->GeometryShader = shaderAsset->shader;
 		myMaterial->SetPSO(myPSO);
-		myShaderNames[ShaderType::GeometryShader] = shaderAsset->GetName().string();
-		myShaderPaths[ShaderType::GeometryShader] = shaderAsset->GetPath().string();
+		myShaderNames[ShaderType::Geometry] = shaderAsset->GetName().string();
+		myShaderPaths[ShaderType::Geometry] = shaderAsset->GetPath().string();
 	}
 	else if (shaderAsset->GetName().string().ends_with("PS"))
 	{
 		myPSO->PixelShader = shaderAsset->shader;
 		myMaterial->SetPSO(myPSO);
-		myShaderNames[ShaderType::PixelShader] = shaderAsset->GetName().string();
-		myShaderPaths[ShaderType::PixelShader] = shaderAsset->GetPath().string();
+		myShaderNames[ShaderType::Pixel] = shaderAsset->GetName().string();
+		myShaderPaths[ShaderType::Pixel] = shaderAsset->GetPath().string();
 	}
 	else
 	{
@@ -1067,9 +1067,9 @@ void ModelViewer::ExportPSO()
 	nl::json newPSO;
 
 	newPSO["VertexType"] = std::string("Default");
-	newPSO["VertexShader"] = myShaderPaths[ShaderType::VertexShader];
-	newPSO["GeometryShader"] = myShaderPaths[ShaderType::GeometryShader];
-	newPSO["PixelShader"] = myShaderPaths[ShaderType::PixelShader];
+	newPSO["VertexShader"] = myShaderPaths[ShaderType::Vertex];
+	newPSO["GeometryShader"] = myShaderPaths[ShaderType::Geometry];
+	newPSO["PixelShader"] = myShaderPaths[ShaderType::Pixel];
 
 	std::string name = "PSO_" + myPSOName + ".json";
 	std::filesystem::path parentDirectory = std::filesystem::current_path() / "ExportedAssets";

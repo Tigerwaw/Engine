@@ -68,7 +68,7 @@ public:
 	void DrawIndexed(unsigned aStartIndex, unsigned aIndexCount) const;
 	void DrawIndexedInstanced(unsigned aIndexCount, unsigned aInstanceCount, unsigned aStartIndex, unsigned aStartVertex, unsigned aStartInstance) const;
 
-	void ChangePipelineState(const PipelineStateObject& aNewPSO);
+	void ChangePipelineState(const PipelineStateObject& aCurrentPSO, const PipelineStateObject& aNewPSO);
 
 	bool CreateSamplerState(std::string_view aName, const D3D11_SAMPLER_DESC& aSamplerDesc);
 	const Microsoft::WRL::ComPtr<ID3D11SamplerState>& GetSamplerState(const std::string& aName) const;

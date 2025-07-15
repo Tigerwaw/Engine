@@ -5,8 +5,18 @@
 
 namespace GraphicsSettings
 {
-	inline constexpr unsigned MAX_TEXTURES = 8;
+	inline constexpr unsigned MAX_MATERIAL_TEXTURES = 8;
+	inline constexpr unsigned MAX_PSO_TEXTURES = 8;
 }
+
+enum class ShaderType : unsigned
+{
+	Unknown,
+	Vertex,
+	Geometry,
+	Pixel,
+	COUNT
+};
 
 enum class PSOType
 {

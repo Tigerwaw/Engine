@@ -15,9 +15,18 @@ std::shared_ptr<PipelineStateObject> PipelineStateObject::CreateInstance() const
 	instance->InputLayout = InputLayout;
 	instance->SamplerStates = SamplerStates;
 	instance->VertexStride = VertexStride;
-	instance->VertexShader = VertexShader;
-	instance->GeometryShader = GeometryShader;
-	instance->PixelShader = PixelShader;
+
+	instance->Shaders = Shaders;
 
 	return instance;
+}
+
+void PipelineStateObject::SetShader(ShaderType aShaderType, std::shared_ptr<Shader> aShader)
+{
+	Shaders[static_cast<int>(aShaderType)] = aShader;
+}
+
+std::shared_ptr<Shader> PipelineStateObject::GetShader(ShaderType aShaderType) const
+{
+	return Shaders[static_cast<int>(aShaderType)];
 }
