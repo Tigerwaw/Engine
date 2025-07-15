@@ -606,8 +606,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription deferredDesc;
 		deferredDesc.name = PSOName(PSOType::Deferred);
-		deferredDesc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		deferredDesc.vertexStride = sizeof(Vertex);
+		deferredDesc.vertexType = VertexType::MeshVertex;
 		deferredDesc.vsPath = defaultMeshVSPath;
 		deferredDesc.vsShader = defaultMeshVS;
 		deferredDesc.psShader = deferredMeshPS;
@@ -627,8 +626,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::ForwardPBR);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = forwardPBRMeshPS;
@@ -649,8 +647,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::TransparentPBR);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = forwardPBRMeshPS;
@@ -672,8 +669,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::Shadow);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 
@@ -690,8 +686,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::ShadowCube);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = shadowCubeVSPath;
 		desc.vsShader = shadowCubeVS;
 		desc.gsShader = shadowCubeGS;
@@ -709,8 +704,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::Sprite);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = spriteVSPath;
 		desc.vsShader = spriteVS;
 		desc.gsShader = spriteGS;
@@ -730,8 +724,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::Spritesheet);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = spriteVSPath;
 		desc.vsShader = spriteVS;
 		desc.gsShader = spriteGS;
@@ -751,8 +744,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::Text);
-		desc.inputLayoutDefinition = TextVertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(TextVertex);
+		desc.vertexType = VertexType::TextVertex;
 		desc.vsPath = textVSPath;
 		desc.vsShader = textVS;
 		desc.psShader = textPS;
@@ -771,8 +763,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::Particle);
-		desc.inputLayoutDefinition = ParticleVertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(ParticleVertex);
+		desc.vertexType = VertexType::ParticleVertex;
 		desc.vsPath = particleVSPath;
 		desc.vsShader = particleVS;
 		desc.gsShader = particleGS;
@@ -794,8 +785,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::Trail);
-		desc.inputLayoutDefinition = TrailVertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(TrailVertex);
+		desc.vertexType = VertexType::TrailVertex;
 		desc.vsPath = trailVSPath;
 		desc.vsShader = trailVS;
 		desc.gsShader = trailGS;
@@ -819,8 +809,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::ParticleSpritesheet);
-		desc.inputLayoutDefinition = ParticleVertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(ParticleVertex);
+		desc.vertexType = VertexType::ParticleVertex;
 		desc.vsPath = particleVSPath;
 		desc.vsShader = particleVS;
 		desc.gsShader = particleGS;
@@ -842,8 +831,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::VFXSpritesheet);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = vfxSpritesheetPS;
@@ -865,8 +853,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::DebugLine);
-		desc.inputLayoutDefinition = DebugLineVertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(DebugLineVertex);
+		desc.vertexType = VertexType::DebugLineVertex;
 		desc.vsPath = debugLineVSPath;
 		desc.vsShader = debugLineVS;
 		desc.gsShader = debugLineGS;
@@ -888,8 +875,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::DeferredDirectionalLight);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = deferredDirectionalLightPS;
@@ -911,8 +897,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::DeferredPointlight);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = deferredPointlightPS;
@@ -934,8 +919,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::DeferredSpotlight);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = deferredSpotlightPS;
@@ -957,8 +941,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::Bloom);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = bloomPS;
@@ -978,8 +961,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::GaussianH);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = gaussianhPS;
@@ -998,8 +980,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::GaussianV);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = gaussianvPS;
@@ -1018,8 +999,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::Luminance);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = luminancePS;
@@ -1038,8 +1018,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::RadialBlur);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = radialBlurPS;
@@ -1058,8 +1037,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::Resample);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = resamplePS;
@@ -1078,8 +1056,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::SSAO);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = ssaoPS;
@@ -1100,8 +1077,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::TonemapACES);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = tonemapACESPS;
@@ -1120,8 +1096,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::TonemapLottes);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = tonemapLottesPS;
@@ -1140,8 +1115,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::TonemapUE);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = quadVSPath;
 		desc.vsShader = quadVS;
 		desc.psShader = tonemapUEPS;
@@ -1160,8 +1134,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::Wireframe);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = wireframePS;
@@ -1181,8 +1154,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::DebugAO);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugAOPS;
@@ -1201,8 +1173,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::DebugAO);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugAOPS;
@@ -1221,8 +1192,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::DebugRoughness);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugAOPS;
@@ -1241,8 +1211,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::DebugMetallic);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugMetallicPS;
@@ -1261,8 +1230,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::DebugPixelNormals);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugPixelNormalsPS;
@@ -1281,8 +1249,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::DebugFX);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugFXPS;
@@ -1301,8 +1268,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::DebugUVs);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugUVsPS;
@@ -1318,8 +1284,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::DebugVertexColor);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugVertexColorPS;
@@ -1335,8 +1300,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::DebugVertexNormals);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugVertexNormalsPS;
@@ -1352,8 +1316,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 	{
 		PSODescription desc;
 		desc.name = PSOName(PSOType::DebugTextureNormals);
-		desc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-		desc.vertexStride = sizeof(Vertex);
+		desc.vertexType = VertexType::MeshVertex;
 		desc.vsPath = defaultMeshVSPath;
 		desc.vsShader = defaultMeshVS;
 		desc.psShader = debugTextureNormalsPS;

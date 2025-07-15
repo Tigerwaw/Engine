@@ -5,8 +5,7 @@
 struct PSODescription
 {
 	std::string name;
-	std::vector<VertexElementDesc> inputLayoutDefinition;
-	unsigned vertexStride;
+	VertexType vertexType;
 	std::wstring vsPath;
 	std::shared_ptr<Shader> vsShader;
 	std::shared_ptr<Shader> gsShader;

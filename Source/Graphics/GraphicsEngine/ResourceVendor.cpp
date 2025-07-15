@@ -5,6 +5,12 @@
 #include "Objects/Material.h"
 #include "ShaderReflection/ShaderInfo.h"
 
+#include "Objects/Vertices/Vertex.h"
+#include "Objects/Vertices/DebugLineVertex.h"
+#include "Objects/Vertices/TextVertex.h"
+#include "Objects/Vertices/ParticleVertex.h"
+#include "Objects/Vertices/TrailVertex.h"
+
 bool ResourceVendor::Initialize(std::shared_ptr<RenderHardwareInterface> aRHI)
 {
 	myRHI = aRHI;
@@ -53,11 +59,45 @@ bool ResourceVendor::LoadShader(const std::filesystem::path& aFilePath, Shader& 
 
 bool ResourceVendor::CreatePSO(PipelineStateObject& aPSO, PSODescription& aPSOdesc)
 {
-	aPSO.VertexStride = aPSOdesc.vertexStride;
+	std::vector<VertexElementDesc> inputLayoutDefinition;
+
+	switch (aPSOdesc.vertexType)
+	{
+	case VertexType::MeshVertex:
+	{
+		inputLayoutDefinition = Vertex::InputLayoutDefinition;
+		aPSO.VertexStride = static_cast<unsigned>(sizeof(Vertex));
+		break;
+	}
+	case VertexType::DebugLineVertex:
+	{
+		inputLayoutDefinition = DebugLineVertex::InputLayoutDefinition;
+		aPSO.VertexStride = static_cast<unsigned>(sizeof(DebugLineVertex));
+		break;
+	}
+	case VertexType::TextVertex:
+	{
+		inputLayoutDefinition = TextVertex::InputLayoutDefinition;
+		aPSO.VertexStride = static_cast<unsigned>(sizeof(TextVertex));
+		break;
+	}
+	case VertexType::ParticleVertex:
+	{
+		inputLayoutDefinition = ParticleVertex::InputLayoutDefinition;
+		aPSO.VertexStride = static_cast<unsigned>(sizeof(ParticleVertex));
+		break;
+	}
+	case VertexType::TrailVertex:
+	{
+		inputLayoutDefinition = TrailVertex::InputLayoutDefinition;
+		aPSO.VertexStride = static_cast<unsigned>(sizeof(TrailVertex));
+		break;
+	}
+	}
 
 	if (aPSOdesc.vsPath != L"")
 	{
-		if (!myRHI->CreateInputLayout(aPSO.InputLayout, aPSOdesc.inputLayoutDefinition, aPSOdesc.vsPath))
+		if (!myRHI->CreateInputLayout(aPSO.InputLayout, inputLayoutDefinition, aPSOdesc.vsPath))
 		{
 			LOG(LogGraphicsEngine, Error, "Failed to create PSO!");
 			return false;

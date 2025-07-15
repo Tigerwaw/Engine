@@ -6,11 +6,6 @@ namespace nl = nlohmann;
 #include <fstream>
 #include "AssetManager.h"
 #include "ShaderAsset.h"
-#include "Objects/Vertices/Vertex.h"
-#include "Objects/Vertices/DebugLineVertex.h"
-#include "Objects/Vertices/TextVertex.h"
-#include "Objects/Vertices/ParticleVertex.h"
-#include "Objects/Vertices/TrailVertex.h"
 
 bool PSOAsset::Load()
 {
@@ -33,31 +28,7 @@ bool PSOAsset::Load()
 
     if (data.contains("VertexType"))
     {
-        if (data["VertexType"].get<std::string>() == "Default")
-        {
-            psoDesc.inputLayoutDefinition = Vertex::InputLayoutDefinition;
-            psoDesc.vertexStride = sizeof(Vertex);
-        }
-        else if (data["VertexType"].get<std::string>() == "DebugLine")
-        {
-            psoDesc.inputLayoutDefinition = DebugLineVertex::InputLayoutDefinition;
-            psoDesc.vertexStride = sizeof(DebugLineVertex);
-        }
-        else if (data["VertexType"].get<std::string>() == "Text")
-        {
-            psoDesc.inputLayoutDefinition = TextVertex::InputLayoutDefinition;
-            psoDesc.vertexStride = sizeof(TextVertex);
-        }
-        else if (data["VertexType"].get<std::string>() == "Particle")
-        {
-            psoDesc.inputLayoutDefinition = ParticleVertex::InputLayoutDefinition;
-            psoDesc.vertexStride = sizeof(ParticleVertex);
-        }
-        else if (data["VertexType"].get<std::string>() == "Trail")
-        {
-            psoDesc.inputLayoutDefinition = TrailVertex::InputLayoutDefinition;
-            psoDesc.vertexStride = sizeof(TrailVertex);
-        }
+        psoDesc.vertexType = VertexTypeFromName(data["VertexType"].get<std::string>().c_str());
     }
 
     std::filesystem::path vsPath = "";
