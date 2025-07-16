@@ -21,20 +21,6 @@
 
 #include "Math/Vector.hpp"
 
-Scene::Scene()
-{
-}
-
-Scene::~Scene()
-{
-	myAmbientLight = nullptr;
-	myDirectionalLight = nullptr;
-	myMainCamera = nullptr;
-	myPointLights.clear();
-	mySpotLights.clear();
-	myGameObjects.clear();
-}
-
 void Scene::Update()
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(7), "Update GameObjects in Scene");
@@ -113,33 +99,6 @@ void Scene::Instantiate(std::shared_ptr<GameObject> aGameObject)
 	myCurrentGameObjectID++;
 	myGameObjects.emplace_back(aGameObject);
 
-	// Temp
-	if (aGameObject->GetComponent<AmbientLight>())
-	{
-		myAmbientLight = aGameObject;
-	}
-	else if (aGameObject->GetComponent<DirectionalLight>())
-	{
-		myDirectionalLight = aGameObject;
-	}
-	else if (aGameObject->GetComponent<PointLight>())
-	{
-		myPointLights.emplace_back(aGameObject);
-	}
-	else if (aGameObject->GetComponent<SpotLight>())
-	{
-		mySpotLights.emplace_back(aGameObject);
-	}
-	else if (auto cam = aGameObject->GetComponent<Camera>())
-	{
-		if (aGameObject->GetName() == "MainCamera")
-		{
-			cam->SetAsMainCamera(true);
-			myMainCamera = aGameObject;
-			Engine::Get().GetAudioEngine().SetListener(aGameObject);
-		}
-	}
-
 	LOG(LogScene, Log, "Created GameObject {}!", aGameObject->GetName());
 }
 
@@ -166,7 +125,10 @@ void Scene::Destroy(std::shared_ptr<GameObject> aGameObject)
 void Scene::SortGameObjects()
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(8), "Sort GameObjects in Scene");
-	Math::Vector3f camPos = myMainCamera->GetComponent<Transform>()->GetTranslation(true);
+
+	Math::Vector3f camPos;
+	if (Camera::GetMainCamera())
+		camPos = Camera::GetMainCamera()->gameObject->GetComponent<Transform>()->GetTranslation(true);
 
 	std::stable_sort(myGameObjects.begin(), myGameObjects.end(), [this, camPos](const std::shared_ptr<GameObject> lhs, const std::shared_ptr<GameObject> rhs)
 		{

@@ -7,8 +7,8 @@
 class GameObject final
 {
 public:
-    GameObject();
-    virtual ~GameObject();
+    GameObject() = default;
+    virtual ~GameObject() = default;
     void Update();
     void SetActive(bool aActive);
     bool GetActive() const { return myIsActive; }

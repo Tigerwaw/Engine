@@ -17,6 +17,7 @@ public:
     void LoadScene(const std::string& aSceneFilePath);
     void UnloadScene(unsigned aLoadedSceneIndex);
     void ChangeActiveScene(unsigned aLoadedSceneIndex);
+    void SetMainCamera(std::shared_ptr<Camera> aCamera);
 
     std::shared_ptr<GameObject> FindGameObjectByName(const std::string& aName);
     std::shared_ptr<GameObject> FindGameObjectByID(const unsigned aID);

@@ -15,8 +15,6 @@ public:
 	friend class RenderAssembler;
 	friend class CollisionHandler;
 
-	Scene();
-	~Scene();
 	void Update();
 	std::shared_ptr<GameObject> FindGameObjectByName(const std::string& aName);
 	std::shared_ptr<GameObject> FindGameObjectByID(const unsigned aID);
@@ -44,11 +42,4 @@ private:
 	Math::AABB3D<float> myBoundingBox;
 
 	unsigned myCurrentGameObjectID = 0;
-
-	// TEMP (?)
-	std::shared_ptr<GameObject> myMainCamera;
-	std::shared_ptr<GameObject> myAmbientLight;
-	std::shared_ptr<GameObject> myDirectionalLight;
-	std::vector<std::shared_ptr<GameObject>> myPointLights;
-	std::vector<std::shared_ptr<GameObject>> mySpotLights;
 };

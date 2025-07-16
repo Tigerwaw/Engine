@@ -4,8 +4,27 @@
 #include "ComponentSystem/GameObject.h"
 #include "ComponentSystem/Components/Transform.h"
 #include "Math/Intersection3D.hpp"
+#include "SceneHandler/SceneHandler.h"
 
 #define PI 3.14159265358979323846
+
+static Camera* sInstance = nullptr;
+
+Camera* Camera::GetMainCamera()
+{
+	return sInstance;
+}
+
+void Camera::SetAsMainCamera()
+{
+	sInstance = this;
+	Engine::Get().GetAudioEngine().SetListener(Engine::Get().GetSceneHandler().FindGameObjectByID(gameObject->GetID()));
+}
+
+bool Camera::IsMainCamera() const
+{
+	return sInstance == this;
+}
 
 Camera::Camera(float aFOV, float aNearPlane, float aFarPlane, Math::Vector2f aResolution)
 {
@@ -19,6 +38,10 @@ Camera::Camera(float aLeft, float aRight, float aTop, float aBottom, float aNear
 
 void Camera::Start()
 {
+	if (sInstance == nullptr)
+	{
+		SetAsMainCamera();
+	}
 }
 
 void Camera::Update()

@@ -80,7 +80,7 @@
     {
       "Name": "CastleWall1",
       "Active": true,
-      "Static": false,
+      "Static": true,
       "Components": [
         {
           "Type": "Transform",
@@ -99,7 +99,7 @@
     {
       "Name": "CastleWall2",
       "Active": true,
-      "Static": false,
+      "Static": true,
       "Components": [
         {
           "Type": "Transform",
@@ -118,7 +118,7 @@
     {
       "Name": "CastleStairs",
       "Active": true,
-      "Static": false,
+      "Static": true,
       "Components": [
         {
           "Type": "Transform",
@@ -137,7 +137,7 @@
     {
       "Name": "CastleStructure",
       "Active": true,
-      "Static": false,
+      "Static": true,
       "Components": [
         {
           "Type": "Transform",
@@ -180,7 +180,7 @@
     {
       "Name": "Chest2",
       "Active": true,
-      "Static": false,
+      "Static": true,
       "Components": [
         {
           "Type": "Transform",
@@ -200,7 +200,7 @@
     {
       "Name": "Chest3",
       "Active": true,
-      "Static": false,
+      "Static": true,
       "Components": [
         {
           "Type": "Transform",
@@ -220,7 +220,7 @@
     {
       "Name": "Chest4",
       "Active": true,
-      "Static": false,
+      "Static": true,
       "Components": [
         {
           "Type": "Transform",
@@ -240,7 +240,7 @@
     {
       "Name": "Chest5",
       "Active": true,
-      "Static": false,
+      "Static": true,
       "Components": [
         {
           "Type": "Transform",

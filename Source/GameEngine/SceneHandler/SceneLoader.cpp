@@ -59,11 +59,7 @@ bool SceneLoader::LoadScene(std::shared_ptr<Scene> aScene, std::filesystem::path
     {
         for (auto& gameObject : data["GameObjects"])
         {
-            std::shared_ptr<GameObject> newGO = LoadGameObject(aScene, gameObject);
-            if (newGO)
-            {
-                aScene->Instantiate(newGO);
-            }
+            LoadGameObject(aScene, gameObject);
         }
     }
 
@@ -73,6 +69,7 @@ bool SceneLoader::LoadScene(std::shared_ptr<Scene> aScene, std::filesystem::path
 std::shared_ptr<GameObject> SceneLoader::LoadGameObject(std::shared_ptr<Scene> aScene, nl::json& aGO)
 {
     std::shared_ptr<GameObject> newGO = std::make_shared<GameObject>();
+    aScene->Instantiate(newGO);
 
     if (aGO.contains("Name"))
     {
@@ -97,6 +94,8 @@ std::shared_ptr<GameObject> SceneLoader::LoadGameObject(std::shared_ptr<Scene> a
         }
     }
 
+    aScene->UpdateBoundingBox(newGO);
+
     if (aGO.contains("Children"))
     {
         for (auto& child : aGO["Children"])
@@ -105,7 +104,6 @@ std::shared_ptr<GameObject> SceneLoader::LoadGameObject(std::shared_ptr<Scene> a
             if (newChild)
             {
                 newGO->GetComponent<Transform>()->AddChild(newChild->GetComponent<Transform>().get());
-                aScene->Instantiate(newChild);
             }
         }
     }

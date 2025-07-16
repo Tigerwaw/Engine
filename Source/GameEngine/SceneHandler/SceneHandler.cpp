@@ -6,6 +6,7 @@
 #include "CollisionHandler/CollisionHandler.h"
 #include "ComponentSystem/Scene.h"
 #include "ComponentSystem/GameObject.h"
+#include "ComponentSystem/Components/Graphics/Camera.h"
 
 #include "Engine.h"
 
@@ -81,6 +82,11 @@ void SceneHandler::UnloadScene(unsigned aSceneIndex)
 void SceneHandler::ChangeActiveScene(unsigned aSceneIndex)
 {
     myActiveScene = myLoadedScenes[aSceneIndex];
+}
+
+void SceneHandler::SetMainCamera(std::shared_ptr<Camera> aCamera)
+{
+    aCamera->SetAsMainCamera();
 }
 
 std::shared_ptr<GameObject> SceneHandler::FindGameObjectByName(const std::string& aName)

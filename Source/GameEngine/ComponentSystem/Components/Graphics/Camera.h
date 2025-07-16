@@ -12,6 +12,10 @@ class Transform;
 class Camera : public Component
 {
 public:
+	static Camera* GetMainCamera();
+	void SetAsMainCamera();
+	bool IsMainCamera() const;
+
 	Camera() = default;
 	Camera(float aFOV, float aNearPlane, float aFarPlane, Math::Vector2f aResolution);
 	Camera(float aLeft, float aRight, float aTop, float aBottom, float aNear, float aFar);
@@ -25,11 +29,8 @@ public:
 	float GetFarPlane() const { return myFarPlane; }
 	float GetHorizontalFOV() const { return myHFOV; }
 	Math::Vector2f GetViewportDimensions() const { return myViewportDimensions; }
-	void SetAsMainCamera(bool aIsMainCamera) { myIsMainCamera = aIsMainCamera; }
-	bool IsMainCamera() const { return myIsMainCamera; }
 
 	const std::array<Math::Vector3f, 8>& GetFrustumCorners() const { return myFrustumCorners; }
-	// Get Frustum Plane Volume in object space (Leave arguments empty to get in world space)
 	Math::PlaneVolume<float> GetFrustumPlaneVolume(Math::Matrix4x4f aObjectSpace = Math::Matrix4x4f());
 	bool GetViewcullingIntersection(std::shared_ptr<Transform> aObjectTransform, const Math::AABB3D<float>& aObjectAABB);
 
@@ -37,7 +38,6 @@ public:
 	bool Deserialize(nl::json& aJsonObject) override;
 
 protected:
-	bool myIsMainCamera = false;
 	Math::Matrix4x4f myProjectionMatrix;
 	std::array<Math::Vector3f, 8> myFrustumCorners;
 	float myNearPlane = 0;

@@ -4,15 +4,6 @@
 #include "Engine.h"
 #include "Time/Timer.h"
 
-GameObject::GameObject()
-{
-}
-
-GameObject::~GameObject()
-{
-	myComponents.clear();
-}
-
 void GameObject::Update()
 {
 	if (!GetActive()) return;
