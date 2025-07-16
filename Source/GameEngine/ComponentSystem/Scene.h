@@ -30,7 +30,6 @@ public:
 	const bool GetActive() const { return myIsActive; }
 
 private:
-	void SortGameObjects();
 	void DestroyInternal(GameObject* aGameObject);
 	void DestroyHierarchy(Transform* aTransform);
 	void UpdateBoundingBox(std::shared_ptr<GameObject> aGameObject);

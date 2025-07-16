@@ -592,6 +592,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		desc.samplerList[14] = SamplerName(SamplerType::LUT);
 		desc.samplerList[15] = SamplerName(SamplerType::Shadow);
 		desc.blendMode = BlendMode::Alpha;
+		desc.useReadOnlyDepthStencilState = true;
 
 		std::shared_ptr<PipelineStateObject> pso = std::make_shared<PipelineStateObject>();
 		if (!rv.CreatePSO(*pso, desc))

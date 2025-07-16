@@ -41,6 +41,7 @@ void RenderAssembler::RenderScene(Scene& aScene)
 	PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Add Render Commands");
 
 	SceneRenderData sceneRenderData = AssembleLists(aScene);
+	SortRenderables(sceneRenderData);
 
 	if (GraphicsEngine::Get().CurrentDebugRenderMode == DebugRenderMode::None)
 	{
@@ -59,9 +60,7 @@ RenderAssembler::SceneRenderData RenderAssembler::AssembleLists(Scene& aScene)
 	PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Assemble Scene Data");
 
 	SceneRenderData sceneRenderData;
-	sceneRenderData.castShadowsModels.reserve(100);
-	sceneRenderData.castShadowsAnimModels.reserve(100);
-	sceneRenderData.castShadowsInstancedModels.reserve(100);
+	sceneRenderData.castShadows.reserve(100);
 	sceneRenderData.drawDeferred.reserve(100);
 	sceneRenderData.drawForward.reserve(100);
 	sceneRenderData.pointLights.reserve(4);
@@ -83,7 +82,7 @@ RenderAssembler::SceneRenderData RenderAssembler::AssembleLists(Scene& aScene)
 			{
 				if (model->GetCastShadows())
 				{
-					sceneRenderData.castShadowsModels.emplace_back(model);
+					sceneRenderData.castShadows.emplace_back(gameObject);
 				}
 
 				if (model->GetMaterials().size() > 0)
@@ -111,7 +110,7 @@ RenderAssembler::SceneRenderData RenderAssembler::AssembleLists(Scene& aScene)
 			{
 				if (animModel->GetCastShadows())
 				{
-					sceneRenderData.castShadowsAnimModels.emplace_back(animModel);
+					sceneRenderData.castShadows.emplace_back(gameObject);
 				}
 
 				if (animModel->GetMaterials().size() > 0)
@@ -139,7 +138,7 @@ RenderAssembler::SceneRenderData RenderAssembler::AssembleLists(Scene& aScene)
 			{
 				if (instancedModel->GetCastShadows())
 				{
-					sceneRenderData.castShadowsInstancedModels.emplace_back(instancedModel);
+					sceneRenderData.castShadows.emplace_back(gameObject);
 				}
 
 				if (instancedModel->GetMaterials().size() > 0)
@@ -165,13 +164,13 @@ RenderAssembler::SceneRenderData RenderAssembler::AssembleLists(Scene& aScene)
 			std::shared_ptr<ParticleSystem> particleSystem = gameObject->GetComponent<ParticleSystem>();
 			if (particleSystem && particleSystem->GetActive())
 			{
-				sceneRenderData.particleSystems.emplace_back(particleSystem);
+				sceneRenderData.drawParticleSystems.emplace_back(gameObject);
 			}
 
 			std::shared_ptr<TrailSystem> trailSystem = gameObject->GetComponent<TrailSystem>();
 			if (trailSystem && trailSystem->GetActive())
 			{
-				sceneRenderData.trailSystems.emplace_back(trailSystem);
+				sceneRenderData.drawParticleSystems.emplace_back(gameObject);
 			}
 		}
 
@@ -237,6 +236,58 @@ RenderAssembler::SceneRenderData RenderAssembler::AssembleLists(Scene& aScene)
 	}
 
 	return sceneRenderData;
+}
+
+void RenderAssembler::SortRenderables(SceneRenderData& aRenderData)
+{
+	PIXScopedEvent(PIX_COLOR_INDEX(8), "Sort GameObjects in Scene");
+
+	Math::Vector3f camPos = aRenderData.mainCamera->gameObject->GetComponent<Transform>()->GetTranslation(true);
+
+	std::stable_sort(aRenderData.castShadows.begin(), aRenderData.castShadows.end(), [camPos](const std::shared_ptr<GameObject> lhs, const std::shared_ptr<GameObject> rhs)
+		{
+			std::shared_ptr<Transform> transform1 = lhs->GetComponent<Transform>();
+			std::shared_ptr<Transform> transform2 = rhs->GetComponent<Transform>();
+			if (transform1 && transform2)
+			{
+				float distTo1 = Math::Vector3f(camPos - transform1->GetTranslation(true)).LengthSqr();
+				float distTo2 = Math::Vector3f(camPos - transform2->GetTranslation(true)).LengthSqr();
+
+				return distTo1 < distTo2;
+			}
+
+			return false;
+		});
+
+	std::stable_sort(aRenderData.drawDeferred.begin(), aRenderData.drawDeferred.end(), [camPos](const std::shared_ptr<GameObject> lhs, const std::shared_ptr<GameObject> rhs)
+		{
+			std::shared_ptr<Transform> transform1 = lhs->GetComponent<Transform>();
+			std::shared_ptr<Transform> transform2 = rhs->GetComponent<Transform>();
+			if (transform1 && transform2)
+			{
+				float distTo1 = Math::Vector3f(camPos - transform1->GetTranslation(true)).LengthSqr();
+				float distTo2 = Math::Vector3f(camPos - transform2->GetTranslation(true)).LengthSqr();
+
+				return distTo1 < distTo2;
+			}
+
+			return false;
+		});
+
+	std::stable_sort(aRenderData.drawForward.begin(), aRenderData.drawForward.end(), [camPos](const std::shared_ptr<GameObject> lhs, const std::shared_ptr<GameObject> rhs)
+		{
+			std::shared_ptr<Transform> transform1 = lhs->GetComponent<Transform>();
+			std::shared_ptr<Transform> transform2 = rhs->GetComponent<Transform>();
+			if (transform1 && transform2)
+			{
+				float distTo1 = Math::Vector3f(camPos - transform1->GetTranslation(true)).LengthSqr();
+				float distTo2 = Math::Vector3f(camPos - transform2->GetTranslation(true)).LengthSqr();
+
+				return distTo1 > distTo2;
+			}
+
+			return false;
+		});
 }
 
 void RenderAssembler::RenderDebug(SceneRenderData& aRenderData)
@@ -416,13 +467,34 @@ void RenderAssembler::RenderDeferred(SceneRenderData& aRenderData)
 	}
 	gfxList.Enqueue<EndEvent>();
 	
-	// Forward meshes
+	// Forward objects
 	{
 		PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Draw Forward Objects");
 		gfxList.Enqueue<BeginEvent>("Draw Forward Objects");
 		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HDR), gfx.GetDepthBuffer(), false, false);
 		QueueForwardObjects(aRenderData);
 		gfxList.Enqueue<EndEvent>();
+	}
+
+	for (auto& gameObject : aRenderData.drawParticleSystems)
+	{
+		std::shared_ptr<ParticleSystem> particleSystem = gameObject->GetComponent<ParticleSystem>();
+		if (particleSystem && particleSystem->GetActive())
+		{
+			RenderParticles::RenderParticlesData data;
+			data.emitters = particleSystem->GetEmitters();
+			data.transform = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderParticles>(std::move(data));
+		}
+
+		std::shared_ptr<TrailSystem> trailSystem = gameObject->GetComponent<TrailSystem>();
+		if (trailSystem && trailSystem->GetActive())
+		{
+			RenderTrail::TrailData data;
+			data.emitters = trailSystem->GetEmitters();
+			data.transform = gameObject->GetComponent<Transform>()->GetWorldMatrix();
+			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderTrail>(std::move(data));
+		}
 	}
 
 	QueueDebugLines(aRenderData);
@@ -447,16 +519,6 @@ void RenderAssembler::RenderDeferred(SceneRenderData& aRenderData)
 		gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::HDR));
 		gfxList.Enqueue<RenderFullscreenQuad>();
 		gfxList.Enqueue<ClearTextureResource>(30);
-		gfxList.Enqueue<EndEvent>();
-	}
-
-	// Particle & Trail Systems
-	{
-		PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Particle Systems");
-		gfxList.Enqueue<BeginEvent>("Render Particle Systems");
-		gfxList.Enqueue<SetRenderTarget>(renderTarget, gfx.GetDepthBuffer(), false, false);
-		QueueParticleSystems(aRenderData);
-		QueueTrailSystems(aRenderData);
 		gfxList.Enqueue<EndEvent>();
 	}
 
@@ -668,32 +730,6 @@ void RenderAssembler::QueueForwardObjects(SceneRenderData& aRenderData)
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMesh>(std::move(data));
 			}
 		}
-	}
-}
-
-void RenderAssembler::QueueParticleSystems(SceneRenderData& aRenderData)
-{
-	PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Queue All Particle Systems");
-
-	for (auto& particleSystem : aRenderData.particleSystems)
-	{
-		RenderParticles::RenderParticlesData data;
-		data.emitters = particleSystem->GetEmitters();
-		data.transform = particleSystem->gameObject->GetComponent<Transform>()->GetWorldMatrix();
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderParticles>(std::move(data));
-	}
-}
-
-void RenderAssembler::QueueTrailSystems(SceneRenderData& aRenderData)
-{
-	PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Queue All Trail Systems");
-
-	for (auto& trailSystem : aRenderData.trailSystems)
-	{
-		RenderTrail::TrailData data;
-		data.emitters = trailSystem->GetEmitters();
-		data.transform = trailSystem->gameObject->GetComponent<Transform>()->GetWorldMatrix();
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderTrail>(std::move(data));
 	}
 }
 
@@ -940,11 +976,12 @@ void RenderAssembler::QueueObjectShadows(SceneRenderData& aRenderData, std::shar
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Queue Object Shadows");
 
+	for (auto& object : aRenderData.castShadows)
 	{
-		PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Queue Model Shadows");
-		for (auto& model : aRenderData.castShadowsModels)
+		auto transform = object->GetComponent<Transform>();
+
+		if (auto model = object->GetComponent<Model>())
 		{
-			auto transform = model->gameObject->GetComponent<Transform>();
 			if (!model->GetShouldViewcull() || IsInsideFrustum(aRenderCamera, transform, model->GetBoundingBox()))
 			{
 				PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Mesh Shadow Data");
@@ -954,13 +991,9 @@ void RenderAssembler::QueueObjectShadows(SceneRenderData& aRenderData, std::shar
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMeshShadow>(std::move(data));
 			}
 		}
-	}
 
-	{
-		PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Queue Anim Model Shadows");
-		for (auto& animModel : aRenderData.castShadowsAnimModels)
+		if (auto animModel = object->GetComponent<AnimatedModel>())
 		{
-			auto transform = animModel->gameObject->GetComponent<Transform>();
 			if (!animModel->GetShouldViewcull() || IsInsideFrustum(aRenderCamera, transform, animModel->GetBoundingBox()))
 			{
 				PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Anim Mesh Shadow Data");
@@ -971,13 +1004,9 @@ void RenderAssembler::QueueObjectShadows(SceneRenderData& aRenderData, std::shar
 				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMeshShadow>(std::move(data));
 			}
 		}
-	}
 
-	{
-		PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Queue Instanced Model Shadows");
-		for (auto& instancedModel : aRenderData.castShadowsInstancedModels)
+		if (auto instancedModel = object->GetComponent<InstancedModel>())
 		{
-			auto transform = instancedModel->gameObject->GetComponent<Transform>();
 			if (!instancedModel->GetShouldViewcull() || IsInsideFrustum(aRenderCamera, transform, instancedModel->GetBoundingBox()))
 			{
 				PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Instanced Mesh Shadow Data");
@@ -996,45 +1025,47 @@ void RenderAssembler::QueueObjectShadows(SceneRenderData& aRenderData, std::shar
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Queue Object Shadows");
 
-	for (auto& model : aRenderData.castShadowsModels)
+	for (auto& object : aRenderData.castShadows)
 	{
-		auto transform = model->gameObject->GetComponent<Transform>();
-		if (!model->GetShouldViewcull() || IsInsideRadius(aPointLight, transform, model->GetBoundingBox()))
-		{
-			PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Mesh Shadow Data");
-			RenderMeshShadow::RenderMeshShadowData data;
-			data.mesh = model->GetMesh();
-			data.transform = transform->GetWorldMatrix();
-			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMeshShadow>(std::move(data));
-		}
-	}
+		auto transform = object->GetComponent<Transform>();
 
-	for (auto& animModel : aRenderData.castShadowsAnimModels)
-	{
-		auto transform = animModel->gameObject->GetComponent<Transform>();
-		if (!animModel->GetShouldViewcull() || IsInsideRadius(aPointLight, transform, animModel->GetBoundingBox()))
+		if (auto model = object->GetComponent<Model>())
 		{
-			PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Anim Mesh Data");
-			RenderAnimatedMeshShadow::AnimMeshShadowRenderData data;
-			data.mesh = animModel->GetMesh();
-			data.transform = transform->GetWorldMatrix();
-			data.jointTransforms = animModel->GetCurrentPose();
-			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMeshShadow>(std::move(data));
+			if (!model->GetShouldViewcull() || IsInsideRadius(aPointLight, transform, model->GetBoundingBox()))
+			{
+				PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Mesh Shadow Data");
+				RenderMeshShadow::RenderMeshShadowData data;
+				data.mesh = model->GetMesh();
+				data.transform = transform->GetWorldMatrix();
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderMeshShadow>(std::move(data));
+			}
 		}
-	}
 
-	for (auto& instancedModel : aRenderData.castShadowsInstancedModels)
-	{
-		auto transform = instancedModel->gameObject->GetComponent<Transform>();
-		if (!instancedModel->GetShouldViewcull() || IsInsideRadius(aPointLight, transform, instancedModel->GetBoundingBox()))
+		if (auto animModel = object->GetComponent<AnimatedModel>())
 		{
-			PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Instanced Mesh Data");
-			RenderInstancedMeshShadow::InstancedMeshShadowRenderData data;
-			data.mesh = instancedModel->GetMesh();
-			data.transform = transform->GetWorldMatrix();
-			data.instanceBuffer = &instancedModel->GetInstanceBuffer();
-			data.meshCount = instancedModel->GetMeshCount();
-			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMeshShadow>(std::move(data));
+			if (!animModel->GetShouldViewcull() || IsInsideRadius(aPointLight, transform, animModel->GetBoundingBox()))
+			{
+				PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Anim Mesh Shadow Data");
+				RenderAnimatedMeshShadow::AnimMeshShadowRenderData data;
+				data.mesh = animModel->GetMesh();
+				data.transform = transform->GetWorldMatrix();
+				data.jointTransforms = animModel->GetCurrentPose();
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderAnimatedMeshShadow>(std::move(data));
+			}
+		}
+
+		if (auto instancedModel = object->GetComponent<InstancedModel>())
+		{
+			if (!instancedModel->GetShouldViewcull() || IsInsideRadius(aPointLight, transform, instancedModel->GetBoundingBox()))
+			{
+				PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Create Instanced Mesh Shadow Data");
+				RenderInstancedMeshShadow::InstancedMeshShadowRenderData data;
+				data.mesh = instancedModel->GetMesh();
+				data.transform = transform->GetWorldMatrix();
+				data.instanceBuffer = &instancedModel->GetInstanceBuffer();
+				data.meshCount = instancedModel->GetMeshCount();
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<RenderInstancedMeshShadow>(std::move(data));
+			}
 		}
 	}
 }

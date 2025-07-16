@@ -17,5 +17,5 @@ struct ParticleEmitterSettings
 	float Lifetime = 5.0f;
 	float GravityScale = 1.0f;
 	Math::Curve<float> Angle;
-	Math::Vector4f ChannelMask = { 1.0f, 0, 0, 0 };
+	Math::Vector4f ChannelMask = { 1.0f, 1.0f, 1.0f, 1.0f };
 };

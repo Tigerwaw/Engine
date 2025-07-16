@@ -9,5 +9,5 @@ struct TrailEmitterSettings
 	Math::Curve<Math::Vector4f> Color;
 	Math::Curve<float> Width;
 	unsigned Length = 10;
-	Math::Vector4f ChannelMask = { 1.0f, 0, 0, 0 };
+	Math::Vector4f ChannelMask = { 1.0f, 1.0f, 1.0f, 1.0f };
 };

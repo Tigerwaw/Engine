@@ -5,6 +5,7 @@ class GameObject;
 class SceneLoader;
 class RenderAssembler;
 class CollisionHandler;
+class Camera;
 
 class SceneHandler
 {

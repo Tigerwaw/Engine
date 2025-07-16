@@ -38,14 +38,10 @@ private:
         std::vector<std::shared_ptr<PointLight>> pointLights;
         std::vector<std::shared_ptr<SpotLight>> spotLights;
 
-        std::vector<std::shared_ptr<Model>> castShadowsModels;
-        std::vector<std::shared_ptr<AnimatedModel>> castShadowsAnimModels;
-        std::vector<std::shared_ptr<InstancedModel>> castShadowsInstancedModels;
-
+        std::vector<std::shared_ptr<GameObject>> castShadows;
         std::vector<std::shared_ptr<GameObject>> drawDeferred;
         std::vector<std::shared_ptr<GameObject>> drawForward;
-        std::vector<std::shared_ptr<ParticleSystem>> particleSystems;
-        std::vector<std::shared_ptr<TrailSystem>> trailSystems;
+        std::vector<std::shared_ptr<GameObject>> drawParticleSystems;
 
         std::vector<std::shared_ptr<GameObject>> drawCollidersObjects;
         std::vector<std::shared_ptr<GameObject>> drawBoundingBoxesObjects;
@@ -53,13 +49,13 @@ private:
     };
 
     SceneRenderData AssembleLists(Scene& aScene);
+    void SortRenderables(SceneRenderData& aRenderData);
+
     void RenderDebug(SceneRenderData& aRenderData);
     void RenderDeferred(SceneRenderData& aRenderData);
 
     void QueueDeferredObjects(SceneRenderData& aRenderData);
     void QueueForwardObjects(SceneRenderData& aRenderData);
-    void QueueParticleSystems(SceneRenderData& aRenderData);
-    void QueueTrailSystems(SceneRenderData& aRenderData);
     void QueueShadowmapTextureResources(SceneRenderData& aRenderData);
     void QueueUpdateLightBuffer(SceneRenderData& aRenderData);
     void QueueSpotLightShadows(SceneRenderData& aRenderData);
