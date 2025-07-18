@@ -72,7 +72,6 @@ void GraphicsCommandList::Reset()
             }
         }
 
-        memset(myData, 0, mySize);
         myRoot = reinterpret_cast<GraphicsCommandBase*>(myData);
         myLink = &myRoot;
         myCursor = 0;

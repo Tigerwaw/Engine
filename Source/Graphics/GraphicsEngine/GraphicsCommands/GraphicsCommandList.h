@@ -45,7 +45,7 @@ class Mesh;
 class GraphicsCommandList final
 {
 public:
-	GraphicsCommandList(size_t aMemorySize = 52428800);
+	GraphicsCommandList(size_t aMemorySize = 16777216);
 	~GraphicsCommandList();
 
 	GraphicsCommandList(const GraphicsCommandList&) = delete;
@@ -76,7 +76,7 @@ public:
 		::new(ptr) CommandClass(std::forward<Args>(args)...);
 		*myLink = ptr;
 		myLink = &ptr->Next;
-		myNumCommands++;
+		++myNumCommands;
 	}
 
 	void Enqueue(GraphicsCommandFunction&& aLambda)
