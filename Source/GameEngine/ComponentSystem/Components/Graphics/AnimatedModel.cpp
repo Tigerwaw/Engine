@@ -50,6 +50,7 @@ void AnimatedModel::Update()
     if (!ValidateMesh()) return;
     if (myAnimationLayers.empty()) return;
 
+    PIXScopedEvent(PIX_COLOR_INDEX(2), "AnimatedModel Update");
     for (auto& animationLayer : myAnimationLayers)
     {
         UpdateAnimationLayer(animationLayer);
@@ -404,6 +405,7 @@ bool AnimatedModel::Deserialize(nl::json& aJsonObject)
 void AnimatedModel::UpdateAnimationLayer(AnimationLayer& aAnimationLayer)
 {
     if (!aAnimationLayer.isPlaying) return;
+    PIXScopedEvent(PIX_COLOR_INDEX(2), "AnimatedModel Update Animation Layer");
 
     UpdateAnimationState(*aAnimationLayer.currentState);
 
@@ -437,6 +439,8 @@ void AnimatedModel::UpdateAnimationLayer(AnimationLayer& aAnimationLayer)
 
 void AnimatedModel::UpdateAnimationState(AnimationState& aAnimationState)
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(2), "AnimatedModel Update Animation State");
+
     aAnimationState.currentTime += Engine::Get().GetTimer().GetDeltaTime();
     if (aAnimationState.currentTime < aAnimationState.frameTime) return;
 
@@ -473,6 +477,8 @@ void AnimatedModel::UpdateAnimationState(AnimationState& aAnimationState)
 
 void AnimatedModel::UpdateAnimation(AnimationLayer& aAnimLayer, unsigned aJointIdx, const Math::Matrix4x4f& aParentJointTransform, std::array<Math::Matrix4x4f, 128>& outTransforms)
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(2), "AnimatedModel Update Animation");
+
     Mesh::Skeleton::Joint currentJoint = myMesh->GetSkeleton().myJoints[aJointIdx];
 
     Math::Matrix4x4f currentFrameJointTransform = aAnimLayer.currentPose[aJointIdx];
@@ -489,10 +495,12 @@ void AnimatedModel::UpdateAnimation(AnimationLayer& aAnimLayer, unsigned aJointI
 
 void AnimatedModel::UpdatePose(AnimationLayer& aAnimLayer)
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(2), "AnimatedModel Update Pose");
+
     const Mesh::Skeleton& skeleton = myMesh->GetSkeleton();
     for (size_t i = aAnimLayer.startJointID; i < skeleton.myJoints.size(); i++)
     {
-        Mesh::Skeleton::Joint currentJoint = myMesh->GetSkeleton().myJoints[i];
+        const Mesh::Skeleton::Joint& currentJoint = skeleton.myJoints[i];
         if (aAnimLayer.currentState->animation->Frames.size() == 0) continue;
         aAnimLayer.currentPose[i] = aAnimLayer.currentState->animation->Frames[aAnimLayer.currentState->currentFrame].BoneTransforms[currentJoint.Name];
     }
@@ -500,10 +508,12 @@ void AnimatedModel::UpdatePose(AnimationLayer& aAnimLayer)
 
 void AnimatedModel::BlendPoses(AnimationLayer& aAnimLayer, float aBlendFactor)
 {
+    PIXScopedEvent(PIX_COLOR_INDEX(2), "AnimatedModel Blend Poses");
+
     const Mesh::Skeleton& skeleton = myMesh->GetSkeleton();
     for (size_t i = aAnimLayer.startJointID; i < skeleton.myJoints.size(); i++)
     {
-        Mesh::Skeleton::Joint currentJoint = myMesh->GetSkeleton().myJoints[i];
+        const Mesh::Skeleton::Joint& currentJoint = skeleton.myJoints[i];
         Math::Matrix4x4f currentStateJointTransform = aAnimLayer.currentState->animation->Frames[aAnimLayer.currentState->currentFrame].BoneTransforms[currentJoint.Name];
         Math::Matrix4x4f nextStateJointTransform = aAnimLayer.nextState->animation->Frames[aAnimLayer.nextState->currentFrame].BoneTransforms[currentJoint.Name];
          
