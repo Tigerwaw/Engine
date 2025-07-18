@@ -10,7 +10,21 @@ public:
 
 	void InitializeApplication() override;
 	void UpdateApplication() override;
+	void UpdateDebug() override;
 private:
+	void TopMenuBar();
+	void FeatureOptions();
+	void LightingSettings();
+	void PerformanceInfo();
+	void ControlsInfo();
+	void ResolutionOptions();
+
+	bool myShowFeatureOptions = true;
+	bool myShowLightingSettings = true;
+	bool myShowPerformanceInfo = true;
+	bool myShowControlsInfo = true;
+	bool myShowResolutionOptions = false;
+
 	int currentAnimation = 0;
 	std::vector<std::string> animationNames = {
 		"Idle",

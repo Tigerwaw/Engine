@@ -101,548 +101,6 @@ void FeatureShowcase::InitializeApplication()
 	}
 
 	Engine::Get().GetSceneHandler().Instantiate(instancedModelObj);
-	
-	Engine::Get().GetImGuiHandler().AddNewFunction([]()
-		{
-#ifndef _RETAIL
-			Math::Vector2f resolution = Engine::Get().GetResolution();
-			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.02f * resolution.y });
-			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.35f * resolution.y });
-			bool open = true;
-			ImGui::Begin("FeatureShowcase", &open, ImGuiWindowFlags_NoSavedSettings);
-
-			ImGui::Checkbox("Use Viewculling", &Engine::Get().UseViewCulling);
-			ImGui::Checkbox("Draw Bounding Boxes", &Engine::Get().DrawBoundingBoxes);
-			ImGui::Checkbox("Draw Camera Frustums", &Engine::Get().DrawCameraFrustums);
-			ImGui::Checkbox("Draw Colliders", &Engine::Get().DrawColliders);
-
-			PostProcessingSettings& ppSettings = GraphicsEngine::Get().GetPostProcessingSettings();
-
-			// Rendering
-			{
-				ImGui::Text("Rendering Mode");
-				if (ImGui::BeginCombo("##RenderModeDropdown", DebugRenderModeName(static_cast<DebugRenderMode>(GraphicsEngine::Get().CurrentDebugRenderMode))))
-				{
-					for (unsigned i = 0; i < static_cast<unsigned>(DebugRenderMode::COUNT); i++)
-					{
-						if (ImGui::Selectable(DebugRenderModeName(static_cast<DebugRenderMode>(i))))
-							GraphicsEngine::Get().CurrentDebugRenderMode = static_cast<DebugRenderMode>(i);
-					}
-					ImGui::EndCombo();
-				}
-			}
-
-			// Tonemapping
-			{
-				ImGui::Text("Tonemapper");
-				if (ImGui::BeginCombo("##TonemapperDropdown", TonemapperName(ppSettings.Tonemapper)))
-				{
-					for (unsigned i = 0; i < static_cast<unsigned>(TonemapperType::COUNT); i++)
-					{
-						if (ImGui::Selectable(TonemapperName(static_cast<TonemapperType>(i)))) ppSettings.Tonemapper = static_cast<TonemapperType>(i);
-					}
-					ImGui::EndCombo();
-				}
-			}
-
-			ImGui::Checkbox("Enable Bloom", &ppSettings.BloomEnabled);
-			ImGui::Checkbox("Enable SSAO", &ppSettings.SSAOEnabled);
-
-			ImGui::Separator();
-
-			// Animation
-			{
-				ImGui::Text("Animations");
-				std::shared_ptr<AnimatedModel> tgaBroModel = Engine::Get().GetSceneHandler().FindGameObjectByName("TgaBro")->GetComponent<AnimatedModel>();
-				if (ImGui::BeginCombo("##AnimationDropdown", tgaBroModel->GetCurrentAnimationNameOnLayer(0).c_str()))
-				{
-					if (ImGui::Selectable("Idle")) tgaBroModel->SetCurrentAnimationOnLayer("Idle", "", 0.5f);
-					if (ImGui::Selectable("Walk")) tgaBroModel->SetCurrentAnimationOnLayer("Walk", "", 0.5f);;
-					if (ImGui::Selectable("Run")) tgaBroModel->SetCurrentAnimationOnLayer("Run", "", 0.5f);;
-					if (ImGui::Selectable("Wave")) tgaBroModel->SetCurrentAnimationOnLayer("Wave", "", 0.5f);;
-					ImGui::EndCombo();
-				}
-			}
-
-			// Test Audio
-			{
-				float sfxVolume = Engine::Get().GetAudioEngine().GetVolumeOfBus(BusType::SFX);
-				if (ImGui::SliderFloat("SFX Volume", &sfxVolume, 0, 1.0f)) Engine::Get().GetAudioEngine().SetVolumeOfBus(BusType::SFX, sfxVolume);
-
-				float musicVolume = Engine::Get().GetAudioEngine().GetVolumeOfBus(BusType::Music);
-				if (ImGui::SliderFloat("Music Volume", &musicVolume, 0, 1.0f)) Engine::Get().GetAudioEngine().SetVolumeOfBus(BusType::Music, musicVolume);
-			}
-
-			// Test VFX
-			{
-				std::shared_ptr<VFXModel> vfx = Engine::Get().GetSceneHandler().FindGameObjectByName("VFXTest")->GetComponent<VFXModel>();
-				if (ImGui::Button("Play VFX"))
-				{
-					if (vfx)
-					{
-						vfx->PlayVFX();
-					}
-				}
-			}
-
-			ImGui::End();
-#endif
-		});
-
-	Engine::Get().GetImGuiHandler().AddNewFunction([]()
-		{
-#ifndef _RETAIL
-			Math::Vector2f resolution = Engine::Get().GetResolution();
-			ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.4f * resolution.y });
-			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.55f * resolution.y });
-
-			PostProcessingSettings& ppSettings = GraphicsEngine::Get().GetPostProcessingSettings();
-
-			bool open = true;
-			ImGui::Begin("Lighting Settings", &open, ImGuiWindowFlags_NoSavedSettings);
-			{
-				if (ImGui::BeginTabBar("Lights"))
-				{
-					if (ImGui::BeginTabItem("Ambient Light"))
-					{
-						std::shared_ptr<GameObject> ambientLight = Engine::Get().GetSceneHandler().FindGameObjectByName("A_Light");
-						bool active = ambientLight->GetActive();
-						if (ImGui::Checkbox("Set Active##Ambient", &active)) ambientLight->SetActive(active);
-
-						std::shared_ptr<AmbientLight> aLight = ambientLight->GetComponent<AmbientLight>();
-						float intensity = aLight->GetIntensity();
-						ImGui::Text("Intensity");
-						if (ImGui::SliderFloat("##AmbientIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) aLight->SetIntensity(intensity);
-						ImGui::Spacing();
-						float color[3] = { aLight->GetColor().x, aLight->GetColor().y, aLight->GetColor().z };
-						ImGui::Text("Color");
-						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
-						if (ImGui::ColorPicker3("##AmbientColor", color, flags)) aLight->SetColor({ color[0], color[1], color[2] });
-						ImGui::EndTabItem();
-
-						// Luminance
-						ImGui::Text("Luminance");
-						if (ImGui::BeginCombo("##LuminanceDropdown", LuminanceName(ppSettings.LuminanceFunction)))
-						{
-							for (unsigned i = 0; i < static_cast<unsigned>(LuminanceType::COUNT); i++)
-							{
-								if (ImGui::Selectable(LuminanceName(static_cast<LuminanceType>(i)))) ppSettings.LuminanceFunction = static_cast<LuminanceType>(i);
-							}
-							ImGui::EndCombo();
-						}
-
-						// Bloom
-						ImGui::Text("Bloom");
-						if (ImGui::BeginCombo("##BloomDropdown", BloomName(ppSettings.BloomFunction)))
-						{
-							for (unsigned i = 0; i < static_cast<unsigned>(BloomType::COUNT); i++)
-							{
-								if (ImGui::Selectable(BloomName(static_cast<BloomType>(i)))) ppSettings.BloomFunction = static_cast<BloomType>(i);
-							}
-							ImGui::EndCombo();
-						}
-
-						ImGui::SliderFloat("Bloom Intensity", &ppSettings.BloomStrength, 0, 1.0f);
-						ImGui::SliderFloat("SSAO Noise Power", &ppSettings.SSAONoisePower, 0, 1.0f);
-						ImGui::SliderFloat("SSAO Radius", &ppSettings.SSAORadius, 0, 0.5f);
-						ImGui::SliderFloat("SSAO Bias", &ppSettings.SSAOBias, 0, 0.1f);
-					}
-
-					if (ImGui::BeginTabItem("Directional Light"))
-					{
-						std::shared_ptr<GameObject> directionalLight = Engine::Get().GetSceneHandler().FindGameObjectByName("D_Light");
-						bool active = directionalLight->GetActive();
-						if (ImGui::Checkbox("Set Active##Directional", &active)) directionalLight->SetActive(active);
-
-						std::shared_ptr<DirectionalLight> dLight = directionalLight->GetComponent<DirectionalLight>();
-						float intensity = dLight->GetIntensity();
-						ImGui::Text("Intensity");
-						if (ImGui::SliderFloat("##DirectionalIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) dLight->SetIntensity(intensity);
-						ImGui::Spacing();
-						float minBias = dLight->GetMinShadowBias();
-						float maxBias = dLight->GetMaxShadowBias();
-						float lightSize = dLight->GetLightSize();
-						ImGui::Text("Shadow Min Bias");
-						if (ImGui::SliderFloat("##DirectionalMinBias", &minBias, 0, 0.001f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
-						ImGui::Text("Shadow Max Bias");
-						if (ImGui::SliderFloat("##DirectionalMaxBias", &maxBias, 0, 0.1f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
-						ImGui::Text("Light Size");
-						if (ImGui::SliderFloat("##DirectionalSize", &lightSize, 0, 2000.0f)) dLight->SetLightSize(lightSize);
-						ImGui::Spacing();
-						float color[3] = { dLight->GetColor().x, dLight->GetColor().y, dLight->GetColor().z };
-						ImGui::Text("Color");
-						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
-						if (ImGui::ColorPicker3("##DirectionalColor", color, flags)) dLight->SetColor({ color[0], color[1], color[2] });
-						ImGui::EndTabItem();
-					}
-
-					if (ImGui::BeginTabItem("Pointlight"))
-					{
-						std::shared_ptr<GameObject> pointLight = Engine::Get().GetSceneHandler().FindGameObjectByName("P_Light");
-						bool active = pointLight->GetActive();
-						if (ImGui::Checkbox("Set Active##Point", &active))  pointLight->SetActive(active);
-
-						std::shared_ptr<PointLight> pLight = pointLight->GetComponent<PointLight>();
-						float value = pLight->GetIntensity();
-						ImGui::Text("Intensity");
-						if (ImGui::SliderFloat("##PointIntensity", &value, 0, 500000.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) pLight->SetIntensity(value);
-
-						ImGui::Spacing();
-
-						float minBias = pLight->GetMinShadowBias();
-						float maxBias = pLight->GetMaxShadowBias();
-						float lightSize = pLight->GetLightSize();
-						ImGui::Text("Shadow Min Bias");
-						if (ImGui::SliderFloat("##PointMinBias", &minBias, 0, 0.001f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
-						ImGui::Text("Shadow Max Bias");
-						if (ImGui::SliderFloat("##PointMaxBias", &maxBias, 0, 0.01f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
-						ImGui::Text("Light Size");
-						if (ImGui::SliderFloat("##PointSize", &lightSize, 0, 10000.0f)) pLight->SetLightSize(lightSize);
-						ImGui::Spacing();
-
-						float color[3] = { pLight->GetColor().x, pLight->GetColor().y, pLight->GetColor().z };
-						ImGui::Text("Color");
-						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
-						if (ImGui::ColorPicker3("##PointColor", color, flags)) pLight->SetColor({ color[0], color[1], color[2] });
-
-						ImGui::Spacing();
-
-						float pos[3] = { pLight->GetPosition().x, pLight->GetPosition().y, pLight->GetPosition().z };
-						ImGui::Text("Position");
-						if (ImGui::DragFloat3("##PLightPos", pos)) pLight->gameObject->GetComponent<Transform>()->SetTranslation(pos[0], pos[1], pos[2]);
-						ImGui::EndTabItem();
-					}
-
-					if (ImGui::BeginTabItem("Spotlight"))
-					{
-						std::shared_ptr<GameObject> spotLight = Engine::Get().GetSceneHandler().FindGameObjectByName("S_Light");
-						bool active = spotLight->GetActive();
-						if (ImGui::Checkbox("Set Active##Spot", &active)) spotLight->SetActive(active);
-
-						std::shared_ptr<SpotLight> sLight = spotLight->GetComponent<SpotLight>();
-						float intensity = sLight->GetIntensity();
-						ImGui::Text("Intensity");
-						if (ImGui::SliderFloat("##SpotIntensity", &intensity, 0, 1000000.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) sLight->SetIntensity(intensity);
-						ImGui::Spacing();
-						float angle = sLight->GetConeAngleDegrees();
-						ImGui::Text("Focus");
-						if (ImGui::SliderFloat("##SpotConeAngle", &angle, 600.0f, 50000.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) sLight->SetConeAngle(angle);
-						ImGui::Spacing();
-
-						float minBias = sLight->GetMinShadowBias();
-						float maxBias = sLight->GetMaxShadowBias();
-						float lightSize = sLight->GetLightSize();
-						ImGui::Text("Shadow Min Bias");
-						if (ImGui::SliderFloat("##SpotMinBias", &minBias, 0, 0.001f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
-						ImGui::Text("Shadow Max Bias");
-						if (ImGui::SliderFloat("##SpotMaxBias", &maxBias, 0, 0.1f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
-						ImGui::Text("Light Size");
-						if (ImGui::SliderFloat("##SpotSize", &lightSize, 0, 10.0f)) sLight->SetLightSize(lightSize);
-						ImGui::Spacing();
-
-						float color[3] = { sLight->GetColor().x, sLight->GetColor().y, sLight->GetColor().z };
-						ImGui::Text("Color");
-						unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
-						if (ImGui::ColorPicker3("##SpotColor", color, flags)) sLight->SetColor({ color[0], color[1], color[2] });
-
-						ImGui::Spacing();
-
-						float pos[3] = { sLight->GetPosition().x, sLight->GetPosition().y, sLight->GetPosition().z };
-						ImGui::Text("Position");
-						if (ImGui::DragFloat3("##SLightPos", pos)) sLight->gameObject->GetComponent<Transform>()->SetTranslation(pos[0], pos[1], pos[2]);
-						Math::Vector3f rotation = sLight->gameObject->GetComponent<Transform>()->GetRotation();
-						float rot[3] = { rotation.x, rotation.y, rotation.z };
-						ImGui::Text("Rotation");
-						if (ImGui::DragFloat3("##SLightRot", rot)) sLight->gameObject->GetComponent<Transform>()->SetRotation(rot[0], rot[1], rot[2]);
-						ImGui::EndTabItem();
-							
-					}
-
-					ImGui::EndTabBar();
-				}
-				
-				ImGui::End();
-			}
-#endif
-		});
-
-	Engine::Get().GetImGuiHandler().AddNewFunction([]()
-		{
-#ifndef _RETAIL
-			Math::Vector2f resolution = Engine::Get().GetResolution();
-			ImGui::SetNextWindowPos({ 0.18f * resolution.x, 0.02f * resolution.y });
-			ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.2f * resolution.y });
-			bool open = true;
-			ImGui::Begin("Performance Info", &open, ImGuiWindowFlags_NoSavedSettings);
-			if (ImGui::BeginTable("PerformanceTable", 2, 0, { 0.18f * resolution.x, 0 }))
-			{
-				ImGuiStyle& style = ImGui::GetStyle();
-				style.CellPadding = { 0.001f * resolution.x, 0.004f * resolution.y };
-
-				// FPS
-				{
-					Math::Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
-					int fps = Engine::Get().GetTimer().GetFPS();
-					if (fps < 60) color = { 1.0f, 1.0f, 0.0f, 1.0f };
-					if (fps < 30) color = { 1.0f, 0.0f, 0.0f, 1.0f };
-
-					ImGui::TableNextColumn();
-					ImGui::Text("FPS:");
-					ImGui::TableNextColumn();
-					ImGui::TextColored({ color.x, color.y, color.z, color.w }, std::to_string(fps).c_str());
-					ImGui::TableNextColumn();
-
-					ImGui::Text("Frametime (ms):");
-					ImGui::TableNextColumn();
-					ImGui::Text("%.2f", Engine::Get().GetTimer().GetFrameTimeMS());
-					ImGui::TableNextColumn();
-				}
-
-				// Draw calls
-				{
-					ImGui::Text("Drawcalls:");
-					ImGui::TableNextColumn();
-					ImGui::Text(std::to_string(GraphicsEngine::Get().GetDrawcallAmount()).c_str());
-					ImGui::TableNextColumn();
-				}
-
-				// Scene objects
-				{
-					ImGui::Text("Scene Objects:");
-					ImGui::TableNextColumn();
-					ImGui::Text(std::string(std::to_string(Engine::Get().GetSceneHandler().GetObjectAmount())).c_str());
-
-					ImGui::TableNextColumn();
-
-					ImGui::Text("Active Scene Objects:");
-					ImGui::TableNextColumn();
-					ImGui::Text(std::to_string(Engine::Get().GetSceneHandler().GetActiveObjectAmount()).c_str());
-					ImGui::TableNextColumn();
-				}
-
-				ImGui::Spacing();
-
-				// Memory Usage
-				{
-					sTimeSinceLastMemoryCheck += Engine::Get().GetTimer().GetDeltaTime();
-
-					sTimeSinceLastMemoryCheck;
-					if (sTimeSinceLastMemoryCheck > sMemoryCheckTimeInterval)
-					{
-						sTimeSinceLastMemoryCheck = 0;
-
-						HANDLE hProcess = {};
-						PROCESS_MEMORY_COUNTERS pmc;
-						hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
-
-						if (hProcess != NULL)
-						{
-							if (GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc)))
-							{
-								int newRamUsage = static_cast<int>(pmc.WorkingSetSize / (1024.0 * 1024.0));
-								sRamUsageChange = newRamUsage - sRamUsage;
-								sRamUsage = newRamUsage;
-							}
-
-							CloseHandle(hProcess);
-						}
-					}
-
-					Math::Vector4f color = { 1.0f, 0.0f, 0.0f, 1.0f };
-					if (sRamUsageChange <= 0) color = { 0.0f, 1.0f, 0.0f, 1.0f };
-
-					ImGui::Text("RAM used:");
-					ImGui::TableNextColumn();
-					ImGui::Text(std::string(std::to_string(sRamUsage) + " Mb").c_str());
-
-					ImGui::TableNextColumn();
-
-					ImGui::Text("RAM usage fluctuation:");
-					ImGui::TableNextColumn();
-					ImGui::TextColored({ color.x, color.y, color.z, color.w }, std::string(std::to_string(sRamUsageChange) + " Mb").c_str());
-					ImGui::TableNextColumn();
-				}
-
-				ImGui::EndTable();
-			}
-			ImGui::End();
-#endif
-		});
-
-	Engine::Get().GetImGuiHandler().AddNewFunction([]()
-		{
-#ifndef _RETAIL
-			Math::Vector2f resolution = Engine::Get().GetResolution();
-			ImGui::SetNextWindowPos({ 0.85f * resolution.x, 0.02f * resolution.y });
-			ImGui::SetNextWindowContentSize({ 0.24f * resolution.x, 0.26f * resolution.y });
-			bool open = true;
-			ImGui::Begin("Controller Info", &open, ImGuiWindowFlags_NoSavedSettings);
-
-			InputHandler& cont = Engine::Get().GetInputHandler();
-
-			ImGui::Text("Left Stick: ");
-			ImGui::SameLine();
-			ImGui::Text("%.2f", cont.GetAnalogAction2D("LeftStick").x);
-			ImGui::SameLine();
-			ImGui::Text(", ");
-			ImGui::SameLine();
-			ImGui::Text("%.2f", cont.GetAnalogAction2D("LeftStick").y);
-
-			ImGui::Text("Right Stick: ");
-			ImGui::SameLine();
-			ImGui::Text("%.2f", cont.GetAnalogAction2D("RightStick").x);
-			ImGui::SameLine();
-			ImGui::Text(", ");
-			ImGui::SameLine();
-			ImGui::Text("%.2f", cont.GetAnalogAction2D("RightStick").y);
-
-			ImGui::Text("Left Trigger: ");
-			ImGui::SameLine();
-			ImGui::Text("%.2f", cont.GetAnalogAction("LeftTrigger"));
-
-			ImGui::Text("Right Trigger: ");
-			ImGui::SameLine();
-			ImGui::Text("%.2f", cont.GetAnalogAction("RightTrigger"));
-
-
-			ImVec4 red = { 1.0f, 0, 0, 1.0f };
-			ImVec4 green = { 0, 1.0f, 0, 1.0f };
-			ImVec4 color = (cont.GetBinaryAction("A_Gamepad") ? green : red);
-			ImGui::TextColored(color, "A");
-			ImGui::SameLine();
-			color = (cont.GetBinaryAction("B") ? green : red);
-			ImGui::TextColored(color, "B");
-			ImGui::SameLine();
-			color = (cont.GetBinaryAction("X") ? green : red);
-			ImGui::TextColored(color, "X");
-			ImGui::SameLine();
-			color = (cont.GetBinaryAction("Y") ? green : red);
-			ImGui::TextColored(color, "Y");
-
-			color = (cont.GetBinaryAction("LB") ? green : red);
-			ImGui::TextColored(color, "LB");
-			ImGui::SameLine();
-			color = (cont.GetBinaryAction("RB") ? green : red);
-			ImGui::TextColored(color, "RB");
-			ImGui::SameLine();
-			color = (cont.GetBinaryAction("LS") ? green : red);
-			ImGui::TextColored(color, "LS");
-			ImGui::SameLine();
-			color = (cont.GetBinaryAction("RS") ? green : red);
-			ImGui::TextColored(color, "RS");
-
-			color = (cont.GetBinaryAction("Left") ? green : red);
-			ImGui::TextColored(color, "Left");
-			ImGui::SameLine();
-			color = (cont.GetBinaryAction("Up") ? green : red);
-			ImGui::TextColored(color, "Up");
-			ImGui::SameLine();
-			color = (cont.GetBinaryAction("Right") ? green : red);
-			ImGui::TextColored(color, "Right");
-			ImGui::SameLine();
-			color = (cont.GetBinaryAction("Down") ? green : red);
-			ImGui::TextColored(color, "Down");
-
-			color = (cont.GetBinaryAction("Start") ? green : red);
-			ImGui::TextColored(color, "Start");
-			ImGui::SameLine();
-			color = (cont.GetBinaryAction("Back") ? green : red);
-			ImGui::TextColored(color, "Back");
-
-			ImGui::Separator();
-
-			ImGui::Text("Mouse Pos: ");
-			ImGui::SameLine();
-			ImGui::Text("%.2f", cont.GetAnalogAction2D("MousePos").x);
-			ImGui::SameLine();
-			ImGui::Text(", ");
-			ImGui::SameLine();
-			ImGui::Text("%.2f", cont.GetAnalogAction2D("MousePos").y);
-
-			ImGui::Text("NDC Mouse Pos: ");
-			ImGui::SameLine();
-			ImGui::Text("%.2f", cont.GetAnalogAction2D("MouseNDCPos").x);
-			ImGui::SameLine();
-			ImGui::Text(", ");
-			ImGui::SameLine();
-			ImGui::Text("%.2f", cont.GetAnalogAction2D("MouseNDCPos").y);
-
-			ImGui::Text("Mouse Delta: ");
-			ImGui::SameLine();
-			ImGui::Text("%.2f", cont.GetAnalogAction2D("MouseDelta").x);
-			ImGui::SameLine();
-			ImGui::Text(", ");
-			ImGui::SameLine();
-			ImGui::Text("%.2f", cont.GetAnalogAction2D("MouseDelta").y);
-
-			color = (cont.GetBinaryAction("W") ? green : red);
-			ImGui::TextColored(color, "W");
-			ImGui::SameLine();
-			color = (cont.GetBinaryAction("A") ? green : red);
-			ImGui::TextColored(color, "A");
-			ImGui::SameLine();
-			color = (cont.GetBinaryAction("S") ? green : red);
-			ImGui::TextColored(color, "S");
-			ImGui::SameLine();
-			color = (cont.GetBinaryAction("D") ? green : red);
-			ImGui::TextColored(color, "D");
-
-			color = (cont.GetBinaryAction("LMB") ? green : red);
-			ImGui::TextColored(color, "LMB");
-			ImGui::SameLine();
-			color = (cont.GetBinaryAction("RMB") ? green : red);
-			ImGui::TextColored(color, "RMB");
-
-			color = (cont.GetBinaryAction("SharedAction") ? green : red);
-			ImGui::TextColored(color, "SharedAction");
-
-			ImGui::End();
-#endif
-		});
-
-	/*Engine::Get().GetImGuiHandler().AddNewFunction([]()
-		{
-#ifndef _RETAIL
-			Math::Vector2f resolution = Engine::Get().GetResolution();
-			ImGui::SetNextWindowPos({ 0.85f * resolution.x, 0.32f * resolution.y });
-			ImGui::SetNextWindowContentSize({ 0.24f * resolution.x, 0.24f * resolution.y });
-			bool open = true;
-			ImGui::Begin("Resolution", &open, ImGuiWindowFlags_NoSavedSettings);
-
-			if (ImGui::Button("Set Maximized"))
-			{
-				GraphicsEngine::Get().MaximizeWindowSize();
-			}
-
-			if (ImGui::Button("1280 x 720"))
-			{
-				GraphicsEngine::Get().SetResolution(1280.0f, 720.0f);
-				Engine::Get().SetResolution(1280.0f, 720.0f);
-			}
-			if (ImGui::Button("1600 x 900"))
-			{
-				GraphicsEngine::Get().SetResolution(1600.0f, 900.0f);
-				Engine::Get().SetResolution(1600.0f, 900.0f);
-			}
-			if (ImGui::Button("1920 x 1080"))
-			{
-				GraphicsEngine::Get().SetResolution(1920.0f, 1080.0f);
-				Engine::Get().SetResolution(1920.0f, 1080.0f);
-			}
-			if (ImGui::Button("2560 x 1440"))
-			{
-				GraphicsEngine::Get().SetResolution(2560.0f, 1440.0f);
-				Engine::Get().SetResolution(2560.0f, 1440.0f);
-			}
-			if (ImGui::Button("3840 x 2160"))
-			{
-				GraphicsEngine::Get().SetResolution(3840.0f, 2160.0f);
-				Engine::Get().SetResolution(3840.0f, 2160.0f);
-			}
-
-			ImGui::End();
-#endif
-		});*/
 }
 
 void FeatureShowcase::UpdateApplication()
@@ -674,4 +132,576 @@ void FeatureShowcase::UpdateApplication()
 	{
 		GraphicsEngine::Get().GetPostProcessingSettings().SSAOEnabled = !GraphicsEngine::Get().GetPostProcessingSettings().SSAOEnabled;
 	}
+}
+
+void FeatureShowcase::UpdateDebug()
+{
+	TopMenuBar();
+
+	if (myShowFeatureOptions)
+		FeatureOptions();
+	
+	if (myShowLightingSettings)
+		LightingSettings();
+	
+	if (myShowPerformanceInfo)
+		PerformanceInfo();
+	
+	if (myShowControlsInfo)
+		ControlsInfo();
+
+	if (myShowResolutionOptions)
+		ResolutionOptions();
+}
+
+void FeatureShowcase::TopMenuBar()
+{
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::MenuItem("General"))
+			myShowFeatureOptions = !myShowFeatureOptions;
+
+		if (ImGui::MenuItem("Lighting"))
+			myShowLightingSettings = !myShowLightingSettings;
+
+		if (ImGui::MenuItem("Performance Info"))
+			myShowPerformanceInfo = !myShowPerformanceInfo;
+
+		if (ImGui::MenuItem("Controls Info"))
+			myShowControlsInfo = !myShowControlsInfo;
+
+		if (ImGui::MenuItem("Resolution Options"))
+			myShowResolutionOptions = !myShowResolutionOptions;
+
+		ImGui::EndMainMenuBar();
+	}
+}
+
+void FeatureShowcase::FeatureOptions()
+{
+	Math::Vector2f resolution = Engine::Get().GetResolution();
+	ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.02f * resolution.y });
+	ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.35f * resolution.y });
+	if (ImGui::Begin("FeatureShowcase", &myShowFeatureOptions))
+	{
+		ImGui::Checkbox("Use Viewculling", &Engine::Get().UseViewCulling);
+		ImGui::Checkbox("Draw Bounding Boxes", &Engine::Get().DrawBoundingBoxes);
+		ImGui::Checkbox("Draw Camera Frustums", &Engine::Get().DrawCameraFrustums);
+		ImGui::Checkbox("Draw Colliders", &Engine::Get().DrawColliders);
+
+		PostProcessingSettings& ppSettings = GraphicsEngine::Get().GetPostProcessingSettings();
+
+		// Rendering
+		{
+			ImGui::Text("Rendering Mode");
+			if (ImGui::BeginCombo("##RenderModeDropdown", DebugRenderModeName(static_cast<DebugRenderMode>(GraphicsEngine::Get().CurrentDebugRenderMode))))
+			{
+				for (unsigned i = 0; i < static_cast<unsigned>(DebugRenderMode::COUNT); i++)
+				{
+					if (ImGui::Selectable(DebugRenderModeName(static_cast<DebugRenderMode>(i))))
+						GraphicsEngine::Get().CurrentDebugRenderMode = static_cast<DebugRenderMode>(i);
+				}
+				ImGui::EndCombo();
+			}
+		}
+
+		// Tonemapping
+		{
+			ImGui::Text("Tonemapper");
+			if (ImGui::BeginCombo("##TonemapperDropdown", TonemapperName(ppSettings.Tonemapper)))
+			{
+				for (unsigned i = 0; i < static_cast<unsigned>(TonemapperType::COUNT); i++)
+				{
+					if (ImGui::Selectable(TonemapperName(static_cast<TonemapperType>(i)))) ppSettings.Tonemapper = static_cast<TonemapperType>(i);
+				}
+				ImGui::EndCombo();
+			}
+		}
+
+		ImGui::Checkbox("Enable Bloom", &ppSettings.BloomEnabled);
+		ImGui::Checkbox("Enable SSAO", &ppSettings.SSAOEnabled);
+
+		ImGui::Separator();
+
+		// Animation
+		{
+			ImGui::Text("Animations");
+			std::shared_ptr<AnimatedModel> tgaBroModel = Engine::Get().GetSceneHandler().FindGameObjectByName("TgaBro")->GetComponent<AnimatedModel>();
+			if (ImGui::BeginCombo("##AnimationDropdown", tgaBroModel->GetCurrentAnimationNameOnLayer(0).c_str()))
+			{
+				if (ImGui::Selectable("Idle")) tgaBroModel->SetCurrentAnimationOnLayer("Idle", "", 0.5f);
+				if (ImGui::Selectable("Walk")) tgaBroModel->SetCurrentAnimationOnLayer("Walk", "", 0.5f);;
+				if (ImGui::Selectable("Run")) tgaBroModel->SetCurrentAnimationOnLayer("Run", "", 0.5f);;
+				if (ImGui::Selectable("Wave")) tgaBroModel->SetCurrentAnimationOnLayer("Wave", "", 0.5f);;
+				ImGui::EndCombo();
+			}
+		}
+
+		// Test Audio
+		{
+			float sfxVolume = Engine::Get().GetAudioEngine().GetVolumeOfBus(BusType::SFX);
+			if (ImGui::SliderFloat("SFX Volume", &sfxVolume, 0, 1.0f)) Engine::Get().GetAudioEngine().SetVolumeOfBus(BusType::SFX, sfxVolume);
+
+			float musicVolume = Engine::Get().GetAudioEngine().GetVolumeOfBus(BusType::Music);
+			if (ImGui::SliderFloat("Music Volume", &musicVolume, 0, 1.0f)) Engine::Get().GetAudioEngine().SetVolumeOfBus(BusType::Music, musicVolume);
+		}
+
+		// Test VFX
+		{
+			std::shared_ptr<VFXModel> vfx = Engine::Get().GetSceneHandler().FindGameObjectByName("VFXTest")->GetComponent<VFXModel>();
+			if (ImGui::Button("Play VFX"))
+			{
+				if (vfx)
+				{
+					vfx->PlayVFX();
+				}
+			}
+		}
+	}
+	ImGui::End();
+}
+
+void FeatureShowcase::LightingSettings()
+{
+	Math::Vector2f resolution = Engine::Get().GetResolution();
+	ImGui::SetNextWindowPos({ 0.01f * resolution.x, 0.4f * resolution.y });
+	ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.55f * resolution.y });
+
+	PostProcessingSettings& ppSettings = GraphicsEngine::Get().GetPostProcessingSettings();
+
+	ImGui::Begin("Lighting Settings", &myShowLightingSettings);
+	{
+		if (ImGui::BeginTabBar("Lights"))
+		{
+			if (ImGui::BeginTabItem("Ambient Light"))
+			{
+				std::shared_ptr<GameObject> ambientLight = Engine::Get().GetSceneHandler().FindGameObjectByName("A_Light");
+				bool active = ambientLight->GetActive();
+				if (ImGui::Checkbox("Set Active##Ambient", &active)) ambientLight->SetActive(active);
+
+				std::shared_ptr<AmbientLight> aLight = ambientLight->GetComponent<AmbientLight>();
+				float intensity = aLight->GetIntensity();
+				ImGui::Text("Intensity");
+				if (ImGui::SliderFloat("##AmbientIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) aLight->SetIntensity(intensity);
+				ImGui::Spacing();
+				float color[3] = { aLight->GetColor().x, aLight->GetColor().y, aLight->GetColor().z };
+				ImGui::Text("Color");
+				unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
+				if (ImGui::ColorPicker3("##AmbientColor", color, flags)) aLight->SetColor({ color[0], color[1], color[2] });
+
+				// Luminance
+				ImGui::Text("Luminance");
+				if (ImGui::BeginCombo("##LuminanceDropdown", LuminanceName(ppSettings.LuminanceFunction)))
+				{
+					for (unsigned i = 0; i < static_cast<unsigned>(LuminanceType::COUNT); i++)
+					{
+						if (ImGui::Selectable(LuminanceName(static_cast<LuminanceType>(i)))) ppSettings.LuminanceFunction = static_cast<LuminanceType>(i);
+					}
+
+					ImGui::EndCombo();
+				}
+
+				// Bloom
+				ImGui::Text("Bloom");
+				if (ImGui::BeginCombo("##BloomDropdown", BloomName(ppSettings.BloomFunction)))
+				{
+					for (unsigned i = 0; i < static_cast<unsigned>(BloomType::COUNT); i++)
+					{
+						if (ImGui::Selectable(BloomName(static_cast<BloomType>(i)))) ppSettings.BloomFunction = static_cast<BloomType>(i);
+					}
+
+					ImGui::EndCombo();
+				}
+
+				ImGui::SliderFloat("Bloom Intensity", &ppSettings.BloomStrength, 0, 1.0f);
+				ImGui::SliderFloat("SSAO Noise Power", &ppSettings.SSAONoisePower, 0, 1.0f);
+				ImGui::SliderFloat("SSAO Radius", &ppSettings.SSAORadius, 0, 0.5f);
+				ImGui::SliderFloat("SSAO Bias", &ppSettings.SSAOBias, 0, 0.1f);
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Directional Light"))
+			{
+				std::shared_ptr<GameObject> directionalLight = Engine::Get().GetSceneHandler().FindGameObjectByName("D_Light");
+				bool active = directionalLight->GetActive();
+				if (ImGui::Checkbox("Set Active##Directional", &active)) directionalLight->SetActive(active);
+
+				std::shared_ptr<DirectionalLight> dLight = directionalLight->GetComponent<DirectionalLight>();
+				float intensity = dLight->GetIntensity();
+				ImGui::Text("Intensity");
+				if (ImGui::SliderFloat("##DirectionalIntensity", &intensity, 0, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) dLight->SetIntensity(intensity);
+				ImGui::Spacing();
+				float minBias = dLight->GetMinShadowBias();
+				float maxBias = dLight->GetMaxShadowBias();
+				float lightSize = dLight->GetLightSize();
+				ImGui::Text("Shadow Min Bias");
+				if (ImGui::SliderFloat("##DirectionalMinBias", &minBias, 0, 0.001f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
+				ImGui::Text("Shadow Max Bias");
+				if (ImGui::SliderFloat("##DirectionalMaxBias", &maxBias, 0, 0.1f, "%.5f")) dLight->SetShadowBias(minBias, maxBias);
+				ImGui::Text("Light Size");
+				if (ImGui::SliderFloat("##DirectionalSize", &lightSize, 0, 2000.0f)) dLight->SetLightSize(lightSize);
+				ImGui::Spacing();
+				float color[3] = { dLight->GetColor().x, dLight->GetColor().y, dLight->GetColor().z };
+				ImGui::Text("Color");
+				unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
+				if (ImGui::ColorPicker3("##DirectionalColor", color, flags)) dLight->SetColor({ color[0], color[1], color[2] });
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Pointlight"))
+			{
+				std::shared_ptr<GameObject> pointLight = Engine::Get().GetSceneHandler().FindGameObjectByName("P_Light");
+				bool active = pointLight->GetActive();
+				if (ImGui::Checkbox("Set Active##Point", &active))  pointLight->SetActive(active);
+
+				std::shared_ptr<PointLight> pLight = pointLight->GetComponent<PointLight>();
+				float value = pLight->GetIntensity();
+				ImGui::Text("Intensity");
+				if (ImGui::SliderFloat("##PointIntensity", &value, 0, 500000.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) pLight->SetIntensity(value);
+
+				ImGui::Spacing();
+
+				float minBias = pLight->GetMinShadowBias();
+				float maxBias = pLight->GetMaxShadowBias();
+				float lightSize = pLight->GetLightSize();
+				ImGui::Text("Shadow Min Bias");
+				if (ImGui::SliderFloat("##PointMinBias", &minBias, 0, 0.001f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
+				ImGui::Text("Shadow Max Bias");
+				if (ImGui::SliderFloat("##PointMaxBias", &maxBias, 0, 0.01f, "%.5f")) pLight->SetShadowBias(minBias, maxBias);
+				ImGui::Text("Light Size");
+				if (ImGui::SliderFloat("##PointSize", &lightSize, 0, 10000.0f)) pLight->SetLightSize(lightSize);
+				ImGui::Spacing();
+
+				float color[3] = { pLight->GetColor().x, pLight->GetColor().y, pLight->GetColor().z };
+				ImGui::Text("Color");
+				unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
+				if (ImGui::ColorPicker3("##PointColor", color, flags)) pLight->SetColor({ color[0], color[1], color[2] });
+
+				ImGui::Spacing();
+
+				float pos[3] = { pLight->GetPosition().x, pLight->GetPosition().y, pLight->GetPosition().z };
+				ImGui::Text("Position");
+				if (ImGui::DragFloat3("##PLightPos", pos)) pLight->gameObject->GetComponent<Transform>()->SetTranslation(pos[0], pos[1], pos[2]);
+
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Spotlight"))
+			{
+				std::shared_ptr<GameObject> spotLight = Engine::Get().GetSceneHandler().FindGameObjectByName("S_Light");
+				bool active = spotLight->GetActive();
+				if (ImGui::Checkbox("Set Active##Spot", &active)) spotLight->SetActive(active);
+
+				std::shared_ptr<SpotLight> sLight = spotLight->GetComponent<SpotLight>();
+				float intensity = sLight->GetIntensity();
+				ImGui::Text("Intensity");
+				if (ImGui::SliderFloat("##SpotIntensity", &intensity, 0, 1000000.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) sLight->SetIntensity(intensity);
+				ImGui::Spacing();
+				float angle = sLight->GetConeAngleDegrees();
+				ImGui::Text("Focus");
+				if (ImGui::SliderFloat("##SpotConeAngle", &angle, 600.0f, 50000.0f, "%.3f", ImGuiSliderFlags_Logarithmic)) sLight->SetConeAngle(angle);
+				ImGui::Spacing();
+
+				float minBias = sLight->GetMinShadowBias();
+				float maxBias = sLight->GetMaxShadowBias();
+				float lightSize = sLight->GetLightSize();
+				ImGui::Text("Shadow Min Bias");
+				if (ImGui::SliderFloat("##SpotMinBias", &minBias, 0, 0.001f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
+				ImGui::Text("Shadow Max Bias");
+				if (ImGui::SliderFloat("##SpotMaxBias", &maxBias, 0, 0.1f, "%.5f")) sLight->SetShadowBias(minBias, maxBias);
+				ImGui::Text("Light Size");
+				if (ImGui::SliderFloat("##SpotSize", &lightSize, 0, 10.0f)) sLight->SetLightSize(lightSize);
+				ImGui::Spacing();
+
+				float color[3] = { sLight->GetColor().x, sLight->GetColor().y, sLight->GetColor().z };
+				ImGui::Text("Color");
+				unsigned flags = ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoSidePreview;
+				if (ImGui::ColorPicker3("##SpotColor", color, flags)) sLight->SetColor({ color[0], color[1], color[2] });
+
+				ImGui::Spacing();
+
+				float pos[3] = { sLight->GetPosition().x, sLight->GetPosition().y, sLight->GetPosition().z };
+				ImGui::Text("Position");
+				if (ImGui::DragFloat3("##SLightPos", pos)) sLight->gameObject->GetComponent<Transform>()->SetTranslation(pos[0], pos[1], pos[2]);
+				Math::Vector3f rotation = sLight->gameObject->GetComponent<Transform>()->GetRotation();
+				float rot[3] = { rotation.x, rotation.y, rotation.z };
+				ImGui::Text("Rotation");
+				if (ImGui::DragFloat3("##SLightRot", rot)) sLight->gameObject->GetComponent<Transform>()->SetRotation(rot[0], rot[1], rot[2]);
+				
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+		}
+	}
+	ImGui::End();
+}
+
+void FeatureShowcase::PerformanceInfo()
+{
+	Math::Vector2f resolution = Engine::Get().GetResolution();
+	ImGui::SetNextWindowPos({ 0.18f * resolution.x, 0.02f * resolution.y });
+	ImGui::SetNextWindowContentSize({ 0.16f * resolution.x, 0.2f * resolution.y });
+	if (ImGui::Begin("Performance Info", &myShowPerformanceInfo))
+	{
+		if (ImGui::BeginTable("PerformanceTable", 2, 0, { 0.18f * resolution.x, 0 }))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.CellPadding = { 0.001f * resolution.x, 0.004f * resolution.y };
+
+			// FPS
+			{
+				Math::Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
+				int fps = Engine::Get().GetTimer().GetFPS();
+				if (fps < 60) color = { 1.0f, 1.0f, 0.0f, 1.0f };
+				if (fps < 30) color = { 1.0f, 0.0f, 0.0f, 1.0f };
+
+				ImGui::TableNextColumn();
+				ImGui::Text("FPS:");
+				ImGui::TableNextColumn();
+				ImGui::TextColored({ color.x, color.y, color.z, color.w }, std::to_string(fps).c_str());
+				ImGui::TableNextColumn();
+
+				ImGui::Text("Frametime (ms):");
+				ImGui::TableNextColumn();
+				ImGui::Text("%.2f", Engine::Get().GetTimer().GetFrameTimeMS());
+				ImGui::TableNextColumn();
+			}
+
+			// Draw calls
+			{
+				ImGui::Text("Drawcalls:");
+				ImGui::TableNextColumn();
+				ImGui::Text(std::to_string(GraphicsEngine::Get().GetDrawcallAmount()).c_str());
+				ImGui::TableNextColumn();
+			}
+
+			// Scene objects
+			{
+				ImGui::Text("Scene Objects:");
+				ImGui::TableNextColumn();
+				ImGui::Text(std::string(std::to_string(Engine::Get().GetSceneHandler().GetObjectAmount())).c_str());
+
+				ImGui::TableNextColumn();
+
+				ImGui::Text("Active Scene Objects:");
+				ImGui::TableNextColumn();
+				ImGui::Text(std::to_string(Engine::Get().GetSceneHandler().GetActiveObjectAmount()).c_str());
+				ImGui::TableNextColumn();
+			}
+
+			ImGui::Spacing();
+
+			// Memory Usage
+			{
+				sTimeSinceLastMemoryCheck += Engine::Get().GetTimer().GetDeltaTime();
+
+				sTimeSinceLastMemoryCheck;
+				if (sTimeSinceLastMemoryCheck > sMemoryCheckTimeInterval)
+				{
+					sTimeSinceLastMemoryCheck = 0;
+
+					HANDLE hProcess = {};
+					PROCESS_MEMORY_COUNTERS pmc;
+					hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
+
+					if (hProcess != NULL)
+					{
+						if (GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc)))
+						{
+							int newRamUsage = static_cast<int>(pmc.WorkingSetSize / (1024.0 * 1024.0));
+							sRamUsageChange = newRamUsage - sRamUsage;
+							sRamUsage = newRamUsage;
+						}
+
+						CloseHandle(hProcess);
+					}
+				}
+
+				Math::Vector4f color = { 1.0f, 0.0f, 0.0f, 1.0f };
+				if (sRamUsageChange <= 0) color = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+				ImGui::Text("RAM used:");
+				ImGui::TableNextColumn();
+				ImGui::Text(std::string(std::to_string(sRamUsage) + " Mb").c_str());
+
+				ImGui::TableNextColumn();
+
+				ImGui::Text("RAM usage fluctuation:");
+				ImGui::TableNextColumn();
+				ImGui::TextColored({ color.x, color.y, color.z, color.w }, std::string(std::to_string(sRamUsageChange) + " Mb").c_str());
+				ImGui::TableNextColumn();
+			}
+			ImGui::EndTable();
+		}
+	}
+	ImGui::End();
+}
+
+void FeatureShowcase::ControlsInfo()
+{
+	Math::Vector2f resolution = Engine::Get().GetResolution();
+	ImGui::SetNextWindowPos({ 0.8f * resolution.x, 0.02f * resolution.y });
+	ImGui::SetNextWindowContentSize({ 0.15f * resolution.x, 0.26f * resolution.y });
+	if (ImGui::Begin("Controller Info", &myShowControlsInfo))
+	{
+		InputHandler& cont = Engine::Get().GetInputHandler();
+
+		ImGui::Text("Left Stick: ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("LeftStick").x);
+		ImGui::SameLine();
+		ImGui::Text(", ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("LeftStick").y);
+
+		ImGui::Text("Right Stick: ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("RightStick").x);
+		ImGui::SameLine();
+		ImGui::Text(", ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("RightStick").y);
+
+		ImGui::Text("Left Trigger: ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction("LeftTrigger"));
+
+		ImGui::Text("Right Trigger: ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction("RightTrigger"));
+
+
+		ImVec4 red = { 1.0f, 0, 0, 1.0f };
+		ImVec4 green = { 0, 1.0f, 0, 1.0f };
+		ImVec4 color = (cont.GetBinaryAction("A_Gamepad") ? green : red);
+		ImGui::TextColored(color, "A");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("B") ? green : red);
+		ImGui::TextColored(color, "B");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("X") ? green : red);
+		ImGui::TextColored(color, "X");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("Y") ? green : red);
+		ImGui::TextColored(color, "Y");
+
+		color = (cont.GetBinaryAction("LB") ? green : red);
+		ImGui::TextColored(color, "LB");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("RB") ? green : red);
+		ImGui::TextColored(color, "RB");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("LS") ? green : red);
+		ImGui::TextColored(color, "LS");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("RS") ? green : red);
+		ImGui::TextColored(color, "RS");
+
+		color = (cont.GetBinaryAction("Left") ? green : red);
+		ImGui::TextColored(color, "Left");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("Up") ? green : red);
+		ImGui::TextColored(color, "Up");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("Right") ? green : red);
+		ImGui::TextColored(color, "Right");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("Down") ? green : red);
+		ImGui::TextColored(color, "Down");
+
+		color = (cont.GetBinaryAction("Start") ? green : red);
+		ImGui::TextColored(color, "Start");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("Back") ? green : red);
+		ImGui::TextColored(color, "Back");
+
+		ImGui::Separator();
+
+		ImGui::Text("Mouse Pos: ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("MousePos").x);
+		ImGui::SameLine();
+		ImGui::Text(", ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("MousePos").y);
+
+		ImGui::Text("NDC Mouse Pos: ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("MouseNDCPos").x);
+		ImGui::SameLine();
+		ImGui::Text(", ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("MouseNDCPos").y);
+
+		ImGui::Text("Mouse Delta: ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("MouseDelta").x);
+		ImGui::SameLine();
+		ImGui::Text(", ");
+		ImGui::SameLine();
+		ImGui::Text("%.2f", cont.GetAnalogAction2D("MouseDelta").y);
+
+		color = (cont.GetBinaryAction("W") ? green : red);
+		ImGui::TextColored(color, "W");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("A") ? green : red);
+		ImGui::TextColored(color, "A");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("S") ? green : red);
+		ImGui::TextColored(color, "S");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("D") ? green : red);
+		ImGui::TextColored(color, "D");
+
+		color = (cont.GetBinaryAction("LMB") ? green : red);
+		ImGui::TextColored(color, "LMB");
+		ImGui::SameLine();
+		color = (cont.GetBinaryAction("RMB") ? green : red);
+		ImGui::TextColored(color, "RMB");
+
+		color = (cont.GetBinaryAction("SharedAction") ? green : red);
+		ImGui::TextColored(color, "SharedAction");
+	}
+	ImGui::End();
+}
+
+void FeatureShowcase::ResolutionOptions()
+{
+	Math::Vector2f resolution = Engine::Get().GetResolution();
+	ImGui::SetNextWindowPos({ 0.8f * resolution.x, 0.32f * resolution.y });
+	ImGui::SetNextWindowContentSize({ 0.15f * resolution.x, 0.24f * resolution.y });
+	if (ImGui::Begin("Resolution", &myShowResolutionOptions))
+	{
+		if (ImGui::Button("Set Maximized"))
+		{
+			GraphicsEngine::Get().MaximizeWindowSize();
+		}
+
+		if (ImGui::Button("1280 x 720"))
+		{
+			GraphicsEngine::Get().SetResolution(1280.0f, 720.0f);
+			Engine::Get().SetResolution(1280.0f, 720.0f);
+		}
+		if (ImGui::Button("1600 x 900"))
+		{
+			GraphicsEngine::Get().SetResolution(1600.0f, 900.0f);
+			Engine::Get().SetResolution(1600.0f, 900.0f);
+		}
+		if (ImGui::Button("1920 x 1080"))
+		{
+			GraphicsEngine::Get().SetResolution(1920.0f, 1080.0f);
+			Engine::Get().SetResolution(1920.0f, 1080.0f);
+		}
+		if (ImGui::Button("2560 x 1440"))
+		{
+			GraphicsEngine::Get().SetResolution(2560.0f, 1440.0f);
+			Engine::Get().SetResolution(2560.0f, 1440.0f);
+		}
+		if (ImGui::Button("3840 x 2160"))
+		{
+			GraphicsEngine::Get().SetResolution(3840.0f, 2160.0f);
+			Engine::Get().SetResolution(3840.0f, 2160.0f);
+		}
+	}
+	ImGui::End();
 }

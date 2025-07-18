@@ -81,16 +81,3 @@ void ImGuiHandler::Render()
 	GraphicsEngine::Get().EndEvent();
 #endif
 }
-
-void ImGuiHandler::Update()
-{
-	for (auto& func : myLambdaList)
-	{
-		func();
-	}
-}
-
-void ImGuiHandler::AddNewFunction(std::function<void()> aFunction)
-{
-	myLambdaList.push_back(aFunction);
-}

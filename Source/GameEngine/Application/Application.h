@@ -85,6 +85,7 @@ public:
 
     virtual void InitializeApplication() {};
     virtual void UpdateApplication() {};
+    virtual void UpdateDebug() {};
     void Run();
 private:
 

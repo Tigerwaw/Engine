@@ -68,6 +68,10 @@ void Application::Run()
 
 		engine.Prepare();
 		UpdateApplication();
+
+#ifndef _RETAIL
+		UpdateDebug();
+#endif
 		engine.Update();
 		engine.Render();
     }
