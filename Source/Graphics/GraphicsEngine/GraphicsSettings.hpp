@@ -7,6 +7,10 @@ namespace GraphicsSettings
 {
 	inline constexpr unsigned MAX_MATERIAL_TEXTURES = 8;
 	inline constexpr unsigned MAX_PSO_TEXTURES = 8;
+
+	inline constexpr unsigned DIRECTIONAL_LIGHT_SHADOWS_SLOT = 100;
+	inline constexpr unsigned POINTLIGHT_SHADOWS_START_SLOT = 101;
+	inline constexpr unsigned SPOTLIGHT_SHADOWS_START_SLOT = 105;
 }
 
 enum class ShaderType : unsigned
@@ -37,7 +41,8 @@ enum class PSOType
 
 	DeferredDirectionalLight,
 	DeferredPointlight,
-	DeferredSpotlight, 
+	DeferredSpotlight,
+	BlendShadowmaps,
 
 	// POST PROCESSING
 	Bloom,
@@ -177,6 +182,7 @@ namespace GraphicsSettings
 		{	PSOType::DeferredDirectionalLight,	"Deferred Directional Light"	},
 		{	PSOType::DeferredPointlight,		"Deferred Pointlight"			},
 		{	PSOType::DeferredSpotlight,			"Deferred Spotlight"			},
+		{	PSOType::BlendShadowmaps,			"Blend Shadowmaps"				},
 		{	PSOType::Bloom,						"Bloom"							},
 		{	PSOType::GaussianH,					"GaussianH"						},
 		{	PSOType::GaussianV,					"GaussianV"						},

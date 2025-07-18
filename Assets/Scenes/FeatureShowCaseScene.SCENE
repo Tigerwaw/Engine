@@ -466,7 +466,7 @@
     {
       "Name": "A_Light",
       "Active": true,
-      "Static": false,
+      "Static": true,
       "Components": [
         {
           "Type": "Transform",
@@ -477,14 +477,14 @@
         {
           "Type": "AmbientLight",
           "Cubemap": "Skansen_Cube.dds",
-          "Intensity": 0.2
+          "Intensity": 0.1
         }
       ]
     },
     {
       "Name": "D_Light",
       "Active": true,
-      "Static": false,
+      "Static": true,
       "Components": [
         {
           "Type": "Transform",
@@ -494,11 +494,11 @@
         },
         {
           "Type": "DirectionalLight",
-          "Intensity": 1.0,
+          "Intensity": 0.5,
           "Color": [ 1.0, 1.0, 1.0 ],
           "CastShadows": true,
           "ShadowTextureSize": 4096,
-          "MinShadowBias": 0.0003,
+          "MinShadowBias": 0.00068,
           "MaxShadowBias": 0.001,
           "LightSize": 1000.0
         },
@@ -517,7 +517,7 @@
     {
       "Name": "P_Light",
       "Active": true,
-      "Static": false,
+      "Static": true,
       "Components": [
         {
           "Type": "Transform",
@@ -531,8 +531,8 @@
           "Color": [ 1.0, 1.0, 1.0 ],
           "CastShadows": true,
           "ShadowTextureSize": 512,
-          "MinShadowBias": 0.00005,
-          "MaxShadowBias": 0.0002,
+          "MinShadowBias": 0.00002,
+          "MaxShadowBias": 0.00005,
           "LightSize": 1500.0
         },
         {
@@ -548,7 +548,7 @@
     {
       "Name": "S_Light",
       "Active": true,
-      "Static": false,
+      "Static": true,
       "Components": [
         {
           "Type": "Transform",

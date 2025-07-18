@@ -38,7 +38,8 @@ private:
         std::vector<std::shared_ptr<PointLight>> pointLights;
         std::vector<std::shared_ptr<SpotLight>> spotLights;
 
-        std::vector<std::shared_ptr<GameObject>> castShadows;
+        std::vector<std::shared_ptr<GameObject>> castShadowsStatic;
+        std::vector<std::shared_ptr<GameObject>> castShadowsDynamic;
         std::vector<std::shared_ptr<GameObject>> drawDeferred;
         std::vector<std::shared_ptr<GameObject>> drawForward;
         std::vector<std::shared_ptr<GameObject>> drawParticleSystems;
@@ -54,15 +55,16 @@ private:
     void RenderDebug(SceneRenderData& aRenderData);
     void RenderDeferred(SceneRenderData& aRenderData);
 
+    void QueueDeferredLightPasses(SceneRenderData& aRenderData);
     void QueueDeferredObjects(SceneRenderData& aRenderData);
     void QueueForwardObjects(SceneRenderData& aRenderData);
-    void QueueShadowmapTextureResources(SceneRenderData& aRenderData);
+    void QueueShadowmapTextureResources(bool aUseStaticShadowmaps, SceneRenderData& aRenderData);
     void QueueUpdateLightBuffer(SceneRenderData& aRenderData);
     void QueueSpotLightShadows(SceneRenderData& aRenderData);
     void QueuePointLightShadows(SceneRenderData& aRenderData);
     void QueueDirectionalLightShadows(SceneRenderData& aRenderData);
-    void QueueObjectShadows(SceneRenderData& aRenderData, std::shared_ptr<Camera> aRenderCamera);
-    void QueueObjectShadows(SceneRenderData& aRenderData, std::shared_ptr<PointLight> aPointLight);
+    void QueueObjectShadows(const std::vector<std::shared_ptr<GameObject>>& aGameObjects, std::shared_ptr<Camera> aRenderCamera);
+    void QueueObjectShadows(const std::vector<std::shared_ptr<GameObject>>& aGameObjects, std::shared_ptr<PointLight> aPointLight);
     void QueueObjectsDebug(SceneRenderData& aRenderData);
     void QueueDebugLines(SceneRenderData& aRenderData);
 
@@ -71,6 +73,10 @@ private:
 
     void UpdateBoundingBox(std::shared_ptr<Transform> aTransform, const Math::AABB3D<float>& aBoundingBox);
     Math::AABB3D<float> myVisibleObjectsBB;
+
+public:
+    bool myShouldUpdateStaticShadows = true;
+private:
 
     // TEMP
     void DrawTestUI();

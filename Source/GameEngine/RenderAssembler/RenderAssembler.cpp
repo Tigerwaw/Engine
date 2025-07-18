@@ -60,7 +60,8 @@ RenderAssembler::SceneRenderData RenderAssembler::AssembleLists(Scene& aScene)
 	PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Assemble Scene Data");
 
 	SceneRenderData sceneRenderData;
-	sceneRenderData.castShadows.reserve(100);
+	sceneRenderData.castShadowsStatic.reserve(100);
+	sceneRenderData.castShadowsDynamic.reserve(100);
 	sceneRenderData.drawDeferred.reserve(100);
 	sceneRenderData.drawForward.reserve(100);
 	sceneRenderData.pointLights.reserve(4);
@@ -82,7 +83,14 @@ RenderAssembler::SceneRenderData RenderAssembler::AssembleLists(Scene& aScene)
 			{
 				if (model->GetCastShadows())
 				{
-					sceneRenderData.castShadows.emplace_back(gameObject);
+					if (gameObject->GetStatic())
+					{
+						sceneRenderData.castShadowsStatic.emplace_back(gameObject);
+					}
+					else
+					{
+						sceneRenderData.castShadowsDynamic.emplace_back(gameObject);
+					}
 				}
 
 				if (model->GetMaterials().size() > 0)
@@ -110,7 +118,14 @@ RenderAssembler::SceneRenderData RenderAssembler::AssembleLists(Scene& aScene)
 			{
 				if (animModel->GetCastShadows())
 				{
-					sceneRenderData.castShadows.emplace_back(gameObject);
+					if (gameObject->GetStatic())
+					{
+						sceneRenderData.castShadowsStatic.emplace_back(gameObject);
+					}
+					else
+					{
+						sceneRenderData.castShadowsDynamic.emplace_back(gameObject);
+					}
 				}
 
 				if (animModel->GetMaterials().size() > 0)
@@ -138,7 +153,14 @@ RenderAssembler::SceneRenderData RenderAssembler::AssembleLists(Scene& aScene)
 			{
 				if (instancedModel->GetCastShadows())
 				{
-					sceneRenderData.castShadows.emplace_back(gameObject);
+					if (gameObject->GetStatic())
+					{
+						sceneRenderData.castShadowsStatic.emplace_back(gameObject);
+					}
+					else
+					{
+						sceneRenderData.castShadowsDynamic.emplace_back(gameObject);
+					}
 				}
 
 				if (instancedModel->GetMaterials().size() > 0)
@@ -244,7 +266,22 @@ void RenderAssembler::SortRenderables(SceneRenderData& aRenderData)
 
 	Math::Vector3f camPos = aRenderData.mainCamera->gameObject->GetComponent<Transform>()->GetTranslation(true);
 
-	std::stable_sort(aRenderData.castShadows.begin(), aRenderData.castShadows.end(), [camPos](const std::shared_ptr<GameObject> lhs, const std::shared_ptr<GameObject> rhs)
+	std::stable_sort(aRenderData.castShadowsStatic.begin(), aRenderData.castShadowsStatic.end(), [camPos](const std::shared_ptr<GameObject> lhs, const std::shared_ptr<GameObject> rhs)
+		{
+			std::shared_ptr<Transform> transform1 = lhs->GetComponent<Transform>();
+			std::shared_ptr<Transform> transform2 = rhs->GetComponent<Transform>();
+			if (transform1 && transform2)
+			{
+				float distTo1 = Math::Vector3f(camPos - transform1->GetTranslation(true)).LengthSqr();
+				float distTo2 = Math::Vector3f(camPos - transform2->GetTranslation(true)).LengthSqr();
+
+				return distTo1 < distTo2;
+			}
+
+			return false;
+		});
+
+	std::stable_sort(aRenderData.castShadowsDynamic.begin(), aRenderData.castShadowsDynamic.end(), [camPos](const std::shared_ptr<GameObject> lhs, const std::shared_ptr<GameObject> rhs)
 		{
 			std::shared_ptr<Transform> transform1 = lhs->GetComponent<Transform>();
 			std::shared_ptr<Transform> transform2 = rhs->GetComponent<Transform>();
@@ -387,14 +424,6 @@ void RenderAssembler::RenderDeferred(SceneRenderData& aRenderData)
 		QueueDeferredObjects(aRenderData);
 		gfxList.Enqueue<EndEvent>();
 	}
-	
-
-	// Light passes
-	{
-		PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Lighting");
-		QueueUpdateLightBuffer(aRenderData);
-		QueueShadowmapTextureResources(aRenderData);
-	}
 
 	if (ppSettings.SSAOEnabled)
 	{
@@ -418,54 +447,33 @@ void RenderAssembler::RenderDeferred(SceneRenderData& aRenderData)
 		gfxList.Enqueue<EndEvent>();
 	}
 
-	// Directional Light
+	// Light passes
 	{
-		PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Directional Light");
-		gfxList.Enqueue<BeginEvent>("Ambient & Directional Light Pass");
-		gfxList.Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::DeferredDirectionalLight));
-		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HDR), nullptr, true, false);
-		gfxList.Enqueue<SetTextureResource>(126, aRenderData.ambientLight->GetCubemap());
-		gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::Luminance));
-		gfxList.Enqueue<SetGBufferAsResource>();
-		gfxList.Enqueue<RenderFullscreenQuad>();
-		gfxList.Enqueue<ClearTextureResource>(30);
-		gfxList.Enqueue<ClearTextureResource>(126);
-		gfxList.Enqueue<EndEvent>();
-	}
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HDR), nullptr, true, false); // Make a clear render target command lol
 
-	// Pointlights
-	{
-		PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Pointlights");
-		gfxList.Enqueue<BeginEvent>("Pointlight Pass");
-		gfxList.Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::DeferredPointlight));
-		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HDR), nullptr, false, false);
-		gfxList.Enqueue<SetGBufferAsResource>();
-		gfxList.Enqueue<RenderFullscreenQuad>();
-		gfxList.Enqueue<EndEvent>();
-	}
+		QueueUpdateLightBuffer(aRenderData);
+		QueueShadowmapTextureResources(true, aRenderData);
+		QueueDeferredLightPasses(aRenderData);
+		for (int i = 100; i < 110; i++)
+		{
+			gfxList.Enqueue<ClearTextureResource>(i);
+		}
 
-	// Spotlights
-	{
-		PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Spotlights");
-		gfxList.Enqueue<BeginEvent>("Spotlight Pass");
-		gfxList.Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::DeferredSpotlight));
-		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HDR), nullptr, false, false);
-		gfxList.Enqueue<SetGBufferAsResource>();
-		gfxList.Enqueue<RenderFullscreenQuad>();
-		gfxList.Enqueue<EndEvent>();
-	}
+		QueueShadowmapTextureResources(false, aRenderData);
+		QueueDeferredLightPasses(aRenderData);
+		for (int i = 100; i < 110; i++)
+		{
+			gfxList.Enqueue<ClearTextureResource>(i);
+		}
 
-	gfxList.Enqueue<BeginEvent>("Clear Texture Resources");
-	for (int i = 0; i < 5; i++)
-	{
-		gfxList.Enqueue<ClearTextureResource>(i);
-	}
+		// Clear GBuffer as Resource
+		for (int i = 0; i < 5; i++)
+		{
+			gfxList.Enqueue<ClearTextureResource>(i);
+		}
 
-	for (int i = 100; i < 110; i++)
-	{
-		gfxList.Enqueue<ClearTextureResource>(i);
+		myShouldUpdateStaticShadows = false;
 	}
-	gfxList.Enqueue<EndEvent>();
 	
 	// Forward objects
 	{
@@ -605,6 +613,49 @@ void RenderAssembler::RenderDeferred(SceneRenderData& aRenderData)
 	}
 }
 
+void RenderAssembler::QueueDeferredLightPasses(SceneRenderData& aRenderData)
+{
+	GraphicsEngine& gfx = GraphicsEngine::Get();
+	GraphicsCommandList& gfxList = gfx.GetGraphicsCommandList();
+
+	// Directional Light
+	{
+		PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Directional Light");
+		gfxList.Enqueue<BeginEvent>("Ambient & Directional Light Pass");
+		gfxList.Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::DeferredDirectionalLight));
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HDR), nullptr, false, false);
+		gfxList.Enqueue<SetTextureResource>(126, aRenderData.ambientLight->GetCubemap());
+		gfxList.Enqueue<SetTextureResource>(30, gfx.GetIntermediateTexture(IntermediateTexture::Luminance));
+		gfxList.Enqueue<SetGBufferAsResource>();
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		gfxList.Enqueue<ClearTextureResource>(30);
+		gfxList.Enqueue<ClearTextureResource>(126);
+		gfxList.Enqueue<EndEvent>();
+	}
+
+	// Pointlights
+	{
+		PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Pointlights");
+		gfxList.Enqueue<BeginEvent>("Pointlight Pass");
+		gfxList.Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::DeferredPointlight));
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HDR), nullptr, false, false);
+		gfxList.Enqueue<SetGBufferAsResource>();
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		gfxList.Enqueue<EndEvent>();
+	}
+
+	// Spotlights
+	{
+		PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Spotlights");
+		gfxList.Enqueue<BeginEvent>("Spotlight Pass");
+		gfxList.Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::DeferredSpotlight));
+		gfxList.Enqueue<SetRenderTarget>(gfx.GetIntermediateTexture(IntermediateTexture::HDR), nullptr, false, false);
+		gfxList.Enqueue<SetGBufferAsResource>();
+		gfxList.Enqueue<RenderFullscreenQuad>();
+		gfxList.Enqueue<EndEvent>();
+	}
+}
+
 void RenderAssembler::QueueDeferredObjects(SceneRenderData& aRenderData)
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Queue All Deferred Objects");
@@ -733,38 +784,27 @@ void RenderAssembler::QueueForwardObjects(SceneRenderData& aRenderData)
 	}
 }
 
-void RenderAssembler::QueueShadowmapTextureResources(SceneRenderData& aRenderData)
+void RenderAssembler::QueueShadowmapTextureResources(bool aUseStaticShadowmaps, SceneRenderData& aRenderData)
 {
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetMarker>("Set Shadowmaps");
 
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(100, aRenderData.directionalLight->GetShadowMap());
+	if (!(aUseStaticShadowmaps && !aRenderData.directionalLight->gameObject->GetStatic()))
+	{
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(GraphicsSettings::DIRECTIONAL_LIGHT_SHADOWS_SLOT, aUseStaticShadowmaps ? aRenderData.directionalLight->GetStaticShadowMap() : aRenderData.directionalLight->GetDynamicShadowMap());
+	}
 
 	for (int i = 0; i < aRenderData.pointLights.size(); i++)
 	{
 		if (i >= MAX_POINTLIGHTS) break;
-
-		std::shared_ptr<PointLight> pLight = aRenderData.pointLights[i];
-		if (!pLight->GetActive()) continue;
-		if (!pLight->CastsShadows()) continue;
-
-		std::shared_ptr<Texture> shadowMap = pLight->GetShadowMap();
-		if (!shadowMap) continue;
-
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(101 + i, shadowMap);
+		if (aUseStaticShadowmaps && !aRenderData.pointLights[i]->gameObject->GetStatic()) continue;
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(GraphicsSettings::POINTLIGHT_SHADOWS_START_SLOT + i, aUseStaticShadowmaps ? aRenderData.pointLights[i]->GetStaticShadowMap() : aRenderData.pointLights[i]->GetDynamicShadowMap());
 	}
 
 	for (int i = 0; i < aRenderData.spotLights.size(); i++)
 	{
 		if (i >= MAX_SPOTLIGHTS) break;
-
-		std::shared_ptr<SpotLight> sLight = aRenderData.spotLights[i];
-		if (!sLight->GetActive()) continue;
-		if (!sLight->CastsShadows()) continue;
-
-		std::shared_ptr<Texture> shadowMap = sLight->GetShadowMap();
-		if (!shadowMap) continue;
-
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(105 + i, shadowMap);
+		if (aUseStaticShadowmaps && !aRenderData.spotLights[i]->gameObject->GetStatic()) continue;
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetTextureResource>(GraphicsSettings::SPOTLIGHT_SHADOWS_START_SLOT + i, aUseStaticShadowmaps ? aRenderData.spotLights[i]->GetStaticShadowMap() : aRenderData.spotLights[i]->GetDynamicShadowMap());
 	}
 }
 
@@ -842,7 +882,7 @@ void RenderAssembler::QueueUpdateLightBuffer(SceneRenderData& aRenderData)
 
 			if (auto transform = sLight->gameObject->GetComponent<Transform>())
 			{
-				lightBufferData.SpotLights[i].View = transform->GetMatrix().GetFastInverse();
+				lightBufferData.SpotLights[i].View = transform->GetWorldMatrix().GetFastInverse();
 			}
 
 			if (auto cam = sLight->gameObject->GetComponent<Camera>())
@@ -853,7 +893,7 @@ void RenderAssembler::QueueUpdateLightBuffer(SceneRenderData& aRenderData)
 			}
 
 			lightBufferData.SpotLights[i].Position = sLight->GetPosition();
-			lightBufferData.SpotLights[i].Position = sLight->GetDirection();
+			lightBufferData.SpotLights[i].Direction = sLight->GetDirection();
 			lightBufferData.SpotLights[i].ConeAngle = sLight->GetConeAngleRadians();
 			lightBufferData.SpotLights[i].Color = sLight->GetColor();
 			lightBufferData.SpotLights[i].Intensity = sLight->GetIntensity();
@@ -863,7 +903,7 @@ void RenderAssembler::QueueUpdateLightBuffer(SceneRenderData& aRenderData)
 			lightBufferData.SpotLights[i].LightSize = sLight->GetLightSize();
 		}
 	}
-	lightBufferData.NumSpotLights = activePLights;
+	lightBufferData.NumSpotLights = activeSLights;
 
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateLightBuffer>(std::move(lightBufferData));
 }
@@ -877,12 +917,6 @@ void RenderAssembler::QueueSpotLightShadows(SceneRenderData& aRenderData)
 	for (int i = 0; i < aRenderData.spotLights.size(); i++)
 	{
 		std::shared_ptr<SpotLight> spotLight = aRenderData.spotLights[i];
-		if (!spotLight->GetActive()) continue;
-		if (!spotLight->CastsShadows()) continue;
-
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::Shadow));
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, spotLight->GetShadowMap(), false, true);
-
 		std::shared_ptr<Camera> lightCam = spotLight->gameObject->GetComponent<Camera>();
 		std::shared_ptr<Transform> lightTransform = spotLight->gameObject->GetComponent<Transform>();
 
@@ -897,7 +931,24 @@ void RenderAssembler::QueueSpotLightShadows(SceneRenderData& aRenderData)
 		frameBuffer.Resolution = Engine::Get().GetResolution();
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(std::move(frameBuffer));
 
-		QueueObjectShadows(aRenderData, lightCam);
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::Shadow));
+		if (spotLight->gameObject->GetStatic())
+		{
+			if (myShouldUpdateStaticShadows)
+			{
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, spotLight->GetStaticShadowMap(), false, true);
+				QueueObjectShadows(aRenderData.castShadowsStatic, lightCam);
+			}
+
+			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, spotLight->GetDynamicShadowMap(), false, true);
+			QueueObjectShadows(aRenderData.castShadowsDynamic, lightCam);
+		}
+		else
+		{
+			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, spotLight->GetDynamicShadowMap(), false, true);
+			QueueObjectShadows(aRenderData.castShadowsStatic, lightCam);
+			QueueObjectShadows(aRenderData.castShadowsDynamic, lightCam);
+		}
 	}
 
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<EndEvent>();
@@ -912,12 +963,6 @@ void RenderAssembler::QueuePointLightShadows(SceneRenderData& aRenderData)
 	for (int i = 0; i < aRenderData.pointLights.size(); i++)
 	{
 		std::shared_ptr<PointLight> pointLight = aRenderData.pointLights[i];
-		if (!pointLight->GetActive()) continue;
-		if (!pointLight->CastsShadows()) continue;
-
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, pointLight->GetShadowMap(), false, true);
-		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::ShadowCube));
-
 		std::shared_ptr<Camera> lightCam = pointLight->gameObject->GetComponent<Camera>();
 		std::shared_ptr<Transform> lightTransform = pointLight->gameObject->GetComponent<Transform>();
 
@@ -935,7 +980,25 @@ void RenderAssembler::QueuePointLightShadows(SceneRenderData& aRenderData)
 		UpdateShadowBuffer::ShadowData shadowData;
 		shadowData.cameraTransform = pointLight->gameObject->GetComponent<Transform>()->GetMatrix();
 		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateShadowBuffer>(std::move(shadowData));
-		QueueObjectShadows(aRenderData, pointLight);
+
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::ShadowCube));
+		if (pointLight->gameObject->GetStatic())
+		{
+			if (myShouldUpdateStaticShadows)
+			{
+				GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, pointLight->GetStaticShadowMap(), false, true);
+				QueueObjectShadows(aRenderData.castShadowsStatic, pointLight);
+			}
+
+			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, pointLight->GetDynamicShadowMap(), false, true);
+			QueueObjectShadows(aRenderData.castShadowsDynamic, pointLight);
+		}
+		else
+		{
+			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, pointLight->GetDynamicShadowMap(), false, true);
+			QueueObjectShadows(aRenderData.castShadowsStatic, pointLight);
+			QueueObjectShadows(aRenderData.castShadowsDynamic, pointLight);
+		}
 	}
 
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<EndEvent>();
@@ -948,12 +1011,6 @@ void RenderAssembler::QueueDirectionalLightShadows(SceneRenderData& aRenderData)
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<BeginEvent>("Directional Light Shadows");
 
 	std::shared_ptr<DirectionalLight> dLight = aRenderData.directionalLight;
-	if (!dLight->GetActive()) return;
-	if (!dLight->CastsShadows()) return;
-
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, dLight->GetShadowMap(), false, true);
-	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::Shadow));
-
 	std::shared_ptr<Camera> lightCam = dLight->gameObject->GetComponent<Camera>();
 	std::shared_ptr<Transform> lightTransform = dLight->gameObject->GetComponent<Transform>();
 
@@ -968,15 +1025,33 @@ void RenderAssembler::QueueDirectionalLightShadows(SceneRenderData& aRenderData)
 	frameBuffer.Resolution = Engine::Get().GetResolution();
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<UpdateFrameBuffer>(std::move(frameBuffer));
 
-	QueueObjectShadows(aRenderData, lightCam);
+	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<ChangePipelineState>(GraphicsEngine::Get().GetPSO(PSOType::Shadow));
+	if (dLight->gameObject->GetStatic())
+	{
+		if (myShouldUpdateStaticShadows)
+		{
+			GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, dLight->GetStaticShadowMap(), false, true);
+			QueueObjectShadows(aRenderData.castShadowsStatic, lightCam);
+		}
+
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, dLight->GetDynamicShadowMap(), false, true);
+		QueueObjectShadows(aRenderData.castShadowsDynamic, lightCam);
+	}
+	else
+	{
+		GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<SetRenderTarget>(nullptr, dLight->GetDynamicShadowMap(), false, true);
+		QueueObjectShadows(aRenderData.castShadowsStatic, lightCam);
+		QueueObjectShadows(aRenderData.castShadowsDynamic, lightCam);
+	}
+	
 	GraphicsEngine::Get().GetGraphicsCommandList().Enqueue<EndEvent>();
 }
 
-void RenderAssembler::QueueObjectShadows(SceneRenderData& aRenderData, std::shared_ptr<Camera> aRenderCamera)
+void RenderAssembler::QueueObjectShadows(const std::vector<std::shared_ptr<GameObject>>& aGameObjects, std::shared_ptr<Camera> aRenderCamera)
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Queue Object Shadows");
 
-	for (auto& object : aRenderData.castShadows)
+	for (auto& object : aGameObjects)
 	{
 		auto transform = object->GetComponent<Transform>();
 
@@ -1021,11 +1096,11 @@ void RenderAssembler::QueueObjectShadows(SceneRenderData& aRenderData, std::shar
 	}
 }
 
-void RenderAssembler::QueueObjectShadows(SceneRenderData& aRenderData, std::shared_ptr<PointLight> aPointLight)
+void RenderAssembler::QueueObjectShadows(const std::vector<std::shared_ptr<GameObject>>& aGameObjects, std::shared_ptr<PointLight> aPointLight)
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(6), "RenderAssembler Queue Object Shadows");
 
-	for (auto& object : aRenderData.castShadows)
+	for (auto& object : aGameObjects)
 	{
 		auto transform = object->GetComponent<Transform>();
 

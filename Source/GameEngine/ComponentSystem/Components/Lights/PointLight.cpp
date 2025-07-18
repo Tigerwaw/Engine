@@ -12,8 +12,17 @@ PointLight::PointLight(float aIntensity, Math::Vector3f aColor) : LightSource(aI
 
 void PointLight::EnableShadowCasting(unsigned aShadowMapWidth, unsigned aShadowMapHeight)
 {
-	myShadowMap = std::make_shared<Texture>();
-	myCastsShadows = GraphicsEngine::Get().GetResourceVendor().CreateShadowCubemap(gameObject->GetName() + "_ShadowCubemap", aShadowMapWidth, aShadowMapHeight, *myShadowMap);
+    myShadowMapSize = { static_cast<float>(aShadowMapWidth), static_cast<float>(aShadowMapHeight) };
+	myDynamicShadowMap = std::make_shared<Texture>();
+	GraphicsEngine::Get().GetResourceVendor().CreateShadowCubemap(gameObject->GetName() + "_DynamicShadowCubemap", aShadowMapWidth, aShadowMapHeight, *myDynamicShadowMap);
+
+    if (gameObject->GetStatic())
+    {
+        myStaticShadowMap = std::make_shared<Texture>();
+        GraphicsEngine::Get().GetResourceVendor().CreateShadowCubemap(gameObject->GetName() + "_StaticShadowCubemap", aShadowMapWidth, aShadowMapHeight, *myStaticShadowMap);
+    }
+
+    myCastsShadows = true;
 }
 
 bool PointLight::Serialize(nl::json& outJsonObject)

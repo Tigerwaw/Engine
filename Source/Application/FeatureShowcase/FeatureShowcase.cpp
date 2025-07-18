@@ -643,28 +643,6 @@ void FeatureShowcase::InitializeApplication()
 			ImGui::End();
 #endif
 		});*/
-
-	Engine::Get().GetImGuiHandler().AddNewFunction([]()
-		{
-#ifndef _RETAIL
-			Math::Vector2f resolution = Engine::Get().GetResolution();
-			ImGui::SetNextWindowPos({ 0.85f * resolution.x, 0.32f * resolution.y });
-			ImGui::SetNextWindowContentSize({ 0.24f * resolution.x, 0.24f * resolution.y });
-			bool open = true;
-			ImGui::Begin("Particle Position", &open, ImGuiWindowFlags_NoSavedSettings);
-
-			std::shared_ptr<GameObject> psObject = Engine::Get().GetSceneHandler().FindGameObjectByName("ParticleTest");
-			std::shared_ptr<Transform> psTransform = psObject->GetComponent<Transform>();
-			Math::Vector3f psPos = psTransform->GetTranslation(true);
-			float pos[3] = { psPos.x, psPos.y, psPos.z };
-			if (ImGui::DragFloat3("Particle System Position", pos))
-			{
-				psTransform->SetTranslation(pos[0], pos[1], pos[2]);
-			}
-
-			ImGui::End();
-#endif
-		});
 }
 
 void FeatureShowcase::UpdateApplication()

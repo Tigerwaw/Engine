@@ -14,7 +14,6 @@ LightSource::LightSource(float aIntensity, Math::Vector3f aColor)
 
 LightSource::~LightSource()
 {
-    myShadowMap = nullptr;
 }
 
 void LightSource::Start()
@@ -27,9 +26,17 @@ void LightSource::Update()
 
 void LightSource::EnableShadowCasting(unsigned aShadowMapWidth, unsigned aShadowMapHeight)
 {
-    myShadowMap = std::make_shared<Texture>();
     myShadowMapSize = { static_cast<float>(aShadowMapWidth), static_cast<float>(aShadowMapHeight) };
-    myCastsShadows = GraphicsEngine::Get().GetResourceVendor().CreateShadowMap(gameObject->GetName() + "_ShadowMap", aShadowMapWidth, aShadowMapHeight, *myShadowMap);
+    myDynamicShadowMap = std::make_shared<Texture>();
+    GraphicsEngine::Get().GetResourceVendor().CreateShadowMap(gameObject->GetName() + "_DynamicShadowMap", aShadowMapWidth, aShadowMapHeight, *myDynamicShadowMap);
+
+    if (gameObject->GetStatic())
+    {
+        myStaticShadowMap = std::make_shared<Texture>();
+        GraphicsEngine::Get().GetResourceVendor().CreateShadowMap(gameObject->GetName() + "_StaticShadowMap", aShadowMapWidth, aShadowMapHeight, *myStaticShadowMap);
+    }
+
+    myCastsShadows = true;
 }
 
 void LightSource::SetColor(Math::Vector3f aColor)
@@ -63,7 +70,12 @@ void LightSource::SetLightSize(float aSize)
     myLightSize = aSize;
 }
 
-std::shared_ptr<Texture> LightSource::GetShadowMap()
+std::shared_ptr<Texture> LightSource::GetStaticShadowMap()
 {
-    return myShadowMap;
+    return myStaticShadowMap;
+}
+
+std::shared_ptr<Texture> LightSource::GetDynamicShadowMap()
+{
+    return myDynamicShadowMap;
 }

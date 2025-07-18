@@ -20,19 +20,23 @@ public:
 	float GetIntensity() const { return myIntensity; }
 	Math::Vector3f GetDirection() const;
 	Math::Vector3f GetPosition() const;
+
 	const bool CastsShadows() const { return myCastsShadows; }
 	void SetShadowBias(float aMinShadowBias, float aMaxShadowBias);
 	const float GetMinShadowBias() const { return myMinShadowBias; }
 	const float GetMaxShadowBias() const { return myMaxShadowBias; }
 	void SetLightSize(float aSize);
 	const float GetLightSize() const { return myLightSize; }
-	std::shared_ptr<Texture> GetShadowMap();
+
+	std::shared_ptr<Texture> GetStaticShadowMap();
+	std::shared_ptr<Texture> GetDynamicShadowMap();
 	const Math::Vector2f GetShadowMapSize() const { return myShadowMapSize; }
 protected:
 	Math::Vector3f myColor = { 1.0f, 1.0f, 1.0f };
 	float myIntensity = 1.0f;
 	bool myCastsShadows = false;
-	std::shared_ptr<Texture> myShadowMap = nullptr;
+	std::shared_ptr<Texture> myStaticShadowMap = nullptr;
+	std::shared_ptr<Texture> myDynamicShadowMap = nullptr;
 	Math::Vector2f myShadowMapSize;
 	float myMinShadowBias = 0.001f;
 	float myMaxShadowBias = 0.005f;
