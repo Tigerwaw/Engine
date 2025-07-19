@@ -35,9 +35,10 @@ bool CollisionHandler::Raycast(Scene& aScene, Math::Vector3f aOrigin, Math::Vect
 		if (!colliderA || !colliderA->GetActive()) continue;
 
 		Math::Ray<float> aRay(aOrigin, aDirection);
-		Math::Vector3f hitPoint;
-		if (colliderA->CheckOverlap(aRay, hitPoint))
+		auto info = colliderA->CheckOverlap(aRay);
+		if (info)
 		{
+			aHitPoint = info.hitPoint;
 			return true;
 		}
 	}

@@ -82,12 +82,11 @@ Math::Vector3f NavMesh::ClampToNavMesh(const Math::Vector3f& aPos) const
 		// essentially we offset ray 50 cm upwards, and then have a threshold of 100cm of snapping to closest node downwards
 
 		Math::Vector3f posOffset = aPos + Math::Vector3f(0.0f, 50.0f, 0.0);
-		Math::Vector3f polyIntersectionPoint;
-		bool polyIntersection = Math::IntersectionPlaneRay(plane, Math::Ray<float>(posOffset, Math::Vector3f(0, -1.0f, 0)), polyIntersectionPoint);
+		Math::IntersectionInfo intersectionResult = Math::IntersectionPlaneRay(plane, Math::Ray<float>(posOffset, Math::Vector3f(0, -1.0f, 0)));
 
-		if (polyIntersection &&  IsPointInsidePolygon(myPolygons[i], polyIntersectionPoint))
+		if (intersectionResult && IsPointInsidePolygon(myPolygons[i], intersectionResult.intersectionPoint))
 		{
-			return polyIntersectionPoint;
+			return intersectionResult.intersectionPoint;
 		}
 	}
 
@@ -184,7 +183,8 @@ NavMeshPath NavMesh::FindPath(Math::Vector3f aStartingPos, Math::Vector3f aEndPo
 
 const bool NavMesh::RayCast(Math::Ray<float> aRay, Math::Vector3f& outHitPoint, bool aClampToNavMesh) const
 {
-	if (!Math::IntersectionAABBRay<float>(myBoundingBox, aRay, outHitPoint))
+	Math::IntersectionInfo intersectResult = Math::IntersectionAABBRay<float>(myBoundingBox, aRay);
+	if (!intersectResult.intersected)
 	{
 		if (!myBoundingBox.IsInside(aRay.GetOrigin()))
 		{
@@ -199,14 +199,13 @@ const bool NavMesh::RayCast(Math::Ray<float> aRay, Math::Vector3f& outHitPoint, 
 	{
 		Math::Plane<float> polygonPlane(polygon.vertexPositions[0], polygon.vertexPositions[1], polygon.vertexPositions[2]);
 
-		Math::Vector3f polyIntersectionPoint;
-		bool polyIntersection = Math::IntersectionPlaneRay(polygonPlane, aRay, polyIntersectionPoint);
-		float intersectionDistance = polyIntersectionPoint.LengthSqr();
-		if (polyIntersection && IsPointInsidePolygon(polygon, polyIntersectionPoint))
+		Math::IntersectionInfo polyIntersection = Math::IntersectionPlaneRay(polygonPlane, aRay);
+		float intersectionDistance = polyIntersection.intersectionPoint.LengthSqr();
+		if (polyIntersection && IsPointInsidePolygon(polygon, polyIntersection.intersectionPoint))
 		{
 			if (intersectionDistance < closestPolygon)
 			{
-				outHitPoint = polyIntersectionPoint;
+				outHitPoint = polyIntersection.intersectionPoint;
 				closestPolygon = intersectionDistance;
 				hitNavMesh = true;
 			}

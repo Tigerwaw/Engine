@@ -1,6 +1,7 @@
 #pragma once
 #include "ComponentSystem/Component.h"
 #include "Math/Ray.hpp"
+#include "Math/Intersection3D.hpp"
 
 class BoxCollider;
 class SphereCollider;
@@ -9,6 +10,23 @@ class Collider : public Component
 {
     friend class CollisionHandler;
 public:
+    struct CollisionInfo
+    {
+        bool collided = false;
+        Math::Vector3f hitPoint;
+
+        operator bool() const
+        {
+            return collided;
+        }
+
+        CollisionInfo(const Math::IntersectionInfo& aInfo)
+        {
+            collided = aInfo.intersected;
+            hitPoint = aInfo.intersectionPoint;
+        }
+    };
+
     void Start() override {}
     void Update() override {}
     void SetIsTrigger(bool aIsTrigger) { myIsTrigger = aIsTrigger; }
@@ -16,10 +34,10 @@ public:
 
     bool IsOverlapping() const { return myIsOverlappingDebug; }
 
-    virtual bool CheckOverlap(const Collider* aCollider) const = 0;
-    virtual bool CheckOverlap(const BoxCollider* aCollider) const = 0;
-    virtual bool CheckOverlap(const SphereCollider* aCollider) const = 0;
-    virtual bool CheckOverlap(const Math::Ray<float> aRay, Math::Vector3f& outHitPoint) const = 0;
+    virtual CollisionInfo CheckOverlap(const Collider* aCollider) const = 0;
+    virtual CollisionInfo CheckOverlap(const BoxCollider* aCollider) const = 0;
+    virtual CollisionInfo CheckOverlap(const SphereCollider* aCollider) const = 0;
+    virtual CollisionInfo CheckOverlap(const Math::Ray<float> aRay) const = 0;
 
     void SetOnCollisionEnterResponse(const std::function<void()>& aCallback);
     void SetOnCollisionStayResponse(const std::function<void()>& aCallback);

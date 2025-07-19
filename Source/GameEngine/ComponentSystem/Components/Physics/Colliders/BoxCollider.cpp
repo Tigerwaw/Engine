@@ -12,12 +12,12 @@ BoxCollider::BoxCollider(Math::Vector3f aExtents, Math::Vector3f aCenterOffset)
     myAABB.InitWithCenterAndExtents(aCenterOffset, aExtents);
 }
 
-bool BoxCollider::CheckOverlap(const Collider* aCollider) const
+Collider::CollisionInfo BoxCollider::CheckOverlap(const Collider* aCollider) const
 {
     return aCollider->CheckOverlap(this);
 }
 
-bool BoxCollider::CheckOverlap(const BoxCollider* aCollider) const
+Collider::CollisionInfo BoxCollider::CheckOverlap(const BoxCollider* aCollider) const
 {
     std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
     std::shared_ptr<Transform> collTransform = aCollider->gameObject->GetComponent<Transform>();
@@ -26,22 +26,20 @@ bool BoxCollider::CheckOverlap(const BoxCollider* aCollider) const
     return Math::IntersectionBetweenAABBS(GetAABB(), otherAABBinMySpace);
 }
 
-bool BoxCollider::CheckOverlap(const SphereCollider* aCollider) const
+Collider::CollisionInfo BoxCollider::CheckOverlap(const SphereCollider* aCollider) const
 {
     std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
     std::shared_ptr<Transform> collTransform = aCollider->gameObject->GetComponent<Transform>();
     Math::Sphere<float> sphereInMySpace = aCollider->GetSphere().GetSphereinNewSpace(collTransform->GetWorldMatrix() * transform->GetWorldMatrix().GetFastInverse());
 
-    Math::Vector3f intersectionPoint;
-    return Math::IntersectionSphereAABB(sphereInMySpace, GetAABB(), intersectionPoint);
+    return Math::IntersectionSphereAABB(sphereInMySpace, GetAABB());
 }
 
-bool BoxCollider::CheckOverlap(const Math::Ray<float> aRay, Math::Vector3f& outHitPoint) const
+Collider::CollisionInfo BoxCollider::CheckOverlap(const Math::Ray<float> aRay) const
 {
     std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
     Math::Ray<float> rayInMySpace = aRay.GetRayinNewSpace(transform->GetWorldMatrix().GetFastInverse());
 
-    outHitPoint;
     return Math::IntersectionAABBRay(myAABB, rayInMySpace);
 }
 

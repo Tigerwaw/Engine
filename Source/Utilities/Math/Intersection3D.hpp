@@ -9,13 +9,19 @@
 
 namespace Math
 {
-	// If the ray is parallel to the plane, aOutIntersectionPoint remains unchanged. If
-	// the ray is in the plane, true is returned, if not, false is returned. If the ray
-	// isn't parallel to the plane and hits, the intersection point is stored in
-	// aOutIntersectionPoint and true returned otherwise false is returned and
-	// outIntersectionPoint is unchanged.
+	struct IntersectionInfo
+	{
+		bool intersected = false;
+		Vector3f intersectionPoint;
+
+		operator bool() const
+		{
+			return intersected;
+		}
+	};
+
 	template <class T>
-	bool IntersectionPlaneRay(const Plane<T>& aPlane, const Ray<T>& aRay)
+	IntersectionInfo IntersectionPlaneRay(const Plane<T>& aPlane, const Ray<T>& aRay)
 	{
 		T tolerance = (T)0.0001;
 		T d = aPlane.GetPoint().Dot(aPlane.GetNormal());
@@ -26,42 +32,12 @@ namespace Math
 		if (denominator < tolerance && denominator > -tolerance)
 		{
 			// Ray Origin is on the plane
-			if (numerator < tolerance && numerator > -tolerance)
-			{
-				return true;
-			}
+			//if (numerator < tolerance && numerator > -tolerance)
+			//{
+			//	return true;
+			//}
 
-			return false;
-		}
-
-		T t = numerator / denominator;
-		// Ray is pointing away from the plane
-		if (t < 0)
-		{
-			return false;
-		}
-
-		return true;
-	}
-
-	template <class T>
-	bool IntersectionPlaneRay(const Plane<T>& aPlane, const Ray<T>& aRay, Vector3<T>& outIntersectionPoint)
-	{
-		T tolerance = (T)0.0001;
-		T d = aPlane.GetPoint().Dot(aPlane.GetNormal());
-		T numerator = d - aRay.GetOrigin().Dot(aPlane.GetNormal());
-		T denominator = aRay.GetDirection().Dot(aPlane.GetNormal());
-
-		// Ray is parallel to the plane
-		if (denominator < tolerance && denominator > -tolerance)
-		{
-			// Ray Origin is on the plane
-			if (numerator < tolerance && numerator > -tolerance)
-			{
-				return true;
-			}
-
-			return false;
+			return IntersectionInfo();
 		}
 
 		T t = numerator / denominator;
@@ -69,55 +45,75 @@ namespace Math
 		// Ray is pointing away from the plane
 		if (t < 0)
 		{
-			return false;
+			return IntersectionInfo();
 		}
 
-		outIntersectionPoint = aRay.GetOrigin() + aRay.GetDirection() * t;
-		return true;
+		IntersectionInfo info;
+		info.intersected = true;
+		info.intersectionPoint = aRay.GetOrigin() + aRay.GetDirection() * t;
+		return info;
 	}
 
-	// If no collision, aOutIntersectionPoint remains unchanged.
-	// If The sphere overlaps the AABB true is returned, if not, false is returned.
-	// The point on the AABB closest to the sphere centre is saved in
-	// aOutIntersectionPoint.
-	// A sphere touching the aabb is considered overlapping.
 	template <class T>
-	bool IntersectionSphereAABB(const Sphere<T>& aSphere, const AABB3D<T>& aAABB3D)
+	IntersectionInfo IntersectionAABBRay(const AABB3D<T>& aAABB, const Ray<T>& aRay)
 	{
-		Vector3<T> closestPoint = aSphere.GetPoint();
+		const Vector3<T> rDir = aRay.GetDirection();
 
-		if (aSphere.GetPoint().x <= aAABB3D.GetMin().x)
+		const Vector3<T> originToMin = (aAABB.GetMin() - aRay.GetOrigin());
+		const Vector3<T> originToMax = (aAABB.GetMax() - aRay.GetOrigin());
+
+		const Vector3<T> t1{ originToMin.x / rDir.x, originToMin.y / rDir.y, originToMin.z / rDir.z };
+		const Vector3<T> t2{ originToMax.x / rDir.x, originToMax.y / rDir.y, originToMax.z / rDir.z };
+
+		T tMin = 0;
+		T tMax = static_cast<T>(FLT_MAX);
+
+		tMin = static_cast<T>(std::fmin(std::fmax(t1.x, tMin), std::fmax(t2.x, tMin)));
+		tMax = static_cast<T>(std::fmax(std::fmin(t1.x, tMax), std::fmin(t2.x, tMax)));
+
+		tMin = static_cast<T>(std::fmin(std::fmax(t1.y, tMin), std::fmax(t2.y, tMin)));
+		tMax = static_cast<T>(std::fmax(std::fmin(t1.y, tMax), std::fmin(t2.y, tMax)));
+
+		tMin = static_cast<T>(std::fmin(std::fmax(t1.z, tMin), std::fmax(t2.z, tMin)));
+		tMax = static_cast<T>(std::fmax(std::fmin(t1.z, tMax), std::fmin(t2.z, tMax)));
+
+		if (tMin <= tMax)
 		{
-			closestPoint.x = aAABB3D.GetMin().x;
-		}
-		else if (aSphere.GetPoint().x >= aAABB3D.GetMax().x)
-		{
-			closestPoint.x = aAABB3D.GetMax().x;
+			tMin = static_cast<T>(std::fmax(tMin, T(0))); // clamp tMin to zero if inside aabb
+
+			IntersectionInfo info;
+			info.intersected = true;
+			info.intersectionPoint = aRay.GetOrigin() + aRay.GetDirection() * tMin;
+			return info;
 		}
 
-		if (aSphere.GetPoint().y <= aAABB3D.GetMin().y)
-		{
-			closestPoint.y = aAABB3D.GetMin().y;
-		}
-		else if (aSphere.GetPoint().y >= aAABB3D.GetMax().y)
-		{
-			closestPoint.y = aAABB3D.GetMax().y;
-		}
-
-		if (aSphere.GetPoint().z <= aAABB3D.GetMin().z)
-		{
-			closestPoint.z = aAABB3D.GetMin().z;
-		}
-		else if (aSphere.GetPoint().z >= aAABB3D.GetMax().z)
-		{
-			closestPoint.z = aAABB3D.GetMax().z;
-		}
-
-		return aSphere.IsInside(closestPoint);
+		return IntersectionInfo();
 	}
 
 	template <class T>
-	bool IntersectionSphereAABB(const Sphere<T>& aSphere, const AABB3D<T>& aAABB3D, Vector3<T>& outIntersectionPoint)
+	IntersectionInfo IntersectionSphereRay(const Sphere<T>& aSphere, const Ray<T>& aRay)
+	{
+		Vector3<T> sphereCenterToRayPoint = aSphere.GetPoint() - aRay.GetOrigin();
+		T distanceProjectedOntoRay = sphereCenterToRayPoint.Dot(aRay.GetDirection());
+
+		if (distanceProjectedOntoRay < 0)
+		{
+			return IntersectionInfo();
+		}
+
+		if (0 > aSphere.GetRadiusSqr() - sphereCenterToRayPoint.LengthSqr() + (distanceProjectedOntoRay * distanceProjectedOntoRay))
+		{
+			return IntersectionInfo();
+		}
+
+		IntersectionInfo info;
+		info.intersected = true;
+		info.intersectionPoint = aRay.GetOrigin() + aRay.GetDirection() * distanceProjectedOntoRay;
+		return info;
+	}
+
+	template <class T>
+	IntersectionInfo IntersectionSphereAABB(const Sphere<T>& aSphere, const AABB3D<T>& aAABB3D)
 	{
 		Vector3<T> closestPoint = aSphere.GetPoint();
 
@@ -150,105 +146,17 @@ namespace Math
 
 		if (aSphere.IsInside(closestPoint))
 		{
-			outIntersectionPoint = closestPoint;
-			return true;
+			IntersectionInfo info;
+			info.intersected = true;
+			info.intersectionPoint = closestPoint;
+			return info;
 		}
 
-		return false;
-	}
-
-	// If the ray intersects the AABB, true is returned, if not, false is returned.
-	// A ray in one of the AABB's sides is counted as intersecting it.
-	template <class T>
-	bool IntersectionAABBRay(const AABB3D<T>& aAABB, const Ray<T>& aRay)
-	{
-		const Vector3<T> rDir = aRay.GetDirection();
-
-		const Vector3<T> originToMin = (aAABB.GetMin() - aRay.GetOrigin());
-		const Vector3<T> originToMax = (aAABB.GetMax() - aRay.GetOrigin());
-
-		const Vector3<T> t1{ originToMin.x / rDir.x, originToMin.y / rDir.y, originToMin.z / rDir.z };
-		const Vector3<T> t2{ originToMax.x / rDir.x, originToMax.y / rDir.y, originToMax.z / rDir.z };
-
-		T tMin = 0;
-		T tMax = static_cast<T>(FLT_MAX);
-
-		tMin = static_cast<T>(std::fmin(std::fmax(t1.x, tMin), std::fmax(t2.x, tMin)));
-		tMax = static_cast<T>(std::fmax(std::fmin(t1.x, tMax), std::fmin(t2.x, tMax)));
-
-		tMin = static_cast<T>(std::fmin(std::fmax(t1.y, tMin), std::fmax(t2.y, tMin)));
-		tMax = static_cast<T>(std::fmax(std::fmin(t1.y, tMax), std::fmin(t2.y, tMax)));
-
-		tMin = static_cast<T>(std::fmin(std::fmax(t1.z, tMin), std::fmax(t2.z, tMin)));
-		tMax = static_cast<T>(std::fmax(std::fmin(t1.z, tMax), std::fmin(t2.z, tMax)));
-
-		if (tMin <= tMax)
-		{
-			tMin = static_cast<T>(std::fmax(tMin, T(0))); // clamp tMin to zero if inside aabb
-
-			return true;
-		}
-
-		return false;
-	}
-
-	template <class T>
-	bool IntersectionAABBRay(const AABB3D<T>& aAABB, const Ray<T>& aRay, Vector3<T>& outIntersectionPoint)
-	{
-		const Vector3<T> rDir = aRay.GetDirection();
-
-		const Vector3<T> originToMin = (aAABB.GetMin() - aRay.GetOrigin());
-		const Vector3<T> originToMax = (aAABB.GetMax() - aRay.GetOrigin());
-
-		const Vector3<T> t1{ originToMin.x / rDir.x, originToMin.y / rDir.y, originToMin.z / rDir.z };
-		const Vector3<T> t2{ originToMax.x / rDir.x, originToMax.y / rDir.y, originToMax.z / rDir.z };
-
-		T tMin = 0;
-		T tMax = static_cast<T>(FLT_MAX);
-
-		tMin = static_cast<T>(std::fmin(std::fmax(t1.x, tMin), std::fmax(t2.x, tMin)));
-		tMax = static_cast<T>(std::fmax(std::fmin(t1.x, tMax), std::fmin(t2.x, tMax)));
-
-		tMin = static_cast<T>(std::fmin(std::fmax(t1.y, tMin), std::fmax(t2.y, tMin)));
-		tMax = static_cast<T>(std::fmax(std::fmin(t1.y, tMax), std::fmin(t2.y, tMax)));
-																   
-		tMin = static_cast<T>(std::fmin(std::fmax(t1.z, tMin), std::fmax(t2.z, tMin)));
-		tMax = static_cast<T>(std::fmax(std::fmin(t1.z, tMax), std::fmin(t2.z, tMax)));
-
-		if (tMin <= tMax)
-		{
-			tMin = static_cast<T>(std::fmax(tMin, T(0))); // clamp tMin to zero if inside aabb
-
-			outIntersectionPoint = aRay.GetOrigin() + aRay.GetDirection() * tMin;
-			return true;
-		}
-
-		return false;
-	}
-
-	// If the ray intersects the sphere, true is returned, if not, false is returned.
-	// A ray intersecting the surface of the sphere is considered as intersecting it.
-	template <class T>
-	bool IntersectionSphereRay(const Sphere<T>& aSphere, const Ray<T>& aRay)
-	{
-		Vector3<T> sphereCenterToRayPoint = aSphere.GetPoint() - aRay.GetOrigin();
-		T distanceProjectedOntoRay = sphereCenterToRayPoint.Dot(aRay.GetDirection());
-
-		if (distanceProjectedOntoRay < 0)
-		{
-			return false;
-		}
-
-		if (0 > aSphere.GetRadiusSqr() - sphereCenterToRayPoint.LengthSqr() + (distanceProjectedOntoRay * distanceProjectedOntoRay))
-		{
-			return false;
-		}
-
-		return true;
+		return IntersectionInfo();
 	}
 
 	template<class T>
-	bool IntersectionBetweenAABBS(const AABB3D<T>& aBoundingBoxOne, const AABB3D<T>& aBoundingBoxTwo)
+	IntersectionInfo IntersectionBetweenAABBS(const AABB3D<T>& aBoundingBoxOne, const AABB3D<T>& aBoundingBoxTwo)
 	{
 		Vector3<T> minA = aBoundingBoxOne.GetMin();
 		Vector3<T> maxA = aBoundingBoxOne.GetMax();
@@ -258,22 +166,26 @@ namespace Math
 		bool y = minA.y <= maxB.y && maxA.y >= minB.y;
 		bool z = minA.z <= maxB.z && maxA.z >= minB.z;
 
-		return x && y && z;
+		IntersectionInfo info;
+		info.intersected = x && y && z;
+		return info;
 	}
 
 	template<class T>
-	bool IntersectionBetweenSpheres(const Sphere<T>& aSphereOne, const Sphere<T>& aSphereTwo)
+	IntersectionInfo IntersectionBetweenSpheres(const Sphere<T>& aSphereOne, const Sphere<T>& aSphereTwo)
 	{
 		Vector3<T> differenceFromCenterToCenter = aSphereOne.GetPoint() - aSphereTwo.GetPoint();
 		T distanceSqr = differenceFromCenterToCenter.LengthSqr();
 		T radiusSum = aSphereOne.GetRadius() + aSphereTwo.GetRadius();
 		T sqrdRadii = radiusSum * radiusSum;
 
-		return (distanceSqr <= sqrdRadii);
+		IntersectionInfo info;
+		info.intersected = (distanceSqr <= sqrdRadii);
+		return info;
 	}
 
 	template<class T>
-	bool IntersectionBetweenPlaneVolumeAABB(const PlaneVolume<T>& aPlaneVolume, const AABB3D<T>& aBoundingBox)
+	IntersectionInfo IntersectionBetweenPlaneVolumeAABB(const PlaneVolume<T>& aPlaneVolume, const AABB3D<T>& aBoundingBox)
 	{
 		for (const Plane<T>& plane : aPlaneVolume.GetPlanes())
 		{
@@ -287,9 +199,11 @@ namespace Math
 				}
 			}
 
-			if (cornersInPlane == 0) return false;
+			if (cornersInPlane == 0) return IntersectionInfo();
 		}
 
-		return true;
+		IntersectionInfo info;
+		info.intersected = true;
+		return info;
 	}
 }
