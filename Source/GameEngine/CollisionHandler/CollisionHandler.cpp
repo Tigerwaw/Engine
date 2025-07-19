@@ -52,6 +52,7 @@ void CollisionHandler::AddActiveCollisions(Scene& aScene)
 	{
 		std::shared_ptr<GameObject> goA = aScene.myGameObjects[indexA];
 		if (!goA->GetActive()) continue;
+		bool isStaticA = goA->GetStatic();
 
 		std::shared_ptr<Collider> colliderA = goA->GetComponent<Collider>();
 		if (!colliderA || !colliderA->GetActive()) continue;
@@ -60,6 +61,8 @@ void CollisionHandler::AddActiveCollisions(Scene& aScene)
 		{
 			std::shared_ptr<GameObject> goB = aScene.myGameObjects[indexB];
 			if (!goB->GetActive()) continue;
+			bool isStaticB = goB->GetStatic();
+			if (isStaticA && isStaticB) continue;
 
 			std::shared_ptr<Collider> colliderB = goB->GetComponent<Collider>();
 			if (!colliderB || !colliderB->GetActive()) continue;
