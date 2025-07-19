@@ -1287,20 +1287,21 @@ void RenderAssembler::QueueDebugLines(SceneRenderData& aRenderData)
 
 	if (Engine::Get().DrawColliders)
 	{
+		Math::Vector4f colorGreen = { 0, 1.0f, 0, 1.0f };
+		Math::Vector4f colorRed = { 1.0f, 0, 0, 1.0f };
+
 		for (auto& gameObject : aRenderData.drawCollidersObjects)
 		{
 			std::shared_ptr<BoxCollider> boxCollider = gameObject->GetComponent<BoxCollider>();
 			if (boxCollider && boxCollider->GetActive())
 			{
-				Math::Vector4f colliderColor = boxCollider->debugColliding ? Math::Vector4f(1.0f, 0, 0, 1.0f) : Math::Vector4f(0, 1.0f, 0, 1.0f);
-				Engine::Get().GetDebugDrawer().DrawBoundingBox(boxCollider->GetAABB(), gameObject->GetComponent<Transform>()->GetWorldMatrix(), colliderColor);
+				Engine::Get().GetDebugDrawer().DrawBoundingBox(boxCollider->GetAABB(), gameObject->GetComponent<Transform>()->GetWorldMatrix(), boxCollider->IsOverlapping() ? colorRed : colorGreen);
 			}
 
 			std::shared_ptr<SphereCollider> sphereCollider = gameObject->GetComponent<SphereCollider>();
 			if (sphereCollider && sphereCollider->GetActive())
 			{
-				Math::Vector4f colliderColor = sphereCollider->debugColliding ? Math::Vector4f(1.0f, 0, 0, 1.0f) : Math::Vector4f(0, 1.0f, 0, 1.0f);
-				Engine::Get().GetDebugDrawer().DrawBoundingSphere(sphereCollider->GetSphere(), gameObject->GetComponent<Transform>()->GetWorldMatrix(), colliderColor);
+				Engine::Get().GetDebugDrawer().DrawBoundingSphere(sphereCollider->GetSphere(), gameObject->GetComponent<Transform>()->GetWorldMatrix(), sphereCollider->IsOverlapping() ? colorRed : colorGreen);
 			}
 		}
 	}

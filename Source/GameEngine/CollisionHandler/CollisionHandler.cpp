@@ -15,38 +15,14 @@ CollisionHandler::~CollisionHandler()
 {
 }
 
-void CollisionHandler::TestCollisions(Scene& aScene)
+void CollisionHandler::UpdateCollisions(Scene& aScene)
 {
-	PIXScopedEvent(PIX_COLOR_INDEX(9), "Test Collisions in Scene");
+	PIXScopedEvent(PIX_COLOR_INDEX(9), "Update Collisions in Scene");
 
-    for (auto& goA : aScene.myGameObjects)
-    {
-		int collisions = 0;
-		if (!goA->GetActive()) continue;
-
-		std::shared_ptr<Collider> colliderA = goA->GetComponent<Collider>();
-		if (!colliderA || !colliderA->GetActive()) continue;
-
-		for (auto& goB : aScene.myGameObjects)
-		{
-			if (goA == goB) break;
-			if (!goB->GetActive()) continue;
-
-			std::shared_ptr<Collider> colliderB = goB->GetComponent<Collider>();
-			if (!colliderB || !colliderB->GetActive()) continue;
-
-			if (colliderA->TestCollision(colliderB.get()))
-			{
-				colliderA->TriggerCollisionResponse();
-				colliderB->TriggerCollisionResponse();
-				colliderA->debugColliding = true;
-				colliderB->debugColliding = true;
-				collisions++;
-			}
-		}
-
-		if (collisions == 0) colliderA->debugColliding = false;
-    }
+	AddActiveCollisions(aScene);
+	CompareCollisions();
+	myActiveCollisionsLastFrame = myActiveCollisionsThisFrame;
+	myActiveCollisionsThisFrame.clear();
 }
 
 bool CollisionHandler::Raycast(Scene& aScene, Math::Vector3f aOrigin, Math::Vector3f aDirection, Math::Vector3f& aHitPoint)
@@ -60,7 +36,7 @@ bool CollisionHandler::Raycast(Scene& aScene, Math::Vector3f aOrigin, Math::Vect
 
 		Math::Ray<float> aRay(aOrigin, aDirection);
 		Math::Vector3f hitPoint;
-		if (colliderA->TestCollision(aRay, hitPoint))
+		if (colliderA->CheckOverlap(aRay, hitPoint))
 		{
 			return true;
 		}
@@ -68,4 +44,96 @@ bool CollisionHandler::Raycast(Scene& aScene, Math::Vector3f aOrigin, Math::Vect
 
 	aHitPoint = { 0, 0, 0 };
 	return false;
+}
+
+void CollisionHandler::AddActiveCollisions(Scene& aScene)
+{
+	for (size_t indexA = 0; indexA < aScene.myGameObjects.size() - 1; ++indexA)
+	{
+		std::shared_ptr<GameObject> goA = aScene.myGameObjects[indexA];
+		if (!goA->GetActive()) continue;
+
+		std::shared_ptr<Collider> colliderA = goA->GetComponent<Collider>();
+		if (!colliderA || !colliderA->GetActive()) continue;
+
+		for (size_t indexB = indexA + 1; indexB < aScene.myGameObjects.size(); ++indexB)
+		{
+			std::shared_ptr<GameObject> goB = aScene.myGameObjects[indexB];
+			if (!goB->GetActive()) continue;
+
+			std::shared_ptr<Collider> colliderB = goB->GetComponent<Collider>();
+			if (!colliderB || !colliderB->GetActive()) continue;
+
+			if (colliderA->CheckOverlap(colliderB.get()))
+			{
+				auto& newCollision = myActiveCollisionsThisFrame.emplace_back();
+				newCollision.colliderOne = colliderA;
+				newCollision.colliderTwo = colliderB;
+				newCollision.isTrigger = colliderA->IsTrigger() || colliderB->IsTrigger();
+			}
+		}
+	}
+}
+
+void CollisionHandler::CompareCollisions()
+{
+	for (auto& activeCollisionThisFrame : myActiveCollisionsThisFrame)
+	{
+		auto it = std::find(myActiveCollisionsLastFrame.begin(), myActiveCollisionsLastFrame.end(), activeCollisionThisFrame);
+		bool isNewCollision = (it == myActiveCollisionsLastFrame.end());
+		if (activeCollisionThisFrame.isTrigger)
+		{
+			if (isNewCollision)
+			{
+				if (activeCollisionThisFrame.colliderOne->IsTrigger())
+					activeCollisionThisFrame.colliderOne->OnTriggerEnter();
+
+				if (activeCollisionThisFrame.colliderTwo->IsTrigger())
+					activeCollisionThisFrame.colliderTwo->OnTriggerEnter();
+			}
+			else
+			{
+				if (activeCollisionThisFrame.colliderOne->IsTrigger())
+					activeCollisionThisFrame.colliderOne->OnTriggerStay();
+
+				if (activeCollisionThisFrame.colliderTwo->IsTrigger())
+					activeCollisionThisFrame.colliderTwo->OnTriggerStay();
+			}
+		}
+		else
+		{
+			if (isNewCollision)
+			{
+				activeCollisionThisFrame.colliderOne->OnCollisionEnter();
+				activeCollisionThisFrame.colliderTwo->OnCollisionEnter();
+			}
+			else
+			{
+				activeCollisionThisFrame.colliderOne->OnCollisionStay();
+				activeCollisionThisFrame.colliderTwo->OnCollisionStay();
+			}
+		}
+	}
+
+	for (auto& activeCollisionLastFrame : myActiveCollisionsLastFrame)
+	{
+		auto it = std::find(myActiveCollisionsThisFrame.begin(), myActiveCollisionsThisFrame.end(), activeCollisionLastFrame);
+		bool collisionEnded = (it == myActiveCollisionsThisFrame.end());
+		if (collisionEnded)
+		{
+			if (activeCollisionLastFrame.isTrigger)
+			{
+				if (activeCollisionLastFrame.colliderOne->IsTrigger())
+					activeCollisionLastFrame.colliderOne->OnTriggerExit();
+
+				if (activeCollisionLastFrame.colliderTwo->IsTrigger())
+					activeCollisionLastFrame.colliderTwo->OnTriggerExit();
+			}
+			else
+			{
+				activeCollisionLastFrame.colliderOne->OnCollisionExit();
+				activeCollisionLastFrame.colliderTwo->OnCollisionExit();
+			}
+		}
+	}
 }

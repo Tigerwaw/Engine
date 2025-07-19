@@ -12,12 +12,12 @@ BoxCollider::BoxCollider(Math::Vector3f aExtents, Math::Vector3f aCenterOffset)
     myAABB.InitWithCenterAndExtents(aCenterOffset, aExtents);
 }
 
-bool BoxCollider::TestCollision(const Collider* aCollider) const
+bool BoxCollider::CheckOverlap(const Collider* aCollider) const
 {
-    return aCollider->TestCollision(this);
+    return aCollider->CheckOverlap(this);
 }
 
-bool BoxCollider::TestCollision(const BoxCollider* aCollider) const
+bool BoxCollider::CheckOverlap(const BoxCollider* aCollider) const
 {
     std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
     std::shared_ptr<Transform> collTransform = aCollider->gameObject->GetComponent<Transform>();
@@ -26,7 +26,7 @@ bool BoxCollider::TestCollision(const BoxCollider* aCollider) const
     return Math::IntersectionBetweenAABBS(GetAABB(), otherAABBinMySpace);
 }
 
-bool BoxCollider::TestCollision(const SphereCollider* aCollider) const
+bool BoxCollider::CheckOverlap(const SphereCollider* aCollider) const
 {
     std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
     std::shared_ptr<Transform> collTransform = aCollider->gameObject->GetComponent<Transform>();
@@ -36,7 +36,7 @@ bool BoxCollider::TestCollision(const SphereCollider* aCollider) const
     return Math::IntersectionSphereAABB(sphereInMySpace, GetAABB(), intersectionPoint);
 }
 
-bool BoxCollider::TestCollision(const Math::Ray<float> aRay, Math::Vector3f& outHitPoint) const
+bool BoxCollider::CheckOverlap(const Math::Ray<float> aRay, Math::Vector3f& outHitPoint) const
 {
     std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
     Math::Ray<float> rayInMySpace = aRay.GetRayinNewSpace(transform->GetWorldMatrix().GetFastInverse());
@@ -58,6 +58,8 @@ bool BoxCollider::Serialize(nl::json& outJsonObject)
 
 bool BoxCollider::Deserialize(nl::json& aJsonObject)
 {
+    Collider::Deserialize(aJsonObject);
+
     Math::Vector3f centerOffset;
     Math::Vector3f extents;
 

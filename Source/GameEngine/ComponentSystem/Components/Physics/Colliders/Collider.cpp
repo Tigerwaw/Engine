@@ -1,15 +1,103 @@
 #include "Enginepch.h"
 #include "Collider.h"
 
-void Collider::SetCollisionResponse(const std::function<void()>& aCallback)
+void Collider::SetOnCollisionEnterResponse(const std::function<void()>& aCallback)
 {
-	myCollisionResponse = aCallback;
+	myOnCollisionEnterResponse = aCallback;
 }
 
-void Collider::TriggerCollisionResponse() const
+void Collider::SetOnCollisionStayResponse(const std::function<void()>& aCallback)
 {
-	if (myCollisionResponse)
+	myOnCollisionStayResponse = aCallback;
+}
+
+void Collider::SetOnCollisionExitResponse(const std::function<void()>& aCallback)
+{
+	myOnCollisionExitResponse = aCallback;
+}
+
+void Collider::SetOnTriggerEnterResponse(const std::function<void()>& aCallback)
+{
+	myOnTriggerEnterResponse = aCallback;
+}
+
+void Collider::SetOnTriggerStayResponse(const std::function<void()>& aCallback)
+{
+	myOnTriggerStayResponse = aCallback;
+}
+
+void Collider::SetOnTriggerExitResponse(const std::function<void()>& aCallback)
+{
+	myOnTriggerExitResponse = aCallback;
+}
+
+bool Collider::Serialize(nl::json&)
+{
+	return false;
+}
+
+bool Collider::Deserialize(nl::json& aJsonObject)
+{
+	if (aJsonObject.contains("IsTrigger"))
 	{
-		myCollisionResponse();
+		SetIsTrigger(aJsonObject["IsTrigger"].get<bool>());
+	}
+	
+	return true;
+}
+
+void Collider::OnCollisionEnter()
+{
+	myIsOverlappingDebug = true;
+
+	if (myOnCollisionEnterResponse)
+	{
+		myOnCollisionEnterResponse();
+	}
+}
+
+void Collider::OnCollisionStay()
+{
+	if (myOnCollisionStayResponse)
+	{
+		myOnCollisionStayResponse();
+	}
+}
+
+void Collider::OnCollisionExit()
+{
+	myIsOverlappingDebug = false;
+
+	if (myOnCollisionExitResponse)
+	{
+		myOnCollisionExitResponse();
+	}
+}
+
+void Collider::OnTriggerEnter()
+{
+	myIsOverlappingDebug = true;
+
+	if (myOnTriggerEnterResponse)
+	{
+		myOnTriggerEnterResponse();
+	}
+}
+
+void Collider::OnTriggerStay()
+{
+	if (myOnTriggerStayResponse)
+	{
+		myOnTriggerStayResponse();
+	}
+}
+
+void Collider::OnTriggerExit()
+{
+	myIsOverlappingDebug = false;
+
+	if (myOnTriggerExitResponse)
+	{
+		myOnTriggerExitResponse();
 	}
 }

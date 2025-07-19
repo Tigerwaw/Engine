@@ -31,7 +31,7 @@ void SceneHandler::UpdateActiveScene()
     }
 
     myActiveScene->Update();
-    myCollisionHandler->TestCollisions(*myActiveScene);
+    myCollisionHandler->UpdateCollisions(*myActiveScene);
 }
 
 void SceneHandler::RenderActiveScene()

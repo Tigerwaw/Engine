@@ -11,17 +11,17 @@ SphereCollider::SphereCollider(float aRadius, Math::Vector3f aCenterOffset)
     mySphere.InitWithCenterAndRadius(aCenterOffset, aRadius);
 }
 
-bool SphereCollider::TestCollision(const Collider* aCollider) const
+bool SphereCollider::CheckOverlap(const Collider* aCollider) const
 {
-    return aCollider->TestCollision(this);
+    return aCollider->CheckOverlap(this);
 }
 
-bool SphereCollider::TestCollision(const BoxCollider* aCollider) const
+bool SphereCollider::CheckOverlap(const BoxCollider* aCollider) const
 {
-    return aCollider->TestCollision(this);
+    return aCollider->CheckOverlap(this);
 }
 
-bool SphereCollider::TestCollision(const SphereCollider* aCollider) const
+bool SphereCollider::CheckOverlap(const SphereCollider* aCollider) const
 {
     std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
     std::shared_ptr<Transform> collTransform = aCollider->gameObject->GetComponent<Transform>();
@@ -30,7 +30,7 @@ bool SphereCollider::TestCollision(const SphereCollider* aCollider) const
     return Math::IntersectionBetweenSpheres(GetSphere(), otherSphereInMySpace);
 }
 
-bool SphereCollider::TestCollision(const Math::Ray<float> aRay, Math::Vector3f& outHitPoint) const
+bool SphereCollider::CheckOverlap(const Math::Ray<float> aRay, Math::Vector3f& outHitPoint) const
 {
     std::shared_ptr<Transform> transform = gameObject->GetComponent<Transform>();
     Math::Ray<float> rayInMySpace = aRay.GetRayinNewSpace(transform->GetWorldMatrix().GetFastInverse());
@@ -52,6 +52,8 @@ bool SphereCollider::Serialize(nl::json& outJsonObject)
 
 bool SphereCollider::Deserialize(nl::json& aJsonObject)
 {
+    Collider::Deserialize(aJsonObject);
+
     Math::Vector3f centerOffset;
     float radius = 0;
 
