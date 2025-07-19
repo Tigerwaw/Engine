@@ -33,16 +33,3 @@ void GameObject::SetStatic(bool aStatic)
 {
 	myIsStatic = aStatic;
 }
-
-void GameObject::SendEvent(const GameObjectEvent aEvent)
-{
-	for (auto& comp : myComponents)
-	{
-		comp->ReceiveEvent(aEvent);
-	}
-}
-
-void GameObject::SendEvent(const GameObjectEventType aEvent, std::any aValue)
-{
-	SendEvent(GameObjectEvent(aEvent, aValue));
-}

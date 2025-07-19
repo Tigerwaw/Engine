@@ -3,9 +3,6 @@
 #include "Math/AABB3D.hpp"
 #include "Math/Matrix4x4.hpp"
 
-
-#include "ComponentSystem/GameObjectEventType.h"
-
 // The reason why this class doesn't inherit from the Model class is that it creates problems with type-casting.
 // (Calling GetComponent<Model> would return a pointer to an instance of AnimatedModel, which may not be desired)
 
@@ -19,7 +16,7 @@ public:
     struct AnimationEvent
     {
         unsigned frame = 0;
-        GameObjectEventType eventTypeToSend = GameObjectEventType::Count;
+        //GameObjectEventType eventTypeToSend = GameObjectEventType::Count;
         bool hasBeenCalledThisLoop = false;
     };
 
@@ -77,8 +74,8 @@ public:
     void AddAnimationToLayer(const std::string& aAnimationName, std::shared_ptr<Animation> aNewAnimation, const std::string& aStartJoint = "", bool aShouldLoop = false);
     void SetCurrentAnimationOnLayer(const std::string& aAnimationName, unsigned aLayerIndex = 0, float aBlendTime = 0, unsigned aStartingFrame = 0);
     void SetCurrentAnimationOnLayer(const std::string& aAnimationName, const std::string& aStartJoint = "", float aBlendTime = 0, unsigned aStartingFrame = 0);
-    void AddAnimationEvent(const std::string& aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, unsigned aLayerIndex = 0);
-    void AddAnimationEvent(const std::string& aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, const std::string& aStartJoint = "");
+    //void AddAnimationEvent(const std::string& aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, unsigned aLayerIndex = 0);
+    //void AddAnimationEvent(const std::string& aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, const std::string& aStartJoint = "");
 
     const std::string GetCurrentAnimationNameOnLayer(unsigned aLayerIndex = 0) const;
     const std::string GetCurrentAnimationNameOnLayer(const std::string& aStartJoint = "") const;

@@ -19,10 +19,10 @@ private:
 	void ControlsInfo();
 	void ResolutionOptions();
 
-	bool myShowFeatureOptions = true;
-	bool myShowLightingSettings = true;
+	bool myShowFeatureOptions = false;
+	bool myShowLightingSettings = false;
 	bool myShowPerformanceInfo = true;
-	bool myShowControlsInfo = true;
+	bool myShowControlsInfo = false;
 	bool myShowResolutionOptions = false;
 
 	int currentAnimation = 0;

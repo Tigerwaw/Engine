@@ -27,7 +27,6 @@ public:
 
     Timer& GetTimer() { return *myTimer; }
     InputHandler& GetInputHandler() { return *myInputHandler; }
-    GlobalEventHandler& GetGlobalEventHandler() { return *myGlobalEventHandler; }
     SceneHandler& GetSceneHandler() { return *mySceneHandler; }
     DebugDrawer& GetDebugDrawer() { return *myDebugDrawer; }
     AudioEngine& GetAudioEngine() { return *myAudioEngine; }
@@ -66,7 +65,6 @@ private:
     std::unique_ptr<WindowsEventHandler> myEventHandler;
     std::unique_ptr<Timer> myTimer;
     std::unique_ptr<InputHandler> myInputHandler;
-    std::unique_ptr<GlobalEventHandler> myGlobalEventHandler;
     std::unique_ptr<SceneHandler> mySceneHandler;
     std::unique_ptr<DebugDrawer> myDebugDrawer;
     std::unique_ptr<AudioEngine> myAudioEngine;

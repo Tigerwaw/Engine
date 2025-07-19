@@ -13,7 +13,6 @@ VFXModel::~VFXModel()
 VFXModel::VFXModel(VFXData aVFXData)
 {
 	SetLifetime(aVFXData.lifetime);
-	SetEventTrigger(aVFXData.eventTrigger);
 	SetWorldspaceSprite(aVFXData.isBillboard, aVFXData.isSpritesheet, aVFXData.spritesheetSize);
 }
 
@@ -65,14 +64,6 @@ void VFXModel::PlayVFX()
 	}
 }
 
-void VFXModel::ReceiveEvent(const GameObjectEvent& aEvent)
-{
-	if (aEvent.type == myEventTrigger)
-	{
-		PlayVFX();
-	}
-}
-
 void VFXModel::SetWorldspaceSprite(bool aIsBillboard, bool aIsSpritesheet, Math::Vector2f aSpritesheetSize)
 {
     myIsBillboard = aIsBillboard;
@@ -100,11 +91,6 @@ bool VFXModel::Deserialize(nl::json& aJsonObject)
 	if (aJsonObject.contains("CastShadows"))
 	{
 		SetCastShadows(aJsonObject["CastShadows"].get<bool>());
-	}
-
-	if (aJsonObject.contains("EventTrigger"))
-	{
-		SetEventTrigger(static_cast<GameObjectEventType>(aJsonObject["EventTrigger"].get<unsigned>()));
 	}
 
 	bool isBillboard = myIsBillboard;

@@ -281,6 +281,7 @@
         },
         {
           "Type": "BoxCollider",
+          "IsTrigger": false,
           "CenterOffset": [ 0.0, 0.0, 5.0 ],
           "Extents": {
             "Width": 60.0,
@@ -347,6 +348,7 @@
             },
             {
               "Type": "SphereCollider",
+              "IsTrigger":  false,
               "CenterOffset": [ 0.0, 70.0, 0.0 ],
               "Radius": 60.0
             }
@@ -383,32 +385,12 @@
                 {
                   "Name": "Walk",
                   "Path": "A_C_TGA_Bro_Walk.fbx",
-                  "Loop": true,
-                  "Events": [
-                    {
-                      "EventType": 1,
-                      "Frame": 1
-                    },
-                    {
-                      "EventType": 1,
-                      "Frame": 17
-                    }
-                  ]
+                  "Loop": true
                 },
                 {
                   "Name": "Run",
                   "Path": "A_C_TGA_Bro_Run.fbx",
-                  "Loop": true,
-                  "Events": [
-                    {
-                      "EventType": 1,
-                      "Frame": 4
-                    },
-                    {
-                      "EventType": 1,
-                      "Frame": 13
-                    }
-                  ]
+                  "Loop": true
                 },
                 {
                   "Name": "Wave",
@@ -433,8 +415,7 @@
           "Type": "AudioSource",
           "AudioName": "TgaBroFootsteps",
           "IsOneShot": true,
-          "SourceType": 2,
-          "PlayOnEvent": 1
+          "SourceType": 2
         }
       ]
     },
@@ -600,7 +581,6 @@
           "Type": "VFXModel",
           "CastShadows": false,
           "Lifetime": 1.0,
-          "EventTrigger": 0,
           "IsBillboard": true,
           "IsSpritesheet": true,
           "SpritesheetSize": [

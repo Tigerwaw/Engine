@@ -1,7 +1,6 @@
 #pragma once
 
 class GameObject;
-struct GameObjectEvent;
 
 class Component
 {
@@ -24,7 +23,6 @@ public:
     virtual bool Serialize(nl::json& outJsonObject) { outJsonObject; return false; }
     virtual bool Deserialize(nl::json& aJsonObject) { aJsonObject; return false; }
 protected:
-    virtual void ReceiveEvent(const GameObjectEvent& aEvent) { aEvent; }
 
     bool myIsActive = true;
 };

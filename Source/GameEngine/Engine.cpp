@@ -3,7 +3,6 @@
 #include "Engine.h"
 #include "Time/Timer.h"
 #include "Input/InputHandler.h"
-#include "GlobalEventHandler/GlobalEventHandler.h"
 #include "SceneHandler/SceneHandler.h"
 #include "DebugDrawer/DebugDrawer.h"
 #include "Audio/AudioEngine.h"
@@ -43,7 +42,6 @@ void Engine::Initialize()
     instance.myEventHandler = std::make_unique<WindowsEventHandler>();
     instance.myTimer = std::make_unique<Timer>();
     instance.myInputHandler = std::make_unique<InputHandler>();
-    instance.myGlobalEventHandler = std::make_unique<GlobalEventHandler>();
     instance.mySceneHandler = std::make_unique<SceneHandler>();
     instance.myDebugDrawer = std::make_unique<DebugDrawer>();
     instance.myAudioEngine = std::make_unique<AudioEngine>();

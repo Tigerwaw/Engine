@@ -20,16 +20,6 @@ void AudioSource::Update()
     }
 }
 
-void AudioSource::ReceiveEvent(const GameObjectEvent& aEvent)
-{
-    if (myPlayOnEvents.find(aEvent.type) == myPlayOnEvents.end()) return;
-
-    for (auto& audioString : myPlayOnEvents.at(aEvent.type))
-    {
-        Play(audioString);
-    }
-}
-
 void AudioSource::Play(const std::string& aAudioName)
 {
     if (myAudioInstances.find(aAudioName) == myAudioInstances.end()) return;
@@ -67,23 +57,6 @@ void AudioSource::AddAudioInstance(const std::string& aFMODEventName, bool aIsOn
     }
 }
 
-void AudioSource::SetAudioPlayOnEvent(const std::string& aAudioName, GameObjectEventType aEventType)
-{
-    if (myAudioInstances.find(aAudioName) == myAudioInstances.end()) return;
-
-    if (myPlayOnEvents.find(aEventType) == myPlayOnEvents.end())
-    {
-        myPlayOnEvents.emplace(aEventType, std::vector<std::string>());
-    }
-
-    for (auto& audioString : myPlayOnEvents.at(aEventType))
-    {
-        if (audioString == aAudioName) return;
-    }
-
-    myPlayOnEvents.at(aEventType).emplace_back(aAudioName);
-}
-
 bool AudioSource::Serialize(nl::json& outJsonObject)
 {
     outJsonObject;
@@ -118,16 +91,6 @@ bool AudioSource::Deserialize(nl::json& aJsonObject)
     }
 
     AddAudioInstance(audioName, isOneShot, sourceType, playOnStart);
-
-    if (aJsonObject.contains("PlayOnEvent"))
-    {
-        int eventInt = aJsonObject["PlayOnEvent"].get<int>();
-
-        if (eventInt > 0 && eventInt < static_cast<int>(GameObjectEventType::Count))
-        {
-            SetAudioPlayOnEvent(audioName, static_cast<GameObjectEventType>(eventInt));
-        }
-    }
 
     return true;
 }

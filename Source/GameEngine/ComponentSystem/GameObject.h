@@ -2,7 +2,6 @@
 #include "EngineDefines.h"
 
 #include "Component.h"
-#include "GameObjectEvent.h"
 
 class GameObject final
 {
@@ -35,13 +34,6 @@ public:
 
     template <typename T>
     const std::vector<std::shared_ptr<T>> GetComponents();
-    // --
-
-    // INTERNAL EVENT HANDLER
-    // (The idea of this is to encourage decoupling between components and reduce the need for pulling data through 
-    // GetComponent() every tick, and instead relegate that logic to an event call that polls the necessary components when needed).
-    void SendEvent(const GameObjectEvent aEvent);
-    void SendEvent(const GameObjectEventType aEventType, std::any aData = 0);
     // --
 
 private:

@@ -171,33 +171,33 @@ void AnimatedModel::SetCurrentAnimationOnLayer(const std::string& aAnimationName
     SetCurrentAnimationOnLayer(aAnimationName, myJointNameToLayerIndex.at(aStartJoint), aBlendTime, aStartingFrame);
 }
 
-void AnimatedModel::AddAnimationEvent(const std::string& aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, unsigned aLayerIndex)
-{
-    if (!ValidateLayerIndex(aLayerIndex)) return;
-    if (!ValidateAnimationName(aLayerIndex, aAnimationName)) return;
+//void AnimatedModel::AddAnimationEvent(const std::string& aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, unsigned aLayerIndex)
+//{
+//    if (!ValidateLayerIndex(aLayerIndex)) return;
+//    if (!ValidateAnimationName(aLayerIndex, aAnimationName)) return;
+//
+//    if (aEventFrame < 0 || aEventFrame >= myAnimationLayers[aLayerIndex].myAnimationStates.at(aAnimationName)->animation->Frames.size())
+//    {
+//        LOG(LogComponentSystem, Warning, "Frame {} is out of the range of Animation {}! Event will not be added!", aEventFrame, aAnimationName);
+//        return;
+//    }
+//
+//    AnimationEvent newEvent;
+//    newEvent.eventTypeToSend = aEventTypeToSend;
+//    newEvent.frame = aEventFrame;
+//    myAnimationLayers[aLayerIndex].myAnimationStates.at(aAnimationName)->events.emplace_back(newEvent);
+//}
 
-    if (aEventFrame < 0 || aEventFrame >= myAnimationLayers[aLayerIndex].myAnimationStates.at(aAnimationName)->animation->Frames.size())
-    {
-        LOG(LogComponentSystem, Warning, "Frame {} is out of the range of Animation {}! Event will not be added!", aEventFrame, aAnimationName);
-        return;
-    }
-
-    AnimationEvent newEvent;
-    newEvent.eventTypeToSend = aEventTypeToSend;
-    newEvent.frame = aEventFrame;
-    myAnimationLayers[aLayerIndex].myAnimationStates.at(aAnimationName)->events.emplace_back(newEvent);
-}
-
-void AnimatedModel::AddAnimationEvent(const std::string& aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, const std::string& aStartJoint)
-{
-    if (aStartJoint == "")
-    {
-        AddAnimationEvent(aAnimationName, aEventFrame, aEventTypeToSend, 0);
-        return;
-    }
-
-    AddAnimationEvent(aAnimationName, aEventFrame, aEventTypeToSend, myJointNameToLayerIndex.at(aStartJoint));
-}
+//void AnimatedModel::AddAnimationEvent(const std::string& aAnimationName, unsigned aEventFrame, GameObjectEventType aEventTypeToSend, const std::string& aStartJoint)
+//{
+//    if (aStartJoint == "")
+//    {
+//        AddAnimationEvent(aAnimationName, aEventFrame, aEventTypeToSend, 0);
+//        return;
+//    }
+//
+//    AddAnimationEvent(aAnimationName, aEventFrame, aEventTypeToSend, myJointNameToLayerIndex.at(aStartJoint));
+//}
 
 const std::string AnimatedModel::GetCurrentAnimationNameOnLayer(unsigned aLayerIndex) const
 {
@@ -373,27 +373,6 @@ bool AnimatedModel::Deserialize(nl::json& aJsonObject)
                     }
 
                     AddAnimationToLayer(animationName, anim, startBone, shouldLoop);
-
-                    if (animation.contains("Events"))
-                    {
-                        for (auto& animEvent : animation["Events"])
-                        {
-                            GameObjectEventType eventType = GameObjectEventType::Count;
-                            unsigned eventFrame = 0;
-
-                            if (animEvent.contains("EventType"))
-                            {
-                                eventType = static_cast<GameObjectEventType>(animEvent["EventType"].get<int>());
-                            }
-
-                            if (animEvent.contains("Frame"))
-                            {
-                                eventFrame = animEvent["Frame"].get<int>();
-                            }
-
-                            AddAnimationEvent(animationName, eventFrame, eventType, startBone);
-                        }
-                    }
                 }
             }
         }
@@ -451,7 +430,7 @@ void AnimatedModel::UpdateAnimationState(AnimationState& aAnimationState)
     {
         if (event.frame == aAnimationState.currentFrame)
         {
-            gameObject->SendEvent(event.eventTypeToSend);
+            //gameObject->SendEvent(event.eventTypeToSend);
             event.hasBeenCalledThisLoop = true;
         }
     }
