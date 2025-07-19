@@ -54,7 +54,7 @@ bool ResourceVendor::CreateShadowCubemap(std::string_view aName, unsigned aWidth
 
 bool ResourceVendor::LoadShader(const std::filesystem::path& aFilePath, Shader& outShader)
 {
-	return myRHI->LoadShaderFromFilePath(aFilePath.stem().string(), outShader, aFilePath.generic_wstring());
+	return myRHI->LoadShaderFromFilePath(aFilePath.stem().string(), outShader, aFilePath.wstring());
 }
 
 bool ResourceVendor::CreatePSO(PipelineStateObject& aPSO, PSODescription& aPSOdesc)
@@ -95,12 +95,19 @@ bool ResourceVendor::CreatePSO(PipelineStateObject& aPSO, PSODescription& aPSOde
 	}
 	}
 
-	if (aPSOdesc.vsPath != L"")
+	if (!aPSOdesc.vsPath.empty())
 	{
-		if (!myRHI->CreateInputLayout(aPSO.InputLayout, inputLayoutDefinition, aPSOdesc.vsPath))
+		if (myRHI->HasInputLayout(aPSOdesc.vsPath))
 		{
-			LOG(LogGraphicsEngine, Error, "Failed to create PSO!");
-			return false;
+			aPSO.InputLayout = myRHI->GetInputLayout(aPSOdesc.vsPath);
+		}
+		else
+		{
+			if (!myRHI->CreateInputLayout(aPSOdesc.vsPath.filename().string(), aPSO.InputLayout, inputLayoutDefinition, aPSOdesc.vsPath))
+			{
+				LOG(LogGraphicsEngine, Error, "Failed to create PSO {}!", aPSOdesc.name);
+				return false;
+			}
 		}
 	}
 
@@ -194,8 +201,25 @@ bool ResourceVendor::CreatePSO(PipelineStateObject& aPSO, PSODescription& aPSOde
 
 const bool ResourceVendor::CompareShaderParameters(const std::filesystem::path& aShaderOnePath, const std::filesystem::path& aShaderTwoPath) const
 {
-	ShaderInfo shaderOneInfo = myRHI->GetShaderInfo(aShaderOnePath);
-	ShaderInfo shaderTwoInfo = myRHI->GetShaderInfo(aShaderTwoPath);
+	ShaderInfo shaderOneInfo;
+	if (GraphicsEngine::Get().IsShaderCached(aShaderOnePath))
+	{
+		shaderOneInfo = GraphicsEngine::Get().GetCachedShaderInfo(aShaderOnePath);
+	}
+	else
+	{
+		shaderOneInfo = myRHI->GetShaderInfo(aShaderOnePath);
+	}
+
+	ShaderInfo shaderTwoInfo;
+	if (GraphicsEngine::Get().IsShaderCached(aShaderTwoPath))
+	{
+		shaderTwoInfo = GraphicsEngine::Get().GetCachedShaderInfo(aShaderTwoPath);
+	}
+	else
+	{
+		shaderTwoInfo = myRHI->GetShaderInfo(aShaderTwoPath);
+	}
 
 	if (shaderOneInfo.GetOutputParameters().size() != shaderTwoInfo.GetInputParameters().size())
 	{

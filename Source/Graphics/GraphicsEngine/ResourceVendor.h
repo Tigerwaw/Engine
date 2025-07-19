@@ -6,7 +6,7 @@ struct PSODescription
 {
 	std::string name;
 	VertexType vertexType;
-	std::wstring vsPath;
+	std::filesystem::path vsPath;
 	std::shared_ptr<Shader> vsShader;
 	std::shared_ptr<Shader> gsShader;
 	std::shared_ptr<Shader> psShader;

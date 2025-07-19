@@ -57,8 +57,8 @@ public:
 
 	void SetPrimitiveTopology(Topology aTopology) const;
 
-	bool CreateInputLayout(Microsoft::WRL::ComPtr<ID3D11InputLayout>& outInputLayout, const std::vector<VertexElementDesc>& aInputLayoutDefinition, const uint8_t* aShaderDataPtr, size_t aShaderDataSize);
-	bool CreateInputLayout(Microsoft::WRL::ComPtr<ID3D11InputLayout>& outInputLayout, const std::vector<VertexElementDesc>& aInputLayoutDefinition, std::wstring aFilePath);
+	bool CreateInputLayout(std::string_view aName, Microsoft::WRL::ComPtr<ID3D11InputLayout>& outInputLayout, const std::vector<VertexElementDesc>& aInputLayoutDefinition, const uint8_t* aShaderDataPtr, size_t aShaderDataSize);
+	bool CreateInputLayout(std::string_view aName, Microsoft::WRL::ComPtr<ID3D11InputLayout>& outInputLayout, const std::vector<VertexElementDesc>& aInputLayoutDefinition, const std::filesystem::path& aFilePath);
 	void SetInputLayout(const Microsoft::WRL::ComPtr<ID3D11InputLayout>& aInputLayout);
 
 	bool LoadShaderFromMemory(std::string_view aName, Shader& outShader, const uint8_t* aShaderDataPtr, size_t aShaderDataSize);
@@ -96,7 +96,10 @@ public:
 	void SetMarker(std::string_view aMarker) const;
 
 	ShaderInfo GetShaderInfo(const uint8_t* aTextureDataPtr, size_t aTextureDataSize);
-	ShaderInfo GetShaderInfo(std::wstring aShaderFilePath);
+	ShaderInfo GetShaderInfo(const std::filesystem::path& aShaderFilePath);
+
+	bool HasInputLayout(const std::filesystem::path& aVSshaderPath) const;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> GetInputLayout(const std::filesystem::path& aVSshaderPath);
 
 	FORCEINLINE std::shared_ptr<Texture> GetBackBuffer() { return myBackBuffer; }
 	FORCEINLINE std::shared_ptr<Texture> GetDepthBuffer() { return myDepthBuffer; }
@@ -121,7 +124,7 @@ private:
 	std::shared_ptr<Texture> myDepthBuffer;
 	std::unordered_map<IntermediateTexture, std::shared_ptr<Texture>> myIntermediateTextures;
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D11SamplerState>> mySamplerStates;
-	//std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D11InputLayout>> myInputLayouts;
+	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D11InputLayout>> myInputLayouts;
 };
 
 template<typename VertexType>

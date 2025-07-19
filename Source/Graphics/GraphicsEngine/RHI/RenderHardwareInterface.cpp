@@ -460,7 +460,7 @@ void RenderHardwareInterface::SetPrimitiveTopology(Topology aTopology) const
 	myContext->IASetPrimitiveTopology(static_cast<D3D11_PRIMITIVE_TOPOLOGY>(aTopology));
 }
 
-bool RenderHardwareInterface::CreateInputLayout(Microsoft::WRL::ComPtr<ID3D11InputLayout>& outInputLayout, 
+bool RenderHardwareInterface::CreateInputLayout(std::string_view aName, Microsoft::WRL::ComPtr<ID3D11InputLayout>& outInputLayout,
 												const std::vector<VertexElementDesc>& aInputLayoutDefinition, const uint8_t* aShaderDataPtr, size_t aShaderDataSize)
 {
 	std::vector<D3D11_INPUT_ELEMENT_DESC> inputElements;
@@ -489,21 +489,24 @@ bool RenderHardwareInterface::CreateInputLayout(Microsoft::WRL::ComPtr<ID3D11Inp
 		outInputLayout.GetAddressOf()
 	);
 
-	SetObjectName(outInputLayout, "Default Input Layout");
+	SetObjectName(outInputLayout, aName);
 
 	if (FAILED(result))
 	{
-		LOG(LogRHI, Error, "Failed to create Input Layout!");
+		LOG(LogRHI, Error, "Failed to create Input Layout {}!", aName);
 		return false;
 	}
 
+	myInputLayouts[aName.data()] = outInputLayout;
+	LOG(LogRHI, Log, "Successfully created Input Layout {}!", aName);
 	return true;
 }
 
-bool RenderHardwareInterface::CreateInputLayout(Microsoft::WRL::ComPtr<ID3D11InputLayout>& outInputLayout, const std::vector<VertexElementDesc>& aInputLayoutDefinition, std::wstring aFilePath)
+bool RenderHardwareInterface::CreateInputLayout(std::string_view aName, Microsoft::WRL::ComPtr<ID3D11InputLayout>& outInputLayout, const std::vector<VertexElementDesc>& aInputLayoutDefinition, const std::filesystem::path& aFilePath)
 {
 	ComPtr<ID3D10Blob> shaderBuffer;
-	HRESULT result = D3DReadFileToBlob(aFilePath.c_str(), shaderBuffer.GetAddressOf());
+	
+	HRESULT result = D3DReadFileToBlob(aFilePath.wstring().c_str(), shaderBuffer.GetAddressOf());
 
 	if (FAILED(result))
 	{
@@ -511,7 +514,7 @@ bool RenderHardwareInterface::CreateInputLayout(Microsoft::WRL::ComPtr<ID3D11Inp
 		return false;
 	}
 
-	if (!CreateInputLayout(outInputLayout, aInputLayoutDefinition, reinterpret_cast<const uint8_t*>(shaderBuffer->GetBufferPointer()), shaderBuffer->GetBufferSize()))
+	if (!CreateInputLayout(aName, outInputLayout, aInputLayoutDefinition, reinterpret_cast<const uint8_t*>(shaderBuffer->GetBufferPointer()), shaderBuffer->GetBufferSize()))
 	{
 		return false;
 	}
@@ -1268,18 +1271,29 @@ ShaderInfo RenderHardwareInterface::GetShaderInfo(const uint8_t* aTextureDataPtr
 	return ShaderInfo::Reflect(aTextureDataPtr, aTextureDataSize);
 }
 
-ShaderInfo RenderHardwareInterface::GetShaderInfo(std::wstring aShaderFilePath)
+ShaderInfo RenderHardwareInterface::GetShaderInfo(const std::filesystem::path& aShaderFilePath)
 {
 	ComPtr<ID3D10Blob> shaderBuffer;
-	HRESULT result = D3DReadFileToBlob(aShaderFilePath.c_str(), shaderBuffer.GetAddressOf());
+	HRESULT result = D3DReadFileToBlob(aShaderFilePath.wstring().c_str(), shaderBuffer.GetAddressOf());
 
 	if (FAILED(result))
 	{
-		LOG(LogRHI, Error, "Failed to read input layout shader from filepath!");
+		LOG(LogRHI, Error, "Failed to read shader info from filepath {}!", aShaderFilePath.string());
 		return ShaderInfo();
 	}
 
 	return ShaderInfo::Reflect(reinterpret_cast<const uint8_t*>(shaderBuffer->GetBufferPointer()), shaderBuffer->GetBufferSize());
+}
+
+bool RenderHardwareInterface::HasInputLayout(const std::filesystem::path& aVSshaderPath) const
+{
+	return myInputLayouts.contains(aVSshaderPath.filename().string());
+}
+
+Microsoft::WRL::ComPtr<ID3D11InputLayout> RenderHardwareInterface::GetInputLayout(const std::filesystem::path& aVSshaderPath)
+{
+	assert(HasInputLayout(aVSshaderPath.filename().string()));
+	return myInputLayouts.at(aVSshaderPath.filename().string());
 }
 
 bool RenderHardwareInterface::CreateVertexBufferInternal(std::string_view aName, Microsoft::WRL::ComPtr<ID3D11Buffer>& outVxBuffer,

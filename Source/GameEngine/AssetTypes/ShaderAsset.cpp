@@ -4,13 +4,21 @@
 
 bool ShaderAsset::Load()
 {
-    Shader sh;
-    if (!GraphicsEngine::Get().GetResourceVendor().LoadShader(GetPath(), sh))
+    if (GraphicsEngine::Get().IsShaderCached(GetPath()))
     {
-        return false;
+        shader = GraphicsEngine::Get().GetCachedShader(GetPath());
+    }
+    else
+    {
+        Shader sh;
+        if (!GraphicsEngine::Get().GetResourceVendor().LoadShader(GetPath(), sh))
+        {
+            return false;
+        }
+
+        shader = std::make_shared<Shader>(std::move(sh));
     }
 
-    shader = std::make_shared<Shader>(std::move(sh));
     return true;
 }
 

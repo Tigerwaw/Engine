@@ -92,6 +92,11 @@ public:
 	std::shared_ptr<PipelineStateObject> GetPSO(PSOType aPSOType) const;
 	std::shared_ptr<PipelineStateObject> RegisterPSO(const char* aPSOName, std::shared_ptr<PipelineStateObject> aPSO);
 
+	bool IsShaderCached(const std::filesystem::path& aShaderPath) const;
+	std::shared_ptr<Shader> GetCachedShader(const std::filesystem::path& aShaderPath);
+	const ShaderInfo& GetCachedShaderInfo(const std::filesystem::path& aShaderPath);
+	void CacheShader(const std::filesystem::path& aShaderPath, std::shared_ptr<Shader> aShader);
+
 	std::shared_ptr<Texture> GetBlueNoiseTexture() const { return myBlueNoiseTexture; }
 
 	std::shared_ptr<Texture> GetDefaultAlbedoTexture() const { return myDefaultAlbedoTexture; }
@@ -125,6 +130,8 @@ private:
 
 	std::unordered_map<std::string, ConstantBuffer> myConstantBuffers;
 	std::unordered_map<std::string, std::shared_ptr<PipelineStateObject>> myPSOs;
+	std::unordered_map<std::string, std::shared_ptr<Shader>> myCachedShaders;
+	std::unordered_map<std::string, ShaderInfo> myCachedShaderInfo;
 	
 	std::shared_ptr<PipelineStateObject> myCurrentPSO;
 	std::shared_ptr<PipelineStateObject> myDefaultPSO;

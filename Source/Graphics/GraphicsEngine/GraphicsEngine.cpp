@@ -219,6 +219,29 @@ std::shared_ptr<PipelineStateObject> GraphicsEngine::RegisterPSO(const char* aPS
 	return aPSO;
 }
 
+bool GraphicsEngine::IsShaderCached(const std::filesystem::path& aShaderPath) const
+{
+	return myCachedShaders.contains(aShaderPath.filename().string());
+}
+
+std::shared_ptr<Shader> GraphicsEngine::GetCachedShader(const std::filesystem::path& aShaderPath)
+{
+	assert(IsShaderCached(aShaderPath));
+	return myCachedShaders.at(aShaderPath.filename().string());
+}
+
+const ShaderInfo& GraphicsEngine::GetCachedShaderInfo(const std::filesystem::path& aShaderPath)
+{
+	assert(myCachedShaderInfo.contains(aShaderPath.filename().string()));
+	return myCachedShaderInfo.at(aShaderPath.filename().string());
+}
+
+void GraphicsEngine::CacheShader(const std::filesystem::path& aShaderPath, std::shared_ptr<Shader> aShader)
+{
+	myCachedShaders[aShaderPath.filename().string()] = aShader;
+	myCachedShaderInfo[aShaderPath.filename().string()] = myRHI->GetShaderInfo(aShaderPath);
+}
+
 GraphicsEngine::GraphicsEngine() = default;
 GraphicsEngine::~GraphicsEngine() = default;
 
@@ -242,6 +265,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", defaultMeshVSPath.filename().string());
 		return false;
 	}
+	CacheShader(defaultMeshVSPath, defaultMeshVS);
 
 	std::filesystem::path deferredMeshPSPath = aContentRoot / "EngineAssets/Shaders/Deferred_PS.cso";
 	std::shared_ptr<Shader> deferredMeshPS = std::make_shared<Shader>();
@@ -250,6 +274,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", deferredMeshPSPath.filename().string());
 		return false;
 	}
+	CacheShader(deferredMeshPSPath, deferredMeshPS);
 
 	std::filesystem::path forwardPBRMeshPSPath = aContentRoot / "EngineAssets/Shaders/PBRMesh_PS.cso";
 	std::shared_ptr<Shader> forwardPBRMeshPS = std::make_shared<Shader>();
@@ -258,6 +283,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", forwardPBRMeshPSPath.filename().string());
 		return false;
 	}
+	CacheShader(forwardPBRMeshPSPath, forwardPBRMeshPS);
 
 	std::filesystem::path shadowCubeVSPath = aContentRoot / "EngineAssets/Shaders/ShadowCube_VS.cso";
 	std::shared_ptr<Shader> shadowCubeVS = std::make_shared<Shader>();
@@ -266,6 +292,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", shadowCubeVSPath.filename().string());
 		return false;
 	}
+	CacheShader(shadowCubeVSPath, shadowCubeVS);
 
 	std::filesystem::path shadowCubeGSPath = aContentRoot / "EngineAssets/Shaders/ShadowCube_GS.cso";
 	std::shared_ptr<Shader> shadowCubeGS = std::make_shared<Shader>();
@@ -274,6 +301,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", shadowCubeGSPath.filename().string());
 		return false;
 	}
+	CacheShader(shadowCubeGSPath, shadowCubeGS);
 
 	std::filesystem::path spriteVSPath = aContentRoot / "EngineAssets/Shaders/Sprite_VS.cso";
 	std::shared_ptr<Shader> spriteVS = std::make_shared<Shader>();
@@ -282,6 +310,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", spriteVSPath.filename().string());
 		return false;
 	}
+	CacheShader(spriteVSPath, spriteVS);
 
 	std::filesystem::path spriteGSPath = aContentRoot / "EngineAssets/Shaders/Sprite_GS.cso";
 	std::shared_ptr<Shader> spriteGS = std::make_shared<Shader>();
@@ -290,6 +319,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", spriteGSPath.filename().string());
 		return false;
 	}
+	CacheShader(spriteGSPath, spriteGS);
 
 	std::filesystem::path spritePSPath = aContentRoot / "EngineAssets/Shaders/Sprite_PS.cso";
 	std::shared_ptr<Shader> spritePS = std::make_shared<Shader>();
@@ -298,6 +328,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", spritePSPath.filename().string());
 		return false;
 	}
+	CacheShader(spritePSPath, spritePS);
 
 	std::filesystem::path spritesheetPSPath = aContentRoot / "EngineAssets/Shaders/Spritesheet_PS.cso";
 	std::shared_ptr<Shader> spritesheetPS = std::make_shared<Shader>();
@@ -306,6 +337,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", spritesheetPSPath.filename().string());
 		return false;
 	}
+	CacheShader(spritesheetPSPath, spritesheetPS);
 
 	std::filesystem::path textVSPath = aContentRoot / "EngineAssets/Shaders/UI_Text_VS.cso";
 	std::shared_ptr<Shader> textVS = std::make_shared<Shader>();
@@ -314,6 +346,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", textVSPath.filename().string());
 		return false;
 	}
+	CacheShader(textVSPath, textVS);
 
 	std::filesystem::path textPSPath = aContentRoot / "EngineAssets/Shaders/UI_Text_PS.cso";
 	std::shared_ptr<Shader> textPS = std::make_shared<Shader>();
@@ -322,6 +355,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", textPSPath.filename().string());
 		return false;
 	}
+	CacheShader(textPSPath, textPS);
 
 	std::filesystem::path particleVSPath = aContentRoot / "EngineAssets/Shaders/Particle_VS.cso";
 	std::shared_ptr<Shader> particleVS = std::make_shared<Shader>();
@@ -330,6 +364,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", particleVSPath.filename().string());
 		return false;
 	}
+	CacheShader(particleVSPath, particleVS);
 
 	std::filesystem::path particleGSPath = aContentRoot / "EngineAssets/Shaders/Particle_GS.cso";
 	std::shared_ptr<Shader> particleGS = std::make_shared<Shader>();
@@ -338,6 +373,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", particleGSPath.filename().string());
 		return false;
 	}
+	CacheShader(particleGSPath, particleGS);
 
 	std::filesystem::path particlePSPath = aContentRoot / "EngineAssets/Shaders/Particle_PS.cso";
 	std::shared_ptr<Shader> particlePS = std::make_shared<Shader>();
@@ -346,6 +382,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", particlePSPath.filename().string());
 		return false;
 	}
+	CacheShader(particlePSPath, particlePS);
 
 	std::filesystem::path trailVSPath = aContentRoot / "EngineAssets/Shaders/Trail_VS.cso";
 	std::shared_ptr<Shader> trailVS = std::make_shared<Shader>();
@@ -354,6 +391,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", particleVSPath.filename().string());
 		return false;
 	}
+	CacheShader(trailVSPath, trailVS);
 
 	std::filesystem::path trailGSPath = aContentRoot / "EngineAssets/Shaders/Trail_GS.cso";
 	std::shared_ptr<Shader> trailGS = std::make_shared<Shader>();
@@ -362,6 +400,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", trailGSPath.filename().string());
 		return false;
 	}
+	CacheShader(trailGSPath, trailGS);
 
 	std::filesystem::path trailPSPath = aContentRoot / "EngineAssets/Shaders/Trail_PS.cso";
 	std::shared_ptr<Shader> trailPS = std::make_shared<Shader>();
@@ -370,6 +409,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", trailPSPath.filename().string());
 		return false;
 	}
+	CacheShader(trailPSPath, trailPS);
 
 	std::filesystem::path particleSpritesheetPSPath = aContentRoot / "EngineAssets/Shaders/ParticleSpritesheet_PS.cso";
 	std::shared_ptr<Shader> particleSpritesheetPS = std::make_shared<Shader>();
@@ -378,6 +418,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", particleSpritesheetPSPath.filename().string());
 		return false;
 	}
+	CacheShader(particleSpritesheetPSPath, particleSpritesheetPS);
 
 	std::filesystem::path vfxSpritesheetPSPath = aContentRoot / "EngineAssets/Shaders/VFXSpritesheet_PS.cso";
 	std::shared_ptr<Shader> vfxSpritesheetPS = std::make_shared<Shader>();
@@ -386,6 +427,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", vfxSpritesheetPSPath.filename().string());
 		return false;
 	}
+	CacheShader(vfxSpritesheetPSPath, vfxSpritesheetPS);
 
 	std::filesystem::path debugLineVSPath = aContentRoot / "EngineAssets/Shaders/DebugLine_VS.cso";
 	std::shared_ptr<Shader> debugLineVS = std::make_shared<Shader>();
@@ -394,6 +436,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", debugLineVSPath.filename().string());
 		return false;
 	}
+	CacheShader(debugLineVSPath, debugLineVS);
 
 	std::filesystem::path debugLineGSPath = aContentRoot / "EngineAssets/Shaders/DebugLine_GS.cso";
 	std::shared_ptr<Shader> debugLineGS = std::make_shared<Shader>();
@@ -402,6 +445,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", debugLineGSPath.filename().string());
 		return false;
 	}
+	CacheShader(debugLineGSPath, debugLineGS);
 	
 	std::filesystem::path debugLinePSPath = aContentRoot / "EngineAssets/Shaders/DebugObject_PS.cso";
 	std::shared_ptr<Shader> debugLinePS = std::make_shared<Shader>();
@@ -410,6 +454,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", debugLinePSPath.filename().string());
 		return false;
 	}
+	CacheShader(debugLinePSPath, debugLinePS);
 	
 	std::filesystem::path quadVSPath = aContentRoot / "EngineAssets/Shaders/Quad_VS.cso";
 	std::shared_ptr<Shader> quadVS = std::make_shared<Shader>();
@@ -418,6 +463,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", quadVSPath.filename().string());
 		return false;
 	}
+	CacheShader(quadVSPath, quadVS);
 	
 	std::filesystem::path deferredDirectionalLightPSPath = aContentRoot / "EngineAssets/Shaders/Deferred_DirectionalLight_PS.cso";
 	std::shared_ptr<Shader> deferredDirectionalLightPS = std::make_shared<Shader>();
@@ -426,6 +472,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", deferredDirectionalLightPSPath.filename().string());
 		return false;
 	}
+	CacheShader(deferredDirectionalLightPSPath, deferredDirectionalLightPS);
 	
 	std::filesystem::path deferredPointlightPSPath = aContentRoot / "EngineAssets/Shaders/Deferred_Pointlight_PS.cso";
 	std::shared_ptr<Shader> deferredPointlightPS = std::make_shared<Shader>();
@@ -434,6 +481,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", deferredPointlightPSPath.filename().string());
 		return false;
 	}
+	CacheShader(deferredPointlightPSPath, deferredPointlightPS);
 	
 	std::filesystem::path deferredSpotlightPSPath = aContentRoot / "EngineAssets/Shaders/Deferred_Spotlight_PS.cso";
 	std::shared_ptr<Shader> deferredSpotlightPS = std::make_shared<Shader>();
@@ -442,6 +490,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", deferredSpotlightPSPath.filename().string());
 		return false;
 	}
+	CacheShader(deferredSpotlightPSPath, deferredSpotlightPS);
 	
 	std::filesystem::path bloomPSPath = aContentRoot / "EngineAssets/Shaders/PP_Bloom_PS.cso";
 	std::shared_ptr<Shader> bloomPS = std::make_shared<Shader>();
@@ -450,6 +499,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", bloomPSPath.filename().string());
 		return false;
 	}
+	CacheShader(bloomPSPath, bloomPS);
 	
 	std::filesystem::path gaussianhPSPath = aContentRoot / "EngineAssets/Shaders/PP_GaussianH_PS.cso";
 	std::shared_ptr<Shader> gaussianhPS = std::make_shared<Shader>();
@@ -458,6 +508,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", gaussianhPSPath.filename().string());
 		return false;
 	}
+	CacheShader(gaussianhPSPath, gaussianhPS);
 	
 	std::filesystem::path gaussianvPSPath = aContentRoot / "EngineAssets/Shaders/PP_GaussianV_PS.cso";
 	std::shared_ptr<Shader> gaussianvPS = std::make_shared<Shader>();
@@ -466,6 +517,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", gaussianhPSPath.filename().string());
 		return false;
 	}
+	CacheShader(gaussianvPSPath, gaussianvPS);
 	
 	std::filesystem::path luminancePSPath = aContentRoot / "EngineAssets/Shaders/PP_Luminance_PS.cso";
 	std::shared_ptr<Shader> luminancePS = std::make_shared<Shader>();
@@ -474,6 +526,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", luminancePSPath.filename().string());
 		return false;
 	}
+	CacheShader(luminancePSPath, luminancePS);
 	
 	std::filesystem::path radialBlurPSPath = aContentRoot / "EngineAssets/Shaders/PP_RadialBlur_PS.cso";
 	std::shared_ptr<Shader> radialBlurPS = std::make_shared<Shader>();
@@ -482,6 +535,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", radialBlurPSPath.filename().string());
 		return false;
 	}
+	CacheShader(radialBlurPSPath, radialBlurPS);
 	
 	std::filesystem::path resamplePSPath = aContentRoot / "EngineAssets/Shaders/PP_Resample_PS.cso";
 	std::shared_ptr<Shader> resamplePS = std::make_shared<Shader>();
@@ -490,6 +544,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", resamplePSPath.filename().string());
 		return false;
 	}
+	CacheShader(resamplePSPath, resamplePS);
 	
 	std::filesystem::path ssaoPSPath = aContentRoot / "EngineAssets/Shaders/PP_SSAO_PS.cso";
 	std::shared_ptr<Shader> ssaoPS = std::make_shared<Shader>();
@@ -498,6 +553,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", ssaoPSPath.filename().string());
 		return false;
 	}
+	CacheShader(ssaoPSPath, ssaoPS);
 	
 	std::filesystem::path tonemapACESPSPath = aContentRoot / "EngineAssets/Shaders/PP_TonemapACES_PS.cso";
 	std::shared_ptr<Shader> tonemapACESPS = std::make_shared<Shader>();
@@ -506,6 +562,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", tonemapACESPSPath.filename().string());
 		return false;
 	}
+	CacheShader(tonemapACESPSPath, tonemapACESPS);
 	
 	std::filesystem::path tonemapLottesPSPath = aContentRoot / "EngineAssets/Shaders/PP_TonemapLottes_PS.cso";
 	std::shared_ptr<Shader> tonemapLottesPS = std::make_shared<Shader>();
@@ -514,6 +571,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", tonemapLottesPSPath.filename().string());
 		return false;
 	}
+	CacheShader(tonemapLottesPSPath, tonemapLottesPS);
 	
 	std::filesystem::path tonemapUEPSPath = aContentRoot / "EngineAssets/Shaders/PP_TonemapUE_PS.cso";
 	std::shared_ptr<Shader> tonemapUEPS = std::make_shared<Shader>();
@@ -522,6 +580,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", tonemapUEPSPath.filename().string());
 		return false;
 	}
+	CacheShader(tonemapUEPSPath, tonemapUEPS);
 	
 	std::filesystem::path debugForwardPSPath = aContentRoot / "EngineAssets/Shaders/DebugForward_PS.cso";
 	std::shared_ptr<Shader> debugForwardPS = std::make_shared<Shader>();
@@ -530,6 +589,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", debugForwardPSPath.filename().string());
 		return false;
 	}
+	CacheShader(debugForwardPSPath, debugForwardPS);
 	
 	std::filesystem::path debugGBufferPSPath = aContentRoot / "EngineAssets/Shaders/DebugGBuffer_PS.cso";
 	std::shared_ptr<Shader> debugGBufferPS = std::make_shared<Shader>();
@@ -538,6 +598,7 @@ bool GraphicsEngine::CreateDefaultPSOs(const std::filesystem::path& aContentRoot
 		LOG(LogGraphicsEngine, Error, "Failed to load shader {}", debugGBufferPSPath.filename().string());
 		return false;
 	}
+	CacheShader(debugGBufferPSPath, debugGBufferPS);
 
 	{
 		PSODescription deferredDesc;
